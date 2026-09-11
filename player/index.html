@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>PrintMyEscape · Personaliza tu escape room</title>
+<style>
+  :root {
+    --abyss: #0c2a2f; --abyss-2: #14404a; --teal: #0e7463; --teal-deep: #0a574a;
+    --sage: #b7c29b; --sage-deep: #9fad82; --paper: #faf6ec; --ink: #22302a;
+    --accent: #0e7463; --danger: #c0392b;
+  }
+  * { box-sizing: border-box; }
+  ::selection { background: var(--teal); color: #fff; }
+  body {
+    margin: 0; color: var(--ink);
+    font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    background-color: var(--paper);
+    background-image: radial-gradient(rgba(12,42,47,.07) 1px, transparent 1.5px);
+    background-size: 22px 22px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  header {
+    padding: 12px 16px; color: #fff;
+    background: linear-gradient(135deg, var(--abyss) 0%, var(--abyss-2) 70%, #1a4a52 100%);
+    border-bottom: 4px solid var(--teal);
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    position: sticky; top: 0; z-index: 20;
+    box-shadow: 0 4px 18px rgba(12,42,47,.35);
+  }
+  header h1 {
+    font-size: 19px; margin: 0 6px 0 0; font-weight: 900;
+    letter-spacing: .05em; text-transform: uppercase;
+    font-family: Impact, "Arial Narrow", "Trebuchet MS", sans-serif;
+  }
+  #ver {
+    background: var(--teal); color: #fff; font-weight: 800; font-size: 11px;
+    padding: 7px 12px; min-width: 52px; text-align: center; letter-spacing: .08em;
+    clip-path: polygon(28% 0, 72% 0, 100% 50%, 72% 100%, 28% 100%, 0 50%);
+  }
+  header button {
+    font-size: 13px; font-weight: 800; letter-spacing: .02em; cursor: pointer; border: 0;
+    padding: 11px 22px; color: #fff; background: #1e4d55;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    transition: transform .12s ease, filter .12s ease;
+  }
+  header button:hover:not(:disabled) { transform: translateY(-1px) rotate(-.3deg); filter: brightness(1.15); }
+  header button:active:not(:disabled) { transform: translateY(1px); }
+  header button:disabled { opacity: .45; cursor: not-allowed; filter: grayscale(.4); }
+  header button:focus-visible { outline: 3px solid var(--sage); outline-offset: 2px; }
+  #print { background: var(--sage); color: #16241d; }
+  #loadTpl, #reset, #clearSlot { background: #1e4d55; color: #fff; }
+  header nav { display: flex; gap: 8px; align-items: center; }
+  header nav button {
+    width: 46px; height: 36px; padding: 0; font-size: 13px;
+    background: var(--teal); color: #fff;
+    clip-path: polygon(28% 0, 72% 0, 100% 50%, 72% 100%, 28% 100%, 0 50%);
+  }
+  header nav button:hover { background: var(--teal-deep); transform: translateY(-1px) scale(1.04); }
+  #tip {
+    background: var(--sage); color: #1d2a1f; font-size: 13.5px; font-weight: 600;
+    padding: 10px 28px; border-top: 3px solid var(--abyss);
+    clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  }
+  #pending { color: var(--teal-deep); font-weight: 800; }
+  #preview { display: flex; flex-direction: column; gap: 30px; align-items: center; padding: 22px 12px 56px; }
+  .pme-page {
+    position: relative; width: min(94vw, 680px); aspect-ratio: 210/297; background: #fff;
+    border: 3px solid var(--abyss); border-radius: 8px; overflow: hidden;
+    box-shadow: 8px 8px 0 rgba(14,116,99,.28), 0 14px 34px rgba(12,42,47,.28);
+  }
+  .pme-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
+  .pme-slot { position: absolute; overflow: hidden; z-index: 2; touch-action: manipulation; }
+  .pme-slot.pme-text {
+    display: flex; align-items: center; font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    white-space: nowrap; cursor: pointer; overflow: visible; border-radius: 2px;
+    color: #22302a; background: rgba(255,253,244,.92); padding: 0 3px;
+  }
+  .pme-slot.pme-text[data-font="script"] { font-family: "Segoe Script", "Brush Script MT", cursive; }
+  .pme-slot.pme-text[data-font="hand"] { font-family: "Comic Sans MS", "Segoe Script", cursive; }
+  .pme-slot.pme-text:hover { outline: 2px solid rgba(14,116,99,.35); }
+  .pme-tag {
+    position: absolute; left: 50%; top: -1.5em; z-index: 3; pointer-events: none;
+    font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+    font-family: "Trebuchet MS", system-ui, sans-serif;
+    background: var(--abyss); color: #fff; padding: 3px 9px; white-space: nowrap;
+    max-width: 190px; overflow: hidden; text-overflow: ellipsis;
+    border-radius: 3px 9px 9px 3px; transform: translateX(-50%) rotate(-.6deg);
+    box-shadow: 2px 2px 0 rgba(14,116,99,.9);
+  }
+  .pme-slot.pme-image { background-position: center; background-repeat: no-repeat; cursor: pointer; overflow: visible; }
+  .pme-slot.pme-empty { outline: 2px dashed rgba(14,116,99,.7); background-color: rgba(183,194,155,.22); }
+  .pme-slot.pme-selected { outline: 3px solid var(--teal) !important; box-shadow: 0 0 0 5px rgba(14,116,99,.25); }
+  .pme-overlay {
+    position: absolute; z-index: 10; margin: 0; padding: 0 4px;
+    border: 3px solid var(--teal); border-radius: 5px; background: #fffdf8;
+    box-shadow: 0 8px 20px rgba(12,42,47,.3); outline: none; resize: none;
+    overflow: hidden; color: #22302a;
+    font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif; white-space: nowrap;
+  }
+  .pme-overlay[data-font="script"] { font-family: "Segoe Script", "Brush Script MT", cursive; }
+  .pme-overlay[data-font="hand"] { font-family: "Comic Sans MS", "Segoe Script", cursive; }
+  #charcount {
+    position: fixed; bottom: 12px; right: 14px; z-index: 30; display: none;
+    background: var(--abyss); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: .05em;
+    padding: 7px 15px; border: 2px solid var(--teal); border-radius: 999px;
+    box-shadow: 3px 3px 0 rgba(14,116,99,.85);
+  }
+  @media (max-width: 640px) {
+    header { gap: 8px; padding: 10px 12px; }
+    header h1 { font-size: 16px; flex-basis: 100%; }
+    header button { padding: 9px 14px; font-size: 12px; min-height: 44px; }
+    header nav { flex-wrap: wrap; }
+    header nav button { width: 48px; height: 40px; }
+    #tip { clip-path: none; border-radius: 0; padding: 10px 14px; font-size: 13px; }
+    #preview { gap: 22px; padding: 14px 8px 48px; }
+    .pme-tag { display: none; }
+    .pme-slot.pme-selected .pme-tag { display: block; font-size: 9px; max-width: 200px; }
+    #charcount { bottom: calc(10px + env(safe-area-inset-bottom)); }
+  }
+  /* ========== TEMA HORRIBLE (broma para el diseñador; solo pantalla) ========== */
+  @media screen {
+    @keyframes horrible-blink { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+    html[data-theme="horrible"] body {
+      font-family: "Comic Sans MS", "Chalkboard SE", cursive;
+      background-color: #ffff00;
+      background-image: repeating-linear-gradient(45deg, #ffff00 0 22px, #ff00ff 22px 44px);
+    }
+    html[data-theme="horrible"] header {
+      background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
+      border-bottom: 6px dashed #000;
+    }
+    html[data-theme="horrible"] header h1 {
+      transform: rotate(2deg); letter-spacing: .22em; color: #00ff00;
+      text-shadow: 3px 3px 0 #ff0000, -2px -2px 0 #0000ff;
+      animation: horrible-blink 1s infinite;
+    }
+    html[data-theme="horrible"] #ver { background: #ff0000; clip-path: none; border-radius: 50%; }
+    html[data-theme="horrible"] header button {
+      background: #00ff00; color: #ff00ff; clip-path: none;
+      border: 3px dashed #ff0000; border-radius: 50%; transform: rotate(-2deg);
+    }
+    html[data-theme="horrible"] #print { background: #00ffff; color: #ff0000; }
+    html[data-theme="horrible"] header nav button { background: #ff0000; clip-path: none; border-radius: 50%; }
+    html[data-theme="horrible"] #tip {
+      background: #00ff00; color: #ff00ff; clip-path: none; font-weight: 900;
+      border-top: 5px dotted #0000ff;
+    }
+    html[data-theme="horrible"] #pending { color: #ff0000; }
+    html[data-theme="horrible"] .pme-page {
+      border: 5px dotted #ff0000; transform: rotate(.8deg);
+      box-shadow: 10px 10px 0 #00ffff, -10px -10px 0 #ff00ff;
+    }
+    html[data-theme="horrible"] .pme-tag {
+      background: #ff0000; color: #ffff00; font-size: 13px; max-width: 240px;
+      transform: translateX(-50%) rotate(3deg); box-shadow: 3px 3px 0 #0000ff;
+    }
+    html[data-theme="horrible"] .pme-slot.pme-text {
+      background: #00ff00; color: #0000ff;
+      font-family: "Comic Sans MS", cursive !important;
+    }
+    html[data-theme="horrible"] .pme-slot.pme-empty {
+      outline: 3px dashed #ff00ff;
+      background: repeating-linear-gradient(45deg, #fff 0 8px, #ffff00 8px 16px);
+    }
+    html[data-theme="horrible"] .pme-overlay {
+      border-color: #ff0000; background: #00ffff; transform: rotate(-1deg);
+      font-family: "Comic Sans MS", cursive;
+    }
+    html[data-theme="horrible"] #charcount {
+      background: #ff00ff; border-color: #ffff00; transform: rotate(-3deg);
+    }
+  }
+  @media print {
+    header, #tip, #charcount, #errbox { display: none !important; }
+    body { background: #fff; background-image: none; }
+    #preview { display: block; padding: 0; }
+    .pme-page { width: 100%; border: 0; border-radius: 0; box-shadow: none; break-after: page; }
+    .pme-slot.pme-empty { outline: none !important; background: none !important; }
+    .pme-tag { display: none !important; }
+    .pme-slot.pme-text { background: none !important; box-shadow: none !important; }
+    .pme-overlay { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title">PrintMyEscape</h1> <span id="ver">v2.0</span>
+  <nav id="pagenav"></nav>
+  <button id="clearSlot" disabled>Vaciar este hueco</button>
+  <button id="print">Imprimir / guardar PDF</button>
+  <button id="loadTpl">Cargar maquetacion...</button>
+  <input id="loadTplFile" type="file" accept="application/json,.json" style="display:none">
+  <button id="reset">Vaciar todo</button>
+  <button id="theme" title="Solo para valientes">Tema horrible</button>
+</header>
+<div id="errbox" style="display:none;background:#b71c1c;color:#fff;font-size:13px;padding:8px 14px;"></div>
+<div id="tip">Pulsa un hueco de texto para escribir; pulsa un hueco de foto y elige la imagen.<span id="src"></span><span id="pending"></span></div>
+<div id="preview"></div>
+<div id="charcount"></div>
+<input id="filePicker" type="file" accept="image/jpeg,image/png,image/webp" style="display:none">
+<script type="application/json" id="tpl-data">{
+  "id": "regalo-robado",
+  "version": 1,
+  "name": "Puzzle del regalo robado",
+  "pageSize": "A4",
+  "notes": "Los campos son globales: la foto/nombre de cada sospechoso se define una vez y se reutiliza en todas las paginas donde aparece.",
+  "fields": [
+    { "id": "victimName", "type": "text", "label": "Nombre del homenajeado", "default": "Ian", "maxLength": 16 },
+    { "id": "s1_name", "type": "text", "label": "Sospechoso 1 - nombre", "default": "Celia", "maxLength": 16 },
+    { "id": "s1_photo", "type": "image", "label": "Sospechoso 1 - foto" },
+    { "id": "s2_name", "type": "text", "label": "Sospechoso 2 - nombre", "default": "Nuria", "maxLength": 16 },
+    { "id": "s2_photo", "type": "image", "label": "Sospechoso 2 - foto" },
+    { "id": "s3_name", "type": "text", "label": "Sospechoso 3 - nombre", "default": "Adela", "maxLength": 16 },
+    { "id": "s3_photo", "type": "image", "label": "Sospechoso 3 - foto" },
+    { "id": "s4_name", "type": "text", "label": "Sospechoso 4 - nombre", "default": "Adam", "maxLength": 16 },
+    { "id": "s4_photo", "type": "image", "label": "Sospechoso 4 - foto" },
+    { "id": "s5_name", "type": "text", "label": "Sospechoso 5 - nombre", "default": "Dani", "maxLength": 16 },
+    { "id": "s5_photo", "type": "image", "label": "Sospechoso 5 - foto" },
+    { "id": "s6_name", "type": "text", "label": "Sospechoso 6 - nombre", "default": "Pol", "maxLength": 16 },
+    { "id": "s6_photo", "type": "image", "label": "Sospechoso 6 - foto" },
+    { "id": "s7_name", "type": "text", "label": "Sospechoso 7 - nombre", "default": "Marc", "maxLength": 16 },
+    { "id": "s7_photo", "type": "image", "label": "Sospechoso 7 - foto" },
+    { "id": "s8_name", "type": "text", "label": "Sospechoso 8 - nombre", "default": "Clau", "maxLength": 16 },
+    { "id": "s8_photo", "type": "image", "label": "Sospechoso 8 - foto" },
+    { "id": "s1_loc_a", "type": "text", "label": "Celia - pista 1", "default": "", "maxLength": 70 },
+    { "id": "s1_loc_b", "type": "text", "label": "Celia - pista 2", "default": "", "maxLength": 70 },
+    { "id": "s2_loc_a", "type": "text", "label": "Nuria - pista 1", "default": "", "maxLength": 70 },
+    { "id": "s2_loc_b", "type": "text", "label": "Nuria - pista 2", "default": "", "maxLength": 70 },
+    { "id": "s3_loc_a", "type": "text", "label": "Adela - pista 1", "default": "", "maxLength": 70 },
+    { "id": "s3_loc_b", "type": "text", "label": "Adela - pista 2", "default": "", "maxLength": 70 },
+    { "id": "s4_loc_a", "type": "text", "label": "Adam - pista 1", "default": "", "maxLength": 70 },
+    { "id": "s4_loc_b", "type": "text", "label": "Adam - pista 2", "default": "", "maxLength": 70 }
+  ],
+  "pages": [
+    {
+      "id": "sospechosos",
+      "title": "1 - Sospechosos",
+      "background": "../assets/pages/page-1.png",
+      "slots": [
+        { "field": "s1_photo", "x": 14.5, "y": 39.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s1_name", "x": 14.5, "y": 49.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s2_photo", "x": 42.0, "y": 39.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s2_name", "x": 42.0, "y": 49.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s3_photo", "x": 69.5, "y": 39.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s3_name", "x": 69.5, "y": 49.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s4_photo", "x": 14.5, "y": 57.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s4_name", "x": 14.5, "y": 67.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s5_photo", "x": 42.0, "y": 57.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s5_name", "x": 42.0, "y": 67.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s6_photo", "x": 69.5, "y": 57.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s6_name", "x": 69.5, "y": 67.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s7_photo", "x": 14.5, "y": 75.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s7_name", "x": 14.5, "y": 85.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s8_photo", "x": 42.0, "y": 75.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s8_name", "x": 42.0, "y": 85.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "victimName", "x": 70.0, "y": 81.5, "w": 13.5, "h": 2.4, "font": "script", "size": 2.4, "align": "center", "prefix": "Regalo de " }
+      ]
+    },
+    {
+      "id": "plano",
+      "title": "2 - Plano (sin personalizar)",
+      "background": "../assets/pages/page-2.png",
+      "slots": []
+    },
+    {
+      "id": "ubicaciones",
+      "title": "3 - Ubicaciones",
+      "background": "../assets/pages/page-3.png",
+      "slots": [
+        { "field": "s1_photo", "x": 17.5, "y": 14.0, "w": 12.5, "h": 9.5, "fit": "cover" },
+        { "field": "s1_name", "x": 17.5, "y": 23.8, "w": 12.5, "h": 2.2, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s1_loc_a", "x": 36.0, "y": 14.3, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s1_loc_b", "x": 36.0, "y": 21.5, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s2_photo", "x": 17.5, "y": 34.0, "w": 12.5, "h": 9.5, "fit": "cover" },
+        { "field": "s2_name", "x": 17.5, "y": 43.8, "w": 12.5, "h": 2.2, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s2_loc_a", "x": 36.0, "y": 38.8, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s2_loc_b", "x": 36.0, "y": 41.2, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s3_photo", "x": 17.5, "y": 54.0, "w": 12.5, "h": 9.5, "fit": "cover" },
+        { "field": "s3_name", "x": 17.5, "y": 63.8, "w": 12.5, "h": 2.2, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s3_loc_a", "x": 36.0, "y": 58.8, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s3_loc_b", "x": 36.0, "y": 61.2, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s4_photo", "x": 17.5, "y": 74.0, "w": 12.5, "h": 9.5, "fit": "cover" },
+        { "field": "s4_name", "x": 17.5, "y": 83.8, "w": 12.5, "h": 2.2, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s4_loc_a", "x": 36.0, "y": 78.8, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s4_loc_b", "x": 36.0, "y": 83.6, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" }
+      ]
+    },
+    {
+      "id": "nota",
+      "title": "4 - Nota cifrada",
+      "background": "../assets/pages/page-4.png",
+      "slots": [
+        { "field": "s2_photo", "x": 13.5, "y": 13.5, "w": 15.5, "h": 12.5, "fit": "cover" },
+        { "field": "s2_name", "x": 13.5, "y": 27.0, "w": 15.5, "h": 2.6, "font": "hand", "size": 2.8, "align": "center", "uppercase": true }
+      ]
+    }
+  ]
+}
+</script>
+<script>
+'use strict';
+/* Player v2.0 — textarea overlay, no contentEditable. Works everywhere: file://, http://, any browser. */
+
+window.onerror = function (msg, src, line) {
+  var b = document.getElementById('errbox');
+  if (b) { b.style.display = ''; b.textContent = 'Error ' + line + ': ' + msg; }
+};
+if (window.Element && !Element.prototype.closest) {
+  Element.prototype.closest = function (s) {
+    var el = this;
+    while (el) { if (el.matches && el.matches(s)) return el; el = el.parentElement; }
+    return null;
+  };
+}
+
+var IS_FILE = location.protocol === 'file:';
+var store = {
+  mem: {},
+  _ls: (function () {
+    if (IS_FILE) {
+      try { window.localStorage.setItem('__test__', '1'); window.localStorage.removeItem('__test__'); return true; } catch (e) { return false; }
+    }
+    return true;
+  })(),
+  get: function (k) {
+    if (this._ls) { try { var v = window.localStorage.getItem(k); if (v !== null) return v; } catch (e) { this._ls = false; } }
+    return (k in this.mem) ? this.mem[k] : null;
+  },
+  set: function (k, v) {
+    if (this._ls) { try { window.localStorage.setItem(k, v); return; } catch (e) { this._ls = false; } }
+    this.mem[k] = v;
+  },
+  del: function (k) {
+    if (this._ls) { try { window.localStorage.removeItem(k); return; } catch (e) { this._ls = false; } }
+    delete this.mem[k];
+  }
+};
+
+var LS_TPL = 'pme-template-override';
+var tpl, values, sel = null, pendingPhotoField = null, activeOverlay = null;
+var _listenersAttached = false;
+
+function embeddedTemplate() { return JSON.parse(document.getElementById('tpl-data').textContent); }
+function loadTemplate(cb) {
+  var saved = store.get(LS_TPL);
+  if (saved) { try { cb(JSON.parse(saved), true); return; } catch (e) {} }
+  if (!IS_FILE && window.fetch) {
+    window.fetch('../templates/regalo-robado/template.json').then(function (r) {
+      if (!r.ok) throw 0;
+      return r.json();
+    }).then(function (t) { cb(t, false); }, function () { cb(embeddedTemplate(), false); });
+  } else { cb(embeddedTemplate(), false); }
+}
+function defaultValues(t) {
+  var v = {};
+  t.fields.forEach(function (f) { v[f.id] = f.default !== undefined ? f.default : ''; });
+  return v;
+}
+function findField(t, id) {
+  for (var i = 0; i < t.fields.length; i++) if (t.fields[i].id === id) return t.fields[i];
+  return null;
+}
+function slotFontSize(pageEl, size) { return (pageEl.clientWidth * size / 100) + 'px'; }
+function $(id) { return document.getElementById(id); }
+
+function save() { store.set('pme-draft-' + tpl.id, JSON.stringify(values)); }
+
+/* ========== TEXTAREA OVERLAY: bulletproof text editing ========== */
+function removeOverlay() {
+  if (!activeOverlay) return;
+  var ta = activeOverlay;
+  activeOverlay = null;
+  $('charcount').style.display = 'none';
+  if (ta.parentNode) ta.parentNode.removeChild(ta);
+}
+
+function commitOverlay() {
+  if (!activeOverlay) return;
+  var ta = activeOverlay;
+  var fieldId = ta.getAttribute('data-field');
+  var max = +(ta.getAttribute('data-max')) || 200;
+  var val = ta.value.slice(0, max);
+  values[fieldId] = val;
+  removeOverlay();
+  save();
+  draw();
+}
+
+function cancelOverlay() {
+  if (!activeOverlay) return;
+  removeOverlay();
+  draw();
+}
+
+function openOverlay(pageEl, slotEl, pi, si) {
+  removeOverlay();
+  var slot = tpl.pages[pi].slots[si];
+  var field = findField(tpl, slot.field);
+  if (!field || field.type !== 'text') return;
+  var max = field.maxLength || 200;
+
+  var ta = document.createElement('textarea');
+  ta.className = 'pme-overlay';
+  ta.setAttribute('data-field', slot.field);
+  ta.setAttribute('data-max', max);
+  ta.setAttribute('data-font', slot.font || 'type');
+
+  /* Position exactly over the slot. pageEl is .pme-page (position:relative). */
+  var pw = pageEl.clientWidth, ph = pageEl.clientHeight;
+  ta.style.left = (pw * slot.x / 100) + 'px';
+  ta.style.top = (ph * slot.y / 100) + 'px';
+  ta.style.width = (pw * slot.w / 100) + 'px';
+  ta.style.height = (ph * slot.h / 100) + 'px';
+
+  /* Match font styling */
+  var fs = slot.size ? (pw * slot.size / 100) : 14;
+  ta.style.fontSize = fs + 'px';
+  ta.style.lineHeight = (ph * slot.h / 100) + 'px';
+  ta.style.textAlign = slot.align || 'left';
+  if (slot.color) ta.style.color = slot.color;
+  ta.style.verticalAlign = 'middle';
+
+  /* Value */
+  var raw = values[slot.field] || '';
+  ta.value = raw;
+  pageEl.appendChild(ta);
+  activeOverlay = ta;
+
+  /* Char count */
+  var cc = $('charcount');
+  cc.style.display = '';
+  function updateCC() { var n = ta.value.length; cc.textContent = n + '/' + max; cc.style.background = n >= max ? '#c0392b' : 'var(--accent)'; }
+  updateCC();
+
+  ta.oninput = function () {
+    if (ta.value.length > max) { ta.value = ta.value.slice(0, max); }
+    updateCC();
+  };
+  ta.onkeydown = function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); commitOverlay(); }
+    if (e.key === 'Escape') { cancelOverlay(); }
+  };
+  /* Commit on blur, but only if the focus moved somewhere OUTSIDE the overlay
+     (not just to a child or due to a synthetic Puppeteer event). */
+  var blurCommitted = false;
+  ta.onblur = function () {
+    setTimeout(function () {
+      if (blurCommitted) return;
+      if (!activeOverlay || activeOverlay !== ta) return;
+      /* Check if focus moved to something inside the overlay (e.g. the textarea itself). */
+      var focused = document.activeElement;
+      if (focused && ta.contains(focused)) return;
+      blurCommitted = true;
+      commitOverlay();
+    }, 150);
+  };
+  /* Prevent the overlay from being disrupted by clicks on the page itself. */
+  ta.addEventListener('mousedown', function (e) { e.stopPropagation(); });
+
+  /* Focus */
+  try {
+    ta.focus();
+    ta.select();
+  } catch (e) {}
+}
+
+/* ========== SELECTION ========== */
+function setSel(s) {
+  sel = s;
+  var kids = document.querySelectorAll('.pme-slot.pme-selected');
+  for (var i = 0; i < kids.length; i++) kids[i].classList.remove('pme-selected');
+  if (s) {
+    var n = document.querySelector('.pme-slot[data-pi="' + s.pi + '"][data-si="' + s.si + '"]');
+    if (n) n.classList.add('pme-selected');
+  }
+  $('clearSlot').disabled = !s;
+}
+
+/* ========== DRAW ========== */
+function draw() {
+  var preview = $('preview');
+  preview.innerHTML = '';
+  tpl.pages.forEach(function (page, pi) {
+    var el = document.createElement('div');
+    el.className = 'pme-page'; el.id = 'pg' + pi;
+    preview.appendChild(el);
+    var bg = document.createElement('img');
+    bg.className = 'pme-bg'; bg.src = page.background; bg.alt = page.title; bg.draggable = false;
+    el.appendChild(bg);
+    (page.slots || []).forEach(function (slot, si) {
+      var field = findField(tpl, slot.field);
+      var type = field ? field.type : 'text';
+      var raw = values[slot.field] || '';
+      var n = document.createElement('div');
+      n.className = 'pme-slot pme-' + type;
+      n.style.left = slot.x + '%'; n.style.top = slot.y + '%';
+      n.style.width = slot.w + '%'; n.style.height = slot.h + '%';
+      n.setAttribute('data-pi', pi); n.setAttribute('data-si', si);
+      if (type === 'image') {
+        if (raw) { n.style.backgroundImage = 'url("' + raw + '")'; n.style.backgroundSize = slot.fit === 'contain' ? 'contain' : 'cover'; }
+        else { n.classList.add('pme-empty'); }
+      } else {
+        var text = String(raw !== undefined && raw !== null ? raw : '');
+        if (slot.uppercase) text = text.toUpperCase();
+        if (slot.prefix && text) text = slot.prefix + text;
+        n.textContent = text;
+        n.setAttribute('data-font', slot.font || 'type');
+        if (slot.size) n.style.fontSize = slotFontSize(el, slot.size);
+        if (slot.align) n.style.textAlign = slot.align;
+        if (slot.color) n.style.color = slot.color;
+        if (!text) { n.classList.add('pme-empty'); }
+      }
+      var tag = document.createElement('span');
+      tag.className = 'pme-tag';
+      tag.textContent = (field ? field.label : slot.field);
+      tag.title = (field ? field.label : slot.field);
+      n.appendChild(tag);
+      if (sel && sel.pi === pi && sel.si === si) n.classList.add('pme-selected');
+      el.appendChild(n);
+    });
+    preview.appendChild(el);
+  });
+  $('clearSlot').disabled = !sel;
+  updatePending();
+}
+
+function updatePending() {
+  var used = {}, missing = [];
+  tpl.pages.forEach(function (p) { (p.slots || []).forEach(function (s) { used[s.field] = true; }); });
+  tpl.fields.forEach(function (f) {
+    if (used[f.id] && !values[f.id]) missing.push(f.label);
+  });
+  var el = $('pending');
+  if (!el) return;
+  el.textContent = missing.length
+    ? ' - Te faltan ' + missing.length + ' hueco(s): ' + missing.slice(0, 4).join(', ') + (missing.length > 4 ? '...' : '')
+    : ' - Todo relleno, listo para imprimir!';
+}
+
+function setTheme(t) {
+  var horrible = t === 'horrible';
+  if (horrible) document.documentElement.setAttribute('data-theme', 'horrible');
+  else document.documentElement.removeAttribute('data-theme');
+  store.set('pme-theme', horrible ? 'horrible' : 'serio');
+  var b = $('theme');
+  if (b) b.textContent = horrible ? 'Tema serio' : 'Tema horrible';
+}
+
+/* ========== ONE-TIME EVENT LISTENERS ========== */
+function setupListeners() {
+  /* Click on slots: text -> overlay, image -> file picker.
+     Use mousedown (not pointerdown) + preventDefault to stop the browser from
+     stealing focus away from our newly-created textarea. */
+  $('preview').addEventListener('mousedown', function (e) {
+    var n = e.target;
+    while (n && !n.classList.contains('pme-slot')) n = n.parentElement;
+    if (!n) { commitOverlay(); setSel(null); return; }
+    var pi = +n.getAttribute('data-pi'), si = +n.getAttribute('data-si');
+    var slot = tpl.pages[pi].slots[si];
+    var field = findField(tpl, slot.field);
+    var type = field ? field.type : 'text';
+    if (type === 'image') {
+      e.preventDefault();
+      commitOverlay();
+      setSel({ pi: pi, si: si });
+      pendingPhotoField = slot.field;
+      $('filePicker').click();
+    } else {
+      e.preventDefault();
+      setSel({ pi: pi, si: si });
+      var pageEl = $('pg' + pi);
+      openOverlay(pageEl, n, pi, si);
+    }
+  });
+
+  $('filePicker').onchange = function (e) {
+    var file = e.target.files[0];
+    e.target.value = '';
+    if (!file || !pendingPhotoField) return;
+    if (file.size > 5 * 1024 * 1024) { alert('Maximo 5 MB por foto'); return; }
+    var r = new FileReader();
+    r.onload = function () { values[pendingPhotoField] = r.result; pendingPhotoField = null; save(); draw(); };
+    r.readAsDataURL(file);
+  };
+
+  $('clearSlot').onclick = function () {
+    if (!sel) return;
+    commitOverlay();
+    values[tpl.pages[sel.pi].slots[sel.si].field] = '';
+    save(); draw();
+  };
+  $('print').onclick = function () { commitOverlay(); draw(); window.print(); };
+  $('loadTpl').onclick = function () { $('loadTplFile').click(); };
+  $('loadTplFile').onchange = function (e) {
+    var file = e.target.files[0]; if (!file) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var nt = JSON.parse(r.result);
+        if (!nt.fields || !nt.pages) throw 0;
+        tpl = nt;
+        values = defaultValues(tpl);
+        sel = null;
+        $('title').textContent = 'PrintMyEscape - ' + (tpl.name || 'personaliza e imprime');
+        $('src').textContent = ' Maquetacion importada.';
+        var nav = $('pagenav'); nav.innerHTML = '';
+        tpl.pages.forEach(function (p, i) {
+          var b = document.createElement('button');
+          b.textContent = 'P' + (i + 1); b.title = p.title;
+          b.onclick = function () { commitOverlay(); var el = $('pg' + i); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+          nav.appendChild(b);
+        });
+        draw();
+      } catch (err) { alert('Ese fichero no es una maquetacion valida'); }
+    };
+    r.readAsText(file);
+    e.target.value = '';
+  };
+  $('reset').onclick = function () {
+    if (!confirm('Vaciar todos los huecos?')) return;
+    values = defaultValues(tpl);
+    save(); draw();
+  };
+  $('theme').onclick = function () {
+    var horrible = document.documentElement.getAttribute('data-theme') === 'horrible';
+    setTheme(horrible ? 'serio' : 'horrible');
+  };
+  window.addEventListener('resize', function () { if (!activeOverlay) draw(); });
+}
+
+/* ========== INIT ========== */
+function init(t, fromStudio) {
+  tpl = t;
+  $('title').textContent = 'PrintMyEscape - ' + (tpl.name || 'personaliza e imprime');
+  var srcMsg = fromStudio ? 'Maquetacion del studio' : 'Maquetacion original';
+  srcMsg += store._ls ? ' | guardado local' : ' | memoria temporal';
+  $('src').textContent = ' ' + srcMsg + '.';
+  var draft = store.get('pme-draft-' + tpl.id);
+  values = defaultValues(tpl);
+  if (draft) { try { Object.assign(values, JSON.parse(draft)); } catch (e) {} }
+
+  var nav = $('pagenav'); nav.innerHTML = '';
+  tpl.pages.forEach(function (p, i) {
+    var b = document.createElement('button');
+    b.textContent = 'P' + (i + 1);
+    b.title = p.title;
+    b.onclick = function () {
+      commitOverlay();
+      var el = $('pg' + i);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    nav.appendChild(b);
+  });
+
+  if (!_listenersAttached) { _listenersAttached = true; setupListeners(); }
+  setTheme(store.get('pme-theme') === 'horrible' ? 'horrible' : 'serio');
+  draw();
+}
+loadTemplate(init);
+</script>
+</body>
+</html>

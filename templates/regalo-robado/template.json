@@ -1,0 +1,98 @@
+{
+  "id": "regalo-robado",
+  "version": 1,
+  "name": "Puzzle del regalo robado",
+  "pageSize": "A4",
+  "notes": "Los campos son globales: la foto/nombre de cada sospechoso se define una vez y se reutiliza en todas las paginas donde aparece. Los huecos vacios estan permitidos: si un campo esta vacio se ve el fondo original.",
+  "fields": [
+    { "id": "victimName", "type": "text", "label": "Nombre del homenajeado (victima)", "default": "Ian", "maxLength": 16 },
+    { "id": "s1_name", "type": "text", "label": "Sospechoso 1 - nombre", "default": "Celia", "maxLength": 16 },
+    { "id": "s1_photo", "type": "image", "label": "Sospechoso 1 - foto" },
+    { "id": "s2_name", "type": "text", "label": "Sospechoso 2 - nombre", "default": "Nuria", "maxLength": 16 },
+    { "id": "s2_photo", "type": "image", "label": "Sospechoso 2 - foto" },
+    { "id": "s3_name", "type": "text", "label": "Sospechoso 3 - nombre", "default": "Adela", "maxLength": 16 },
+    { "id": "s3_photo", "type": "image", "label": "Sospechoso 3 - foto" },
+    { "id": "s4_name", "type": "text", "label": "Sospechoso 4 - nombre", "default": "Adam", "maxLength": 16 },
+    { "id": "s4_photo", "type": "image", "label": "Sospechoso 4 - foto" },
+    { "id": "s5_name", "type": "text", "label": "Sospechoso 5 - nombre", "default": "Dani", "maxLength": 16 },
+    { "id": "s5_photo", "type": "image", "label": "Sospechoso 5 - foto" },
+    { "id": "s6_name", "type": "text", "label": "Sospechoso 6 - nombre", "default": "Pol", "maxLength": 16 },
+    { "id": "s6_photo", "type": "image", "label": "Sospechoso 6 - foto" },
+    { "id": "s7_name", "type": "text", "label": "Sospechoso 7 - nombre", "default": "Marc", "maxLength": 16 },
+    { "id": "s7_photo", "type": "image", "label": "Sospechoso 7 - foto" },
+    { "id": "s8_name", "type": "text", "label": "Sospechoso 8 - nombre", "default": "Clau", "maxLength": 16 },
+    { "id": "s8_photo", "type": "image", "label": "Sospechoso 8 - foto" },
+    { "id": "s1_loc_a", "type": "text", "label": "Celia - pista personalizada 1", "default": "", "maxLength": 70 },
+    { "id": "s1_loc_b", "type": "text", "label": "Celia - pista personalizada 2", "default": "", "maxLength": 70 },
+    { "id": "s2_loc_a", "type": "text", "label": "Nuria - pista personalizada 1", "default": "", "maxLength": 70 },
+    { "id": "s2_loc_b", "type": "text", "label": "Nuria - pista personalizada 2", "default": "", "maxLength": 70 },
+    { "id": "s3_loc_a", "type": "text", "label": "Adela - pista personalizada 1", "default": "", "maxLength": 70 },
+    { "id": "s3_loc_b", "type": "text", "label": "Adela - pista personalizada 2", "default": "", "maxLength": 70 },
+    { "id": "s4_loc_a", "type": "text", "label": "Adam - pista personalizada 1", "default": "", "maxLength": 70 },
+    { "id": "s4_loc_b", "type": "text", "label": "Adam - pista personalizada 2", "default": "", "maxLength": 70 }
+  ],
+  "pages": [
+    {
+      "id": "sospechosos",
+      "title": "1 - Sospechosos",
+      "background": "../assets/pages/page-1.png",
+      "slots": [
+        { "field": "s1_photo", "x": 14.5, "y": 39.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s1_name", "x": 14.5, "y": 49.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s2_photo", "x": 42.0, "y": 39.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s2_name", "x": 42.0, "y": 49.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s3_photo", "x": 69.5, "y": 39.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s3_name", "x": 69.5, "y": 49.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s4_photo", "x": 14.5, "y": 57.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s4_name", "x": 14.5, "y": 67.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s5_photo", "x": 42.0, "y": 57.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s5_name", "x": 42.0, "y": 67.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s6_photo", "x": 69.5, "y": 57.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s6_name", "x": 69.5, "y": 67.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s7_photo", "x": 14.5, "y": 75.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s7_name", "x": 14.5, "y": 85.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s8_photo", "x": 42.0, "y": 75.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s8_name", "x": 42.0, "y": 85.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "victimName", "x": 70.0, "y": 81.5, "w": 13.5, "h": 2.4, "font": "script", "size": 2.4, "align": "center", "prefix": "Regalo de " }
+      ]
+    },
+    {
+      "id": "plano",
+      "title": "2 - Plano (sin personalizar: se juega a mano)",
+      "background": "../assets/pages/page-2.png",
+      "slots": []
+    },
+    {
+      "id": "ubicaciones",
+      "title": "3 - Ubicaciones",
+      "background": "../assets/pages/page-3.png",
+      "slots": [
+        { "field": "s1_photo", "x": 17.5, "y": 14.0, "w": 12.5, "h": 9.5, "fit": "cover" },
+        { "field": "s1_name", "x": 17.5, "y": 23.8, "w": 12.5, "h": 2.2, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s1_loc_a", "x": 36.0, "y": 14.3, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s1_loc_b", "x": 36.0, "y": 21.5, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s2_photo", "x": 17.5, "y": 34.0, "w": 12.5, "h": 9.5, "fit": "cover" },
+        { "field": "s2_name", "x": 17.5, "y": 43.8, "w": 12.5, "h": 2.2, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s2_loc_a", "x": 36.0, "y": 38.8, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s2_loc_b", "x": 36.0, "y": 41.2, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s3_photo", "x": 17.5, "y": 54.0, "w": 12.5, "h": 9.5, "fit": "cover" },
+        { "field": "s3_name", "x": 17.5, "y": 63.8, "w": 12.5, "h": 2.2, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s3_loc_a", "x": 36.0, "y": 58.8, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s3_loc_b", "x": 36.0, "y": 61.2, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s4_photo", "x": 17.5, "y": 74.0, "w": 12.5, "h": 9.5, "fit": "cover" },
+        { "field": "s4_name", "x": 17.5, "y": 83.8, "w": 12.5, "h": 2.2, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s4_loc_a", "x": 36.0, "y": 78.8, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s4_loc_b", "x": 36.0, "y": 83.6, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" }
+      ]
+    },
+    {
+      "id": "nota",
+      "title": "4 - Nota cifrada",
+      "background": "../assets/pages/page-4.png",
+      "slots": [
+        { "field": "s2_photo", "x": 13.5, "y": 13.5, "w": 15.5, "h": 12.5, "fit": "cover" },
+        { "field": "s2_name", "x": 13.5, "y": 27.0, "w": 15.5, "h": 2.6, "font": "hand", "size": 2.8, "align": "center", "uppercase": true }
+      ]
+    }
+  ]
+}

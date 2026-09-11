@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>PrintMyEscape · Maquetador interno</title>
+  <style>
+    :root {
+      --abyss: #0c2a2f;
+      --abyss-2: #14404a;
+      --teal: #0e7463;
+      --teal-deep: #0a574a;
+      --sage: #b7c29b;
+      --sage-deep: #9fad82;
+      --paper: #faf6ec;
+      --ink: #22302a;
+      --accent: #0e7463;
+      --danger: #c0392b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    ::selection {
+      background: var(--teal);
+      color: #fff;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+      background-color: var(--paper);
+      background-image: radial-gradient(rgba(12, 42, 47, .07) 1px, transparent 1.5px);
+      background-size: 22px 22px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    header {
+      padding: 12px 16px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--abyss) 0%, var(--abyss-2) 70%, #1a4a52 100%);
+      border-bottom: 4px solid var(--teal);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 18px rgba(12, 42, 47, .35);
+    }
+
+    header h1 {
+      font-size: 18px;
+      margin: 0 6px 0 0;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      font-family: Impact, "Arial Narrow", "Trebuchet MS", sans-serif;
+    }
+
+    header button {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      cursor: pointer;
+      border: 0;
+      padding: 10px 18px;
+      color: #fff;
+      background: #1e4d55;
+      clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+      transition: transform .12s ease, filter .12s ease;
+    }
+
+    header button:hover {
+      transform: translateY(-1px) rotate(-.3deg);
+      filter: brightness(1.15);
+    }
+
+    header button:active {
+      transform: translateY(1px);
+    }
+
+    header button:focus-visible {
+      outline: 3px solid var(--sage);
+      outline-offset: 2px;
+    }
+
+    #export {
+      background: var(--sage);
+      color: #16241d;
+    }
+
+    header select {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 9px 12px;
+      border: 0;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      max-width: 100%;
+    }
+
+    header select:focus-visible {
+      outline: 3px solid var(--sage);
+      outline-offset: 2px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 18px;
+      padding: 16px;
+      max-width: 1220px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    #panel {
+      background: #fffdf6;
+      border: 3px solid var(--abyss);
+      border-radius: 10px;
+      padding: 14px;
+      height: fit-content;
+      position: sticky;
+      top: 12px;
+      box-shadow: 6px 6px 0 rgba(14, 116, 99, .25);
+    }
+
+    #panel h2 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      font-weight: 900;
+      background: var(--abyss);
+      color: #fff;
+      margin: 16px 0 6px;
+      padding: 7px 10px;
+      border-left: 6px solid var(--teal);
+      border-radius: 4px 10px 10px 4px;
+    }
+
+    #panel h2:first-child {
+      margin-top: 0;
+    }
+
+    #panel label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin: 8px 0 3px;
+    }
+
+    #panel select,
+    #panel input {
+      width: 100%;
+      font-size: 14px;
+      padding: 9px 10px;
+      color: var(--ink);
+      border: 2px solid var(--abyss);
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    #panel select:focus,
+    #panel input:focus {
+      outline: none;
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(14, 116, 99, .25);
+    }
+
+    #panel .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    #panel .btnrow {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    #panel .btnrow button {
+      flex: 1;
+      min-width: 120px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      padding: 10px 6px;
+      cursor: pointer;
+      border: 0;
+      color: #fff;
+      background: var(--teal);
+      clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+      transition: transform .12s ease, filter .12s ease;
+    }
+
+    #panel .btnrow button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+    }
+
+    #panel .btnrow button:active {
+      transform: translateY(1px);
+    }
+
+    #del {
+      background: var(--danger) !important;
+    }
+
+    #stage {
+      display: flex;
+      justify-content: center;
+      padding-bottom: 40px;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .pme-page {
+      position: relative;
+      width: min(92vw, 640px);
+      aspect-ratio: 210/297;
+      background: #fff;
+      border: 3px solid var(--abyss);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 8px 8px 0 rgba(14, 116, 99, .28), 0 14px 34px rgba(12, 42, 47, .28);
+    }
+
+    .pme-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      user-select: none;
+    }
+
+    .pme-slot {
+      position: absolute;
+      overflow: hidden;
+    }
+
+    .pme-slot.pme-text {
+      display: flex;
+      align-items: center;
+      font-family: "Courier New", monospace;
+      white-space: nowrap;
+    }
+
+    .pme-slot.pme-text[data-font="script"] {
+      font-family: "Segoe Script", "Brush Script MT", cursive;
+    }
+
+    .pme-image {
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: rgba(255, 255, 255, .25);
+    }
+
+    .pme-editable {
+      outline: 2px dashed var(--teal);
+      cursor: move;
+      overflow: visible;
+      background: rgba(183, 194, 155, .20);
+      touch-action: none;
+    }
+
+    .pme-editable.pme-selected {
+      outline: 3px solid var(--teal);
+      box-shadow: 0 0 0 5px rgba(14, 116, 99, .25);
+    }
+
+    .pme-tag {
+      position: absolute;
+      left: 50%;
+      top: -1.5em;
+      z-index: 3;
+      pointer-events: none;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      font-family: "Trebuchet MS", system-ui, sans-serif;
+      background: var(--abyss);
+      color: #fff;
+      padding: 3px 8px;
+      white-space: nowrap;
+      max-width: 190px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border-radius: 3px 9px 9px 3px;
+      transform: translateX(-50%) rotate(-.6deg);
+      box-shadow: 2px 2px 0 rgba(14, 116, 99, .9);
+    }
+
+    .pme-handle {
+      position: absolute;
+      right: -9px;
+      bottom: -9px;
+      width: 18px;
+      height: 18px;
+      background: var(--teal);
+      border: 3px solid #fff;
+      border-radius: 50%;
+      box-shadow: 1px 1px 0 var(--abyss);
+      cursor: nwse-resize;
+      touch-action: none;
+    }
+
+    #hint {
+      font-size: 12px;
+      color: #4c5d53;
+      margin-top: 10px;
+      border-left: 4px solid var(--teal);
+      padding-left: 8px;
+    }
+
+    #status {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--teal-deep);
+      min-height: 1.2em;
+      margin-top: 10px;
+      background: rgba(14, 116, 99, .10);
+      padding: 7px 9px;
+      border-radius: 6px;
+    }
+
+    @media (min-width: 901px) {
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+      }
+
+      main {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      #panel {
+        position: static;
+        min-height: 0;
+      }
+
+      #stage {
+        min-height: 0;
+        max-height: 100%;
+        overflow: auto;
+        padding-bottom: 12px;
+      }
+
+      .pme-page {
+        width: min(92vw, 640px, max(300px, calc((100vh - 190px) * 210 / 297)));
+        width: min(92vw, 640px, max(300px, calc((100dvh - 190px) * 210 / 297)));
+        flex: 0 0 auto;
+        margin: auto;
+      }
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      #stage {
+        order: -1;
+        padding-bottom: 8px;
+      }
+
+      #panel {
+        position: static;
+      }
+
+      #panel select,
+      #panel input {
+        font-size: 16px;
+      }
+
+      #panel .btnrow button {
+        min-height: 44px;
+      }
+
+      header button {
+        min-height: 44px;
+      }
+    }
+
+    @media (pointer: coarse) {
+      .pme-handle {
+        width: 24px;
+        height: 24px;
+        right: -12px;
+        bottom: -12px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .pme-tag {
+        display: none;
+      }
+
+      .pme-slot.pme-selected .pme-tag {
+        display: block;
+        font-size: 9px;
+        max-width: 200px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Maquetador · <span id="tplName"></span></h1>
+    <select id="pageSel"></select>
+    <button id="prevSlot" title="Seleccionar hueco anterior">◀ hueco</button>
+    <button id="nextSlot" title="Seleccionar hueco siguiente">hueco ▶</button>
+    <button id="export">Guardar template.json</button>
+    <button id="importBtn">Importar template.json</button>
+    <input id="importFile" type="file" accept="application/json,.json" style="display:none">
+    <button id="resetTpl">Restablecer original</button>
+  </header>
+  <main>
+    <div id="panel">
+      <h2>1 · Colocar hueco en la página</h2>
+      <label>Nombre del dato nuevo para el hueco</label>
+      <input id="newFieldName" type="text" placeholder="ej: Sospechoso 9 - nombre" maxlength="50">
+      <div class="btnrow">
+        <button id="placeText">+ hueco de texto</button>
+        <button id="placePhoto">+ hueco de foto</button>
+      </div>
+      <p id="hint">Escribe el nombre del dato y pulsa +. El hueco aparece en el centro: arrástralo sobre el fondo y tira
+        del punto verde. El mismo dato puede tener varios huecos (ej. la foto de Celia en págs. 1, 3 y 4).</p>
+
+      <h2>2 · Ajustar el hueco seleccionado</h2>
+      <label>Dato que muestra este hueco</label>
+      <select id="fieldSel"></select>
+      <label>Nombre del dato (editable)</label>
+      <div style="display:flex;gap:6px;align-items:start;">
+        <input id="fieldNameInput" type="text" style="flex:1;" maxlength="50">
+        <button id="applyFieldName" style="min-width:60px;font-size:11px;padding:9px 8px;margin-top:0;">Aplicar</button>
+      </div>
+      <div class="row">
+        <div><label>X %</label><input id="fX" type="number" step="0.1"></div>
+        <div><label>Y %</label><input id="fY" type="number" step="0.1"></div>
+        <div><label>Ancho %</label><input id="fW" type="number" step="0.1"></div>
+        <div><label>Alto %</label><input id="fH" type="number" step="0.1"></div>
+        <div><label>Tamaño texto</label><input id="fSize" type="number" step="0.1"></div>
+        <div><label>Alineación</label>
+          <select id="fAlign">
+            <option value="left">izq</option>
+            <option value="center">centro</option>
+            <option value="right">der</option>
+          </select>
+        </div>
+        <div><label>Fuente</label>
+          <select id="fFont">
+            <option value="type">máquina</option>
+            <option value="script">manuscrita</option>
+            <option value="hand">rotulador</option>
+          </select>
+        </div>
+        <div><label>Ajuste foto</label>
+          <select id="fFit">
+            <option value="cover">rellenar</option>
+            <option value="contain">encajar</option>
+          </select>
+        </div>
+      </div>
+      <div class="btnrow">
+        <button id="dup">Duplicar hueco</button>
+        <button id="del">Eliminar hueco</button>
+      </div>
+      <p id="status"></p>
+    </div>
+    <div id="stage">
+      <div id="page"></div>
+    </div>
+  </main>
+  <script type="application/json" id="tpl-data">{
+  "id": "regalo-robado",
+  "version": 1,
+  "name": "Puzzle del regalo robado",
+  "pageSize": "A4",
+  "notes": "Los campos son globales: la foto/nombre de cada sospechoso se define una vez y se reutiliza en todas las paginas donde aparece. Los huecos vacios estan permitidos: si un campo esta vacio se ve el fondo original.",
+  "fields": [
+    { "id": "victimName", "type": "text", "label": "Nombre del homenajeado (victima)", "default": "Ian", "maxLength": 16 },
+    { "id": "s1_name", "type": "text", "label": "Sospechoso 1 - nombre", "default": "Celia", "maxLength": 16 },
+    { "id": "s1_photo", "type": "image", "label": "Sospechoso 1 - foto" },
+    { "id": "s2_name", "type": "text", "label": "Sospechoso 2 - nombre", "default": "Nuria", "maxLength": 16 },
+    { "id": "s2_photo", "type": "image", "label": "Sospechoso 2 - foto" },
+    { "id": "s3_name", "type": "text", "label": "Sospechoso 3 - nombre", "default": "Adela", "maxLength": 16 },
+    { "id": "s3_photo", "type": "image", "label": "Sospechoso 3 - foto" },
+    { "id": "s4_name", "type": "text", "label": "Sospechoso 4 - nombre", "default": "Adam", "maxLength": 16 },
+    { "id": "s4_photo", "type": "image", "label": "Sospechoso 4 - foto" },
+    { "id": "s5_name", "type": "text", "label": "Sospechoso 5 - nombre", "default": "Dani", "maxLength": 16 },
+    { "id": "s5_photo", "type": "image", "label": "Sospechoso 5 - foto" },
+    { "id": "s6_name", "type": "text", "label": "Sospechoso 6 - nombre", "default": "Pol", "maxLength": 16 },
+    { "id": "s6_photo", "type": "image", "label": "Sospechoso 6 - foto" },
+    { "id": "s7_name", "type": "text", "label": "Sospechoso 7 - nombre", "default": "Marc", "maxLength": 16 },
+    { "id": "s7_photo", "type": "image", "label": "Sospechoso 7 - foto" },
+    { "id": "s8_name", "type": "text", "label": "Sospechoso 8 - nombre", "default": "Clau", "maxLength": 16 },
+    { "id": "s8_photo", "type": "image", "label": "Sospechoso 8 - foto" },
+    { "id": "s1_loc_a", "type": "text", "label": "Celia - pista personalizada 1", "default": "", "maxLength": 70 },
+    { "id": "s1_loc_b", "type": "text", "label": "Celia - pista personalizada 2", "default": "", "maxLength": 70 },
+    { "id": "s2_loc_a", "type": "text", "label": "Nuria - pista personalizada 1", "default": "", "maxLength": 70 },
+    { "id": "s2_loc_b", "type": "text", "label": "Nuria - pista personalizada 2", "default": "", "maxLength": 70 },
+    { "id": "s3_loc_a", "type": "text", "label": "Adela - pista personalizada 1", "default": "", "maxLength": 70 },
+    { "id": "s3_loc_b", "type": "text", "label": "Adela - pista personalizada 2", "default": "", "maxLength": 70 },
+    { "id": "s4_loc_a", "type": "text", "label": "Adam - pista personalizada 1", "default": "", "maxLength": 70 },
+    { "id": "s4_loc_b", "type": "text", "label": "Adam - pista personalizada 2", "default": "", "maxLength": 70 }
+  ],
+  "pages": [
+    {
+      "id": "sospechosos",
+      "title": "1 - Sospechosos",
+      "background": "../assets/pages/page-1.png",
+      "slots": [
+        { "field": "s1_photo", "x": 14.5, "y": 39.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s1_name", "x": 14.5, "y": 49.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s2_photo", "x": 42.0, "y": 39.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s2_name", "x": 42.0, "y": 49.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s3_photo", "x": 69.5, "y": 39.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s3_name", "x": 69.5, "y": 49.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s4_photo", "x": 14.5, "y": 57.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s4_name", "x": 14.5, "y": 67.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s5_photo", "x": 42.0, "y": 57.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s5_name", "x": 42.0, "y": 67.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s6_photo", "x": 69.5, "y": 57.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s6_name", "x": 69.5, "y": 67.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s7_photo", "x": 14.5, "y": 75.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s7_name", "x": 14.5, "y": 85.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s8_photo", "x": 42.0, "y": 75.5, "w": 14.5, "h": 9.0, "fit": "cover" },
+        { "field": "s8_name", "x": 42.0, "y": 85.0, "w": 14.5, "h": 2.4, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "victimName", "x": 70.0, "y": 81.5, "w": 13.5, "h": 2.4, "font": "script", "size": 2.4, "align": "center", "prefix": "Regalo de " }
+      ]
+    },
+    {
+      "id": "plano",
+      "title": "2 - Plano (sin personalizar: se juega a mano)",
+      "background": "../assets/pages/page-2.png",
+      "slots": []
+    },
+    {
+      "id": "ubicaciones",
+      "title": "3 - Ubicaciones",
+      "background": "../assets/pages/page-3.png",
+      "slots": [
+        { "field": "s1_photo", "x": 17.5, "y": 14.0, "w": 12.5, "h": 9.5, "fit": "cover" },
+        { "field": "s1_name", "x": 17.5, "y": 23.8, "w": 12.5, "h": 2.2, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s1_loc_a", "x": 36.0, "y": 14.3, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s1_loc_b", "x": 36.0, "y": 21.5, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s2_photo", "x": 17.5, "y": 34.0, "w": 12.5, "h": 9.5, "fit": "cover" },
+        { "field": "s2_name", "x": 17.5, "y": 43.8, "w": 12.5, "h": 2.2, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s2_loc_a", "x": 36.0, "y": 38.8, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s2_loc_b", "x": 36.0, "y": 41.2, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s3_photo", "x": 17.5, "y": 54.0, "w": 12.5, "h": 9.5, "fit": "cover" },
+        { "field": "s3_name", "x": 17.5, "y": 63.8, "w": 12.5, "h": 2.2, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s3_loc_a", "x": 36.0, "y": 58.8, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s3_loc_b", "x": 36.0, "y": 61.2, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s4_photo", "x": 17.5, "y": 74.0, "w": 12.5, "h": 9.5, "fit": "cover" },
+        { "field": "s4_name", "x": 17.5, "y": 83.8, "w": 12.5, "h": 2.2, "font": "script", "size": 2.6, "align": "center" },
+        { "field": "s4_loc_a", "x": 36.0, "y": 78.8, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" },
+        { "field": "s4_loc_b", "x": 36.0, "y": 83.6, "w": 56.0, "h": 2.4, "font": "type", "size": 1.9, "align": "left" }
+      ]
+    },
+    {
+      "id": "nota",
+      "title": "4 - Nota cifrada",
+      "background": "../assets/pages/page-4.png",
+      "slots": [
+        { "field": "s2_photo", "x": 13.5, "y": 13.5, "w": 15.5, "h": 12.5, "fit": "cover" },
+        { "field": "s2_name", "x": 13.5, "y": 27.0, "w": 15.5, "h": 2.6, "font": "hand", "size": 2.8, "align": "center", "uppercase": true }
+      ]
+    }
+  ]
+}
+</script>
+  <script>
+    'use strict';
+    /* Prototipo solo HTML/CSS/JS: sin modulos ni fetch obligatorio, funciona con doble clic (file://). */
+
+    /* Almacenamiento seguro (en file:// algunos navegadores restringen localStorage). */
+    var IS_FILE = location.protocol === 'file:';
+    var store = {
+      mem: {},
+      _ls: (function () {
+        if (IS_FILE) {
+          try { window.localStorage.setItem('__test__', '1'); window.localStorage.removeItem('__test__'); return true; } catch (e) { return false; }
+        }
+        return true;
+      })(),
+      get: function (k) {
+        if (this._ls) { try { var v = window.localStorage.getItem(k); if (v !== null) return v; } catch (e) { this._ls = false; } }
+        return (k in this.mem) ? this.mem[k] : null;
+      },
+      set: function (k, v) {
+        if (this._ls) { try { window.localStorage.setItem(k, v); return; } catch (e) { this._ls = false; } }
+        this.mem[k] = v;
+      },
+      del: function (k) {
+        if (this._ls) { try { window.localStorage.removeItem(k); return; } catch (e) { this._ls = false; } }
+        delete this.mem[k];
+      }
+    };
+
+    var TPL_URL = '../templates/regalo-robado/template.json'; /* solo si se sirve por HTTP */
+    var LS_KEY = 'pme-template-override';
+
+    function embeddedTemplate() { return JSON.parse(document.getElementById('tpl-data').textContent); }
+    function loadTemplate(cb) {
+      var saved = store.get(LS_KEY);
+      if (saved) { try { cb(JSON.parse(saved)); return; } catch (e) { } }
+      if (IS_FILE) { cb(embeddedTemplate()); return; }
+      /* En HTTP intentamos cargar el JSON del servidor; si falla usamos la copia incrustada. */
+      if (window.fetch) {
+        window.fetch(TPL_URL).then(function (r) {
+          if (!r.ok) throw 0;
+          return r.json();
+        }).then(cb, function () { cb(embeddedTemplate()); });
+      } else { cb(embeddedTemplate()); }
+    }
+    function defaultValues(tpl) {
+      var v = {};
+      tpl.fields.forEach(function (f) { v[f.id] = f.default !== undefined ? f.default : ''; });
+      return v;
+    }
+    function findField(tpl, id) {
+      for (var i = 0; i < tpl.fields.length; i++) if (tpl.fields[i].id === id) return tpl.fields[i];
+      return null;
+    }
+    function slotFontSize(pageEl, size) {
+      /* 1 unidad = 1% del ancho de pagina (equivale a ~2.1mm en A4). */
+      return (pageEl.clientWidth * size / 100) + 'px';
+    }
+    function renderPage(el, tpl, page, values, mode) {
+      el.className = 'pme-page';
+      el.innerHTML = '';
+      var bg = document.createElement('img');
+      bg.className = 'pme-bg'; bg.src = page.background; bg.alt = page.title; bg.draggable = false;
+      el.appendChild(bg);
+      var nodes = [];
+      (page.slots || []).forEach(function (slot, i) {
+        var field = findField(tpl, slot.field);
+        var type = field ? field.type : 'text';
+        var raw = values[slot.field] || '';
+        var n = document.createElement('div');
+        n.className = 'pme-slot pme-' + type + (mode === 'studio' ? ' pme-editable' : '');
+        n.setAttribute('data-slot', String(i));
+        n.style.left = slot.x + '%'; n.style.top = slot.y + '%';
+        n.style.width = slot.w + '%'; n.style.height = slot.h + '%';
+        if (type === 'image') {
+          if (raw) { n.style.backgroundImage = 'url("' + raw + '")'; n.style.backgroundSize = slot.fit === 'contain' ? 'contain' : 'cover'; }
+        } else {
+          var text = String(raw !== undefined && raw !== null ? raw : '');
+          if (slot.uppercase) text = text.toUpperCase();
+          if (slot.prefix && text) text = slot.prefix + text;
+          n.textContent = text;
+          n.setAttribute('data-font', slot.font || 'type');
+          if (slot.size) n.style.fontSize = slotFontSize(el, slot.size);
+          if (slot.align) n.style.textAlign = slot.align;
+          if (slot.color) n.style.color = slot.color;
+        }
+        el.appendChild(n);
+        nodes.push(n);
+      });
+      return nodes;
+    }
+    function downloadJson(obj, filename) {
+      var blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = filename;
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+    }
+    function $(id) { return document.getElementById(id); }
+
+    var tpl, values, pageIdx = 0, sel = -1;
+    var statusT = 0;
+    function status(msg) { $('status').textContent = msg; clearTimeout(statusT); statusT = setTimeout(function () { $('status').textContent = ''; }, 3000); }
+    function persist() {
+      store.set(LS_KEY, JSON.stringify(tpl));
+      status(IS_FILE
+        ? 'Guardado en memoria de sesión (exporta antes de cerrar la pestaña)'
+        : 'Guardado automático ✓ (el jugador lo verá en este mismo equipo)');
+    }
+    function refreshPages() {
+      var s = $('pageSel'); s.innerHTML = '';
+      tpl.pages.forEach(function (p, i) { var o = document.createElement('option'); o.value = i; o.textContent = p.title; s.appendChild(o); });
+      s.value = pageIdx;
+    }
+    function refreshFields(keepType) {
+      var s = $('fieldSel'); s.innerHTML = '';
+      tpl.fields.forEach(function (f) {
+        if (keepType && f.type !== keepType) return;
+        var o = document.createElement('option'); o.value = f.id; o.textContent = f.label + ' [' + f.type + ']';
+        s.appendChild(o);
+      });
+    }
+    function draw() {
+      var page = tpl.pages[pageIdx];
+      var nodes = renderPage($('page'), tpl, page, values, 'studio');
+      nodes.forEach(function (n, i) {
+        var s = page.slots[i];
+        var tag = document.createElement('span'); tag.className = 'pme-tag';
+        tag.textContent = (findField(tpl, s.field) || {}).label || s.field;
+        n.appendChild(tag);
+        if (i === sel) {
+          n.classList.add('pme-selected');
+          var h = document.createElement('div'); h.className = 'pme-handle'; n.appendChild(h);
+        }
+        n.addEventListener('pointerdown', function (e) {
+          sel = i; syncPanel();
+          if (e.target.classList.contains('pme-handle')) startResize(e, page.slots[i]);
+          else startDrag(e, page.slots[i]);
+          draw();
+        });
+      });
+    }
+    function syncPanel() {
+      var s = tpl.pages[pageIdx].slots[sel];
+      if (!s) return;
+      var f = findField(tpl, s.field);
+      refreshFields(f ? f.type : '');
+      $('fieldSel').value = s.field;
+      $('fieldNameInput').value = f ? f.label : '';
+      $('fX').value = s.x; $('fY').value = s.y; $('fW').value = s.w; $('fH').value = s.h;
+      $('fSize').value = s.size !== undefined ? s.size : '';
+      $('fAlign').value = s.align || 'left'; $('fFont').value = s.font || 'type'; $('fFit').value = s.fit || 'cover';
+    }
+    function cur() { return tpl.pages[pageIdx].slots[sel]; }
+    function startDrag(e, s) {
+      e.preventDefault();
+      var r = $('page').getBoundingClientRect();
+      var x0 = e.clientX, y0 = e.clientY, ox = s.x, oy = s.y;
+      function mv(ev) { s.x = +(ox + (ev.clientX - x0) / r.width * 100).toFixed(1); s.y = +(oy + (ev.clientY - y0) / r.height * 100).toFixed(1); draw(); }
+      function up() { window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); persist(); syncPanel(); }
+      window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
+    }
+    function startResize(e, s) {
+      e.preventDefault(); e.stopPropagation();
+      var r = $('page').getBoundingClientRect();
+      var x0 = e.clientX, y0 = e.clientY, ow = s.w, oh = s.h;
+      function mv(ev) { s.w = Math.max(1, +(ow + (ev.clientX - x0) / r.width * 100).toFixed(1)); s.h = Math.max(0.5, +(oh + (ev.clientY - y0) / r.height * 100).toFixed(1)); draw(); }
+      function up() { window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); persist(); syncPanel(); }
+      window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
+    }
+    function place(type, name) {
+      var slug = (name || '').trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 30);
+      if (!slug) slug = (type === 'text' ? 'nuevo_texto' : 'nueva_foto') + '_' + Date.now().toString(36);
+      var existing = findField(tpl, slug);
+      if (existing && existing.type !== type) slug = slug + '_' + Date.now().toString(36);
+      if (!existing) {
+        var newField = { id: slug, type: type, label: (name || '').trim() || slug.replace(/_/g, ' ') };
+        if (type === 'text') { newField.default = ''; newField.maxLength = 70; }
+        tpl.fields.push(newField);
+      }
+      var fieldId = existing ? existing.id : slug;
+      var page = tpl.pages[pageIdx];
+      page.slots.push(type === 'text'
+        ? { field: fieldId, x: 30, y: 30, w: 30, h: 3, font: 'type', size: 2, align: 'left' }
+        : { field: fieldId, x: 30, y: 30, w: 15, h: 10, fit: 'cover' });
+      sel = page.slots.length - 1;
+      persist(); refreshFields(); draw(); syncPanel();
+      var f = findField(tpl, fieldId);
+      status((existing ? 'Hueco creado' : 'Dato + hueco creados') + ' para «' + (f ? f.label : fieldId) + '». Ajústalo en el apartado 2.');
+    }
+
+    function init(t) {
+      tpl = t;
+      $('tplName').textContent = tpl.name || tpl.id;
+      values = defaultValues(tpl);
+      tpl.fields.forEach(function (f) { if (f.type !== 'image' && !values[f.id]) values[f.id] = f.label; });
+      refreshPages(); refreshFields();
+
+      $('pageSel').onchange = function () { pageIdx = +$('pageSel').value; sel = -1; draw(); };
+      $('fieldSel').onchange = function () { var s = cur(); if (s) { s.field = $('fieldSel').value; persist(); draw(); syncPanel(); } };
+      $('applyFieldName').onclick = function () { var s = cur(); if (!s) return; var f = findField(tpl, s.field); if (!f) return; f.label = $('fieldNameInput').value.trim() || f.id; persist(); draw(); status('Nombre actualizado a «' + f.label + '»'); };
+      $('fieldNameInput').onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); $('applyFieldName').onclick(); } };
+      [['fX', 'x'], ['fY', 'y'], ['fW', 'w'], ['fH', 'h'], ['fSize', 'size']].forEach(function (pair) {
+        $(pair[0]).oninput = function (e) { var s = cur(); if (s && e.target.value !== '') { s[pair[1]] = +e.target.value; persist(); draw(); } };
+      });
+      $('fAlign').onchange = function (e) { var s = cur(); if (s) { s.align = e.target.value; persist(); draw(); } };
+      $('fFont').onchange = function (e) { var s = cur(); if (s) { s.font = e.target.value; persist(); draw(); } };
+      $('fFit').onchange = function (e) { var s = cur(); if (s) { s.fit = e.target.value; persist(); draw(); } };
+
+      $('placeText').onclick = function () { place('text', $('newFieldName').value); $('newFieldName').value = ''; };
+      $('placePhoto').onclick = function () { place('image', $('newFieldName').value); $('newFieldName').value = ''; };
+      $('dup').onclick = function () {
+        var s = cur(); if (!s) return;
+        tpl.pages[pageIdx].slots.push(Object.assign({}, s, { x: +(s.x + 2).toFixed(1), y: +(s.y + 2).toFixed(1) }));
+        sel = tpl.pages[pageIdx].slots.length - 1; persist(); draw(); syncPanel();
+      };
+      $('del').onclick = function () { if (sel >= 0) { tpl.pages[pageIdx].slots.splice(sel, 1); sel = -1; persist(); draw(); } };
+      $('prevSlot').onclick = function () { var n = tpl.pages[pageIdx].slots.length; if (n) { sel = ((sel - 1) % n + n) % n; draw(); syncPanel(); } };
+      $('nextSlot').onclick = function () { var n = tpl.pages[pageIdx].slots.length; if (n) { sel = (sel + 1) % n; draw(); syncPanel(); } };
+      $('export').onclick = function () { downloadJson(tpl, 'template.json'); status('Descargado. Pásalo al jugador con Importar.'); };
+      $('importBtn').onclick = function () { $('importFile').click(); };
+      $('importFile').onchange = function (e) {
+        var file = e.target.files[0]; if (!file) return;
+        var r = new FileReader();
+        r.onload = function () {
+          try {
+            tpl = JSON.parse(r.result);
+            values = defaultValues(tpl); pageIdx = 0; sel = -1;
+            refreshPages(); refreshFields(); persist(); draw();
+            $('tplName').textContent = tpl.name || tpl.id;
+            status('Maquetación importada ✓');
+          } catch (err) { status('Ese fichero no es un template válido'); }
+        };
+        r.readAsText(file);
+        e.target.value = '';
+      };
+      $('resetTpl').onclick = function () {
+        if (!confirm('¿Descartar la maquetación del estudio y volver al original?')) return;
+        store.del(LS_KEY);
+        tpl = embeddedTemplate();
+        values = defaultValues(tpl); pageIdx = 0; sel = -1;
+        refreshPages(); refreshFields(); draw();
+      };
+      window.addEventListener('resize', draw);
+      draw();
+      persist();
+    }
+    loadTemplate(init);
+  </script>
+</body>
+
+</html>
