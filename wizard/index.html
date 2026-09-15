@@ -33,8 +33,14 @@
     background: linear-gradient(135deg, var(--abyss) 0%, var(--abyss-2) 100%);
     border-bottom: 4px solid var(--teal);
   }
+  #menuBtn {
+    font-size: 14px; font-weight: 900; cursor: pointer; border: 0; border-radius: 8px;
+    padding: 10px 14px; color: #fff; background: #1e4d55; min-height: 44px;
+  }
+  #menuBtn:hover { filter: brightness(1.2); }
   #top h1 { font-size: 15px; margin: 0; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
   #top h1 span { color: var(--sage); }
+  #draftinfo { font-size: 11px; color: var(--sage); }
   #stepcount { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--sage); white-space: nowrap; }
   main { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 28px 16px 90px; }
   #card {
@@ -46,31 +52,46 @@
   }
   @keyframes in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   #kicker {
-    display: inline-block; font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase;
     background: var(--abyss); color: #fff; padding: 5px 12px; border-radius: 3px 10px 10px 3px;
-    border-left: 5px solid var(--teal); margin-bottom: 14px;
+    border-left: 5px solid var(--teal); margin-bottom: 14px; max-width: 100%;
   }
+  #kicker img { width: 30px; height: 30px; object-fit: cover; border-radius: 50%; border: 2px solid var(--sage); }
   #q { font-size: 24px; font-weight: 900; line-height: 1.25; margin: 0 0 6px; }
-  #q .req { color: var(--danger); }
   #desc { font-size: 14px; color: #4c5d53; margin: 0 0 18px; line-height: 1.5; }
-  #desc .ej { display: block; margin-top: 6px; font-style: italic; background: rgba(183,194,155,.25); padding: 8px 10px; border-radius: 6px; }
-  #answer input[type="text"], #answer input[type="number"], #answer textarea {
+  .field { margin-bottom: 20px; }
+  .field:last-child { margin-bottom: 4px; }
+  .field > label { display: block; font-size: 16px; font-weight: 900; margin-bottom: 2px; }
+  .field > label .req { color: var(--danger); }
+  .field .fdesc { font-size: 13px; color: #4c5d53; margin: 0 0 8px; line-height: 1.5; }
+  .field .fdesc .ej { display: block; margin-top: 6px; font-style: italic; background: rgba(183,194,155,.25); padding: 8px 10px; border-radius: 6px; }
+  .field input[type="text"], .field input[type="number"], .field textarea {
     width: 100%; font-size: 18px; font-family: inherit; color: var(--ink);
     border: 0; border-bottom: 3px solid var(--abyss); background: transparent;
     padding: 10px 2px; outline: none;
   }
-  #answer input:focus, #answer textarea:focus { border-bottom-color: var(--teal); }
-  #answer textarea { border: 2px solid var(--abyss); border-radius: 8px; padding: 12px; min-height: 110px; font-size: 16px; line-height: 1.5; resize: vertical; }
-  #answer textarea:focus { border-color: var(--teal); }
+  .field input:focus, .field textarea:focus { border-bottom-color: var(--teal); }
+  .field textarea { border: 2px solid var(--abyss); border-radius: 8px; padding: 12px; min-height: 90px; font-size: 16px; line-height: 1.5; resize: vertical; }
+  .field textarea:focus { border-color: var(--teal); }
+  .count { font-size: 11px; color: #4c5d53; text-align: right; margin-top: 2px; }
+  .ferr { display: none; color: #fff; background: var(--danger); font-size: 13px; font-weight: 700; padding: 8px 12px; border-radius: 6px; margin-top: 8px; }
+  .field.bad input, .field.bad textarea { border-color: var(--danger); }
+  .field.bad .ferr { display: block; }
   #err { display: none; color: #fff; background: var(--danger); font-size: 13px; font-weight: 700; padding: 8px 12px; border-radius: 6px; margin-top: 10px; }
   .pills { display: flex; flex-wrap: wrap; gap: 8px; }
   .pill {
     font-size: 14px; font-weight: 700; padding: 10px 16px; border-radius: 999px; cursor: pointer;
-    border: 2px solid var(--abyss); background: #fff; color: var(--ink); user-select: none;
+    border: 2px solid var(--abyss); background: #fff; color: var(--ink); user-select: none; min-height: 44px;
   }
   .pill.on { background: var(--teal); border-color: var(--teal-deep); color: #fff; }
-  #otherWrap { margin-top: 12px; display: none; }
-  #otherWrap.show { display: block; }
+  .otherWrap { margin-top: 12px; display: none; }
+  .otherWrap.show { display: block; }
+  #toast {
+    display: none; position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: 96px; z-index: 60; background: var(--danger); color: #fff;
+    font-size: 13px; font-weight: 800; padding: 10px 16px; border-radius: 8px; max-width: 90vw;
+  }
   .photobox {
     border: 3px dashed var(--teal); border-radius: 10px; background: rgba(14,116,99,.06);
     padding: 22px; text-align: center; cursor: pointer;
@@ -79,6 +100,7 @@
   .photobox img { max-width: 100%; max-height: 260px; border-radius: 8px; border: 3px solid var(--abyss); }
   .photobox .ph-t { font-weight: 900; font-size: 16px; }
   .photobox .ph-s { font-size: 12px; color: #4c5d53; margin-top: 4px; }
+  .photorm { margin-top: 8px; font-size: 12px; font-weight: 800; cursor: pointer; border: 2px solid var(--danger); background: #fff; color: var(--danger); border-radius: 6px; padding: 7px 12px; min-height: 40px; }
   .checkline {
     display: flex; gap: 10px; align-items: flex-start; margin-top: 16px;
     background: rgba(14,116,99,.08); border-radius: 8px; padding: 12px; cursor: pointer;
@@ -94,13 +116,43 @@
   #nav button {
     font-size: 16px; font-weight: 900; letter-spacing: .02em; cursor: pointer; border: 0;
     padding: 13px 30px; color: #fff; background: var(--teal); border-radius: 8px;
-    box-shadow: 3px 3px 0 var(--abyss); transition: transform .1s ease;
+    box-shadow: 3px 3px 0 var(--abyss); transition: transform .1s ease; min-height: 48px;
   }
   #nav button:hover { filter: brightness(1.1); }
   #nav button:active { transform: translateY(2px); box-shadow: 1px 1px 0 var(--abyss); }
   #nav button.ghost { background: #fff; color: var(--ink); border: 2px solid var(--abyss); box-shadow: none; }
   #nav button:disabled { opacity: .45; cursor: not-allowed; }
   #hintkeys { font-size: 12px; color: #4c5d53; }
+  /* ---- menú de secciones ---- */
+  #scrim { display: none; position: fixed; inset: 0; background: rgba(12,42,47,.5); z-index: 40; }
+  #scrim.open { display: block; }
+  #drawer {
+    position: fixed; top: 0; right: -340px; width: min(86vw, 320px); height: 100dvh; z-index: 41;
+    background: #fffdf6; border-left: 4px solid var(--abyss); transition: right .25s ease;
+    display: flex; flex-direction: column;
+  }
+  #drawer.open { right: 0; }
+  #drawer h2 { margin: 0; padding: 16px; font-size: 15px; text-transform: uppercase; letter-spacing: .06em; background: var(--abyss); color: #fff; }
+  #drawerList { overflow-y: auto; padding: 10px; flex: 1; }
+  .secItem {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+    font-family: inherit; font-size: 14px; font-weight: 800; cursor: pointer;
+    border: 2px solid transparent; background: none; color: var(--ink);
+    border-radius: 8px; padding: 11px 10px; min-height: 48px;
+  }
+  .secItem:hover { background: rgba(14,116,99,.1); }
+  .secItem.cur { border-color: var(--teal); background: rgba(14,116,99,.12); }
+  .secItem .dot {
+    flex: none; width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; background: rgba(12,42,47,.12); color: var(--ink);
+  }
+  .secItem.done .dot { background: var(--teal); color: #fff; }
+  .secItem .miss { margin-left: auto; font-size: 11px; color: var(--danger); white-space: nowrap; }
+  /* ---- revisión ---- */
+  .review-tools { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; font-size: 13px; font-weight: 700; }
+  .review-tools input { width: 20px; height: 20px; accent-color: var(--teal); }
+  #dupwarn { display: none; background: #fdf0e6; border: 2px solid #d35400; color: #7e3b00; font-size: 13px; font-weight: 700; padding: 9px 12px; border-radius: 8px; margin-bottom: 12px; }
   .review-group { border: 2px solid var(--abyss); border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
   .review-group h3 {
     margin: 0; font-size: 14px; text-transform: uppercase; letter-spacing: .06em;
@@ -114,45 +166,79 @@
   .review-row button {
     flex: none; font-size: 11px; font-weight: 800; cursor: pointer;
     border: 2px solid var(--teal); background: #fff; color: var(--teal-deep);
-    border-radius: 6px; padding: 4px 10px;
+    border-radius: 6px; padding: 6px 10px; min-height: 36px;
   }
   .review-thumb { max-height: 60px; border-radius: 6px; border: 2px solid var(--abyss); }
   #done { text-align: center; }
   #done .big { font-size: 52px; }
+  /* ---- modo móvil: página con scroll ---- */
+  #mwrap { display: none; width: min(94vw, 620px); padding-bottom: 110px; }
+  body.mobile main { align-items: stretch; padding: 16px 12px 120px; }
+  body.mobile #card { display: none; }
+  body.mobile #mwrap { display: block; }
+  body.mobile.showcard #card { display: block; }
+  body.mobile.showcard #mwrap { display: none; }
+  .msec { background: #fffdf6; border: 3px solid var(--abyss); border-radius: 12px; box-shadow: 6px 6px 0 rgba(14,116,99,.25); margin-bottom: 18px; overflow: hidden; }
+  .msec > h2 {
+    margin: 0; padding: 12px 16px; font-size: 15px; text-transform: uppercase; letter-spacing: .06em;
+    background: var(--abyss); color: #fff; position: sticky; top: 0; display: flex; align-items: center; gap: 8px;
+  }
+  .msec > h2 img { width: 30px; height: 30px; object-fit: cover; border-radius: 50%; border: 2px solid var(--sage); }
+  .msec > h2 .mstate { margin-left: auto; font-size: 11px; color: var(--sage); }
+  .mscreen { padding: 16px 16px 6px; border-top: 2px dashed rgba(12,42,47,.2); }
+  .mscreen:first-of-type { border-top: 0; }
+  .mscreen > h3 { margin: 0 0 10px; font-size: 17px; }
   @media (max-width: 640px) {
-    #q { font-size: 20px; }
+    #top h1 { font-size: 12px; }
+    #draftinfo { display: none; }
     #card { padding: 22px 18px 20px; }
-    #nav button { padding: 13px 20px; font-size: 15px; min-height: 48px; }
+    #q { font-size: 20px; }
+    #nav button { padding: 13px 18px; font-size: 15px; }
     #hintkeys { display: none; }
     .review-row { flex-wrap: wrap; }
     .review-row b { flex-basis: 100%; }
+    #drawer { top: auto; bottom: 0; right: 0; left: 0; width: 100%; height: auto; max-height: 70dvh; border-left: 0; border-top: 4px solid var(--abyss); transform: translateY(105%); transition: transform .25s ease; border-radius: 14px 14px 0 0; }
+    #drawer.open { right: 0; transform: none; }
   }
 </style>
 </head>
 <body>
 <div id="progress"><div></div></div>
-<div id="top"><h1>PrintMyEscape <span>· El Regalo Robado</span></h1><span id="stepcount"></span></div>
-<main><div id="card">
-  <div id="kicker"></div>
-  <h2 id="q"></h2>
-  <p id="desc"></p>
-  <div id="answer"></div>
-  <div id="err"></div>
-</div></main>
+<div id="top">
+  <button id="menuBtn" title="Ir a una sección">☰ Secciones</button>
+  <h1>PrintMyEscape <span>· El Regalo Robado</span></h1>
+  <span id="draftinfo"></span>
+  <span id="stepcount"></span>
+</div>
+<main>
+  <div id="card">
+    <div id="kicker"></div>
+    <h2 id="q"></h2>
+    <p id="desc"></p>
+    <div id="answer"></div>
+    <div id="err"></div>
+  </div>
+  <div id="mwrap"></div>
+</main>
 <div id="nav">
   <button id="back" class="ghost">← Atrás</button>
   <span id="hintkeys">pulsa <b>Enter ↵</b> para continuar</span>
   <button id="next">Continuar →</button>
 </div>
+<div id="scrim"></div>
+<div id="toast"></div>
+<aside id="drawer"><h2>Secciones</h2><div id="drawerList"></div></aside>
 <input id="filepick" type="file" accept="image/jpeg,image/png,image/webp" style="display:none">
 <script>
 'use strict';
-/* Asistente de personalización estilo Typeform. Una pregunta por pantalla.
-   Funciona con doble clic (file://). Textos en localStorage, fotos en memoria. */
+/* Asistente de personalización. Desktop: pasos agrupados. Móvil (<=640px):
+   página con scroll. Textos en localStorage, fotos en IndexedDB (fallback memoria). */
 
-/* ---------- utilidades ---------- */
 function $(id) { return document.getElementById(id); }
-var IS_FILE = location.protocol === 'file:';
+function esc(s) {
+  return String(s === undefined || s === null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 var store = {
   mem: {},
   _ls: (function () {
@@ -174,193 +260,229 @@ var store = {
 };
 var DRAFT_KEY = 'pme-wizard-draft';
 
-/* ---------- definición de pasos ---------- */
-/* types: info | section | text | long | number | photo | multi */
+/* ---------- fotos en IndexedDB (persisten recargas) ---------- */
+var photos = {}, idbOK = false, idbDB = null;
+var idb = {
+  open: function (cb) {
+    if (!window.indexedDB) { cb(false); return; }
+    try {
+      var rq = window.indexedDB.open('pme-wizard', 1);
+      rq.onupgradeneeded = function () { rq.result.createObjectStore('photos'); };
+      rq.onsuccess = function () { idbDB = rq.result; idbOK = true; cb(true); };
+      rq.onerror = function () { cb(false); };
+    } catch (e) { cb(false); }
+  },
+  save: function (k, v) {
+    if (!idbOK) return;
+    try { idbDB.transaction('photos', 'readwrite').objectStore('photos').put(v, k); } catch (e) {}
+  },
+  remove: function (k) {
+    if (!idbOK) return;
+    try { idbDB.transaction('photos', 'readwrite').objectStore('photos').delete(k); } catch (e) {}
+  },
+  loadAll: function (cb) {
+    if (!idbOK) { cb({}); return; }
+    try {
+      var rq = idbDB.transaction('photos', 'readonly').objectStore('photos').getAll();
+      rq.onsuccess = function () {
+        var out = {}, keys = rq.result;
+        /* getAll sin claves: recuperamos por cursor para mantener la clave */
+        var cur = idbDB.transaction('photos', 'readonly').objectStore('photos').openCursor();
+        cur.onsuccess = function () {
+          var c = cur.result;
+          if (c) { out[c.key] = c.value; c.continue(); }
+          else cb(out);
+        };
+        cur.onerror = function () { cb(out); };
+      };
+      rq.onerror = function () { cb({}); };
+    } catch (e) { cb({}); }
+  }
+};
+
+/* ---------- definición de pantallas (2-3 campos relacionados) ---------- */
+function T(id, q, o) { o = o || {}; return { id: id, type: 'text', q: q, required: !!o.req, max: o.max || 0, desc: o.desc || '', ej: o.ej || '' }; }
+function L(id, q, o) { o = o || {}; return { id: id, type: 'long', q: q, required: !!o.req, max: o.max || 0, desc: o.desc || '', ej: o.ej || '' }; }
+function N(id, q, o) { o = o || {}; return { id: id, type: 'number', q: q, required: !!o.req, min: o.min, max: o.max }; }
+function P(id, q, o) { o = o || {}; return { id: id, type: 'photo', q: q, required: !!o.req, desc: o.desc || '1 archivo de imagen, tamaño máximo 10 MB.' }; }
+function M(id, q, o) { o = o || {}; return { id: id, type: 'multi', q: q, desc: o.desc || '' }; }
+
 var WEAK_OPTS = ['Llegar tarde', 'Robar comida ajena', 'Contar chistes malos', 'Hacer trampas jugando'];
+var SECTIONS = [{ id: 'intro', title: 'Inicio' }, { id: 'b', title: 'El cumpleañero' }];
+for (var _n = 1; _n <= 8; _n++) SECTIONS.push({ id: 's' + _n, title: 'Sospechoso ' + _n });
 
-/* Preguntas extra por sospechoso, tal cual las pide el formulario original. */
-var SUS_EXTRA = {
-  1: [
-    { id: 'shame_place', type: 'text', q: 'Un sitio que le da vergüenza ir y no le diría a nadie', max: 80,
-      desc: 'Un sitio al que va a por un tipo de resultado: club de colección de monedas, la Tuna, granjero busca esposa…' },
-    { id: 'shame_result', type: 'long', q: '¿Qué resultado le darían allí?', max: 280,
-      desc: 'Como si le estuviesen dando la noticia.',
-      ej: '«Su colección de monedas de Pokémon no se acepta en este club; consideramos que su uso del triángulo es de nivel muy básico…»' }
-  ],
-  2: [
-    { id: 'secret_love', type: 'text', q: '¿A quién le daría vergüenza declarar su amor más prohibido?', max: 80,
-      desc: 'Puede ser una persona real, un amor platónico, un dibujo animado…' }
-  ],
-  3: [
-    { id: 'shame_shop', type: 'text', q: '¿En qué tienda le daría vergüenza comprar algo?', max: 80,
-      ej: 'Vibradores SL, Dulces gordos shop, Batamanta 3000…' },
-    { id: 'shame_product', type: 'text', q: '¿Qué producto compraría?', max: 80,
-      ej: 'Black vibrator, gocholón, batamanta 2400…' }
-  ],
-  4: [
-    { id: 'hide_with', type: 'text', q: '¿Con quién se escondería para hablar?', max: 80,
-      desc: 'Puede ser real, inventado, un actor o actriz…' },
-    { id: 'confession', type: 'long', q: '¿Qué mensaje le confesaría a esa persona?', max: 280 }
-  ],
-  5: [
-    { id: 'shame_web1', type: 'text', q: 'Un sitio web donde le daría vergüenza que le pillasen mirando', max: 80,
-      ej: 'pornhub, tarotistas.com, kebabs4ever…' },
-    { id: 'shame_web2', type: 'text', q: 'Otro sitio web donde le daría vergüenza que le pillasen', max: 80 }
-  ],
-  6: [
-    { id: 'postcard_to', type: 'text', q: '¿A quién le escribiría una postal?', max: 80,
-      desc: 'Puede ser real, un dibujo animado, un actor o actriz…' },
-    { id: 'postcard_text', type: 'long', q: '¿Qué le escribiría en esa postal?', max: 280 },
-    { id: 'backpack_note', type: 'long', q: 'Nota que llevaría en su mochila y no quiere que vea nadie', max: 280 }
-  ],
-  7: [
-    { id: 'hobby1', type: 'text', q: 'Una afición secreta que le daría vergüenza admitir', max: 80,
-      ej: 'cazar orcos, dormir en la calle…' },
-    { id: 'hobby2', type: 'text', q: 'Otra afición que le daría vergüenza admitir', max: 80 }
-  ],
-  8: [
-    { id: 'app1', type: 'text', q: 'App en su tablet o smartphone que le da vergüenza admitir (1 de 4)', max: 60,
-      desc: 'Puede ser real o inventada.', ej: 'tinder, lácteos4my…' },
-    { id: 'app2', type: 'text', q: 'Segunda app que le da vergüenza admitir (2 de 4)', max: 60 },
-    { id: 'app3', type: 'text', q: 'Tercera app que le da vergüenza admitir (3 de 4)', max: 60 },
-    { id: 'app4', type: 'text', q: 'Cuarta app que le da vergüenza admitir (4 de 4)', max: 60 }
-  ]
-};
-var SUS_INTRO = {
-  1: 'Aquí vamos a rellenar los datos del primer sospechoso.',
-  2: 'Seguimos con el segundo sospechoso.',
-  3: 'Tercer sospechoso.',
-  4: 'Cuarto sospechoso.',
-  5: 'Quinto sospechoso.',
-  6: 'Sexto sospechoso.',
-  7: 'Séptimo sospechoso.',
-  8: 'Último sospechoso, ¡ya casi está!'
-};
-
-function buildSteps() {
-  var S = [];
-  S.push({
-    id: 'intro', type: 'info', kicker: 'Antes de empezar', q: 'Cómo va a ser el proceso',
+var SCREENS = [
+  { id: 'intro', sec: 'intro', title: 'Cómo va a ser el proceso',
     desc: 'Vas a personalizar el escape room «El Regalo Robado» con tus amigos y familiares como protagonistas.',
+    fields: [{ id: 'intro_ok', type: 'check', q: 'Comprendo cómo funciona y tengo las fotos a mano (o las subiré sobre la marcha)', required: true }],
     bullets: [
       'Te llevará unos <b>15–20 minutos</b>. Puedes salir y volver: tus respuestas se guardan en este equipo.',
       'Vas a necesitar: el <b>nombre y apodo</b> de 8 sospechosos más el cumpleañero, <b>9 fotos</b> (máx. 10 MB cada una) y un par de <b>lugares donde se escondería</b> cada uno.',
       'Al final revisaremos todo junto antes de generar tu juego personalizado.'
-    ],
-    check: 'Comprendo cómo funciona y tengo las fotos a mano (o las subiré sobre la marcha)'
-  });
-  S.push({ id: 'sec_b', type: 'section', kicker: 'Primera persona', q: 'El cumpleañero',
-    desc: 'Aquí vamos a personalizar la ficha de la persona que va a cumplir años.' });
-  S.push({ id: 'b_name', sec: 'El cumpleañero', type: 'text', q: '¿Cómo se llama?', required: true, max: 24 });
-  S.push({ id: 'b_alias', sec: 'El cumpleañero', type: 'text', q: 'Su alias (opcional)', max: 24 });
-  S.push({ id: 'b_photo', sec: 'El cumpleañero', type: 'photo', q: 'Sube su foto', desc: '1 archivo de imagen, tamaño máximo 10 MB.' });
-  S.push({ id: 'b_age', sec: 'El cumpleañero', type: 'number', q: '¿Cuántos años cumple?', required: true, min: 1, max: 120 });
-  S.push({ id: 'b_known', sec: 'El cumpleañero', type: 'long', q: '¿Por qué se le conoce?', max: 280,
-    ej: 'Por comer hamburguesas, por pillarse un pedo monumental cada vez que sale de fiesta…' });
-  S.push({ id: 'b_weak', sec: 'El cumpleañero', type: 'multi', q: 'Su mayor debilidad es…',
-    desc: 'Puedes seleccionar varias opciones e incluso escribir otra.' });
-  S.push({ id: 'b_info', sec: 'El cumpleañero', type: 'long', q: 'Información que sus amigos y familiares consideran importante sobre esta persona', max: 280 });
-  S.push({ id: 'b_notes', sec: 'El cumpleañero', type: 'long', q: 'Notas y observaciones', max: 280,
-    desc: 'Todo lo que nos quieras contar y no encaje arriba.' });
+    ] },
+  { id: 'b1', sec: 'b', title: '¿Quién es el cumpleañero?', desc: 'Empezamos por lo básico.',
+    fields: [T('b_name', '¿Cómo se llama?', { req: 1, max: 24 }), T('b_alias', 'Su alias (opcional)', { max: 24 }), N('b_age', '¿Cuántos años cumple?', { req: 1, min: 1, max: 120 })] },
+  { id: 'b2', sec: 'b', title: 'Su foto', fields: [P('b_photo', 'Sube su foto')] },
+  { id: 'b3', sec: 'b', title: 'Cómo se le conoce',
+    fields: [L('b_known', '¿Por qué se le conoce?', { max: 280, ej: 'Por comer hamburguesas, por pillarse un pedo monumental cada vez que sale de fiesta…' }),
+      M('b_weak', 'Su mayor debilidad es…', { desc: 'Puedes seleccionar varias opciones e incluso escribir otra.' })] },
+  { id: 'b4', sec: 'b', title: 'Algo más sobre esta persona',
+    fields: [L('b_info', 'Información que sus amigos y familiares consideran importante', { max: 280 }),
+      L('b_notes', 'Notas y observaciones', { max: 280, desc: 'Todo lo que nos quieras contar y no encaje arriba.' })] }
+];
+(function () {
+  var cfg = {
+    1: { t: 'Un sitio inconfesable', f: [T('s1_shame_place', 'Un sitio que le da vergüenza ir y no le diría a nadie', { max: 80, desc: 'Un sitio al que va a por un tipo de resultado: club de colección de monedas, la Tuna, granjero busca esposa…' }),
+      L('s1_shame_result', '¿Qué resultado le darían allí?', { max: 280, desc: 'Como si le estuviesen dando la noticia.', ej: '«Su colección de monedas de Pokémon no se acepta en este club…»' })] },
+    2: { t: 'Su amor prohibido', f: [T('s2_secret_love', '¿A quién le daría vergüenza declarar su amor más prohibido?', { max: 80, desc: 'Puede ser una persona real, un amor platónico, un dibujo animado…' })] },
+    3: { t: 'Compras secretas', f: [T('s3_shame_shop', '¿En qué tienda le daría vergüenza comprar algo?', { max: 80, ej: 'Vibradores SL, Dulces gordos shop, Batamanta 3000…' }),
+      T('s3_shame_product', '¿Qué producto compraría?', { max: 80, ej: 'Black vibrator, gocholón, batamanta 2400…' })] },
+    4: { t: 'Su confidente', f: [T('s4_hide_with', '¿Con quién se escondería para hablar?', { max: 80, desc: 'Puede ser real, inventado, un actor o actriz…' }),
+      L('s4_confession', '¿Qué mensaje le confesaría a esa persona?', { max: 280 })] },
+    5: { t: 'Historial vergonzoso', f: [T('s5_shame_web1', 'Un sitio web donde le daría vergüenza que le pillasen mirando', { max: 80, ej: 'pornhub, tarotistas.com, kebabs4ever…' }),
+      T('s5_shame_web2', 'Otro sitio web donde le daría vergüenza que le pillasen', { max: 80 })] },
+    6: { t: 'Postal', f: [T('s6_postcard_to', '¿A quién le escribiría una postal?', { max: 80, desc: 'Puede ser real, un dibujo animado, un actor o actriz…' }),
+      L('s6_postcard_text', '¿Qué le escribiría en esa postal?', { max: 280 })],
+      t2: 'Nota de la mochila', f2: [L('s6_backpack_note', 'Nota que llevaría en su mochila y no quiere que vea nadie', { max: 280 })] },
+    7: { t: 'Aficiones secretas', f: [T('s7_hobby1', 'Una afición secreta que le daría vergüenza admitir', { max: 80, ej: 'cazar orcos, dormir en la calle…' }),
+      T('s7_hobby2', 'Otra afición que le daría vergüenza admitir', { max: 80 })] },
+    8: { t: 'Apps prohibidas (1/2)', f: [T('s8_app1', 'App que le da vergüenza admitir', { max: 60, desc: 'Puede ser real o inventada.', ej: 'tinder, lácteos4my…' }),
+      T('s8_app2', 'Segunda app que le da vergüenza admitir', { max: 60 })],
+      t2: 'Apps prohibidas (2/2)', f2: [T('s8_app3', 'Tercera app que le da vergüenza admitir', { max: 60 }),
+      T('s8_app4', 'Cuarta app que le da vergüenza admitir', { max: 60 })] }
+  };
   for (var n = 1; n <= 8; n++) {
-    S.push({ id: 'sec_s' + n, type: 'section', kicker: 'Sospechoso ' + n + ' de 8', q: 'Sospechoso ' + n, desc: SUS_INTRO[n] });
-    S.push({ id: 's' + n + '_name', sec: 'Sospechoso ' + n, type: 'text', q: 'Nombre', required: true, max: 24 });
-    S.push({ id: 's' + n + '_alias', sec: 'Sospechoso ' + n, type: 'text', q: 'Alias (opcional)', max: 24 });
-    S.push({ id: 's' + n + '_photo', sec: 'Sospechoso ' + n, type: 'photo', q: 'Sube su foto', desc: '1 archivo de imagen, tamaño máximo 10 MB.' });
-    S.push({ id: 's' + n + '_hide1', sec: 'Sospechoso ' + n, type: 'text', q: 'Un lugar donde se escondería si robase algo', required: true, max: 70 });
-    S.push({ id: 's' + n + '_hide2', sec: 'Sospechoso ' + n, type: 'text', q: 'Otro posible lugar donde se escondería', required: true, max: 70 });
-    SUS_EXTRA[n].forEach(function (e) {
-      S.push({ id: 's' + n + '_' + e.id, sec: 'Sospechoso ' + n, type: e.type, q: e.q, max: e.max, desc: e.desc, ej: e.ej });
-    });
+    var c = cfg[n], sec = 's' + n;
+    SCREENS.push({ id: sec + 'a', sec: sec, title: 'Datos básicos', desc: '¿A quién acusamos esta vez?',
+      fields: [T(sec + '_name', 'Nombre', { req: 1, max: 24 }), T(sec + '_alias', 'Alias (opcional)', { max: 24 })] });
+    SCREENS.push({ id: sec + 'b', sec: sec, title: 'Su foto', fields: [P(sec + '_photo', 'Sube su foto')] });
+    SCREENS.push({ id: sec + 'c', sec: sec, title: 'Dónde se escondería',
+      fields: [T(sec + '_hide1', 'Un lugar donde se escondería si robase algo', { req: 1, max: 70 }),
+        T(sec + '_hide2', 'Otro posible lugar donde se escondería', { req: 1, max: 70 })] });
+    SCREENS.push({ id: sec + 'd', sec: sec, title: c.t, fields: c.f });
+    if (c.f2) SCREENS.push({ id: sec + 'e', sec: sec, title: c.t2, fields: c.f2 });
   }
-  return S;
-}
-var STEPS = buildSteps();
+})();
 
 /* ---------- estado ---------- */
-var idx = 0, answers = {}, photos = {}, multiOther = {};
+var idx = 0, answers = {}, multiOther = {}, view = 'steps';
 try {
-  var d = JSON.parse(store.get(DRAFT_KEY) || 'null');
-  if (d) { answers = d.answers || {}; multiOther = d.multiOther || {}; if (typeof d.idx === 'number') idx = d.idx; }
+  var d0 = JSON.parse(store.get(DRAFT_KEY) || 'null');
+  if (d0) { answers = d0.answers || {}; multiOther = d0.multiOther || {}; if (typeof d0.idx === 'number') idx = d0.idx; }
 } catch (e) {}
-if (idx < 0 || idx >= STEPS.length) idx = 0;
+if (idx < 0 || idx >= SCREENS.length) idx = 0;
 function saveDraft() {
-  store.set(DRAFT_KEY, JSON.stringify({ idx: idx, answers: answers, multiOther: multiOther }));
+  var when = new Date();
+  store.set(DRAFT_KEY, JSON.stringify({ idx: idx, answers: answers, multiOther: multiOther, savedAt: when.getTime() }));
+  updateDraftInfo(when.getTime());
 }
-function stepById(id) {
-  for (var i = 0; i < STEPS.length; i++) if (STEPS[i].id === id) return i;
-  return -1;
+function updateDraftInfo(ts) {
+  var el = $('draftinfo');
+  var n = 0;
+  SCREENS.forEach(function (s) { s.fields.forEach(function (f) { if (f.required && answers[f.id]) n++; }); });
+  var total = 0;
+  SCREENS.forEach(function (s) { s.fields.forEach(function (f) { if (f.required) total++; }); });
+  var date = ts ? new Date(ts) : null;
+  el.textContent = 'Borrador ' + (date ? (date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })) : '') + ' · ' + n + '/' + total + ' obligatorios';
 }
-
-/* ---------- render ---------- */
+function secTitle(sec) {
+  for (var i = 0; i < SECTIONS.length; i++) if (SECTIONS[i].id === sec) return SECTIONS[i].title;
+  return sec;
+}
+function personName(sec) {
+  if (sec === 'b') return answers.b_name || '';
+  var m = sec.match(/^s(\d+)$/);
+  if (m) return answers['s' + m[1] + '_name'] || '';
+  return '';
+}
+function photoOf(sec) {
+  if (sec === 'b') return photos.photo_b_photo || '';
+  var m = sec.match(/^s(\d+)$/);
+  if (m) return photos['photo_s' + m[1] + '_photo'] || '';
+  return '';
+}
+function kickerFor(sec) {
+  var t = secTitle(sec), nm = personName(sec);
+  return nm ? (t + ' · ' + nm) : t;
+}
+function firstScreenOf(sec) {
+  for (var i = 0; i < SCREENS.length; i++) if (SCREENS[i].sec === sec) return i;
+  return 0;
+}
+function screenOfField(fid) {
+  for (var i = 0; i < SCREENS.length; i++) {
+    var fs = SCREENS[i].fields;
+    for (var j = 0; j < fs.length; j++) if (fs[j].id === fid) return i;
+  }
+  return 0;
+}
+function requiredOf(sec) {
+  var out = [];
+  SCREENS.forEach(function (s) {
+    if (s.sec !== sec) return;
+    s.fields.forEach(function (f) { if (f.required) out.push(f); });
+  });
+  return out;
+}
+function missingOf(sec) {
+  return requiredOf(sec).filter(function (f) { return !answers[f.id]; });
+}
+function isMobile() {
+  return window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+}
 function showErr(msg) {
   var e = $('err');
-  if (!msg) { e.style.display = 'none'; e.textContent = ''; return; }
+  if (!msg) { e.style.display = 'none'; e.textContent = ''; hideToast(); return; }
+  if (document.body.classList.contains('mobile') && !document.body.classList.contains('showcard')) {
+    e.style.display = 'none'; showToast(msg); return;
+  }
   e.textContent = msg; e.style.display = '';
 }
-function esc(s) {
-  return String(s === undefined || s === null ? '' : s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function showToast(msg) {
+  var t = $('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._t);
+  t._t = setTimeout(hideToast, 4000);
 }
-function photoStep() { return 'photo_' + STEPS[idx].id; }
+function hideToast() { var t = $('toast'); if (t) t.style.display = 'none'; }
 
-function render() {
-  showErr(null);
-  var total = STEPS.length + 1; /* +1 revisión */
-  var isReview = idx >= STEPS.length;
-  if (isReview) {
-    var AR = $('answer'); AR.innerHTML = '';
-    renderReview(AR);
-    $('progress').firstElementChild.style.width = Math.round(100 * STEPS.length / total) + '%';
-    $('stepcount').textContent = 'Revisión';
-    $('back').disabled = false;
-    $('next').textContent = 'Terminar ✓';
-    return;
+/* ---------- controles de campo (compartidos desktop/móvil) ---------- */
+var photoTarget = null;
+function fieldControl(f, prefix) {
+  var wrap = document.createElement('div');
+  wrap.className = 'field'; wrap.setAttribute('data-field', f.id);
+  var lab = document.createElement('label');
+  lab.innerHTML = esc(f.q) + (f.required ? ' <span class="req">*</span>' : '');
+  wrap.appendChild(lab);
+  if (f.desc || f.ej) {
+    var fd = document.createElement('p'); fd.className = 'fdesc';
+    fd.innerHTML = (f.desc ? esc(f.desc) : '') + (f.ej ? '<span class="ej">Ejemplo: ' + esc(f.ej) + '</span>' : '');
+    wrap.appendChild(fd);
   }
-  var st = STEPS[idx];
-  $('kicker').textContent = st.kicker || st.sec || 'Personalización';
-  var q = st.q || '';
-  $('q').innerHTML = esc(q) + (st.required ? ' <span class="req">*</span>' : '');
-  var dh = '';
-  if (st.desc) dh += esc(st.desc);
-  if (st.ej) dh += '<span class="ej">Ejemplo: ' + esc(st.ej) + '</span>';
-  $('desc').innerHTML = dh;
-  var A = $('answer'); A.innerHTML = '';
-
-  if (st.type === 'info') {
-    var ul = document.createElement('ul');
-    ul.style.cssText = 'font-size:15px;line-height:1.7;margin:0 0 6px;padding-left:20px;';
-    st.bullets.forEach(function (b) { var li = document.createElement('li'); li.innerHTML = b; ul.appendChild(li); });
-    A.appendChild(ul);
-    var lab = document.createElement('label'); lab.className = 'checkline';
-    var cb = document.createElement('input'); cb.type = 'checkbox'; cb.id = 'introCheck';
-    cb.checked = answers.intro_ok === '1';
-    lab.appendChild(cb);
-    var sp = document.createElement('span'); sp.textContent = st.check; lab.appendChild(sp);
-    A.appendChild(lab);
-  } else if (st.type === 'section') {
-    var p = document.createElement('p');
-    p.style.cssText = 'font-size:16px;line-height:1.6;margin:0;';
-    p.textContent = 'Pulsa Continuar para rellenar sus datos.';
-    A.appendChild(p);
-  } else if (st.type === 'text' || st.type === 'number') {
-    var inp = document.createElement('input');
-    inp.type = st.type === 'number' ? 'number' : 'text'; inp.id = 'field';
-    if (st.max) inp.maxLength = st.max;
-    if (st.type === 'number') { inp.min = st.min; inp.max = st.max; }
-    inp.value = answers[st.id] || '';
-    inp.placeholder = 'Escribe aquí…';
-    A.appendChild(inp);
-    setTimeout(function () { try { inp.focus(); } catch (e) {} }, 50);
-  } else if (st.type === 'long') {
-    var ta = document.createElement('textarea'); ta.id = 'field';
-    if (st.max) ta.maxLength = st.max;
-    ta.value = answers[st.id] || '';
-    ta.placeholder = 'Escribe aquí…';
-    A.appendChild(ta);
-  } else if (st.type === 'photo') {
-    var box = document.createElement('div'); box.className = 'photobox'; box.id = 'photobox';
-    var key = photoStep();
+  var ctl = null;
+  if (f.type === 'text' || f.type === 'number') {
+    ctl = document.createElement('input');
+    ctl.type = f.type === 'number' ? 'number' : 'text';
+    if (f.max) { if (f.type === 'number') { ctl.min = f.min; ctl.max = f.max; } else ctl.maxLength = f.max; }
+    ctl.value = answers[f.id] || '';
+    ctl.placeholder = 'Escribe aquí…';
+  } else if (f.type === 'long') {
+    ctl = document.createElement('textarea');
+    if (f.max) ctl.maxLength = f.max;
+    ctl.value = answers[f.id] || '';
+    ctl.placeholder = 'Escribe aquí…';
+  }
+  if (ctl) {
+    ctl.setAttribute('data-fid', f.id);
+    wrap.appendChild(ctl);
+    if (f.max && f.type !== 'number') {
+      var co = document.createElement('div'); co.className = 'count';
+      co.textContent = (answers[f.id] || '').length + '/' + f.max;
+      wrap.appendChild(co);
+    }
+  } else if (f.type === 'photo') {
+    var key = 'photo_' + f.id;
+    var box = document.createElement('div'); box.className = 'photobox';
     if (photos[key]) {
       var im = document.createElement('img'); im.src = photos[key]; im.alt = 'Foto subida';
       box.appendChild(im);
@@ -370,70 +492,237 @@ function render() {
       var t = document.createElement('div'); t.className = 'ph-t'; t.textContent = 'Pulsa para subir una foto';
       box.appendChild(t);
       var s2 = document.createElement('div'); s2.className = 'ph-s';
-      s2.textContent = 'JPG, PNG o WebP · máx. 10 MB · se guarda solo en este equipo';
+      s2.textContent = idbOK
+        ? 'JPG, PNG o WebP · máx. 10 MB · se guarda en este equipo'
+        : 'JPG, PNG o WebP · máx. 10 MB · solo vive en esta sesión';
       box.appendChild(s2);
     }
-    box.onclick = function () { $('filepick').click(); };
-    A.appendChild(box);
-  } else if (st.type === 'multi') {
-    var wrap = document.createElement('div');
+    box.onclick = function () { photoTarget = f.id; $('filepick').click(); };
+    wrap.appendChild(box);
+    if (photos[key]) {
+      var rm = document.createElement('button'); rm.type = 'button'; rm.className = 'photorm'; rm.textContent = 'Quitar foto';
+      rm.onclick = function () { delete photos[key]; idb.remove(key); saveDraft(); render(); };
+      wrap.appendChild(rm);
+    }
+  } else if (f.type === 'multi') {
     var pills = document.createElement('div'); pills.className = 'pills';
     var cur = {};
-    (answers[st.id] || '').split('||').forEach(function (v) { if (v) cur[v] = true; });
+    (answers[f.id] || '').split('||').forEach(function (v) { if (v) cur[v] = true; });
     WEAK_OPTS.forEach(function (o) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'pill' + (cur[o] ? ' on' : '');
-      b.textContent = o; b.setAttribute('data-v', o);
-      b.onclick = function () { b.classList.toggle('on'); collectMulti(); };
+      b.textContent = o; b.setAttribute('data-v', o); b.setAttribute('data-fid', f.id);
+      b.onclick = function () { b.classList.toggle('on'); collectMulti(f.id); };
       pills.appendChild(b);
     });
     var bo = document.createElement('button'); bo.type = 'button';
-    bo.className = 'pill' + (multiOther[st.id] ? ' on' : ''); bo.textContent = '+ Otra'; bo.id = 'pillOther';
+    bo.className = 'pill' + (multiOther[f.id] ? ' on' : ''); bo.textContent = '+ Otra';
     bo.onclick = function () {
-      var ow = $('otherWrap'); ow.classList.add('show');
+      var ow = wrap.querySelector('.otherWrap'); ow.classList.add('show');
       bo.classList.add('on');
-      var oi = $('otherInput'); oi.focus(); collectMulti();
+      var oi = wrap.querySelector('.otherInput'); oi.focus(); collectMulti(f.id);
     };
     pills.appendChild(bo);
     wrap.appendChild(pills);
-    var ow2 = document.createElement('div'); ow2.id = 'otherWrap';
-    if (multiOther[st.id]) ow2.className = 'show';
-    var oi2 = document.createElement('input'); oi2.type = 'text'; oi2.id = 'otherInput';
+    var ow2 = document.createElement('div');
+    ow2.className = 'otherWrap' + (multiOther[f.id] ? ' show' : '');
+    var oi2 = document.createElement('input'); oi2.type = 'text';
+    oi2.className = 'otherInput'; oi2.setAttribute('data-other', f.id);
     oi2.placeholder = 'Escribe otra debilidad…'; oi2.maxLength = 60;
-    oi2.value = multiOther[st.id] || '';
-    oi2.oninput = collectMulti;
+    oi2.value = multiOther[f.id] || '';
+    oi2.oninput = function () { collectMulti(f.id); };
     ow2.appendChild(oi2);
     wrap.appendChild(ow2);
-    A.appendChild(wrap);
+  } else if (f.type === 'check') {
+    var lab2 = document.createElement('label'); lab2.className = 'checkline';
+    var cb = document.createElement('input'); cb.type = 'checkbox'; cb.setAttribute('data-fid', f.id);
+    cb.checked = answers[f.id] === '1';
+    lab2.appendChild(cb);
+    var sp = document.createElement('span'); sp.textContent = f.q; lab2.appendChild(sp);
+    wrap.appendChild(lab2);
+    lab.style.display = 'none';
   }
-
-  var total2 = STEPS.length + 1; /* +1 revisión */
-  $('progress').firstElementChild.style.width = Math.round(100 * idx / total2) + '%';
-  $('stepcount').textContent = 'Paso ' + (idx + 1) + ' de ' + total2;
-  $('back').disabled = (idx === 0);
-  $('next').textContent = (idx === STEPS.length - 1) ? 'Revisar →' : 'Continuar →';
+  var fe = document.createElement('div'); fe.className = 'ferr'; wrap.appendChild(fe);
+  return wrap;
 }
-
-function collectMulti() {
-  var st = STEPS[idx];
+function collectMulti(fid, scope) {
+  var root = scope || document.querySelector('.field[data-field="' + fid + '"]') || document;
   var vals = [];
-  var pills = document.querySelectorAll('#answer .pill.on');
+  var pills = root.querySelectorAll('.pill.on');
   for (var i = 0; i < pills.length; i++) {
     var v = pills[i].getAttribute('data-v');
     if (v) vals.push(v);
   }
-  var ow = $('otherWrap'), oi = $('otherInput');
-  if (oi && oi.value.trim()) {
+  var oi = root.querySelector('[data-other="' + fid + '"]');  if (oi && oi.value.trim()) {
     vals.push('Otro: ' + oi.value.trim());
-    multiOther[st.id] = oi.value.trim();
-  } else { delete multiOther[st.id]; }
-  answers[st.id] = vals.join('||');
+    multiOther[fid] = oi.value.trim();
+  } else { delete multiOther[fid]; }
+  answers[fid] = vals.join('||');
   saveDraft();
 }
+function readControl(f, scope) {
+  scope = scope || document;
+  var el = scope.querySelector('[data-fid="' + f.id + '"]');
+  if (!el) return;
+  if (f.type === 'text' || f.type === 'long' || f.type === 'number') answers[f.id] = el.value.trim ? el.value : '';
+  else if (f.type === 'check') answers[f.id] = el.checked ? '1' : '';
+}
+function readAll(scope) {
+  SCREENS.forEach(function (s) { s.fields.forEach(function (f) {
+    if (f.type === 'multi') collectMulti(f.id, scope); else readControl(f, scope);
+  }); });
+  saveDraft();
+}
+function fieldError(f) {
+  if (f.type === 'check' && f.required && answers[f.id] !== '1') return 'Marca esta casilla para continuar.';
+  if (f.required && (f.type === 'text' || f.type === 'long') && !answers[f.id]) return 'Este campo es obligatorio.';
+  if (f.type === 'number' && f.required) {
+    var n = parseInt(answers[f.id], 10);
+    if (!answers[f.id] || isNaN(n) || n < f.min || n > f.max) return 'Escribe un número entre ' + f.min + ' y ' + f.max + '.';
+  }
+  return '';
+}
+function paintErrors(scope, fields) {
+  var bad = 0;
+  fields.forEach(function (f) {
+    var w = scope.querySelector('.field[data-field="' + f.id + '"]');
+    if (!w) return;
+    var msg = fieldError(f);
+    w.classList.toggle('bad', !!msg);
+    w.querySelector('.ferr').textContent = msg || '';
+    if (msg) bad++;
+  });
+  return bad;
+}
 
-/* ---------- revisión ---------- */
-function shortLabel(id) {
-  var m = id.match(/^(b|s(\d+))_(.+)$/);
-  if (!m) return id;
+/* ---------- modo desktop: pasos ---------- */
+function renderStep() {
+  showErr(null);
+  if (idx >= SCREENS.length) { renderReview($('answer'), false); reviewChrome(); return; }
+  var s = SCREENS[idx];
+  var k = $('kicker'); k.innerHTML = '';
+  var kt = document.createElement('span'); kt.textContent = kickerFor(s.sec); k.appendChild(kt);
+  var th = photoOf(s.sec);
+  if (th) { var ti = document.createElement('img'); ti.src = th; ti.alt = ''; k.appendChild(ti); }
+  $('q').textContent = s.title;
+  $('desc').textContent = s.desc || '';
+  var A = $('answer'); A.innerHTML = '';
+  if (s.bullets) {
+    var ul = document.createElement('ul');
+    ul.style.cssText = 'font-size:15px;line-height:1.7;margin:0 0 6px;padding-left:20px;';
+    s.bullets.forEach(function (b) { var li = document.createElement('li'); li.innerHTML = b; ul.appendChild(li); });
+    A.appendChild(ul);
+  }
+  s.fields.forEach(function (f) { A.appendChild(fieldControl(f)); });
+  var total = SCREENS.length + 1;
+  $('progress').firstElementChild.style.width = Math.round(100 * idx / total) + '%';
+  $('stepcount').textContent = 'Pantalla ' + (idx + 1) + ' de ' + total;
+  $('back').disabled = (idx === 0);
+  $('next').textContent = (idx === SCREENS.length - 1) ? 'Revisar →' : 'Continuar →';
+  var first = A.querySelector('input[type="text"], input[type="number"], textarea');
+  if (first && !first.value) { try { first.focus(); } catch (e) {} }
+}
+function goNext() {
+  if (view === 'review') { finish(); return; }
+  if (view === 'done') return;
+  if (isMobile()) { mobileReview(); return; }
+  var s = SCREENS[idx];
+  s.fields.forEach(function (f) { if (f.type === 'multi') collectMulti(f.id); else readControl(f, $('answer')); });
+  saveDraft();
+  if (paintErrors($('answer'), s.fields)) { showErr('Revisa los campos marcados.'); return; }
+  idx++;
+  saveDraft(); view = 'steps'; render(); window.scrollTo(0, 0);
+}
+function goBack() {
+  if (view === 'review') {
+    if (isMobile()) { view = 'steps'; render(); window.scrollTo(0, 0); }
+    else { idx = SCREENS.length - 1; view = 'steps'; render(); window.scrollTo(0, 0); }
+    return;
+  }
+  if (view === 'done' || isMobile()) return;
+  var s = SCREENS[idx];
+  if (s) s.fields.forEach(function (f) { if (f.type === 'multi') collectMulti(f.id); else readControl(f, $('answer')); });
+  saveDraft();
+  if (idx > 0) { idx--; render(); window.scrollTo(0, 0); }
+}
+
+/* ---------- modo móvil: página con scroll ---------- */
+function renderMobile() {
+  if (view === 'review') { renderReview($('answer'), true); reviewChrome(); return; }
+  if (view === 'done') return;
+  document.body.classList.remove('showcard');
+  $('answer').innerHTML = '';
+  var W = $('mwrap'); W.innerHTML = '';
+  SECTIONS.forEach(function (sec) {
+    var box = document.createElement('div'); box.className = 'msec'; box.id = 'msec-' + sec.id;
+    var h = document.createElement('h2');
+    var th = photoOf(sec.id);
+    h.innerHTML = (th ? '<img src="' + th + '" alt="">' : '') + '<span>' + esc(kickerFor(sec.id)) + '</span><span class="mstate"></span>';
+    box.appendChild(h);
+    SCREENS.forEach(function (s) {
+      if (s.sec !== sec.id) return;
+      var ms = document.createElement('div'); ms.className = 'mscreen';
+      var h3 = document.createElement('h3'); h3.textContent = s.title; ms.appendChild(h3);
+      if (s.desc) { var pd = document.createElement('p'); pd.className = 'fdesc'; pd.style.marginTop = '-6px'; pd.textContent = s.desc; ms.appendChild(pd); }
+      if (s.bullets) {
+        var ul = document.createElement('ul');
+        ul.style.cssText = 'font-size:14px;line-height:1.7;margin:0 0 10px;padding-left:20px;';
+        s.bullets.forEach(function (b) { var li = document.createElement('li'); li.innerHTML = b; ul.appendChild(li); });
+        ms.appendChild(ul);
+      }
+      s.fields.forEach(function (f) { ms.appendChild(fieldControl(f)); });
+      box.appendChild(ms);
+    });
+    W.appendChild(box);
+  });
+  refreshMobileStates();
+  $('progress').firstElementChild.style.width = mobileProgress() + '%';
+  $('stepcount').textContent = 'Modo scroll';
+  $('back').style.display = 'none';
+  $('next').textContent = 'Revisar →';
+  $('hintkeys').style.display = 'none';
+}
+function mobileProgress() {
+  var n = 0, total = 0;
+  SCREENS.forEach(function (s) { s.fields.forEach(function (f) {
+    if (f.type === 'photo' || !f.required) return;
+    total++;
+    if (answers[f.id]) n++;
+  }); });
+  return total ? Math.round(100 * n / total) : 0;
+}
+function refreshMobileStates() {
+  SECTIONS.forEach(function (sec) {
+    var box = $('msec-' + sec.id);
+    if (!box) return;
+    var miss = missingOf(sec.id);
+    var st = box.querySelector('.mstate');
+    if (st) { st.textContent = miss.length ? ('faltan ' + miss.length) : '✓'; st.style.color = miss.length ? '#f0a35e' : 'var(--sage)'; }
+  });
+  $('progress').firstElementChild.style.width = mobileProgress() + '%';
+}
+function mobileReview() {
+  readAll($('mwrap'));
+  var all = [];
+  SCREENS.forEach(function (s) { all = all.concat(s.fields); });
+  var bad = paintErrors($('mwrap'), all);
+  if (bad) {
+    var first = $('mwrap').querySelector('.field.bad');
+    if (first) first.scrollIntoView({ block: 'center' });
+    showErrMobile('Te faltan ' + bad + ' campo(s) obligatorio(s).');
+    return;
+  }
+  view = 'review'; render(); window.scrollTo(0, 0);
+}
+function showErrMobile(msg) {
+  showErr(msg);
+  clearTimeout(showErr._t);
+  showErr._t = setTimeout(hideToast, 4000);
+}
+
+/* ---------- revisión y final (ambos modos) ---------- */
+function shortLabel(fid) {
+  var m = fid.match(/^(b|s(\d+))_(.+)$/);
+  if (!m) return fid;
   var who = m[1] === 'b' ? 'Cumple' : ('S' + m[2]);
   var names = { name: 'Nombre', alias: 'Alias', photo: 'Foto', age: 'Años', known: 'Se le conoce por',
     weak: 'Debilidad', info: 'Info importante', notes: 'Notas', hide1: 'Escondite 1', hide2: 'Escondite 2',
@@ -441,114 +730,150 @@ function shortLabel(id) {
     shame_shop: 'Tienda', shame_product: 'Producto', hide_with: 'Esconderse con', confession: 'Confesión',
     shame_web1: 'Web 1', shame_web2: 'Web 2', postcard_to: 'Postal para', postcard_text: 'Texto postal',
     backpack_note: 'Nota mochila', hobby1: 'Afición 1', hobby2: 'Afición 2',
-    app1: 'App 1', app2: 'App 2', app3: 'App 3', app4: 'App 4' };
+    app1: 'App 1', app2: 'App 2', app3: 'App 3', app4: 'App 4', intro_ok: 'Comprendo' };
   return who + ' · ' + (names[m[3]] || m[3]);
 }
-function renderReview(A) {
-  $('kicker').textContent = 'Último paso';
-  $('q').textContent = 'Revisa tus respuestas';
-  $('desc').textContent = 'Pulsa Editar en lo que quieras cambiar. Las fotos solo viven en esta sesión del navegador.';
-  A.innerHTML = '';
-  var groups = {};
-  STEPS.forEach(function (st) {
-    if (st.type === 'info' || st.type === 'section') return;
-    var g = st.sec || 'General';
-    (groups[g] = groups[g] || []).push(st);
-  });
-  Object.keys(groups).forEach(function (g) {
-    var gd = document.createElement('div'); gd.className = 'review-group';
-    var h = document.createElement('h3'); h.textContent = g; gd.appendChild(h);
-    groups[g].forEach(function (st) {
-      var row = document.createElement('div'); row.className = 'review-row';
-      var b = document.createElement('b'); b.textContent = shortLabel(st.id); row.appendChild(b);
-      var sp = document.createElement('span');
-      if (st.type === 'photo') {
-        var key = 'photo_' + st.id;
-        if (photos[key]) { var im = document.createElement('img'); im.src = photos[key]; im.className = 'review-thumb'; sp.appendChild(im); }
-        else { sp.innerHTML = '<span class="miss">sin foto</span>'; }
-      } else {
-        var v = (answers[st.id] || '').replace(/\|\|/g, ', ');
-        if (v) sp.textContent = v;
-        else sp.innerHTML = st.required ? '<span class="miss">¡falta!</span>' : '<span class="miss">—</span>';
-      }
-      row.appendChild(sp);
-      var eb = document.createElement('button'); eb.textContent = 'Editar';
-      eb.onclick = (function (id) { return function () { idx = stepById(id); render(); window.scrollTo(0, 0); }; })(st.id);
-      row.appendChild(eb);
-      gd.appendChild(row);
-    });
-    A.appendChild(gd);
-  });
-}
-
-/* ---------- validación y navegación ---------- */
-function readCurrent() {
-  var st = STEPS[idx];
-  if (st.type === 'text' || st.type === 'long') {
-    answers[st.id] = ($('field') ? $('field').value.trim() : '');
-  } else if (st.type === 'number') {
-    answers[st.id] = ($('field') ? $('field').value.trim() : '');
-  } else if (st.type === 'info') {
-    answers.intro_ok = ($('introCheck') && $('introCheck').checked) ? '1' : '';
+function dupNames() {
+  var seen = {}, dups = [];
+  for (var n = 1; n <= 8; n++) {
+    var v = (answers['s' + n + '_name'] || '').trim().toLowerCase();
+    if (!v) continue;
+    if (seen[v]) { if (dups.indexOf(v) < 0) dups.push(v); }
+    else seen[v] = true;
   }
-  saveDraft();
+  return dups;
 }
-function validate() {
-  var st = STEPS[idx];
-  if (st.type === 'info') {
-    if (answers.intro_ok !== '1') { showErr('Marca «Comprendo» para continuar.'); return false; }
-  } else if (st.type === 'text' && st.required) {
-    if (!answers[st.id]) { showErr('Este campo es obligatorio.'); return false; }
-  } else if (st.type === 'number') {
-    var n = parseInt(answers[st.id], 10);
-    if (!answers[st.id] || isNaN(n) || n < st.min || n > st.max) {
-      showErr('Escribe una edad válida entre ' + st.min + ' y ' + st.max + '.'); return false;
+function renderReview(A, fromMobile) {
+  view = 'review';
+  var k = $('kicker'); k.innerHTML = '';
+  var kt = document.createElement('span'); kt.textContent = 'Último paso'; k.appendChild(kt);
+  $('q').textContent = 'Revisa tus respuestas';
+  $('desc').textContent = idbOK
+    ? 'Pulsa Editar en lo que quieras cambiar. Las fotos están guardadas en este equipo.'
+    : 'Pulsa Editar en lo que quieras cambiar. Las fotos solo viven en esta sesión del navegador.';
+  A.innerHTML = '';
+  var tools = document.createElement('label'); tools.className = 'review-tools';
+  var cb = document.createElement('input'); cb.type = 'checkbox'; cb.id = 'onlyMiss';
+  tools.appendChild(cb);
+  var ts = document.createElement('span'); ts.textContent = 'Mostrar solo lo que falta'; tools.appendChild(ts);
+  A.appendChild(tools);
+  var dw = document.createElement('div'); dw.id = 'dupwarn'; A.appendChild(dw);
+  function refreshDup() {
+    var d = dupNames();
+    if (d.length) { dw.style.display = ''; dw.textContent = '⚠ Nombre repetido: ' + d.join(', ') + '. Dos sospechosos no pueden llamarse igual.'; }
+    else dw.style.display = 'none';
+  }
+  refreshDup();
+  var list = document.createElement('div'); list.id = 'reviewList'; A.appendChild(list);
+  function build() {
+    list.innerHTML = '';
+    var onlyMiss = cb.checked;
+    SECTIONS.forEach(function (sec) {
+      if (sec.id === 'intro') return;
+      var fields = [];
+      SCREENS.forEach(function (s) {
+        if (s.sec !== sec.id) return;
+        s.fields.forEach(function (f) {
+          if (f.type === 'check') return;
+          fields.push(f);
+        });
+      });
+      var rows = fields.filter(function (f) {
+        if (!onlyMiss) return true;
+        if (f.type === 'photo') return !photos['photo_' + f.id];
+        return !answers[f.id];
+      });
+      if (!rows.length) return;
+      var gd = document.createElement('div'); gd.className = 'review-group';
+      var h = document.createElement('h3'); h.textContent = kickerFor(sec.id); gd.appendChild(h);
+      rows.forEach(function (f) {
+        var row = document.createElement('div'); row.className = 'review-row';
+        var b = document.createElement('b'); b.textContent = shortLabel(f.id); row.appendChild(b);
+        var sp = document.createElement('span');
+        if (f.type === 'photo') {
+          var key = 'photo_' + f.id;
+          if (photos[key]) { var im = document.createElement('img'); im.src = photos[key]; im.className = 'review-thumb'; sp.appendChild(im); }
+          else sp.innerHTML = '<span class="miss">sin foto</span>';
+        } else {
+          var v = (answers[f.id] || '').replace(/\|\|/g, ', ');
+          if (v) sp.textContent = v;
+          else sp.innerHTML = f.required ? '<span class="miss">¡falta!</span>' : '<span class="miss">—</span>';
+        }
+        row.appendChild(sp);
+        var eb = document.createElement('button'); eb.textContent = 'Editar';
+        eb.onclick = function () { editField(f.id, fromMobile); };
+        row.appendChild(eb);
+        gd.appendChild(row);
+      });
+      list.appendChild(gd);
+    });
+    if (!list.children.length) {
+      var p = document.createElement('p'); p.textContent = 'Todo completo. ¡Buen trabajo!'; list.appendChild(p);
     }
   }
-  return true;
+  cb.onchange = build;
+  build();
 }
-function goNext() {
-  if (idx >= STEPS.length) { finish(); return; } /* en revisión */
-  readCurrent();
-  if (!validate()) return;
-  idx++;
-  saveDraft(); render(); window.scrollTo(0, 0);
+function editField(fid, fromMobile) {
+  if (fromMobile || isMobile()) {
+    view = 'steps'; render();
+    setTimeout(function () {
+      var el = document.querySelector('#mwrap .field[data-field="' + fid + '"]');
+      if (el) {
+        el.scrollIntoView({ block: 'center' });
+        var inp = el.querySelector('input, textarea');
+        if (inp) { try { inp.focus(); } catch (e) {} }
+      }
+    }, 60);
+  } else {
+    idx = screenOfField(fid); view = 'steps'; render(); window.scrollTo(0, 0);
+  }
 }
-function goBack() {
-  if (idx >= STEPS.length) { idx = STEPS.length - 1; render(); window.scrollTo(0, 0); return; }
-  readCurrent();
-  if (idx > 0) { idx--; render(); window.scrollTo(0, 0); }
+function reviewChrome() {
+  var total = SCREENS.length + 1;  $('progress').firstElementChild.style.width = Math.round(100 * SCREENS.length / total) + '%';
+  $('stepcount').textContent = 'Revisión';
+  if (isMobile()) { document.body.classList.add('showcard'); $('back').style.display = ''; $('back').disabled = false; }
+  else { $('back').disabled = false; }
+  $('next').textContent = 'Terminar ✓';
 }
-
-/* ---------- final ---------- */
 function finish() {
   var missing = [];
-  STEPS.forEach(function (st) {
-    if (st.required && !answers[st.id]) missing.push(shortLabel(st.id));
-  });
+  SCREENS.forEach(function (s) { s.fields.forEach(function (f) {
+    if (f.required && !answers[f.id]) missing.push(shortLabel(f.id));
+  }); });
   if (missing.length) {
+    var fid = null;
+    SCREENS.forEach(function (s) { s.fields.forEach(function (f) {
+      if (!fid && f.required && !answers[f.id]) fid = f.id;
+    }); });
+    if (isMobile()) { view = 'steps'; render(); editField(fid, true); }
+    else { idx = screenOfField(fid); view = 'steps'; render(); }
     showErr('Te falta: ' + missing.join(', '));
-    idx = stepById(STEPS.filter(function (s) { return s.required && !answers[s.id]; })[0].id);
-    render(); window.scrollTo(0, 0);
+    window.scrollTo(0, 0);
     return;
   }
+  view = 'done';
+  document.body.classList.add('showcard');
   var A = $('answer'); A.innerHTML = '';
-  $('kicker').textContent = 'Completado';
+  var k = $('kicker'); k.innerHTML = '';
+  var kt = document.createElement('span'); kt.textContent = 'Completado'; k.appendChild(kt);
   $('q').textContent = '¡Listo! Respuestas guardadas';
   $('desc').textContent = 'Tus respuestas están guardadas en este equipo. La generación del PDF personalizado es la siguiente fase.';
+  var dups = dupNames();
   var d = document.createElement('div'); d.id = 'done';
-  d.innerHTML = '<div class="big">🎉</div><p>Has respondido todas las preguntas.<br>Puedes descargar tus respuestas o empezar de nuevo.</p>';
+  d.innerHTML = '<div class="big">🎉</div><p>Has respondido todas las preguntas.<br>Puedes descargar tus respuestas o empezar de nuevo.</p>' +
+    (dups.length ? '<p style="color:var(--danger);font-weight:800;">⚠ Ojo: nombre repetido (' + esc(dups.join(', ')) + '). Revísalo antes de generar el juego.</p>' : '');
   var dl = document.createElement('p');
   var b1 = document.createElement('button');
   b1.textContent = 'Descargar respuestas (.json)';
-  b1.style.cssText = 'font-size:14px;font-weight:800;cursor:pointer;padding:11px 22px;border:0;border-radius:8px;background:var(--abyss);color:#fff;margin:4px;';
+  b1.style.cssText = 'font-size:14px;font-weight:800;cursor:pointer;padding:11px 22px;border:0;border-radius:8px;background:var(--abyss);color:#fff;margin:4px;min-height:48px;';
   b1.onclick = downloadJson;
   var b2 = document.createElement('button');
   b2.textContent = 'Empezar de nuevo';
-  b2.style.cssText = 'font-size:14px;font-weight:800;cursor:pointer;padding:11px 22px;border:2px solid var(--abyss);border-radius:8px;background:#fff;color:var(--ink);margin:4px;';
+  b2.style.cssText = 'font-size:14px;font-weight:800;cursor:pointer;padding:11px 22px;border:2px solid var(--abyss);border-radius:8px;background:#fff;color:var(--ink);margin:4px;min-height:48px;';
   b2.onclick = function () {
     if (!confirm('¿Borrar todas las respuestas y empezar de nuevo?')) return;
-    answers = {}; photos = {}; multiOther = {}; idx = 0;
+    answers = {}; photos = {}; multiOther = {}; idx = 0; view = 'steps';
     store.del(DRAFT_KEY); render(); window.scrollTo(0, 0);
   };
   dl.appendChild(b1); dl.appendChild(b2); d.appendChild(dl);
@@ -560,7 +885,7 @@ function finish() {
   $('next').disabled = true;
 }
 function downloadJson() {
-  var data = { form: 'el-regalo-robado', version: 1, answers: answers, exportedAt: new Date().toISOString() };
+  var data = { form: 'el-regalo-robado', version: 2, answers: answers, exportedAt: new Date().toISOString() };
   var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = 'respuestas-regalo-robado.json';
@@ -568,37 +893,173 @@ function downloadJson() {
   setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
 }
 
+/* ---------- menú de secciones ---------- */
+function menuStatus(sec) {
+  if (sec === 'intro') return answers.intro_ok === '1' ? 'done' : '';
+  var miss = missingOf(sec);
+  return miss.length ? miss.length : 'done';
+}
+function openMenu() {
+  var L = $('drawerList'); L.innerHTML = '';
+  SECTIONS.forEach(function (sec) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'secItem';
+    var st = menuStatus(sec.id);
+    if (st === 'done') b.classList.add('done');
+    var cur = !isMobile() && view === 'steps' && SCREENS[idx] && SCREENS[idx].sec === sec.id;
+    if (cur) b.classList.add('cur');
+    var dot = document.createElement('span'); dot.className = 'dot'; dot.textContent = st === 'done' ? '✓' : (SECTIONS.indexOf(sec) + 1);
+    b.appendChild(dot);
+    var t = document.createElement('span'); t.textContent = kickerFor(sec.id); b.appendChild(t);
+    if (st !== 'done' && typeof st === 'number') {
+      var m = document.createElement('span'); m.className = 'miss'; m.textContent = 'faltan ' + st; b.appendChild(m);
+    }
+    b.onclick = (function (id) { return function () { jumpTo(id); }; })(sec.id);
+    L.appendChild(b);
+  });
+  var rv = document.createElement('button'); rv.type = 'button'; rv.className = 'secItem' + (view === 'review' ? ' cur' : '');
+  var dot2 = document.createElement('span'); dot2.className = 'dot'; dot2.textContent = '≡'; rv.appendChild(dot2);
+  var t2 = document.createElement('span'); t2.textContent = 'Revisión final'; rv.appendChild(t2);
+  rv.onclick = function () {
+    closeMenu();
+    if (isMobile()) mobileReview();
+    else { var s = SCREENS[idx]; if (s) s.fields.forEach(function (f) { if (f.type === 'multi') collectMulti(f.id); else readControl(f, $('answer')); }); saveDraft(); view = 'steps'; idx = SCREENS.length; render(); window.scrollTo(0, 0); }
+  };
+  L.appendChild(rv);
+  $('scrim').classList.add('open');
+  $('drawer').classList.add('open');
+}
+function closeMenu() {
+  $('scrim').classList.remove('open');
+  $('drawer').classList.remove('open');
+}
+function jumpTo(sec) {
+  closeMenu();
+  if (isMobile()) {
+    if (view !== 'review') readAll($('mwrap'));
+    view = 'steps'; render();
+    setTimeout(function () {
+      var box = $('msec-' + sec);
+      if (box) box.scrollIntoView();
+    }, 60);
+  } else {
+    var s = SCREENS[idx];
+    if (s) s.fields.forEach(function (f) { if (f.type === 'multi') collectMulti(f.id); else readControl(f, $('answer')); });
+    saveDraft();
+    idx = firstScreenOf(sec); view = 'steps'; render(); window.scrollTo(0, 0);
+  }
+}
+
+/* ---------- render principal ---------- */
+function render() {
+  closeMenu();
+  $('next').disabled = false;
+  if (view === 'done') return;
+  if (isMobile()) {
+    document.body.classList.add('mobile');
+    if (view === 'review') { $('mwrap').innerHTML = ''; renderReview($('answer'), true); reviewChrome(); }
+    else renderMobile();
+  } else {
+    document.body.classList.remove('mobile');
+    $('mwrap').innerHTML = '';
+    $('back').style.display = '';
+    $('hintkeys').style.display = '';
+    if (view === 'review') { renderReview($('answer'), false); reviewChrome(); }
+    else renderStep();
+  }
+  try {
+    var dd = JSON.parse(store.get(DRAFT_KEY) || 'null');
+    if (dd && dd.savedAt) updateDraftInfo(dd.savedAt);
+  } catch (e) {}
+}
+
 /* ---------- eventos ---------- */
 $('next').onclick = goNext;
 $('back').onclick = goBack;
+$('menuBtn').onclick = openMenu;
+$('scrim').onclick = closeMenu;
 document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') { closeMenu(); return; }
   if (e.key !== 'Enter') return;
+  if (isMobile() || view !== 'steps' || idx >= SCREENS.length) return;
   var t = e.target;
   var tag = t && t.tagName ? t.tagName.toLowerCase() : '';
   if (tag === 'textarea' || tag === 'button') return;
-  if (STEPS[idx] && (STEPS[idx].type === 'photo' || STEPS[idx].type === 'multi')) return;
-  e.preventDefault(); goNext();
+  if (t && t.type === 'checkbox') return;
+  var inputs = $('answer').querySelectorAll('input[type="text"], input[type="number"]');
+  var arr = [];
+  for (var i = 0; i < inputs.length; i++) arr.push(inputs[i]);
+  var at = arr.indexOf(t);
+  e.preventDefault();
+  if (at >= 0 && at < arr.length - 1) { try { arr[at + 1].focus(); } catch (ex) {} }
+  else goNext();
 });
 document.addEventListener('input', function (e) {
-  if (e.target && e.target.id === 'field') {
-    var st = STEPS[idx];
-    if (st && (st.type === 'text' || st.type === 'long' || st.type === 'number')) {
-      answers[st.id] = e.target.value.trim ? e.target.value : '';
-      saveDraft();
+  var t = e.target;
+  if (!t || !t.getAttribute) return;
+  var fid = t.getAttribute('data-fid');
+  if (fid && (t.tagName.toLowerCase() === 'input' || t.tagName.toLowerCase() === 'textarea') && t.type !== 'checkbox') {
+    answers[fid] = t.value;
+    saveDraft();
+    var w = t.closest ? t.closest('.field') : null;
+    if (w) {
+      var c = w.querySelector('.count');
+      if (c) { var f = null; SCREENS.forEach(function (s) { s.fields.forEach(function (x) { if (x.id === fid) f = x; }); }); if (f && f.max) c.textContent = t.value.length + '/' + f.max; }
+      if (w.classList.contains('bad') && t.value.trim()) { w.classList.remove('bad'); w.querySelector('.ferr').textContent = ''; }
     }
+    if (isMobile()) refreshMobileStates();
+  }
+  var other = t.getAttribute && t.getAttribute('data-other');
+  if (other) collectMulti(other);
+});
+document.addEventListener('change', function (e) {
+  var t = e.target;
+  if (!t || !t.getAttribute) return;
+  var fid = t.getAttribute('data-fid');
+  if (fid && t.type === 'checkbox') {
+    answers[fid] = t.checked ? '1' : '';
+    saveDraft();
   }
 });
+if (window.matchMedia) {
+  var mq = window.matchMedia('(max-width: 640px)');
+  var lastMobile = mq.matches;
+  if (mq.addEventListener) mq.addEventListener('change', function () {
+    if (mq.matches === lastMobile) return;
+    lastMobile = mq.matches;
+    if (view === 'steps') readAll(document);
+    saveDraft(); render();
+  });
+  else if (mq.addListener) mq.addListener(function () {
+    if (view === 'steps') readAll(document);
+    saveDraft(); render();
+  });
+}
 $('filepick').onchange = function (e) {
   var f = e.target.files[0]; e.target.value = '';
-  if (!f || idx >= STEPS.length) return;
+  if (!f || !photoTarget) return;
+  var fid = photoTarget; photoTarget = null;
   if (f.size > 10 * 1024 * 1024) { showErr('La foto supera los 10 MB. Elige otra.'); return; }
   if (!/^image\//.test(f.type)) { showErr('El archivo no es una imagen.'); return; }
   var r = new FileReader();
-  r.onload = function () { photos[photoStep()] = r.result; saveDraft(); render(); };
+  r.onload = function () {
+    var key = 'photo_' + fid;
+    photos[key] = r.result;
+    idb.save(key, r.result);
+    saveDraft(); render();
+  };
   r.readAsDataURL(f);
 };
 
+/* ---------- arranque ---------- */
+saveDraft();
 render();
+idb.open(function () {
+  idb.loadAll(function (ph) {
+    var n = 0;
+    for (var k in ph) { photos[k] = ph[k]; n++; }
+    if (n) render();
+  });
+});
 </script>
 </body>
 </html>
