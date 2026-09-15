@@ -34,6 +34,7 @@
     border-bottom: 4px solid var(--teal);
   }
   #menuBtn {
+    display: none;
     font-size: 14px; font-weight: 900; cursor: pointer; border: 0; border-radius: 8px;
     padding: 10px 14px; color: #fff; background: #1e4d55; min-height: 44px;
   }
@@ -42,7 +43,7 @@
   #top h1 span { color: var(--sage); }
   #draftinfo { font-size: 11px; color: var(--sage); }
   #stepcount { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--sage); white-space: nowrap; }
-  main { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 28px 16px 90px; }
+  main { flex: 1; display: flex; align-items: flex-start; justify-content: center; gap: 18px; padding: 28px 16px 90px; }
   #card {
     width: min(94vw, 620px); background: #fffdf6;
     border: 3px solid var(--abyss); border-radius: 12px;
@@ -123,17 +124,26 @@
   #nav button.ghost { background: #fff; color: var(--ink); border: 2px solid var(--abyss); box-shadow: none; }
   #nav button:disabled { opacity: .45; cursor: not-allowed; }
   #hintkeys { font-size: 12px; color: #4c5d53; }
-  /* ---- menú de secciones ---- */
+  /* ---- menú de secciones: sidebar fija en desktop, lámina en móvil ---- */
   #scrim { display: none; position: fixed; inset: 0; background: rgba(12,42,47,.5); z-index: 40; }
   #scrim.open { display: block; }
   #drawer {
-    position: fixed; top: 0; right: -340px; width: min(86vw, 320px); height: 100dvh; z-index: 41;
-    background: #fffdf6; border-left: 4px solid var(--abyss); transition: right .25s ease;
-    display: flex; flex-direction: column;
+    width: 274px; flex: none; position: sticky; top: 12px; max-height: calc(100dvh - 150px);
+    background: #fffdf6; border: 3px solid var(--abyss); border-radius: 12px;
+    box-shadow: 6px 6px 0 rgba(14,116,99,.25);
+    display: flex; flex-direction: column; overflow: hidden;
   }
-  #drawer.open { right: 0; }
-  #drawer h2 { margin: 0; padding: 16px; font-size: 15px; text-transform: uppercase; letter-spacing: .06em; background: var(--abyss); color: #fff; }
+  #drawer h2 { margin: 0; padding: 14px 16px; font-size: 14px; text-transform: uppercase; letter-spacing: .06em; background: var(--abyss); color: #fff; }
   #drawerList { overflow-y: auto; padding: 10px; flex: 1; }
+  body.mobile #menuBtn { display: block; }
+  body.mobile main { display: block; }
+  body.mobile #top { position: sticky; top: 0; z-index: 30; }
+  body.mobile #drawer {
+    width: 100%; position: fixed; top: auto; bottom: 0; right: 0; left: 0; max-height: 70dvh;
+    border: 0; border-top: 4px solid var(--abyss); border-radius: 14px 14px 0 0;
+    transform: translateY(105%); transition: transform .25s ease; z-index: 41;
+  }
+  body.mobile #drawer.open { transform: none; }
   .secItem {
     display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
     font-family: inherit; font-size: 14px; font-weight: 800; cursor: pointer;
@@ -197,8 +207,6 @@
     #hintkeys { display: none; }
     .review-row { flex-wrap: wrap; }
     .review-row b { flex-basis: 100%; }
-    #drawer { top: auto; bottom: 0; right: 0; left: 0; width: 100%; height: auto; max-height: 70dvh; border-left: 0; border-top: 4px solid var(--abyss); transform: translateY(105%); transition: transform .25s ease; border-radius: 14px 14px 0 0; }
-    #drawer.open { right: 0; transform: none; }
   }
 </style>
 </head>
@@ -211,6 +219,7 @@
   <span id="stepcount"></span>
 </div>
 <main>
+  <aside id="drawer"><h2>Secciones</h2><div id="drawerList"></div></aside>
   <div id="card">
     <div id="kicker"></div>
     <h2 id="q"></h2>
@@ -227,7 +236,6 @@
 </div>
 <div id="scrim"></div>
 <div id="toast"></div>
-<aside id="drawer"><h2>Secciones</h2><div id="drawerList"></div></aside>
 <input id="filepick" type="file" accept="image/jpeg,image/png,image/webp" style="display:none">
 <script>
 'use strict';
@@ -365,7 +373,7 @@ var SCREENS = [
 })();
 
 /* ---------- estado ---------- */
-var idx = 0, answers = {}, multiOther = {}, view = 'steps';
+var idx = 0, secPos = 0, answers = {}, multiOther = {}, view = 'steps';
 try {
   var d0 = JSON.parse(store.get(DRAFT_KEY) || 'null');
   if (d0) { answers = d0.answers || {}; multiOther = d0.multiOther || {}; if (typeof d0.idx === 'number') idx = d0.idx; }
@@ -384,6 +392,15 @@ function updateDraftInfo(ts) {
   SCREENS.forEach(function (s) { s.fields.forEach(function (f) { if (f.required) total++; }); });
   var date = ts ? new Date(ts) : null;
   el.textContent = 'Borrador ' + (date ? (date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })) : '') + ' · ' + n + '/' + total + ' obligatorios';
+}
+function secIndex(id) {
+  for (var i = 0; i < SECTIONS.length; i++) if (SECTIONS[i].id === id) return i;
+  return 0;
+}
+function currentSec() {
+  if (view === 'review' || view === 'done') return null;
+  if (isMobile()) return SECTIONS[secPos] ? SECTIONS[secPos].id : null;
+  var s = SCREENS[idx]; return s ? s.sec : null;
 }
 function secTitle(sec) {
   for (var i = 0; i < SECTIONS.length; i++) if (SECTIONS[i].id === sec) return SECTIONS[i].title;
@@ -624,7 +641,7 @@ function renderStep() {
 function goNext() {
   if (view === 'review') { finish(); return; }
   if (view === 'done') return;
-  if (isMobile()) { mobileReview(); return; }
+  if (isMobile()) { mobileNext(); return; }
   var s = SCREENS[idx];
   s.fields.forEach(function (f) { if (f.type === 'multi') collectMulti(f.id); else readControl(f, $('answer')); });
   saveDraft();
@@ -638,48 +655,95 @@ function goBack() {
     else { idx = SCREENS.length - 1; view = 'steps'; render(); window.scrollTo(0, 0); }
     return;
   }
-  if (view === 'done' || isMobile()) return;
+  if (view === 'done') return;
+  if (isMobile()) {
+    if (view === 'steps' && secPos > 0) {
+      readAll($('mwrap')); secPos--; saveDraft(); render(); window.scrollTo(0, 0);
+    }
+    return;
+  }
   var s = SCREENS[idx];
   if (s) s.fields.forEach(function (f) { if (f.type === 'multi') collectMulti(f.id); else readControl(f, $('answer')); });
   saveDraft();
   if (idx > 0) { idx--; render(); window.scrollTo(0, 0); }
 }
 
-/* ---------- modo móvil: página con scroll ---------- */
+/* ---------- modo móvil: una sección (personaje) por vista, con scroll ---------- */
+function sectionFields(secId) {
+  var out = [];
+  SCREENS.forEach(function (s) { if (s.sec === secId) out = out.concat(s.fields); });
+  return out;
+}
 function renderMobile() {
   if (view === 'review') { renderReview($('answer'), true); reviewChrome(); return; }
   if (view === 'done') return;
   document.body.classList.remove('showcard');
   $('answer').innerHTML = '';
+  if (secPos < 0) secPos = 0;
+  if (secPos >= SECTIONS.length) secPos = SECTIONS.length - 1;
+  var sec = SECTIONS[secPos];
   var W = $('mwrap'); W.innerHTML = '';
-  SECTIONS.forEach(function (sec) {
-    var box = document.createElement('div'); box.className = 'msec'; box.id = 'msec-' + sec.id;
-    var h = document.createElement('h2');
-    var th = photoOf(sec.id);
-    h.innerHTML = (th ? '<img src="' + th + '" alt="">' : '') + '<span>' + esc(kickerFor(sec.id)) + '</span><span class="mstate"></span>';
-    box.appendChild(h);
-    SCREENS.forEach(function (s) {
-      if (s.sec !== sec.id) return;
-      var ms = document.createElement('div'); ms.className = 'mscreen';
-      var h3 = document.createElement('h3'); h3.textContent = s.title; ms.appendChild(h3);
-      if (s.desc) { var pd = document.createElement('p'); pd.className = 'fdesc'; pd.style.marginTop = '-6px'; pd.textContent = s.desc; ms.appendChild(pd); }
-      if (s.bullets) {
-        var ul = document.createElement('ul');
-        ul.style.cssText = 'font-size:14px;line-height:1.7;margin:0 0 10px;padding-left:20px;';
-        s.bullets.forEach(function (b) { var li = document.createElement('li'); li.innerHTML = b; ul.appendChild(li); });
-        ms.appendChild(ul);
-      }
-      s.fields.forEach(function (f) { ms.appendChild(fieldControl(f)); });
-      box.appendChild(ms);
-    });
-    W.appendChild(box);
+  var box = document.createElement('div'); box.className = 'msec'; box.id = 'msec-' + sec.id;
+  var h = document.createElement('h2');
+  var th = photoOf(sec.id);
+  h.innerHTML = (th ? '<img src="' + th + '" alt="">' : '') + '<span>' + esc(kickerFor(sec.id)) + '</span>';
+  box.appendChild(h);
+  SCREENS.forEach(function (s) {
+    if (s.sec !== sec.id) return;
+    var ms = document.createElement('div'); ms.className = 'mscreen';
+    var h3 = document.createElement('h3'); h3.textContent = s.title; ms.appendChild(h3);
+    if (s.desc) { var pd = document.createElement('p'); pd.className = 'fdesc'; pd.style.marginTop = '-6px'; pd.textContent = s.desc; ms.appendChild(pd); }
+    if (s.bullets) {
+      var ul = document.createElement('ul');
+      ul.style.cssText = 'font-size:14px;line-height:1.7;margin:0 0 10px;padding-left:20px;';
+      s.bullets.forEach(function (b) { var li = document.createElement('li'); li.innerHTML = b; ul.appendChild(li); });
+      ms.appendChild(ul);
+    }
+    s.fields.forEach(function (f) { ms.appendChild(fieldControl(f)); });
+    box.appendChild(ms);
   });
-  refreshMobileStates();
+  W.appendChild(box);
   $('progress').firstElementChild.style.width = mobileProgress() + '%';
-  $('stepcount').textContent = 'Modo scroll';
-  $('back').style.display = 'none';
-  $('next').textContent = 'Revisar →';
+  $('stepcount').textContent = (secPos + 1) + '/' + SECTIONS.length;
+  $('back').style.display = '';
+  $('back').disabled = (secPos === 0);
+  $('next').textContent = (secPos === SECTIONS.length - 1) ? 'Revisar →' : 'Continuar →';
   $('hintkeys').style.display = 'none';
+  buildMenu();
+}
+function mobileNext() {
+  readAll($('mwrap'));
+  var fields = sectionFields(SECTIONS[secPos].id);
+  if (paintErrors($('mwrap'), fields)) {
+    var first = $('mwrap').querySelector('.field.bad');
+    if (first) first.scrollIntoView({ block: 'center' });
+    showErr('Completa este personaje para continuar.');
+    return;
+  }
+  if (secPos < SECTIONS.length - 1) {
+    secPos++; saveDraft(); view = 'steps'; render(); window.scrollTo(0, 0);
+  } else {
+    mobileGoReview();
+  }
+}
+function mobileGoReview() {
+  if (view === 'steps') readAll($('mwrap'));
+  var missing = [];
+  SCREENS.forEach(function (s) { s.fields.forEach(function (f) {
+    if (f.required && !answers[f.id]) missing.push(f);
+  }); });
+  if (missing.length) {
+    var f0 = missing[0];
+    secPos = secIndex(SCREENS[screenOfField(f0.id)].sec);
+    view = 'steps'; render();
+    showErr('Te falta: ' + missing.map(function (f) { return shortLabel(f.id); }).join(', '));
+    setTimeout(function () {
+      var el = document.querySelector('#mwrap .field[data-field="' + f0.id + '"]');
+      if (el) el.scrollIntoView({ block: 'center' });
+    }, 80);
+    return;
+  }
+  view = 'review'; render(); window.scrollTo(0, 0);
 }
 function mobileProgress() {
   var n = 0, total = 0;
@@ -689,34 +753,6 @@ function mobileProgress() {
     if (answers[f.id]) n++;
   }); });
   return total ? Math.round(100 * n / total) : 0;
-}
-function refreshMobileStates() {
-  SECTIONS.forEach(function (sec) {
-    var box = $('msec-' + sec.id);
-    if (!box) return;
-    var miss = missingOf(sec.id);
-    var st = box.querySelector('.mstate');
-    if (st) { st.textContent = miss.length ? ('faltan ' + miss.length) : '✓'; st.style.color = miss.length ? '#f0a35e' : 'var(--sage)'; }
-  });
-  $('progress').firstElementChild.style.width = mobileProgress() + '%';
-}
-function mobileReview() {
-  readAll($('mwrap'));
-  var all = [];
-  SCREENS.forEach(function (s) { all = all.concat(s.fields); });
-  var bad = paintErrors($('mwrap'), all);
-  if (bad) {
-    var first = $('mwrap').querySelector('.field.bad');
-    if (first) first.scrollIntoView({ block: 'center' });
-    showErrMobile('Te faltan ' + bad + ' campo(s) obligatorio(s).');
-    return;
-  }
-  view = 'review'; render(); window.scrollTo(0, 0);
-}
-function showErrMobile(msg) {
-  showErr(msg);
-  clearTimeout(showErr._t);
-  showErr._t = setTimeout(hideToast, 4000);
 }
 
 /* ---------- revisión y final (ambos modos) ---------- */
@@ -816,6 +852,7 @@ function renderReview(A, fromMobile) {
 }
 function editField(fid, fromMobile) {
   if (fromMobile || isMobile()) {
+    secPos = secIndex(SCREENS[screenOfField(fid)].sec);
     view = 'steps'; render();
     setTimeout(function () {
       var el = document.querySelector('#mwrap .field[data-field="' + fid + '"]');
@@ -899,14 +936,14 @@ function menuStatus(sec) {
   var miss = missingOf(sec);
   return miss.length ? miss.length : 'done';
 }
-function openMenu() {
-  var L = $('drawerList'); L.innerHTML = '';
+function buildMenu() {
+  var L = $('drawerList'); if (!L) return; L.innerHTML = '';
+  var cur = currentSec();
   SECTIONS.forEach(function (sec) {
     var b = document.createElement('button'); b.type = 'button'; b.className = 'secItem';
     var st = menuStatus(sec.id);
     if (st === 'done') b.classList.add('done');
-    var cur = !isMobile() && view === 'steps' && SCREENS[idx] && SCREENS[idx].sec === sec.id;
-    if (cur) b.classList.add('cur');
+    if (cur === sec.id) b.classList.add('cur');
     var dot = document.createElement('span'); dot.className = 'dot'; dot.textContent = st === 'done' ? '✓' : (SECTIONS.indexOf(sec) + 1);
     b.appendChild(dot);
     var t = document.createElement('span'); t.textContent = kickerFor(sec.id); b.appendChild(t);
@@ -921,10 +958,14 @@ function openMenu() {
   var t2 = document.createElement('span'); t2.textContent = 'Revisión final'; rv.appendChild(t2);
   rv.onclick = function () {
     closeMenu();
-    if (isMobile()) mobileReview();
+    if (isMobile()) mobileGoReview();
     else { var s = SCREENS[idx]; if (s) s.fields.forEach(function (f) { if (f.type === 'multi') collectMulti(f.id); else readControl(f, $('answer')); }); saveDraft(); view = 'steps'; idx = SCREENS.length; render(); window.scrollTo(0, 0); }
   };
   L.appendChild(rv);
+}
+function openMenu() {
+  buildMenu();
+  if (!isMobile()) return; /* en desktop el sidebar siempre está visible */
   $('scrim').classList.add('open');
   $('drawer').classList.add('open');
 }
@@ -936,11 +977,7 @@ function jumpTo(sec) {
   closeMenu();
   if (isMobile()) {
     if (view !== 'review') readAll($('mwrap'));
-    view = 'steps'; render();
-    setTimeout(function () {
-      var box = $('msec-' + sec);
-      if (box) box.scrollIntoView();
-    }, 60);
+    secPos = secIndex(sec); view = 'steps'; render(); window.scrollTo(0, 0);
   } else {
     var s = SCREENS[idx];
     if (s) s.fields.forEach(function (f) { if (f.type === 'multi') collectMulti(f.id); else readControl(f, $('answer')); });
@@ -952,6 +989,7 @@ function jumpTo(sec) {
 /* ---------- render principal ---------- */
 function render() {
   closeMenu();
+  hideToast();
   $('next').disabled = false;
   if (view === 'done') return;
   if (isMobile()) {
@@ -965,6 +1003,7 @@ function render() {
     $('hintkeys').style.display = '';
     if (view === 'review') { renderReview($('answer'), false); reviewChrome(); }
     else renderStep();
+    buildMenu();
   }
   try {
     var dd = JSON.parse(store.get(DRAFT_KEY) || 'null');
@@ -1006,7 +1045,8 @@ document.addEventListener('input', function (e) {
       if (c) { var f = null; SCREENS.forEach(function (s) { s.fields.forEach(function (x) { if (x.id === fid) f = x; }); }); if (f && f.max) c.textContent = t.value.length + '/' + f.max; }
       if (w.classList.contains('bad') && t.value.trim()) { w.classList.remove('bad'); w.querySelector('.ferr').textContent = ''; }
     }
-    if (isMobile()) refreshMobileStates();
+    if (isMobile()) $('progress').firstElementChild.style.width = mobileProgress() + '%';
+    buildMenu();
   }
   var other = t.getAttribute && t.getAttribute('data-other');
   if (other) collectMulti(other);
@@ -1027,6 +1067,8 @@ if (window.matchMedia) {
     if (mq.matches === lastMobile) return;
     lastMobile = mq.matches;
     if (view === 'steps') readAll(document);
+    if (lastMobile) secPos = secIndex(SCREENS[idx] ? SCREENS[idx].sec : 'intro');
+    else idx = firstScreenOf(SECTIONS[secPos].id);
     saveDraft(); render();
   });
   else if (mq.addListener) mq.addListener(function () {
