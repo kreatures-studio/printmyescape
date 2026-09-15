@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>PrintMyEscape · Personaliza «El Regalo Robado»</title>
+<style>
+  :root {
+    --abyss: #0c2a2f; --abyss-2: #14404a; --teal: #0e7463; --teal-deep: #0a574a;
+    --sage: #b7c29b; --paper: #faf6ec; --ink: #22302a; --danger: #c0392b;
+  }
+  * { box-sizing: border-box; }
+  ::selection { background: var(--teal); color: #fff; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; color: var(--ink);
+    font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    background-color: var(--paper);
+    background-image: radial-gradient(rgba(12,42,47,.07) 1px, transparent 1.5px);
+    background-size: 22px 22px;
+    -webkit-tap-highlight-color: transparent;
+    display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh;
+  }
+  #progress { height: 8px; background: rgba(12,42,47,.12); }
+  #progress > div {
+    height: 100%; width: 0%; background: linear-gradient(90deg, var(--teal), var(--sage));
+    transition: width .3s ease;
+  }
+  #top {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; color: #fff;
+    background: linear-gradient(135deg, var(--abyss) 0%, var(--abyss-2) 100%);
+    border-bottom: 4px solid var(--teal);
+  }
+  #top h1 { font-size: 15px; margin: 0; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+  #top h1 span { color: var(--sage); }
+  #stepcount { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--sage); white-space: nowrap; }
+  main { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 28px 16px 90px; }
+  #card {
+    width: min(94vw, 620px); background: #fffdf6;
+    border: 3px solid var(--abyss); border-radius: 12px;
+    box-shadow: 8px 8px 0 rgba(14,116,99,.25);
+    padding: 30px 30px 26px;
+    animation: in .25s ease;
+  }
+  @keyframes in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  #kicker {
+    display: inline-block; font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase;
+    background: var(--abyss); color: #fff; padding: 5px 12px; border-radius: 3px 10px 10px 3px;
+    border-left: 5px solid var(--teal); margin-bottom: 14px;
+  }
+  #q { font-size: 24px; font-weight: 900; line-height: 1.25; margin: 0 0 6px; }
+  #q .req { color: var(--danger); }
+  #desc { font-size: 14px; color: #4c5d53; margin: 0 0 18px; line-height: 1.5; }
+  #desc .ej { display: block; margin-top: 6px; font-style: italic; background: rgba(183,194,155,.25); padding: 8px 10px; border-radius: 6px; }
+  #answer input[type="text"], #answer input[type="number"], #answer textarea {
+    width: 100%; font-size: 18px; font-family: inherit; color: var(--ink);
+    border: 0; border-bottom: 3px solid var(--abyss); background: transparent;
+    padding: 10px 2px; outline: none;
+  }
+  #answer input:focus, #answer textarea:focus { border-bottom-color: var(--teal); }
+  #answer textarea { border: 2px solid var(--abyss); border-radius: 8px; padding: 12px; min-height: 110px; font-size: 16px; line-height: 1.5; resize: vertical; }
+  #answer textarea:focus { border-color: var(--teal); }
+  #err { display: none; color: #fff; background: var(--danger); font-size: 13px; font-weight: 700; padding: 8px 12px; border-radius: 6px; margin-top: 10px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    font-size: 14px; font-weight: 700; padding: 10px 16px; border-radius: 999px; cursor: pointer;
+    border: 2px solid var(--abyss); background: #fff; color: var(--ink); user-select: none;
+  }
+  .pill.on { background: var(--teal); border-color: var(--teal-deep); color: #fff; }
+  #otherWrap { margin-top: 12px; display: none; }
+  #otherWrap.show { display: block; }
+  .photobox {
+    border: 3px dashed var(--teal); border-radius: 10px; background: rgba(14,116,99,.06);
+    padding: 22px; text-align: center; cursor: pointer;
+  }
+  .photobox:hover { background: rgba(14,116,99,.12); }
+  .photobox img { max-width: 100%; max-height: 260px; border-radius: 8px; border: 3px solid var(--abyss); }
+  .photobox .ph-t { font-weight: 900; font-size: 16px; }
+  .photobox .ph-s { font-size: 12px; color: #4c5d53; margin-top: 4px; }
+  .checkline {
+    display: flex; gap: 10px; align-items: flex-start; margin-top: 16px;
+    background: rgba(14,116,99,.08); border-radius: 8px; padding: 12px; cursor: pointer;
+  }
+  .checkline input { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--teal); flex: none; }
+  .checkline span { font-size: 15px; font-weight: 700; }
+  #nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    display: flex; gap: 10px; align-items: center; justify-content: center;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: rgba(250,246,236,.95); border-top: 3px solid var(--abyss);
+  }
+  #nav button {
+    font-size: 16px; font-weight: 900; letter-spacing: .02em; cursor: pointer; border: 0;
+    padding: 13px 30px; color: #fff; background: var(--teal); border-radius: 8px;
+    box-shadow: 3px 3px 0 var(--abyss); transition: transform .1s ease;
+  }
+  #nav button:hover { filter: brightness(1.1); }
+  #nav button:active { transform: translateY(2px); box-shadow: 1px 1px 0 var(--abyss); }
+  #nav button.ghost { background: #fff; color: var(--ink); border: 2px solid var(--abyss); box-shadow: none; }
+  #nav button:disabled { opacity: .45; cursor: not-allowed; }
+  #hintkeys { font-size: 12px; color: #4c5d53; }
+  .review-group { border: 2px solid var(--abyss); border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
+  .review-group h3 {
+    margin: 0; font-size: 14px; text-transform: uppercase; letter-spacing: .06em;
+    background: var(--abyss); color: #fff; padding: 9px 12px;
+  }
+  .review-row { display: flex; gap: 8px; align-items: flex-start; padding: 8px 12px; border-top: 1px solid rgba(12,42,47,.12); font-size: 14px; }
+  .review-row:first-of-type { border-top: 0; }
+  .review-row b { flex: 0 0 130px; color: var(--teal-deep); }
+  .review-row span { flex: 1; overflow-wrap: anywhere; }
+  .review-row .miss { color: var(--danger); font-weight: 700; }
+  .review-row button {
+    flex: none; font-size: 11px; font-weight: 800; cursor: pointer;
+    border: 2px solid var(--teal); background: #fff; color: var(--teal-deep);
+    border-radius: 6px; padding: 4px 10px;
+  }
+  .review-thumb { max-height: 60px; border-radius: 6px; border: 2px solid var(--abyss); }
+  #done { text-align: center; }
+  #done .big { font-size: 52px; }
+  @media (max-width: 640px) {
+    #q { font-size: 20px; }
+    #card { padding: 22px 18px 20px; }
+    #nav button { padding: 13px 20px; font-size: 15px; min-height: 48px; }
+    #hintkeys { display: none; }
+    .review-row { flex-wrap: wrap; }
+    .review-row b { flex-basis: 100%; }
+  }
+</style>
+</head>
+<body>
+<div id="progress"><div></div></div>
+<div id="top"><h1>PrintMyEscape <span>· El Regalo Robado</span></h1><span id="stepcount"></span></div>
+<main><div id="card">
+  <div id="kicker"></div>
+  <h2 id="q"></h2>
+  <p id="desc"></p>
+  <div id="answer"></div>
+  <div id="err"></div>
+</div></main>
+<div id="nav">
+  <button id="back" class="ghost">← Atrás</button>
+  <span id="hintkeys">pulsa <b>Enter ↵</b> para continuar</span>
+  <button id="next">Continuar →</button>
+</div>
+<input id="filepick" type="file" accept="image/jpeg,image/png,image/webp" style="display:none">
+<script>
+'use strict';
+/* Asistente de personalización estilo Typeform. Una pregunta por pantalla.
+   Funciona con doble clic (file://). Textos en localStorage, fotos en memoria. */
+
+/* ---------- utilidades ---------- */
+function $(id) { return document.getElementById(id); }
+var IS_FILE = location.protocol === 'file:';
+var store = {
+  mem: {},
+  _ls: (function () {
+    try { window.localStorage.setItem('__t__', '1'); window.localStorage.removeItem('__t__'); return true; }
+    catch (e) { return false; }
+  })(),
+  get: function (k) {
+    if (this._ls) { try { var v = window.localStorage.getItem(k); if (v !== null) return v; } catch (e) { this._ls = false; } }
+    return (k in this.mem) ? this.mem[k] : null;
+  },
+  set: function (k, v) {
+    if (this._ls) { try { window.localStorage.setItem(k, v); return; } catch (e) { this._ls = false; } }
+    this.mem[k] = v;
+  },
+  del: function (k) {
+    if (this._ls) { try { window.localStorage.removeItem(k); return; } catch (e) { this._ls = false; } }
+    delete this.mem[k];
+  }
+};
+var DRAFT_KEY = 'pme-wizard-draft';
+
+/* ---------- definición de pasos ---------- */
+/* types: info | section | text | long | number | photo | multi */
+var WEAK_OPTS = ['Llegar tarde', 'Robar comida ajena', 'Contar chistes malos', 'Hacer trampas jugando'];
+
+/* Preguntas extra por sospechoso, tal cual las pide el formulario original. */
+var SUS_EXTRA = {
+  1: [
+    { id: 'shame_place', type: 'text', q: 'Un sitio que le da vergüenza ir y no le diría a nadie', max: 80,
+      desc: 'Un sitio al que va a por un tipo de resultado: club de colección de monedas, la Tuna, granjero busca esposa…' },
+    { id: 'shame_result', type: 'long', q: '¿Qué resultado le darían allí?', max: 280,
+      desc: 'Como si le estuviesen dando la noticia.',
+      ej: '«Su colección de monedas de Pokémon no se acepta en este club; consideramos que su uso del triángulo es de nivel muy básico…»' }
+  ],
+  2: [
+    { id: 'secret_love', type: 'text', q: '¿A quién le daría vergüenza declarar su amor más prohibido?', max: 80,
+      desc: 'Puede ser una persona real, un amor platónico, un dibujo animado…' }
+  ],
+  3: [
+    { id: 'shame_shop', type: 'text', q: '¿En qué tienda le daría vergüenza comprar algo?', max: 80,
+      ej: 'Vibradores SL, Dulces gordos shop, Batamanta 3000…' },
+    { id: 'shame_product', type: 'text', q: '¿Qué producto compraría?', max: 80,
+      ej: 'Black vibrator, gocholón, batamanta 2400…' }
+  ],
+  4: [
+    { id: 'hide_with', type: 'text', q: '¿Con quién se escondería para hablar?', max: 80,
+      desc: 'Puede ser real, inventado, un actor o actriz…' },
+    { id: 'confession', type: 'long', q: '¿Qué mensaje le confesaría a esa persona?', max: 280 }
+  ],
+  5: [
+    { id: 'shame_web1', type: 'text', q: 'Un sitio web donde le daría vergüenza que le pillasen mirando', max: 80,
+      ej: 'pornhub, tarotistas.com, kebabs4ever…' },
+    { id: 'shame_web2', type: 'text', q: 'Otro sitio web donde le daría vergüenza que le pillasen', max: 80 }
+  ],
+  6: [
+    { id: 'postcard_to', type: 'text', q: '¿A quién le escribiría una postal?', max: 80,
+      desc: 'Puede ser real, un dibujo animado, un actor o actriz…' },
+    { id: 'postcard_text', type: 'long', q: '¿Qué le escribiría en esa postal?', max: 280 },
+    { id: 'backpack_note', type: 'long', q: 'Nota que llevaría en su mochila y no quiere que vea nadie', max: 280 }
+  ],
+  7: [
+    { id: 'hobby1', type: 'text', q: 'Una afición secreta que le daría vergüenza admitir', max: 80,
+      ej: 'cazar orcos, dormir en la calle…' },
+    { id: 'hobby2', type: 'text', q: 'Otra afición que le daría vergüenza admitir', max: 80 }
+  ],
+  8: [
+    { id: 'app1', type: 'text', q: 'App en su tablet o smartphone que le da vergüenza admitir (1 de 4)', max: 60,
+      desc: 'Puede ser real o inventada.', ej: 'tinder, lácteos4my…' },
+    { id: 'app2', type: 'text', q: 'Segunda app que le da vergüenza admitir (2 de 4)', max: 60 },
+    { id: 'app3', type: 'text', q: 'Tercera app que le da vergüenza admitir (3 de 4)', max: 60 },
+    { id: 'app4', type: 'text', q: 'Cuarta app que le da vergüenza admitir (4 de 4)', max: 60 }
+  ]
+};
+var SUS_INTRO = {
+  1: 'Aquí vamos a rellenar los datos del primer sospechoso.',
+  2: 'Seguimos con el segundo sospechoso.',
+  3: 'Tercer sospechoso.',
+  4: 'Cuarto sospechoso.',
+  5: 'Quinto sospechoso.',
+  6: 'Sexto sospechoso.',
+  7: 'Séptimo sospechoso.',
+  8: 'Último sospechoso, ¡ya casi está!'
+};
+
+function buildSteps() {
+  var S = [];
+  S.push({
+    id: 'intro', type: 'info', kicker: 'Antes de empezar', q: 'Cómo va a ser el proceso',
+    desc: 'Vas a personalizar el escape room «El Regalo Robado» con tus amigos y familiares como protagonistas.',
+    bullets: [
+      'Te llevará unos <b>15–20 minutos</b>. Puedes salir y volver: tus respuestas se guardan en este equipo.',
+      'Vas a necesitar: el <b>nombre y apodo</b> de 8 sospechosos más el cumpleañero, <b>9 fotos</b> (máx. 10 MB cada una) y un par de <b>lugares donde se escondería</b> cada uno.',
+      'Al final revisaremos todo junto antes de generar tu juego personalizado.'
+    ],
+    check: 'Comprendo cómo funciona y tengo las fotos a mano (o las subiré sobre la marcha)'
+  });
+  S.push({ id: 'sec_b', type: 'section', kicker: 'Primera persona', q: 'El cumpleañero',
+    desc: 'Aquí vamos a personalizar la ficha de la persona que va a cumplir años.' });
+  S.push({ id: 'b_name', sec: 'El cumpleañero', type: 'text', q: '¿Cómo se llama?', required: true, max: 24 });
+  S.push({ id: 'b_alias', sec: 'El cumpleañero', type: 'text', q: 'Su alias (opcional)', max: 24 });
+  S.push({ id: 'b_photo', sec: 'El cumpleañero', type: 'photo', q: 'Sube su foto', desc: '1 archivo de imagen, tamaño máximo 10 MB.' });
+  S.push({ id: 'b_age', sec: 'El cumpleañero', type: 'number', q: '¿Cuántos años cumple?', required: true, min: 1, max: 120 });
+  S.push({ id: 'b_known', sec: 'El cumpleañero', type: 'long', q: '¿Por qué se le conoce?', max: 280,
+    ej: 'Por comer hamburguesas, por pillarse un pedo monumental cada vez que sale de fiesta…' });
+  S.push({ id: 'b_weak', sec: 'El cumpleañero', type: 'multi', q: 'Su mayor debilidad es…',
+    desc: 'Puedes seleccionar varias opciones e incluso escribir otra.' });
+  S.push({ id: 'b_info', sec: 'El cumpleañero', type: 'long', q: 'Información que sus amigos y familiares consideran importante sobre esta persona', max: 280 });
+  S.push({ id: 'b_notes', sec: 'El cumpleañero', type: 'long', q: 'Notas y observaciones', max: 280,
+    desc: 'Todo lo que nos quieras contar y no encaje arriba.' });
+  for (var n = 1; n <= 8; n++) {
+    S.push({ id: 'sec_s' + n, type: 'section', kicker: 'Sospechoso ' + n + ' de 8', q: 'Sospechoso ' + n, desc: SUS_INTRO[n] });
+    S.push({ id: 's' + n + '_name', sec: 'Sospechoso ' + n, type: 'text', q: 'Nombre', required: true, max: 24 });
+    S.push({ id: 's' + n + '_alias', sec: 'Sospechoso ' + n, type: 'text', q: 'Alias (opcional)', max: 24 });
+    S.push({ id: 's' + n + '_photo', sec: 'Sospechoso ' + n, type: 'photo', q: 'Sube su foto', desc: '1 archivo de imagen, tamaño máximo 10 MB.' });
+    S.push({ id: 's' + n + '_hide1', sec: 'Sospechoso ' + n, type: 'text', q: 'Un lugar donde se escondería si robase algo', required: true, max: 70 });
+    S.push({ id: 's' + n + '_hide2', sec: 'Sospechoso ' + n, type: 'text', q: 'Otro posible lugar donde se escondería', required: true, max: 70 });
+    SUS_EXTRA[n].forEach(function (e) {
+      S.push({ id: 's' + n + '_' + e.id, sec: 'Sospechoso ' + n, type: e.type, q: e.q, max: e.max, desc: e.desc, ej: e.ej });
+    });
+  }
+  return S;
+}
+var STEPS = buildSteps();
+
+/* ---------- estado ---------- */
+var idx = 0, answers = {}, photos = {}, multiOther = {};
+try {
+  var d = JSON.parse(store.get(DRAFT_KEY) || 'null');
+  if (d) { answers = d.answers || {}; multiOther = d.multiOther || {}; if (typeof d.idx === 'number') idx = d.idx; }
+} catch (e) {}
+if (idx < 0 || idx >= STEPS.length) idx = 0;
+function saveDraft() {
+  store.set(DRAFT_KEY, JSON.stringify({ idx: idx, answers: answers, multiOther: multiOther }));
+}
+function stepById(id) {
+  for (var i = 0; i < STEPS.length; i++) if (STEPS[i].id === id) return i;
+  return -1;
+}
+
+/* ---------- render ---------- */
+function showErr(msg) {
+  var e = $('err');
+  if (!msg) { e.style.display = 'none'; e.textContent = ''; return; }
+  e.textContent = msg; e.style.display = '';
+}
+function esc(s) {
+  return String(s === undefined || s === null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function photoStep() { return 'photo_' + STEPS[idx].id; }
+
+function render() {
+  showErr(null);
+  var total = STEPS.length + 1; /* +1 revisión */
+  var isReview = idx >= STEPS.length;
+  if (isReview) {
+    var AR = $('answer'); AR.innerHTML = '';
+    renderReview(AR);
+    $('progress').firstElementChild.style.width = Math.round(100 * STEPS.length / total) + '%';
+    $('stepcount').textContent = 'Revisión';
+    $('back').disabled = false;
+    $('next').textContent = 'Terminar ✓';
+    return;
+  }
+  var st = STEPS[idx];
+  $('kicker').textContent = st.kicker || st.sec || 'Personalización';
+  var q = st.q || '';
+  $('q').innerHTML = esc(q) + (st.required ? ' <span class="req">*</span>' : '');
+  var dh = '';
+  if (st.desc) dh += esc(st.desc);
+  if (st.ej) dh += '<span class="ej">Ejemplo: ' + esc(st.ej) + '</span>';
+  $('desc').innerHTML = dh;
+  var A = $('answer'); A.innerHTML = '';
+
+  if (st.type === 'info') {
+    var ul = document.createElement('ul');
+    ul.style.cssText = 'font-size:15px;line-height:1.7;margin:0 0 6px;padding-left:20px;';
+    st.bullets.forEach(function (b) { var li = document.createElement('li'); li.innerHTML = b; ul.appendChild(li); });
+    A.appendChild(ul);
+    var lab = document.createElement('label'); lab.className = 'checkline';
+    var cb = document.createElement('input'); cb.type = 'checkbox'; cb.id = 'introCheck';
+    cb.checked = answers.intro_ok === '1';
+    lab.appendChild(cb);
+    var sp = document.createElement('span'); sp.textContent = st.check; lab.appendChild(sp);
+    A.appendChild(lab);
+  } else if (st.type === 'section') {
+    var p = document.createElement('p');
+    p.style.cssText = 'font-size:16px;line-height:1.6;margin:0;';
+    p.textContent = 'Pulsa Continuar para rellenar sus datos.';
+    A.appendChild(p);
+  } else if (st.type === 'text' || st.type === 'number') {
+    var inp = document.createElement('input');
+    inp.type = st.type === 'number' ? 'number' : 'text'; inp.id = 'field';
+    if (st.max) inp.maxLength = st.max;
+    if (st.type === 'number') { inp.min = st.min; inp.max = st.max; }
+    inp.value = answers[st.id] || '';
+    inp.placeholder = 'Escribe aquí…';
+    A.appendChild(inp);
+    setTimeout(function () { try { inp.focus(); } catch (e) {} }, 50);
+  } else if (st.type === 'long') {
+    var ta = document.createElement('textarea'); ta.id = 'field';
+    if (st.max) ta.maxLength = st.max;
+    ta.value = answers[st.id] || '';
+    ta.placeholder = 'Escribe aquí…';
+    A.appendChild(ta);
+  } else if (st.type === 'photo') {
+    var box = document.createElement('div'); box.className = 'photobox'; box.id = 'photobox';
+    var key = photoStep();
+    if (photos[key]) {
+      var im = document.createElement('img'); im.src = photos[key]; im.alt = 'Foto subida';
+      box.appendChild(im);
+      var t2 = document.createElement('div'); t2.className = 'ph-t'; t2.textContent = 'Pulsa para cambiar la foto';
+      box.appendChild(t2);
+    } else {
+      var t = document.createElement('div'); t.className = 'ph-t'; t.textContent = 'Pulsa para subir una foto';
+      box.appendChild(t);
+      var s2 = document.createElement('div'); s2.className = 'ph-s';
+      s2.textContent = 'JPG, PNG o WebP · máx. 10 MB · se guarda solo en este equipo';
+      box.appendChild(s2);
+    }
+    box.onclick = function () { $('filepick').click(); };
+    A.appendChild(box);
+  } else if (st.type === 'multi') {
+    var wrap = document.createElement('div');
+    var pills = document.createElement('div'); pills.className = 'pills';
+    var cur = {};
+    (answers[st.id] || '').split('||').forEach(function (v) { if (v) cur[v] = true; });
+    WEAK_OPTS.forEach(function (o) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'pill' + (cur[o] ? ' on' : '');
+      b.textContent = o; b.setAttribute('data-v', o);
+      b.onclick = function () { b.classList.toggle('on'); collectMulti(); };
+      pills.appendChild(b);
+    });
+    var bo = document.createElement('button'); bo.type = 'button';
+    bo.className = 'pill' + (multiOther[st.id] ? ' on' : ''); bo.textContent = '+ Otra'; bo.id = 'pillOther';
+    bo.onclick = function () {
+      var ow = $('otherWrap'); ow.classList.add('show');
+      bo.classList.add('on');
+      var oi = $('otherInput'); oi.focus(); collectMulti();
+    };
+    pills.appendChild(bo);
+    wrap.appendChild(pills);
+    var ow2 = document.createElement('div'); ow2.id = 'otherWrap';
+    if (multiOther[st.id]) ow2.className = 'show';
+    var oi2 = document.createElement('input'); oi2.type = 'text'; oi2.id = 'otherInput';
+    oi2.placeholder = 'Escribe otra debilidad…'; oi2.maxLength = 60;
+    oi2.value = multiOther[st.id] || '';
+    oi2.oninput = collectMulti;
+    ow2.appendChild(oi2);
+    wrap.appendChild(ow2);
+    A.appendChild(wrap);
+  }
+
+  var total2 = STEPS.length + 1; /* +1 revisión */
+  $('progress').firstElementChild.style.width = Math.round(100 * idx / total2) + '%';
+  $('stepcount').textContent = 'Paso ' + (idx + 1) + ' de ' + total2;
+  $('back').disabled = (idx === 0);
+  $('next').textContent = (idx === STEPS.length - 1) ? 'Revisar →' : 'Continuar →';
+}
+
+function collectMulti() {
+  var st = STEPS[idx];
+  var vals = [];
+  var pills = document.querySelectorAll('#answer .pill.on');
+  for (var i = 0; i < pills.length; i++) {
+    var v = pills[i].getAttribute('data-v');
+    if (v) vals.push(v);
+  }
+  var ow = $('otherWrap'), oi = $('otherInput');
+  if (oi && oi.value.trim()) {
+    vals.push('Otro: ' + oi.value.trim());
+    multiOther[st.id] = oi.value.trim();
+  } else { delete multiOther[st.id]; }
+  answers[st.id] = vals.join('||');
+  saveDraft();
+}
+
+/* ---------- revisión ---------- */
+function shortLabel(id) {
+  var m = id.match(/^(b|s(\d+))_(.+)$/);
+  if (!m) return id;
+  var who = m[1] === 'b' ? 'Cumple' : ('S' + m[2]);
+  var names = { name: 'Nombre', alias: 'Alias', photo: 'Foto', age: 'Años', known: 'Se le conoce por',
+    weak: 'Debilidad', info: 'Info importante', notes: 'Notas', hide1: 'Escondite 1', hide2: 'Escondite 2',
+    shame_place: 'Sitio vergüenza', shame_result: 'Resultado', secret_love: 'Amor prohibido',
+    shame_shop: 'Tienda', shame_product: 'Producto', hide_with: 'Esconderse con', confession: 'Confesión',
+    shame_web1: 'Web 1', shame_web2: 'Web 2', postcard_to: 'Postal para', postcard_text: 'Texto postal',
+    backpack_note: 'Nota mochila', hobby1: 'Afición 1', hobby2: 'Afición 2',
+    app1: 'App 1', app2: 'App 2', app3: 'App 3', app4: 'App 4' };
+  return who + ' · ' + (names[m[3]] || m[3]);
+}
+function renderReview(A) {
+  $('kicker').textContent = 'Último paso';
+  $('q').textContent = 'Revisa tus respuestas';
+  $('desc').textContent = 'Pulsa Editar en lo que quieras cambiar. Las fotos solo viven en esta sesión del navegador.';
+  A.innerHTML = '';
+  var groups = {};
+  STEPS.forEach(function (st) {
+    if (st.type === 'info' || st.type === 'section') return;
+    var g = st.sec || 'General';
+    (groups[g] = groups[g] || []).push(st);
+  });
+  Object.keys(groups).forEach(function (g) {
+    var gd = document.createElement('div'); gd.className = 'review-group';
+    var h = document.createElement('h3'); h.textContent = g; gd.appendChild(h);
+    groups[g].forEach(function (st) {
+      var row = document.createElement('div'); row.className = 'review-row';
+      var b = document.createElement('b'); b.textContent = shortLabel(st.id); row.appendChild(b);
+      var sp = document.createElement('span');
+      if (st.type === 'photo') {
+        var key = 'photo_' + st.id;
+        if (photos[key]) { var im = document.createElement('img'); im.src = photos[key]; im.className = 'review-thumb'; sp.appendChild(im); }
+        else { sp.innerHTML = '<span class="miss">sin foto</span>'; }
+      } else {
+        var v = (answers[st.id] || '').replace(/\|\|/g, ', ');
+        if (v) sp.textContent = v;
+        else sp.innerHTML = st.required ? '<span class="miss">¡falta!</span>' : '<span class="miss">—</span>';
+      }
+      row.appendChild(sp);
+      var eb = document.createElement('button'); eb.textContent = 'Editar';
+      eb.onclick = (function (id) { return function () { idx = stepById(id); render(); window.scrollTo(0, 0); }; })(st.id);
+      row.appendChild(eb);
+      gd.appendChild(row);
+    });
+    A.appendChild(gd);
+  });
+}
+
+/* ---------- validación y navegación ---------- */
+function readCurrent() {
+  var st = STEPS[idx];
+  if (st.type === 'text' || st.type === 'long') {
+    answers[st.id] = ($('field') ? $('field').value.trim() : '');
+  } else if (st.type === 'number') {
+    answers[st.id] = ($('field') ? $('field').value.trim() : '');
+  } else if (st.type === 'info') {
+    answers.intro_ok = ($('introCheck') && $('introCheck').checked) ? '1' : '';
+  }
+  saveDraft();
+}
+function validate() {
+  var st = STEPS[idx];
+  if (st.type === 'info') {
+    if (answers.intro_ok !== '1') { showErr('Marca «Comprendo» para continuar.'); return false; }
+  } else if (st.type === 'text' && st.required) {
+    if (!answers[st.id]) { showErr('Este campo es obligatorio.'); return false; }
+  } else if (st.type === 'number') {
+    var n = parseInt(answers[st.id], 10);
+    if (!answers[st.id] || isNaN(n) || n < st.min || n > st.max) {
+      showErr('Escribe una edad válida entre ' + st.min + ' y ' + st.max + '.'); return false;
+    }
+  }
+  return true;
+}
+function goNext() {
+  if (idx >= STEPS.length) { finish(); return; } /* en revisión */
+  readCurrent();
+  if (!validate()) return;
+  idx++;
+  saveDraft(); render(); window.scrollTo(0, 0);
+}
+function goBack() {
+  if (idx >= STEPS.length) { idx = STEPS.length - 1; render(); window.scrollTo(0, 0); return; }
+  readCurrent();
+  if (idx > 0) { idx--; render(); window.scrollTo(0, 0); }
+}
+
+/* ---------- final ---------- */
+function finish() {
+  var missing = [];
+  STEPS.forEach(function (st) {
+    if (st.required && !answers[st.id]) missing.push(shortLabel(st.id));
+  });
+  if (missing.length) {
+    showErr('Te falta: ' + missing.join(', '));
+    idx = stepById(STEPS.filter(function (s) { return s.required && !answers[s.id]; })[0].id);
+    render(); window.scrollTo(0, 0);
+    return;
+  }
+  var A = $('answer'); A.innerHTML = '';
+  $('kicker').textContent = 'Completado';
+  $('q').textContent = '¡Listo! Respuestas guardadas';
+  $('desc').textContent = 'Tus respuestas están guardadas en este equipo. La generación del PDF personalizado es la siguiente fase.';
+  var d = document.createElement('div'); d.id = 'done';
+  d.innerHTML = '<div class="big">🎉</div><p>Has respondido todas las preguntas.<br>Puedes descargar tus respuestas o empezar de nuevo.</p>';
+  var dl = document.createElement('p');
+  var b1 = document.createElement('button');
+  b1.textContent = 'Descargar respuestas (.json)';
+  b1.style.cssText = 'font-size:14px;font-weight:800;cursor:pointer;padding:11px 22px;border:0;border-radius:8px;background:var(--abyss);color:#fff;margin:4px;';
+  b1.onclick = downloadJson;
+  var b2 = document.createElement('button');
+  b2.textContent = 'Empezar de nuevo';
+  b2.style.cssText = 'font-size:14px;font-weight:800;cursor:pointer;padding:11px 22px;border:2px solid var(--abyss);border-radius:8px;background:#fff;color:var(--ink);margin:4px;';
+  b2.onclick = function () {
+    if (!confirm('¿Borrar todas las respuestas y empezar de nuevo?')) return;
+    answers = {}; photos = {}; multiOther = {}; idx = 0;
+    store.del(DRAFT_KEY); render(); window.scrollTo(0, 0);
+  };
+  dl.appendChild(b1); dl.appendChild(b2); d.appendChild(dl);
+  A.appendChild(d);
+  $('progress').firstElementChild.style.width = '100%';
+  $('stepcount').textContent = 'Fin';
+  $('back').disabled = true;
+  $('next').textContent = 'Terminar ✓';
+  $('next').disabled = true;
+}
+function downloadJson() {
+  var data = { form: 'el-regalo-robado', version: 1, answers: answers, exportedAt: new Date().toISOString() };
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'respuestas-regalo-robado.json';
+  document.body.appendChild(a); a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+}
+
+/* ---------- eventos ---------- */
+$('next').onclick = goNext;
+$('back').onclick = goBack;
+document.addEventListener('keydown', function (e) {
+  if (e.key !== 'Enter') return;
+  var t = e.target;
+  var tag = t && t.tagName ? t.tagName.toLowerCase() : '';
+  if (tag === 'textarea' || tag === 'button') return;
+  if (STEPS[idx] && (STEPS[idx].type === 'photo' || STEPS[idx].type === 'multi')) return;
+  e.preventDefault(); goNext();
+});
+document.addEventListener('input', function (e) {
+  if (e.target && e.target.id === 'field') {
+    var st = STEPS[idx];
+    if (st && (st.type === 'text' || st.type === 'long' || st.type === 'number')) {
+      answers[st.id] = e.target.value.trim ? e.target.value : '';
+      saveDraft();
+    }
+  }
+});
+$('filepick').onchange = function (e) {
+  var f = e.target.files[0]; e.target.value = '';
+  if (!f || idx >= STEPS.length) return;
+  if (f.size > 10 * 1024 * 1024) { showErr('La foto supera los 10 MB. Elige otra.'); return; }
+  if (!/^image\//.test(f.type)) { showErr('El archivo no es una imagen.'); return; }
+  var r = new FileReader();
+  r.onload = function () { photos[photoStep()] = r.result; saveDraft(); render(); };
+  r.readAsDataURL(f);
+};
+
+render();
+</script>
+</body>
+</html>
