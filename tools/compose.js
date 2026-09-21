@@ -35,7 +35,7 @@ function hex(h) {
   return rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
 }
 function args() {
-  const o = { lang: 'es', out: null, values: {}, photos: {} };
+  const o = { lang: 'es', out: null, values: {}, photos: {}, tpl: 'templates/recurso-1', bg: 'juego-fondo.pdf' };
   const a = process.argv.slice(2);
   for (let i = 0; i < a.length; i++) {
     if (a[i] === '--lang') o.lang = a[++i];
@@ -43,6 +43,8 @@ function args() {
     else if (a[i] === '--values') o.values = JSON.parse(a[++i]);
     else if (a[i] === '--values-file') o.values = JSON.parse(fs.readFileSync(a[++i], 'utf8'));
     else if (a[i] === '--photos-file') o.photos = JSON.parse(fs.readFileSync(a[++i], 'utf8'));
+    else if (a[i] === '--tpl') o.tpl = a[++i];
+    else if (a[i] === '--bg') o.bg = a[++i];
     else if (a[i] === '--no-subset') o.noSubset = true;
   }
   return o;
@@ -120,7 +122,7 @@ function drawFitted(page, font, text, boxPt, size0, color, align, single, target
 async function main() {
   const o = args();
   if (!o.out) { console.error('falta --out'); process.exit(1); }
-  const tplDir = path.join(ROOT, 'templates/recurso-1');
+  const tplDir = path.join(ROOT, o.tpl);
   const tpl = JSON.parse(fs.readFileSync(path.join(tplDir, 'template.json'), 'utf8'));
   const fixed = JSON.parse(fs.readFileSync(path.join(tplDir, 'texts.json'), 'utf8'));
   const i18n = JSON.parse(fs.readFileSync(path.join(tplDir, `i18n-${o.lang}.json`), 'utf8'));
@@ -130,7 +132,7 @@ async function main() {
     .filter((f) => /^i18n-.*\.json$/.test(f))
     .map((f) => JSON.parse(fs.readFileSync(path.join(tplDir, f), 'utf8')));
 
-  const bgBytes = fs.readFileSync(path.join(ROOT, 'juego-fondo.pdf'));
+  const bgBytes = fs.readFileSync(path.join(ROOT, o.bg));
   const out = await PDFDocument.create();
   out.registerFontkit(fontkit);
   const bgDoc = await PDFDocument.load(bgBytes);

@@ -1,7 +1,7 @@
 {
  "id": "recurso-1",
  "version": 1,
- "name": "Recurso 1 (piloto artista)",
+ "name": "recurso-1",
  "pageSize": "A4",
  "fields": [
   {
