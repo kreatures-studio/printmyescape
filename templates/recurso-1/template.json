@@ -1,0 +1,46 @@
+{
+ "id": "recurso-1",
+ "version": 1,
+ "name": "Recurso 1 (piloto artista)",
+ "pageSize": "A4",
+ "fields": [
+  {
+   "id": "NOMBRE",
+   "type": "text",
+   "label": "Nombre",
+   "maxLength": 70
+  },
+  {
+   "id": "FOTO_1",
+   "type": "image",
+   "label": "Foto 1"
+  }
+ ],
+ "pages": [
+  {
+   "id": "p1",
+   "title": "Página 1",
+   "background": "../assets/pages/recurso-1-fondo-p1.png",
+   "slots": [
+    {
+     "field": "NOMBRE",
+     "x": 46.76,
+     "y": 15.13,
+     "w": 6.49,
+     "h": 1.71,
+     "size": 2.02,
+     "color": "#1D1D1B",
+     "fontFamily": "MyriadPro-Regular"
+    },
+    {
+     "field": "FOTO_1",
+     "x": 9.42,
+     "y": 15.93,
+     "w": 21.53,
+     "h": 16.12,
+     "fit": "cover"
+    }
+   ]
+  }
+ ]
+}
