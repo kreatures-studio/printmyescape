@@ -11,9 +11,9 @@ from fontTools.ttLib import TTFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONTS = [
     ('Caveat-Bold.ttf', 'Caveat', 'Bold'),
-    ('Nunito-Regular.ttf', 'Nunito', 'Regular'),
-    ('Nunito-Bold.ttf', 'Nunito', 'Bold'),
-    ('Nunito-ExtraBold.ttf', 'Nunito', 'ExtraBold'),
+    ('AntonSC-Regular.ttf', 'Anton SC', 'Regular'),
+    ('OpenSans-Regular.ttf', 'Open Sans', 'Regular'),
+    ('OpenSans-Bold.ttf', 'Open Sans', 'Bold'),
 ]
 DROP = ('GSUB', 'GPOS', 'GDEF', 'STAT', 'HVAR', 'MVAR', 'VVAR', 'avar', 'fvar', 'gvar', 'cvar')
 

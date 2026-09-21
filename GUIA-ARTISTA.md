@@ -42,15 +42,18 @@ código entre corchetes. Nosotros te daremos la lista exacta; tiene esta pinta:
 Escríbelos tal cual, con corchetes y en mayúsculas. Es como dejar un hueco
 con etiqueta: luego el programa pone ahí el texto de cada cliente.
 
-## 3. Tipografías: solo 2, gratuitas
+## 3. Tipografías: solo 3, gratuitas
 
 Instálalas desde Google Fonts (son gratis, también para uso comercial)
 y no uses ninguna otra para textos:
 
-- **Caveat** → nombres de personas (aspecto manuscrito).
+- **Anton SC** → títulos y cabeceras de banners.
+  https://fonts.google.com/specimen/Anton+SC
+- **Open Sans** → todo el texto normal (pistas, instrucciones, listas).
+  https://fonts.google.com/specimen/Open+Sans
+- **Caveat** → nombres de personas, con aspecto manuscrito
+  (los códigos `[NOMBRE]` y listados de sospechosos).
   https://fonts.google.com/specimen/Caveat
-- **Nunito** → todo lo demás (pistas, instrucciones, historia).
-  https://fonts.google.com/specimen/Nunito
 
 ¿Por qué solo estas? Porque necesitamos el mismo archivo de letra para
 imprimir los textos traducidos; si usas otras, no podremos replicarlas.
