@@ -1,0 +1,37 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<title>Verificación recurso-1</title><style>
+body{font-family:system-ui,sans-serif;margin:0;background:#222;color:#eee}
+#bar{position:sticky;top:0;background:#111;padding:10px;display:flex;gap:10px;align-items:center;z-index:5}
+#wrap{display:flex;gap:16px;padding:16px;align-items:flex-start}
+.pg{position:relative;flex:none}
+.pg img{display:block;max-height:82vh}
+.bx{position:absolute;border:2px solid;font-size:10px;font-weight:700;cursor:pointer}
+.bx.fijo{border-color:#4aa3ff;color:#4aa3ff}
+.bx.slot{border-color:#3ddc84;color:#3ddc84}
+.bx.foto{border-color:#ff4dff;color:#ff4dff}
+.bx span{background:rgba(0,0,0,.7);padding:0 3px}
+#info{position:sticky;top:60px;background:#111;border:1px solid #555;padding:12px;min-width:260px;font-size:13px;white-space:pre-wrap}
+button{font-size:14px;padding:8px 14px;cursor:pointer}
+</style></head><body>
+<div id="bar"><b>Verificación recurso-1</b><span id="counts"></span>
+<button onclick="toggle('fijo')">fijos</button><button onclick="toggle('slot')">slots</button>
+<button onclick="toggle('foto')">fotos</button><span>azul=fijo · verde=[CODIGO] · magenta=foto</span></div>
+<div id="wrap"><div id="pages"></div><div id="info">Pulsa una caja…</div></div>
+<script>var D={"pages": [{"bg": "recurso-1-fondo-p1.png"}], "boxes": [{"kind": "fijo", "label": "conocido-por", "text": "Conocido por", "page": 1, "x": 38.46, "y": 15.24, "w": 8.04, "h": 1.57, "info": "OpenSans-Regular 1.7pt #1D1D1B"}, {"kind": "fijo", "label": "su-mayor-debilidad", "text": "Su mayor debilidad", "page": 1, "x": 38.46, "y": 18.09, "w": 11.25, "h": 1.57, "info": "OpenSans-Regular 1.7pt #1D1D1B"}, {"kind": "fijo", "label": "su-mayor-talento-es", "text": "Su mayor talento es", "page": 1, "x": 38.46, "y": 20.94, "w": 11.4, "h": 1.57, "info": "OpenSans-Regular 1.7pt #1D1D1B"}, {"kind": "fijo", "label": "si-fuera-sospechoso-de-algo-seria-de", "text": "Si fuera sospechoso de algo sería de", "page": 1, "x": 38.46, "y": 23.79, "w": 21.15, "h": 1.57, "info": "OpenSans-Regular 1.7pt #1D1D1B"}, {"kind": "fijo", "label": "ficha-de-la-victima", "text": "FICHA DE LA VÍCTIMA", "page": 1, "x": 4.72, "y": 1.1, "w": 53.6, "h": 8.62, "info": "Anton-Regular 7.0pt #021E23"}, {"kind": "fijo", "label": "notas-y-observaciones", "text": "NOTAS Y OBSERVACIONES", "page": 1, "x": 68.04, "y": 10.45, "w": 27.32, "h": 3.69, "info": "Anton-Regular 3.0pt #FFFFFF"}, {"kind": "fijo", "label": "delitos-conocidos", "text": "DELITOS CONOCIDOS", "page": 1, "x": 9.69, "y": 46.89, "w": 21.74, "h": 3.69, "info": "Anton-Regular 3.0pt #FFFFFF"}, {"kind": "fijo", "label": "otro", "text": "Otro:", "page": 1, "x": 9.81, "y": 64.94, "w": 4.43, "h": 2.19, "info": "OpenSans-Regular 2.4pt #725A4C"}, {"kind": "fijo", "label": "llegar-tarde", "text": "Llegar tarde", "page": 1, "x": 9.42, "y": 54.76, "w": 10.27, "h": 2.19, "info": "OpenSans-Regular 2.4pt #725A4C"}, {"kind": "fijo", "label": "robar-comida-ajena", "text": "Robar comida ajena", "page": 1, "x": 9.58, "y": 57.4, "w": 17.04, "h": 2.19, "info": "OpenSans-Regular 2.4pt #725A4C"}, {"kind": "fijo", "label": "contar-chistes-malos", "text": "Contar chistes malos", "page": 1, "x": 9.75, "y": 60.08, "w": 17.65, "h": 2.19, "info": "OpenSans-Regular 2.4pt #725A4C"}, {"kind": "fijo", "label": "hacer-trampas-jugando", "text": "Hacer trampas jugando", "page": 1, "x": 9.85, "y": 62.45, "w": 19.96, "h": 2.19, "info": "OpenSans-Regular 2.4pt #725A4C"}, {"kind": "fijo", "label": "iformacion-importante", "text": "IFORMACIÓN IMPORTANTE", "page": 1, "x": 7.64, "y": 72.58, "w": 28.18, "h": 3.69, "info": "Anton-Regular 3.0pt #FFFFFF"}, {"kind": "slot", "label": "NOMBRE", "text": "[NOMBRE]", "page": 1, "x": 46.76, "y": 15.13, "w": 6.49, "h": 1.71, "info": "MyriadPro-Regular 2.0pt #1D1D1B"}, {"kind": "foto", "label": "FOTO_1", "text": "FOTO_1", "page": 1, "x": 9.42, "y": 15.93, "w": 21.53, "h": 16.12, "info": "trazo [0.65, 0.32, 0.605]"}]};
+var shown={fijo:true,slot:true,foto:true};
+function toggle(k){shown[k]=!shown[k];draw();}
+function draw(){
+ var P=document.getElementById('pages');P.innerHTML='';
+ var n={fijo:0,slot:0,foto:0};
+ D.pages.forEach(function(pg,pi){
+  var d=document.createElement('div');d.className='pg';
+  var im=document.createElement('img');im.src='../../assets/pages/'+pg.bg;d.appendChild(im);
+  D.boxes.forEach(function(b){
+   if(b.page!==pi+1||!shown[b.kind])return;n[b.kind]++;
+   var e=document.createElement('div');e.className='bx '+b.kind;
+   e.style.left=b.x+'%';e.style.top=b.y+'%';e.style.width=b.w+'%';e.style.height=b.h+'%';
+   e.innerHTML='<span>'+b.label+'</span>';
+   e.onclick=function(){document.getElementById('info').textContent=b.kind+' · '+b.label+'\n'+b.text+'\n'+b.info+'\n caja '+b.x+','+b.y+' '+b.w+'x'+b.h;};
+   d.appendChild(e);});P.appendChild(d);});
+ document.getElementById('counts').textContent='fijos:'+n.fijo+' slots:'+n.slot+' fotos:'+n.foto;
+}draw();</script></body></html>
