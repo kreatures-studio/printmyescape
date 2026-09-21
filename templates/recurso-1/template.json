@@ -30,7 +30,8 @@
      "h": 1.71,
      "size": 2.02,
      "color": "#1D1D1B",
-     "fontFamily": "MyriadPro-Regular"
+     "fontFamily": "MyriadPro-Regular",
+     "xscale": null
     },
     {
      "field": "FOTO_1",
