@@ -27,11 +27,16 @@ except ImportError:
     HAS_FT = False
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC_TEXT = os.path.join(ROOT, 'juego-con-textos.pdf')
-SRC_BG = os.path.join(ROOT, 'juego-fondo.pdf')
-OUT_TPL = os.path.join(ROOT, 'templates', 'recurso-1')
-OUT_PAGES = os.path.join(ROOT, 'assets', 'pages')
-OUT_VERIFY = os.path.join(ROOT, 'tools', 'verify-recurso-1.html')
+
+
+def parse_args():
+    ap = argparse.ArgumentParser(description='Extrae cajas del PDF del artista')
+    ap.add_argument('--doc', default='recurso-1', help='id del documento (carpeta en templates/)')
+    ap.add_argument('--name', default=None, help='nombre legible (por defecto, el id)')
+    ap.add_argument('--src-text', default='juego-con-textos.pdf', help='PDF con textos (relativo a la raíz)')
+    ap.add_argument('--src-bg', default='juego-fondo.pdf', help='PDF de fondo limpio (relativo a la raíz)')
+    ap.add_argument('--fonts', default=None, help='carpeta con TTF para medir xscale')
+    return ap.parse_args()
 
 CODE_RE = re.compile(r'\[([A-Za-z0-9_]+)\]')
 
@@ -70,12 +75,21 @@ def index_fonts(d):
 
 
 def find_font(spanfam):
-    tok = norm(re.sub(r'-(regular|bold|italic|black|light|medium).*$', '', spanfam, flags=re.IGNORECASE))
-    best = None
+    parts = re.split(r'[-_]', spanfam)
+    tok = norm(parts[0])
+    sub = norm(' '.join(parts[1:])) or 'regular'
+    best, best_score = None, -1
     for e in FONTS_IDX:
-        if tok and tok in e['fam']:
-            if not best or len(e['fam']) < len(best['fam']):
-                best = e
+        if not (tok and tok in e['fam']):
+            continue
+        score = 10 - min(len(e['fam']) - len(tok), 5)
+        esub = e['sub'] or 'regular'
+        if sub == esub:
+            score += 5
+        elif sub in esub or esub in sub:
+            score += 2
+        if score > best_score:
+            best, best_score = e, score
     return best['file'] if best else None
 
 
@@ -181,7 +195,7 @@ def extract_frames(doc):
     return frames
 
 
-def build_template(slots, frames, npages):
+def build_template(slots, frames, npages, doc_id, name):
     fields = {}
     for s in slots:
         code = s['field']
@@ -205,23 +219,23 @@ def build_template(slots, frames, npages):
                 pslots.append({'field': f['field'], 'x': f['x'], 'y': f['y'],
                                'w': f['w'], 'h': f['h'], 'fit': 'cover'})
         pages.append({'id': 'p%d' % pi, 'title': 'Página %d' % pi,
-                      'background': '../assets/pages/recurso-1-fondo-p%d.png' % pi,
+                      'background': '../assets/pages/%s-fondo-p%d.png' % (doc_id, pi),
                       'slots': pslots})
-    return {'id': 'recurso-1', 'version': 1, 'name': 'Recurso 1 (piloto artista)',
+    return {'id': doc_id, 'version': 1, 'name': name,
             'pageSize': 'A4', 'fields': list(fields.values()), 'pages': pages}
 
 
-def render_pages(src, prefix, dpi):
+def render_pages(src, out_dir, prefix, dpi):
     doc = fitz.open(src)
     files = []
     for i, page in enumerate(doc):
-        out = os.path.join(OUT_PAGES, '%s-p%d.png' % (prefix, i + 1))
+        out = os.path.join(out_dir, '%s-p%d.png' % (prefix, i + 1))
         page.get_pixmap(dpi=dpi).save(out)
         files.append(out)
     return files
 
 
-def build_verify(fixed, slots, frames, bg_files, npages):
+def build_verify(fixed, slots, frames, bg_files, out_path, doc_id):
     boxes = []
     for f in fixed:
         boxes.append(dict(kind='fijo', label=f['key'], text=f['es'], page=f['page'],
@@ -238,7 +252,7 @@ def build_verify(fixed, slots, frames, bg_files, npages):
     data = json.dumps({'pages': [{'bg': os.path.basename(bf)} for bf in bg_files],
                        'boxes': boxes}, ensure_ascii=False)
     html = """<!doctype html><html lang="es"><head><meta charset="utf-8">
-<title>Verificación recurso-1</title><style>
+<title>Verificación __DOC__</title><style>
 body{font-family:system-ui,sans-serif;margin:0;background:#222;color:#eee}
 #bar{position:sticky;top:0;background:#111;padding:10px;display:flex;gap:10px;align-items:center;z-index:5}
 #wrap{display:flex;gap:16px;padding:16px;align-items:flex-start}
@@ -252,7 +266,7 @@ body{font-family:system-ui,sans-serif;margin:0;background:#222;color:#eee}
 #info{position:sticky;top:60px;background:#111;border:1px solid #555;padding:12px;min-width:260px;font-size:13px;white-space:pre-wrap}
 button{font-size:14px;padding:8px 14px;cursor:pointer}
 </style></head><body>
-<div id="bar"><b>Verificación recurso-1</b><span id="counts"></span>
+<div id="bar"><b>Verificación __DOC__</b><span id="counts"></span>
 <button onclick="toggle('fijo')">fijos</button><button onclick="toggle('slot')">slots</button>
 <button onclick="toggle('foto')">fotos</button><span>azul=fijo · verde=[CODIGO] · magenta=foto</span></div>
 <div id="wrap"><div id="pages"></div><div id="info">Pulsa una caja…</div></div>
@@ -274,30 +288,31 @@ function draw(){
    d.appendChild(e);});P.appendChild(d);});
  document.getElementById('counts').textContent='fijos:'+n.fijo+' slots:'+n.slot+' fotos:'+n.foto;
 }draw();</script></body></html>"""
-    html = html.replace('__DATA__', data)
-    with open(OUT_VERIFY, 'w', encoding='utf-8') as f:
+    html = html.replace('__DATA__', data).replace('__DOC__', doc_id)
+    with open(out_path, 'w', encoding='utf-8') as f:
         f.write(html)
 
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument('--fonts', default=None)
-    args = ap.parse_args()
+    args = parse_args()
     index_fonts(args.fonts)
-    os.makedirs(OUT_TPL, exist_ok=True)
-    os.makedirs(OUT_PAGES, exist_ok=True)
-    doc = fitz.open(SRC_TEXT)
+    out_tpl = os.path.join(ROOT, 'templates', args.doc)
+    out_pages = os.path.join(ROOT, 'assets', 'pages')
+    out_verify = os.path.join(ROOT, 'tools', 'verify-%s.html' % args.doc)
+    os.makedirs(out_tpl, exist_ok=True)
+    os.makedirs(out_pages, exist_ok=True)
+    doc = fitz.open(os.path.join(ROOT, args.src_text))
     fixed, slots = extract_texts(doc)
     frames = extract_frames(doc)
     npages = doc.page_count
-    with open(os.path.join(OUT_TPL, 'texts.json'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(out_tpl, 'texts.json'), 'w', encoding='utf-8') as f:
         json.dump(fixed, f, ensure_ascii=False, indent=1)
-    tpl = build_template(slots, frames, npages)
-    with open(os.path.join(OUT_TPL, 'template.json'), 'w', encoding='utf-8') as f:
+    tpl = build_template(slots, frames, npages, args.doc, args.name or args.doc)
+    with open(os.path.join(out_tpl, 'template.json'), 'w', encoding='utf-8') as f:
         json.dump(tpl, f, ensure_ascii=False, indent=1)
-    bg_files = render_pages(SRC_BG, 'recurso-1-fondo', 150)
-    render_pages(SRC_TEXT, 'recurso-1-ref', 80)
-    build_verify(fixed, slots, frames, bg_files, npages)
+    bg_files = render_pages(os.path.join(ROOT, args.src_bg), out_pages, '%s-fondo' % args.doc, 150)
+    render_pages(os.path.join(ROOT, args.src_text), out_pages, '%s-ref' % args.doc, 80)
+    build_verify(fixed, slots, frames, bg_files, out_verify, args.doc)
     print('fijos:', len(fixed), '| slots:', len(slots), '| fotos:', len(frames), '| páginas:', npages)
     print('claves:', [f['key'] for f in fixed])
     print('campos:', [f['id'] for f in tpl['fields']])
