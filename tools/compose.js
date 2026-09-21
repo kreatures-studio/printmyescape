@@ -14,18 +14,19 @@ const ROOT = path.join(__dirname, '..');
 const FONTS = {
   /* Caveat: embed completo (el subsetter rompe algunos glifos) */
   caveatBold: { file: '../assets/fonts/Caveat-Bold.ttf', subset: false },
-  nunito: { file: '../assets/fonts/Nunito-Regular.ttf', subset: true },
-  nunitoBold: { file: '../assets/fonts/Nunito-Bold.ttf', subset: true },
-  nunitoXBold: { file: '../assets/fonts/Nunito-ExtraBold.ttf', subset: true },
+  antonSC: { file: '../assets/fonts/AntonSC-Regular.ttf', subset: true },
+  opensans: { file: '../assets/fonts/OpenSans-Regular.ttf', subset: true },
+  opensansBold: { file: '../assets/fonts/OpenSans-Bold.ttf', subset: true },
 };
-/* MAPEO DE PRUEBA (el piloto usa OpenSans/Anton/MyriadPro; el acuerdo es
-   Caveat+Nunito — cuando el artista reexporte, este mapa será identidad).
-   Variables/manuscritas -> Caveat; titulares -> Nunito XBold;
-   etiquetas 10pt -> Nunito regular; lista 14pt -> Nunito Bold. */
+/* MAPEO (el piloto usa OpenSans/Anton/MyriadPro; el acuerdo final es
+   Anton SC + Open Sans + Caveat para nombres; cuando el artista reexporte,
+   este mapa será casi identidad).
+   Variables/manuscritas -> Caveat; titulares Anton -> Anton SC;
+   etiquetas OpenSans 10pt -> Open Sans regular; lista 14pt -> Open Sans bold. */
 function pickFont(family, size) {
   if (/myriad|caveat|script|hand/i.test(family)) return 'caveatBold';
-  if (/anton|black|display/i.test(family)) return 'nunitoXBold';
-  return size >= 12 ? 'nunitoBold' : 'nunito';
+  if (/anton|black|display/i.test(family)) return 'antonSC';
+  return size >= 12 ? 'opensansBold' : 'opensans';
 }
 const ALIGN_OVERRIDE = {}; /* ej: {'notas-y-observaciones': 'center'} */
 
@@ -34,13 +35,14 @@ function hex(h) {
   return rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
 }
 function args() {
-  const o = { lang: 'es', out: null, values: {} };
+  const o = { lang: 'es', out: null, values: {}, photos: {} };
   const a = process.argv.slice(2);
   for (let i = 0; i < a.length; i++) {
     if (a[i] === '--lang') o.lang = a[++i];
     else if (a[i] === '--out') o.out = a[++i];
     else if (a[i] === '--values') o.values = JSON.parse(a[++i]);
     else if (a[i] === '--values-file') o.values = JSON.parse(fs.readFileSync(a[++i], 'utf8'));
+    else if (a[i] === '--photos-file') o.photos = JSON.parse(fs.readFileSync(a[++i], 'utf8'));
     else if (a[i] === '--no-subset') o.noSubset = true;
   }
   return o;
@@ -88,7 +90,7 @@ function drawFitted(page, font, text, boxPt, size0, color, align, single) {
   const { lines, hs, size } = fit(font, text, boxPt, size0, single);
   const lh = size * 1.25;
   const cx = boxPt.x + boxPt.w / 2, cy = boxPt.yTop - boxPt.h / 2;
-  const firstBase = cy + (lines.length * lh) / 2 - size * 0.72;
+  const firstBase = cy + (lines.length * lh) / 2 - size * 0.95;
   lines.forEach((ln, i) => {
     const w = font.widthOfTextAtSize(ln, size) * hs[i];
     let x = boxPt.x;
@@ -139,15 +141,31 @@ async function main() {
       const font = ff[pickFont(s.fontFamily || 'caveat', s.size)];
       drawFitted(bg, font, val, box(s), (s.size / 100) * PW, hex(s.color || '#000000'), s.align || 'left', true);
     }
-    /* fotos: marcador gris (prueba de geometría; el wizard incrustará JPEG reales) */
+    /* fotos: JPEG/PNG recortados al aspecto del marco (el wizard los
+       pre-recorta con canvas); sin foto, marcador gris de geometría */
+    const imgCache = {};
+    async function imgFor(p) {
+      if (!imgCache[p]) {
+        const b = fs.readFileSync(path.join(ROOT, p));
+        imgCache[p] = /\.png$/i.test(p) ? await out.embedPng(b) : await out.embedJpg(b);
+      }
+      return imgCache[p];
+    }
     for (const s of tpl.pages[pi].slots) {
       const fld = tpl.fields.find((x) => x.id === s.field);
       if (!fld || fld.type !== 'image') continue;
       const b = box(s);
-      bg.drawRectangle({ x: b.x, y: b.yTop - b.h, width: b.w, height: b.h, color: rgb(0.85, 0.85, 0.85), borderColor: rgb(0.5, 0.5, 0.5), borderWidth: 1 });
-      const t = 'FOTO';
-      const fs2 = 10, tw = ff.nunitoBold.widthOfTextAtSize(t, fs2);
-      bg.drawText(t, { x: b.x + (b.w - tw) / 2, y: b.yTop - b.h / 2, size: fs2, font: ff.nunitoBold, color: rgb(0.4, 0.4, 0.4) });
+      const by = b.yTop - b.h;
+      const src = o.photos[s.field];
+      if (src) {
+        const im = await imgFor(src);
+        bg.drawImage(im, { x: b.x, y: by, width: b.w, height: b.h });
+      } else {
+        bg.drawRectangle({ x: b.x, y: by, width: b.w, height: b.h, color: rgb(0.85, 0.85, 0.85), borderColor: rgb(0.5, 0.5, 0.5), borderWidth: 1 });
+        const t = 'FOTO';
+        const fs2 = 10, tw = ff.opensansBold.widthOfTextAtSize(t, fs2);
+        bg.drawText(t, { x: b.x + (b.w - tw) / 2, y: by + b.h / 2, size: fs2, font: ff.opensansBold, color: rgb(0.4, 0.4, 0.4) });
+      }
     }
   }
   fs.mkdirSync(path.dirname(path.join(ROOT, o.out)), { recursive: true });
