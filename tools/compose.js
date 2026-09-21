@@ -64,10 +64,13 @@ function wrap(font, text, size, maxW) {
   return lines;
 }
 /* Encaja el texto en la caja: envuelve con anchos naturales, permite
-   condensación horizontal (como hace Illustrator) hasta el 70% y encoge
-   el tamaño hasta el 55%. Devuelve líneas + tamaño + hs por línea. */
+   condensación horizontal (como hace Illustrator) y encoge el tamaño.
+   targetHs: condensación de referencia del artista (xscale extraído).
+   Las traducciones heredan ese aspecto en vez de recalcularlo, para que
+   todos los idiomas se vean iguales aunque las frases midan distinto. */
 const HS_MIN = 0.7, SIZE_MIN = 0.55;
-function fit(font, text, boxPt, size0, single) {
+function fit(font, text, boxPt, size0, single, targetHs) {
+  targetHs = targetHs || 1;
   let size = size0;
   const min = size0 * SIZE_MIN;
   let lines = [text], hs = [1];
@@ -76,7 +79,7 @@ function fit(font, text, boxPt, size0, single) {
     lines = nat;
     hs = nat.map((ln) => {
       const w = font.widthOfTextAtSize(ln, size) || 1;
-      return Math.min(1, boxPt.w / w);
+      return Math.min(targetHs, boxPt.w / w);
     });
     const lh = size * 1.25;
     const tooNarrow = Math.min(...hs) < HS_MIN;
@@ -86,8 +89,8 @@ function fit(font, text, boxPt, size0, single) {
   }
   return { lines, hs, size, warn: size < size0 * 0.85 };
 }
-function drawFitted(page, font, text, boxPt, size0, color, align, single) {
-  const { lines, hs, size } = fit(font, text, boxPt, size0, single);
+function drawFitted(page, font, text, boxPt, size0, color, align, single, targetHs) {
+  const { lines, hs, size, warn } = fit(font, text, boxPt, size0, single, targetHs);
   const lh = size * 1.25;
   const cx = boxPt.x + boxPt.w / 2, cy = boxPt.yTop - boxPt.h / 2;
   const firstBase = cy + (lines.length * lh) / 2 - size * 0.95;
@@ -98,6 +101,7 @@ function drawFitted(page, font, text, boxPt, size0, color, align, single) {
     else if (align === 'right') x = boxPt.x + boxPt.w - w;
     page.drawText(ln, { x, y: firstBase - i * lh, size, font, color, horizontalScaling: Math.round(hs[i] * 100) });
   });
+  return warn;
 }
 
 async function main() {
@@ -128,7 +132,11 @@ async function main() {
       const font = ff[pickFont(f.fontFamily, f.size)];
       const size0 = (f.size / 100) * PW;
       const align = ALIGN_OVERRIDE[f.key] || 'left';
-      if (drawFitted(bg, font, str, box(f), size0, hex(f.color), align)) {
+      if (process.env.COMPOSE_DEBUG) {
+        const r = fit(font, str, box(f), size0, false, f.xscale);
+        console.log(`${f.key}: size0=${size0.toFixed(1)} -> size=${r.size.toFixed(1)} lines=${r.lines.length} hs=${r.hs.map((x) => x.toFixed(2)).join(',')}`);
+      }
+      if (drawFitted(bg, font, str, box(f), size0, hex(f.color), align, false, f.xscale)) {
         warns.push(`${f.key}: encogido fuerte`);
       }
     }
@@ -139,7 +147,7 @@ async function main() {
       const val = o.values[s.field] || '';
       if (!val) continue;
       const font = ff[pickFont(s.fontFamily || 'caveat', s.size)];
-      drawFitted(bg, font, val, box(s), (s.size / 100) * PW, hex(s.color || '#000000'), s.align || 'left', true);
+      drawFitted(bg, font, val, box(s), (s.size / 100) * PW, hex(s.color || '#000000'), s.align || 'left', true, s.xscale || 1);
     }
     /* fotos: JPEG/PNG recortados al aspecto del marco (el wizard los
        pre-recorta con canvas); sin foto, marcador gris de geometría */
