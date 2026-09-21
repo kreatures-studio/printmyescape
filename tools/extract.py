@@ -6,15 +6,25 @@
   - fondos PNG .... render del PDF de fondo limpio (studio/preview)
   - verify.html ... visor de verificación con cajas numeradas (autocontenido)
 
-Uso:  python3 tools/extract.py
+Uso:  python3 tools/extract.py [--fonts DIR]
+  --fonts DIR: carpeta con TTF para medir el ancho natural y calcular
+  el xscale (condensación horizontal aplicada en Illustrator).
+  Sin --fonts, xscale se omite (el compositor asume 1.0).
 Lee:  juego-con-textos.pdf + juego-fondo.pdf (raíz del repo)
 Escribe: templates/recurso-1/*, assets/pages/recurso-1-*.png, tools/verify-recurso-1.html
 """
+import argparse
 import fitz
 import json
 import os
 import re
 import unicodedata
+
+try:
+    from fontTools.ttLib import TTFont
+    HAS_FT = True
+except ImportError:
+    HAS_FT = False
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_TEXT = os.path.join(ROOT, 'juego-con-textos.pdf')
@@ -34,6 +44,51 @@ def slugify(s, n=6):
 
 def basefont(name):
     return name.split('+')[-1]
+
+
+def norm(s):
+    return re.sub(r'[^a-z0-9]', '', s.lower())
+
+
+FONTS_IDX = []
+
+
+def index_fonts(d):
+    FONTS_IDX.clear()
+    if not (HAS_FT and d and os.path.isdir(d)):
+        return
+    for fn in sorted(os.listdir(d)):
+        if not fn.lower().endswith('.ttf'):
+            continue
+        try:
+            f = TTFont(os.path.join(d, fn))
+            fam = f['name'].getDebugName(16) or f['name'].getDebugName(1) or ''
+            sub = f['name'].getDebugName(17) or f['name'].getDebugName(2) or ''
+            FONTS_IDX.append({'file': os.path.join(d, fn), 'fam': norm(fam), 'sub': norm(sub)})
+        except Exception:
+            pass
+
+
+def find_font(spanfam):
+    tok = norm(re.sub(r'-(regular|bold|italic|black|light|medium).*$', '', spanfam, flags=re.IGNORECASE))
+    best = None
+    for e in FONTS_IDX:
+        if tok and tok in e['fam']:
+            if not best or len(e['fam']) < len(best['fam']):
+                best = e
+    return best['file'] if best else None
+
+
+NW_CACHE = {}
+
+
+def natural_width(ttf, text, size):
+    key = (ttf, text)
+    if key not in NW_CACHE:
+        f = TTFont(ttf)
+        cmap, hmtx, upm = f.getBestCmap(), f['hmtx'], f['head'].unitsPerEm
+        NW_CACHE[key] = sum(hmtx[cmap[ord(c)]][0] for c in text if ord(c) in cmap) / upm
+    return NW_CACHE[key] * size
 
 
 def pct(v, total):
@@ -67,6 +122,12 @@ def extract_texts(doc):
                         fx0 = x0 + sw * cursor / total_chars
                         fx1 = x0 + sw * (cursor + plen) / total_chars
                         cursor += plen
+                        xs = None
+                        fp = find_font(s['font'])
+                        if fp and plen:
+                            nat = natural_width(fp, part, s['size'])
+                            if nat > 0:
+                                xs = round((fx1 - fx0) / nat, 2)
                         if k % 2 == 1:  # es un [CODIGO]
                             code = part.strip()
                             slots.append({
@@ -76,6 +137,7 @@ def extract_texts(doc):
                                 'fontFamily': basefont(s['font']),
                                 'size': round(s['size'] / W * 100, 2),
                                 'color': '#%06X' % (s['color'] & 0xFFFFFF),
+                                'xscale': xs,
                             })
                         else:
                             txt = part.strip()
@@ -90,6 +152,7 @@ def extract_texts(doc):
                                     'fontFamily': basefont(s['font']),
                                     'size': round(s['size'] / W * 100, 2),
                                     'color': '#%06X' % (s['color'] & 0xFFFFFF),
+                                    'xscale': xs,
                                 })
     return fixed, slots
 
@@ -135,7 +198,8 @@ def build_template(slots, frames, npages):
             if s['page'] == pi:
                 pslots.append({'field': s['field'], 'x': s['x'], 'y': s['y'],
                                'w': s['w'], 'h': s['h'], 'size': s['size'],
-                               'color': s['color'], 'fontFamily': s['fontFamily']})
+                               'color': s['color'], 'fontFamily': s['fontFamily'],
+                               'xscale': s.get('xscale')})
         for f in frames:
             if f['page'] == pi:
                 pslots.append({'field': f['field'], 'x': f['x'], 'y': f['y'],
@@ -216,6 +280,10 @@ function draw(){
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--fonts', default=None)
+    args = ap.parse_args()
+    index_fonts(args.fonts)
     os.makedirs(OUT_TPL, exist_ok=True)
     os.makedirs(OUT_PAGES, exist_ok=True)
     doc = fitz.open(SRC_TEXT)
