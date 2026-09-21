@@ -69,11 +69,24 @@ function wrap(font, text, size, maxW) {
    Las traducciones heredan ese aspecto en vez de recalcularlo, para que
    todos los idiomas se vean iguales aunque las frases midan distinto. */
 const HS_MIN = 0.7, SIZE_MIN = 0.55;
-function fit(font, text, boxPt, size0, single, targetHs) {
+function fit(font, text, boxPt, size0, single, targetHs, lockSize) {
   targetHs = targetHs || 1;
-  let size = size0;
+  let size = lockSize || size0;
   const min = size0 * SIZE_MIN;
   let lines = [text], hs = [1];
+  const once = (sz) => {
+    const nat = single ? [text] : wrap(font, text, sz, boxPt.w);
+    const h = nat.map((ln) => {
+      const nw = font.widthOfTextAtSize(ln, sz) || 1;
+      return Math.min(targetHs, boxPt.w / nw);
+    });
+    return { lines: nat, hs: h };
+  };
+  if (lockSize) {
+    const r = once(size);
+    lines = r.lines; hs = r.hs;
+    return { lines, hs, size, warn: size < size0 * 0.85 };
+  }
   for (;;) {
     const nat = single ? [text] : wrap(font, text, size, boxPt.w);
     lines = nat;
@@ -89,8 +102,8 @@ function fit(font, text, boxPt, size0, single, targetHs) {
   }
   return { lines, hs, size, warn: size < size0 * 0.85 };
 }
-function drawFitted(page, font, text, boxPt, size0, color, align, single, targetHs) {
-  const { lines, hs, size, warn } = fit(font, text, boxPt, size0, single, targetHs);
+function drawFitted(page, font, text, boxPt, size0, color, align, single, targetHs, lockSize) {
+  const { lines, hs, size, warn } = fit(font, text, boxPt, size0, single, targetHs, lockSize);
   const lh = size * 1.25;
   const cx = boxPt.x + boxPt.w / 2, cy = boxPt.yTop - boxPt.h / 2;
   const firstBase = cy + (lines.length * lh) / 2 - size * 0.95;
@@ -107,9 +120,15 @@ function drawFitted(page, font, text, boxPt, size0, color, align, single, target
 async function main() {
   const o = args();
   if (!o.out) { console.error('falta --out'); process.exit(1); }
-  const tpl = JSON.parse(fs.readFileSync(path.join(ROOT, 'templates/recurso-1/template.json'), 'utf8'));
-  const fixed = JSON.parse(fs.readFileSync(path.join(ROOT, 'templates/recurso-1/texts.json'), 'utf8'));
-  const i18n = JSON.parse(fs.readFileSync(path.join(ROOT, `templates/recurso-1/i18n-${o.lang}.json`), 'utf8'));
+  const tplDir = path.join(ROOT, 'templates/recurso-1');
+  const tpl = JSON.parse(fs.readFileSync(path.join(tplDir, 'template.json'), 'utf8'));
+  const fixed = JSON.parse(fs.readFileSync(path.join(tplDir, 'texts.json'), 'utf8'));
+  const i18n = JSON.parse(fs.readFileSync(path.join(tplDir, `i18n-${o.lang}.json`), 'utf8'));
+  /* Todos los idiomas disponibles: el tamaño se bloquea por caja al mínimo
+     común, para que la misma línea mida lo mismo en todos los idiomas. */
+  const allI18n = fs.readdirSync(tplDir)
+    .filter((f) => /^i18n-.*\.json$/.test(f))
+    .map((f) => JSON.parse(fs.readFileSync(path.join(tplDir, f), 'utf8')));
 
   const bgBytes = fs.readFileSync(path.join(ROOT, 'juego-fondo.pdf'));
   const out = await PDFDocument.create();
@@ -132,11 +151,16 @@ async function main() {
       const font = ff[pickFont(f.fontFamily, f.size)];
       const size0 = (f.size / 100) * PW;
       const align = ALIGN_OVERRIDE[f.key] || 'left';
-      if (process.env.COMPOSE_DEBUG) {
-        const r = fit(font, str, box(f), size0, false, f.xscale);
-        console.log(`${f.key}: size0=${size0.toFixed(1)} -> size=${r.size.toFixed(1)} lines=${r.lines.length} hs=${r.hs.map((x) => x.toFixed(2)).join(',')}`);
+      let use = size0;
+      for (const d of allI18n) {
+        const t = d[f.key] !== undefined ? d[f.key] : f.es;
+        const r = fit(font, t, box(f), size0, false, f.xscale);
+        if (r.size < use) use = r.size;
       }
-      if (drawFitted(bg, font, str, box(f), size0, hex(f.color), align, false, f.xscale)) {
+      if (process.env.COMPOSE_DEBUG) {
+        console.log(`${f.key}: size0=${size0.toFixed(1)} -> usa=${use.toFixed(1)}`);
+      }
+      if (drawFitted(bg, font, str, box(f), size0, hex(f.color), align, false, f.xscale, use)) {
         warns.push(`${f.key}: encogido fuerte`);
       }
     }
