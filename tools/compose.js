@@ -2,7 +2,8 @@
 /* Fase 2 — Compone el PDF final: fondo limpio + fijos traducidos (i18n)
    + variables del usuario + fotos. Mismo stack que usará el wizard
    en el navegador (pdf-lib + fontkit), ejecutado aquí en Node.
-   Uso: node tools/compose.js --lang es|en --out salidas/X.pdf [--values '{"NOMBRE":"..."}']
+   Uso: node tools/compose.js --tpl templates/DOC --bg fondo.pdf --lang es|en
+        --out salidas/X.pdf [--values-file v.json] [--photos-file f.json]
 */
 'use strict';
 const fs = require('fs');
@@ -89,17 +90,22 @@ function fit(font, text, boxPt, size0, single, targetHs, lockSize) {
     lines = r.lines; hs = r.hs;
     return { lines, hs, size, warn: size < size0 * 0.85 };
   }
+  /* Los slots de una línea (valores de usuario) pueden crecer a la derecha
+     hasta 2.5x el ancho del código: los códigos son estrechos por diseño. */
+  const fitW = single ? boxPt.w * 2.5 : boxPt.w;
+  const hsFloor = single ? 0.6 : HS_MIN;
+  const sizeFloor = size0 * (single ? 0.5 : SIZE_MIN);
   for (;;) {
     const nat = single ? [text] : wrap(font, text, size, boxPt.w);
     lines = nat;
     hs = nat.map((ln) => {
       const w = font.widthOfTextAtSize(ln, size) || 1;
-      return Math.min(targetHs, boxPt.w / w);
+      return Math.min(targetHs, fitW / w);
     });
     const lh = size * 1.25;
-    const tooNarrow = Math.min(...hs) < HS_MIN;
+    const tooNarrow = Math.min(...hs) < hsFloor;
     const tooTall = !single && lines.length * lh > boxPt.h + lh * 0.5;
-    if ((!tooNarrow && !tooTall) || size <= min) break;
+    if ((!tooNarrow && !tooTall) || size <= sizeFloor) break;
     size *= 0.94;
   }
   return { lines, hs, size, warn: size < size0 * 0.85 };
@@ -173,7 +179,12 @@ async function main() {
       const val = o.values[s.field] || '';
       if (!val) continue;
       const font = ff[pickFont(s.fontFamily || 'caveat', s.size)];
-      drawFitted(bg, font, val, box(s), (s.size / 100) * PW, hex(s.color || '#000000'), s.align || 'left', true, s.xscale || 1);
+      if (process.env.COMPOSE_DEBUG) {
+        console.log(`slot ${s.field} val="${val}" box=`, JSON.stringify(box(s)));
+      }
+      if (drawFitted(bg, font, val, box(s), (s.size / 100) * PW, hex(s.color || '#000000'), s.align || 'left', true, s.xscale || 1)) {
+        warns.push(`${s.field}: valor encogido`);
+      }
     }
     /* fotos: JPEG/PNG recortados al aspecto del marco (el wizard los
        pre-recorta con canvas); sin foto, marcador gris de geometría */
@@ -204,7 +215,8 @@ async function main() {
   }
   fs.mkdirSync(path.dirname(path.join(ROOT, o.out)), { recursive: true });
   fs.writeFileSync(path.join(ROOT, o.out), await out.save());
-  console.log('OK', o.out, warns.length ? '| avisos: ' + warns.join('; ') : '| sin avisos');
+  console.log('OK', o.out, '| valores:', Object.keys(o.values).length, '| fotos:', Object.keys(o.photos).length,
+    warns.length ? '| avisos: ' + warns.join('; ') : '| sin avisos');
 }
 
 main().catch((e) => { console.error('FALLO', e.message); process.exit(1); });
