@@ -67,6 +67,8 @@
   td.total { color: var(--red); font-weight: 800; }
   tr.grupo td { background: var(--blue) !important; color: #fff; font-weight: 800; font-size: 12px; letter-spacing: .03em; }
   tr.subt td { font-weight: 800; background: #eef4f8 !important; }
+  tr.dto td { font-weight: 800; }
+  tr.dto td.total { color: var(--red-deep, var(--red-dark)); }
   .bottom { display: flex; justify-content: space-between; gap: 24px; margin-top: 24px; }
   .notes { font-size: 11px; color: var(--muted); line-height: 1.7; max-width: 46%; }
   .notes b { color: var(--ink); }
@@ -76,6 +78,7 @@
   .totals table { font-size: 12px; }
   .totals td { border: 0; padding: 2px 0 2px 8px; }
   .totals td:last-child { font-variant-numeric: tabular-nums; }
+  .totals .unit { font-size: 11.5px; color: var(--blue); font-weight: 800; margin-top: 6px; }
   footer { display: flex; justify-content: flex-end; font-size: 10.5px; color: var(--muted); margin-top: 36px; }
   #toolbar { text-align: center; padding: 12px; background: var(--blue-deep); position: sticky; bottom: 0; display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; }
   #toolbar button {
@@ -130,7 +133,7 @@
 
 <script>
 'use strict';
-/* ======== DATOS: P1 (tope 800) y P2 (tope 600). Tarifa estudio 20 €/h ======== */
+/* ======== DATOS (tarifa estudio 20 €/h, conceptos genéricos) ======== */
 var EMISOR = {
   nombre: 'Kreatures Studio', email: 'hello@kreatures.studio',
   web: 'kreatures-studio.github.io/website', lugar: 'España · Worldwide'
@@ -139,61 +142,61 @@ var CLIENTE = {
   nombre: 'Nombre del cliente', direccion: 'Dirección',
   ciudad: 'Ciudad', extra: 'C.I.F./N.I.F.: — · Tel.: — · Email: —'
 };
-var PH = 20; /* €/h tarifa estudio */
+var PH = 20; /* €/h */
 var DATA = {
   p1: {
-    tab: 'P1 · Primera entrega (800 €)', titulo: 'Presupuesto 1 · Primera entrega',
-    numero: '2026/001', concepto: 'Escape Room · PrintMyEscape (primera entrega)',
-    alcance: '<b>Alcance:</b> programación del asistente y motor de PDF + diseño visual + ' +
-      'maquetación de 9 puzles. <b>El diseño de los puzles lo aporta el cliente</b> (sin coste). ' +
-      'Horas eficientes con reutilización de assets e IA; la curva de aprendizaje la absorbe el estudio.',
+    titulo: 'Presupuesto 1 · Primera entrega', numero: '2026/001',
+    concepto: 'Escape Room · PrintMyEscape (primera entrega, 9 puzles)',
+    unidades: 9,
+    alcance: '<b>Alcance:</b> programación del asistente y motor de PDF + ilustración ' +
+      'original + maquetación base de 9 puzles. <b>El diseño de los puzles lo aporta el ' +
+      'cliente</b> (sin coste). Horas eficientes con reutilización de assets e IA; la ' +
+      'curva de aprendizaje la absorbe el estudio.',
     basico: [
-      { desc: 'Programación Web (asistente + motor PDF)', cant: 1, precio: 250, dto: 0 },
-      { desc: 'Diseño Visual', cant: 1, precio: 300, dto: 0 },
-      { desc: 'Maquetación', cant: 1, precio: 250, dto: 0 }
+      { desc: 'Programación Web (asistente + motor PDF)', cant: 1, precio: 300, dto: 0 },
+      { desc: 'Ilustración original (9 puzles)', cant: 1, precio: 400, dto: 0 },
+      { desc: 'Maquetación base + pruebas', cant: 1, precio: 300, dto: 0 },
+      { desc: 'Descuento apoyo primera entrega (único)', cant: 1, precio: -200, dto: 0 }
     ],
     detalle: [
       { grupo: 'Programación Web', items: [
-        { desc: 'Asistente de personalización + motor de PDF + integración', horas: 12.5 } ] },
-      { grupo: 'Diseño Visual · Margaret', items: [
-        { desc: 'Primera página', horas: 2 },
-        { desc: 'Casa', horas: 4 },
-        { desc: 'Devices', horas: 3 } ] },
-      { grupo: 'Diseño Visual · Sabina', items: [
-        { desc: 'Hojas', horas: 3 },
-        { desc: 'Dominó y perritos', horas: 2 },
-        { desc: 'Iconos', horas: 1 } ] },
-      { grupo: 'Maquetación · Margaret', items: [
-        { desc: 'Montaje de páginas + pruebas de impresión', horas: 12.5 } ] }
+        { desc: 'Asistente de personalización + motor de PDF + integración', horas: 15 } ] },
+      { grupo: 'Ilustración original · Margaret', items: [
+        { desc: 'Ilustración original', horas: 12 } ] },
+      { grupo: 'Ilustración original · Sabina', items: [
+        { desc: 'Ilustración original', horas: 8 } ] },
+      { grupo: 'Maquetación base + pruebas · Margaret', items: [
+        { desc: 'Montaje de páginas + pruebas de impresión', horas: 15 } ] }
     ],
+    dto: { desc: 'Descuento apoyo primera entrega (único)', importe: -200 },
     iva: 21, observaciones: 'Presupuesto válido durante 30 días.', pago: 'Forma de pago: a convenir.'
   },
   p2: {
-    tab: 'P2 · Siguientes (600 €)', titulo: 'Presupuesto 2 · Siguientes entregas',
-    numero: '2026/002', concepto: 'Escape Room · PrintMyEscape (siguientes entregas)',
-    alcance: '<b>Alcance:</b> diseño visual + maquetación por entrega, <b>sin programación</b> ' +
-      '(se reutiliza el asistente y el motor). <b>El diseño de los puzles lo aporta el cliente</b> ' +
-      '(sin coste). Horas eficientes con reutilización de assets e IA.',
+    titulo: 'Presupuesto 2 · Siguientes entregas', numero: '2026/002',
+    concepto: 'Escape Room · PrintMyEscape (siguientes entregas, 9 puzles)',
+    unidades: 9,
+    alcance: '<b>Alcance:</b> adaptación y variantes sobre assets existentes + maquetación ' +
+      'sobre plantilla de 9 puzles, <b>sin programación</b> (se reutiliza el asistente y ' +
+      'el motor). <b>El diseño de los puzles lo aporta el cliente</b> (sin coste). ' +
+      'La reutilización abarata el coste por puzle.',
     basico: [
-      { desc: 'Diseño Visual', cant: 1, precio: 350, dto: 0 },
-      { desc: 'Maquetación', cant: 1, precio: 250, dto: 0 }
+      { desc: 'Adaptación y variantes sobre assets (9 puzles)', cant: 1, precio: 400, dto: 0 },
+      { desc: 'Maquetación sobre plantilla + pruebas', cant: 1, precio: 300, dto: 0 },
+      { desc: 'Descuento reutilización assets e IA', cant: 1, precio: -100, dto: 0 }
     ],
     detalle: [
-      { grupo: 'Diseño Visual · Margaret', items: [
-        { desc: 'Casa', horas: 4 },
-        { desc: 'Devices', horas: 3 },
-        { desc: 'Pantalla', horas: 3 } ] },
-      { grupo: 'Diseño Visual · Sabina', items: [
-        { desc: 'Hojas', horas: 3.5 },
-        { desc: 'Dominó y perritos', horas: 2.5 },
-        { desc: 'Iconos', horas: 1.5 } ] },
-      { grupo: 'Maquetación · Margaret', items: [
-        { desc: 'Montaje de páginas + pruebas de impresión', horas: 12.5 } ] }
+      { grupo: 'Adaptación y variantes · Margaret', items: [
+        { desc: 'Variantes sobre assets existentes', horas: 11 } ] },
+      { grupo: 'Adaptación y variantes · Sabina', items: [
+        { desc: 'Variantes sobre assets existentes', horas: 9 } ] },
+      { grupo: 'Maquetación sobre plantilla + pruebas · Margaret', items: [
+        { desc: 'Montaje de páginas + pruebas de impresión', horas: 15 } ] }
     ],
+    dto: { desc: 'Descuento reutilización assets e IA', importe: -100 },
     iva: 21, observaciones: 'Presupuesto válido durante 30 días.', pago: 'Forma de pago: a convenir.'
   }
 };
-/* ============================================================================= */
+/* ==================================================================== */
 
 var cual = 'p1', modo = 'basico';
 function eur(n) {
@@ -224,10 +227,11 @@ function render() {
   document.getElementById('mFecha').textContent = fechaHoy();
   var cab = document.getElementById('cabecera'), tb = document.getElementById('lineas');
   cab.innerHTML = ''; tb.innerHTML = '';
-  var base = 0, i = 0;
-  function fila(n, desc, c3, c4, c5, total, grupo) {
+  var base = 0, i = 0, horas = 0;
+  function fila(desc, c3, c4, c5, total, cls) {
     var tr = document.createElement('tr');
-    if (grupo) { tr.className = 'grupo'; tr.innerHTML = '<td colspan="6">' + esc(desc) + '</td>'; }
+    if (cls) tr.className = cls;
+    if (cls === 'grupo') { tr.innerHTML = '<td colspan="6">' + esc(desc) + '</td>'; }
     else {
       i++;
       tr.innerHTML = '<td class="n"><span>' + i + '.</span></td><td class="desc">' + esc(desc) + '</td>' +
@@ -242,19 +246,19 @@ function render() {
     P.basico.forEach(function (l) {
       var t = l.cant * l.precio * (1 - (l.dto || 0) / 100);
       base += t;
-      fila(0, l.desc, num(l.cant, 2), eur(l.precio), num(l.dto || 0) + '%', eur(t));
+      fila(l.desc, num(l.cant, 2), eur(l.precio), num(l.dto || 0) + '%', eur(t), l.precio < 0 ? 'dto' : '');
     });
   } else {
     cab.innerHTML = '<th style="width:46px">Nº.</th><th>Descripción</th><th class="num">Horas</th>' +
       '<th class="money">Precio/h</th><th class="money"></th><th class="money">Total</th>';
     var gh = 0, gt = 0;
     P.detalle.forEach(function (g) {
-      fila(0, g.grupo, '', '', '', '', true);
+      fila(g.grupo, '', '', '', '', 'grupo');
       var sh = 0, st = 0;
       g.items.forEach(function (it) {
         var t = it.horas * PH;
         sh += it.horas; st += t;
-        fila(0, it.desc, num(it.horas) + ' h', eur(PH), '', eur(t));
+        fila(it.desc, num(it.horas) + ' h', eur(PH), '', eur(t));
       });
       var tr = document.createElement('tr'); tr.className = 'subt';
       tr.innerHTML = '<td></td><td>Subtotal ' + esc(g.grupo) + '</td><td class="num">' +
@@ -262,10 +266,12 @@ function render() {
       tb.appendChild(tr);
       gh += sh; gt += st;
     });
-    base = gt;
+    fila(P.dto.desc, '', '', '', eur(P.dto.importe), 'dto');
+    base = gt + P.dto.importe;
+    horas = gh;
     var tr2 = document.createElement('tr'); tr2.className = 'subt';
     tr2.innerHTML = '<td></td><td>TOTAL HORAS / BASE</td><td class="num"><b>' + num(gh) +
-      ' h</b></td><td></td><td></td><td class="money total">' + eur(gt) + '</td>';
+      ' h</b></td><td></td><td></td><td class="money total">' + eur(base) + '</td>';
     tb.appendChild(tr2);
   }
   var iva = base * P.iva / 100, total = base + iva;
@@ -274,7 +280,8 @@ function render() {
   document.getElementById('totales').innerHTML =
     '<div class="grand">Total: <b>' + eur(total) + '</b></div>' +
     '<table><tr><td>BASE IMPONIBLE</td><td>' + eur(base) + '</td></tr>' +
-    '<tr><td>TOTAL I.V.A. (' + num(P.iva) + '%)</td><td>' + eur(iva) + '</td></tr></table>';
+    '<tr><td>TOTAL I.V.A. (' + num(P.iva) + '%)</td><td>' + eur(iva) + '</td></tr></table>' +
+    '<div class="unit">≈ ' + eur(base / P.unidades) + ' por puzle (' + P.unidades + ' puzles)</div>';
   document.getElementById('tP1').className = cual === 'p1' ? 'on' : '';
   document.getElementById('tP2').className = cual === 'p2' ? 'on' : '';
   document.getElementById('tBas').className = modo === 'basico' ? 'on' : '';
