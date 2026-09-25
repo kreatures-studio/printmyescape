@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Kreatures Studio · Presupuestos 800 / 600</title>
+<style>
+  :root {
+    --red: #D62828; --red-dark: #A81F1F;
+    --blue: #003049; --blue-deep: #002033;
+    --ink: #14232e; --muted: #5a6b76;
+    --line: #e3e7ea; --zebra: #f4f5f6; --paper: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--ink); background: #dfe4e7;
+    font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  }
+  .topbar, .botbar { background: var(--red); }
+  .topbar { height: 10px; }
+  .botbar { height: 14px; }
+  .sheet { background: var(--paper); max-width: 860px; margin: 0 auto; padding: 36px 48px 28px; min-height: 100vh; }
+  header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand img { width: 56px; height: 56px; border-radius: 10px; flex: none; }
+  .brand .name { font-weight: 900; letter-spacing: .14em; font-size: 19px; color: var(--blue); }
+  .brand .sub { font-size: 11px; letter-spacing: .22em; color: var(--red); font-weight: 700; }
+  .emisor { text-align: right; font-size: 12px; line-height: 1.55; }
+  .emisor b { color: var(--blue); }
+  .client { display: flex; gap: 12px; align-items: flex-start; margin: 24px 0 4px; font-size: 12.5px; line-height: 1.6; }
+  .client .ico {
+    flex: none; width: 34px; height: 34px; border-radius: 50%;
+    border: 2px solid var(--red); color: var(--red);
+    display: flex; align-items: center; justify-content: center; font-size: 17px;
+  }
+  .scope {
+    margin: 14px 0 0; font-size: 12px; line-height: 1.65; color: var(--ink);
+    background: #eef4f8; border-left: 5px solid var(--blue); border-radius: 0 8px 8px 0; padding: 10px 14px;
+  }
+  .scope b { color: var(--blue); }
+  .doctitle { display: flex; align-items: center; gap: 10px; margin: 22px 0 2px; }
+  .doctitle .doc {
+    width: 30px; height: 30px; border-radius: 7px; border: 2px solid var(--red);
+    color: var(--red); font-size: 16px; display: flex; align-items: center; justify-content: center; font-weight: 900;
+  }
+  .doctitle h1 { margin: 0; font-size: 28px; color: var(--blue); }
+  .docmeta { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; color: var(--muted); margin-bottom: 12px; flex-wrap: wrap; }
+  .docmeta b { color: var(--ink); }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead th {
+    text-align: left; font-size: 11px; letter-spacing: .04em; color: var(--muted);
+    border-bottom: 2px solid var(--blue); padding: 6px 8px;
+  }
+  thead th.num, tbody td.num { text-align: right; }
+  tbody td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tbody tr:nth-child(even) td { background: var(--zebra); }
+  td.n { width: 46px; }
+  td.n span {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 30px; height: 24px; padding: 0 6px;
+    background: var(--red); color: #fff; font-weight: 800; font-size: 12px;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  }
+  td.desc { line-height: 1.5; }
+  td.money, th.money { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  td.total { color: var(--red); font-weight: 800; }
+  tr.grupo td { background: var(--blue) !important; color: #fff; font-weight: 800; font-size: 12px; letter-spacing: .03em; }
+  tr.subt td { font-weight: 800; background: #eef4f8 !important; }
+  .bottom { display: flex; justify-content: space-between; gap: 24px; margin-top: 24px; }
+  .notes { font-size: 11px; color: var(--muted); line-height: 1.7; max-width: 46%; }
+  .notes b { color: var(--ink); }
+  .totals { margin-left: auto; text-align: right; font-size: 12.5px; min-width: 250px; }
+  .totals .grand { font-size: 15px; margin-bottom: 4px; }
+  .totals .grand b { color: var(--red); font-size: 24px; font-variant-numeric: tabular-nums; }
+  .totals table { font-size: 12px; }
+  .totals td { border: 0; padding: 2px 0 2px 8px; }
+  .totals td:last-child { font-variant-numeric: tabular-nums; }
+  footer { display: flex; justify-content: flex-end; font-size: 10.5px; color: var(--muted); margin-top: 36px; }
+  #toolbar { text-align: center; padding: 12px; background: var(--blue-deep); position: sticky; bottom: 0; display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; }
+  #toolbar button {
+    font-size: 13px; font-weight: 800; cursor: pointer; border: 0; border-radius: 8px;
+    padding: 10px 18px; background: #fff; color: var(--ink);
+  }
+  #toolbar button.on { background: var(--red); color: #fff; }
+  #toolbar button.print { background: var(--red); color: #fff; }
+  #toolbar span { color: #9fb3c0; font-size: 12px; }
+  @media print {
+    body { background: #fff; }
+    .sheet { max-width: none; min-height: auto; padding: 0; }
+    #toolbar { display: none !important; }
+    @page { size: A4; margin: 14mm 12mm; }
+  }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="sheet">
+  <header>
+    <div class="brand">
+      <img src="../assets/logo_studio_kreatures.png" alt="Kreatures Studio">
+      <div><div class="name">KREATURES</div><div class="sub">BEHIND YOUR PROJECT</div></div>
+    </div>
+    <div class="emisor" id="emisor"></div>
+  </header>
+  <div class="client"><div class="ico">◈</div><div id="cliente"></div></div>
+  <div class="scope" id="alcance"></div>
+  <div class="doctitle"><div class="doc">▤</div><h1 id="titulo">Presupuesto</h1></div>
+  <div class="docmeta"><span>Nº <b id="mNum"></b></span><span id="mConcepto"></span><span>Fecha: <b id="mFecha"></b></span></div>
+  <table>
+    <thead><tr id="cabecera"></tr></thead>
+    <tbody id="lineas"></tbody>
+  </table>
+  <div class="bottom">
+    <div class="notes" id="notas"></div>
+    <div class="totals" id="totales"></div>
+  </div>
+  <footer>PÁGINA: 1 / 1</footer>
+</div>
+<div class="botbar"></div>
+
+<div id="toolbar">
+  <button id="tP1" class="on">P1 · Primera entrega (800 €)</button>
+  <button id="tP2">P2 · Siguientes (600 €)</button>
+  <button id="tBas" class="on">Básico</button>
+  <button id="tDet">Detallado por horas</button>
+  <button id="tPrint" class="print">Imprimir / PDF</button>
+  <span>Se imprime la vista visible</span>
+</div>
+
+<script>
+'use strict';
+/* ======== DATOS: P1 (tope 800) y P2 (tope 600). Tarifa estudio 20 €/h ======== */
+var EMISOR = {
+  nombre: 'Kreatures Studio', email: 'hello@kreatures.studio',
+  web: 'kreatures-studio.github.io/website', lugar: 'España · Worldwide'
+};
+var CLIENTE = {
+  nombre: 'Nombre del cliente', direccion: 'Dirección',
+  ciudad: 'Ciudad', extra: 'C.I.F./N.I.F.: — · Tel.: — · Email: —'
+};
+var PH = 20; /* €/h tarifa estudio */
+var DATA = {
+  p1: {
+    tab: 'P1 · Primera entrega (800 €)', titulo: 'Presupuesto 1 · Primera entrega',
+    numero: '2026/001', concepto: 'Escape Room · PrintMyEscape (primera entrega)',
+    alcance: '<b>Alcance:</b> programación del asistente y motor de PDF + diseño visual + ' +
+      'maquetación de 9 puzles. <b>El diseño de los puzles lo aporta el cliente</b> (sin coste). ' +
+      'Horas eficientes con reutilización de assets e IA; la curva de aprendizaje la absorbe el estudio.',
+    basico: [
+      { desc: 'Programación Web (asistente + motor PDF)', cant: 1, precio: 250, dto: 0 },
+      { desc: 'Diseño Visual', cant: 1, precio: 300, dto: 0 },
+      { desc: 'Maquetación', cant: 1, precio: 250, dto: 0 }
+    ],
+    detalle: [
+      { grupo: 'Programación Web', items: [
+        { desc: 'Asistente de personalización + motor de PDF + integración', horas: 12.5 } ] },
+      { grupo: 'Diseño Visual · Margaret', items: [
+        { desc: 'Primera página', horas: 2 },
+        { desc: 'Casa', horas: 4 },
+        { desc: 'Devices', horas: 3 } ] },
+      { grupo: 'Diseño Visual · Sabina', items: [
+        { desc: 'Hojas', horas: 3 },
+        { desc: 'Dominó y perritos', horas: 2 },
+        { desc: 'Iconos', horas: 1 } ] },
+      { grupo: 'Maquetación · Margaret', items: [
+        { desc: 'Montaje de páginas + pruebas de impresión', horas: 12.5 } ] }
+    ],
+    iva: 21, observaciones: 'Presupuesto válido durante 30 días.', pago: 'Forma de pago: a convenir.'
+  },
+  p2: {
+    tab: 'P2 · Siguientes (600 €)', titulo: 'Presupuesto 2 · Siguientes entregas',
+    numero: '2026/002', concepto: 'Escape Room · PrintMyEscape (siguientes entregas)',
+    alcance: '<b>Alcance:</b> diseño visual + maquetación por entrega, <b>sin programación</b> ' +
+      '(se reutiliza el asistente y el motor). <b>El diseño de los puzles lo aporta el cliente</b> ' +
+      '(sin coste). Horas eficientes con reutilización de assets e IA.',
+    basico: [
+      { desc: 'Diseño Visual', cant: 1, precio: 350, dto: 0 },
+      { desc: 'Maquetación', cant: 1, precio: 250, dto: 0 }
+    ],
+    detalle: [
+      { grupo: 'Diseño Visual · Margaret', items: [
+        { desc: 'Casa', horas: 4 },
+        { desc: 'Devices', horas: 3 },
+        { desc: 'Pantalla', horas: 3 } ] },
+      { grupo: 'Diseño Visual · Sabina', items: [
+        { desc: 'Hojas', horas: 3.5 },
+        { desc: 'Dominó y perritos', horas: 2.5 },
+        { desc: 'Iconos', horas: 1.5 } ] },
+      { grupo: 'Maquetación · Margaret', items: [
+        { desc: 'Montaje de páginas + pruebas de impresión', horas: 12.5 } ] }
+    ],
+    iva: 21, observaciones: 'Presupuesto válido durante 30 días.', pago: 'Forma de pago: a convenir.'
+  }
+};
+/* ============================================================================= */
+
+var cual = 'p1', modo = 'basico';
+function eur(n) {
+  return n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '€';
+}
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function num(n, dec) {
+  return n.toLocaleString('es-ES', { minimumFractionDigits: dec || 0, maximumFractionDigits: 2 });
+}
+function fechaHoy() {
+  var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear();
+}
+function render() {
+  var P = DATA[cual];
+  document.getElementById('emisor').innerHTML =
+    '<b>' + esc(EMISOR.nombre) + '</b><br>' + esc(EMISOR.email) + '<br>' +
+    esc(EMISOR.web) + '<br>' + esc(EMISOR.lugar);
+  document.getElementById('cliente').innerHTML =
+    '<b>' + esc(CLIENTE.nombre) + '</b><br>' + esc(CLIENTE.direccion) + '<br>' +
+    esc(CLIENTE.ciudad) + '<br>' + esc(CLIENTE.extra);
+  document.getElementById('alcance').innerHTML = P.alcance;
+  document.getElementById('titulo').textContent = P.titulo;
+  document.getElementById('mNum').textContent = P.numero;
+  document.getElementById('mConcepto').textContent = P.concepto;
+  document.getElementById('mFecha').textContent = fechaHoy();
+  var cab = document.getElementById('cabecera'), tb = document.getElementById('lineas');
+  cab.innerHTML = ''; tb.innerHTML = '';
+  var base = 0, i = 0;
+  function fila(n, desc, c3, c4, c5, total, grupo) {
+    var tr = document.createElement('tr');
+    if (grupo) { tr.className = 'grupo'; tr.innerHTML = '<td colspan="6">' + esc(desc) + '</td>'; }
+    else {
+      i++;
+      tr.innerHTML = '<td class="n"><span>' + i + '.</span></td><td class="desc">' + esc(desc) + '</td>' +
+        '<td class="num">' + c3 + '</td><td class="money">' + c4 + '</td>' +
+        '<td class="money">' + c5 + '</td><td class="money total">' + total + '</td>';
+    }
+    tb.appendChild(tr);
+  }
+  if (modo === 'basico') {
+    cab.innerHTML = '<th style="width:46px">Nº.</th><th>Descripción</th><th class="num">Cantidad</th>' +
+      '<th class="money">Precio</th><th class="money">Dto.</th><th class="money">Total</th>';
+    P.basico.forEach(function (l) {
+      var t = l.cant * l.precio * (1 - (l.dto || 0) / 100);
+      base += t;
+      fila(0, l.desc, num(l.cant, 2), eur(l.precio), num(l.dto || 0) + '%', eur(t));
+    });
+  } else {
+    cab.innerHTML = '<th style="width:46px">Nº.</th><th>Descripción</th><th class="num">Horas</th>' +
+      '<th class="money">Precio/h</th><th class="money"></th><th class="money">Total</th>';
+    var gh = 0, gt = 0;
+    P.detalle.forEach(function (g) {
+      fila(0, g.grupo, '', '', '', '', true);
+      var sh = 0, st = 0;
+      g.items.forEach(function (it) {
+        var t = it.horas * PH;
+        sh += it.horas; st += t;
+        fila(0, it.desc, num(it.horas) + ' h', eur(PH), '', eur(t));
+      });
+      var tr = document.createElement('tr'); tr.className = 'subt';
+      tr.innerHTML = '<td></td><td>Subtotal ' + esc(g.grupo) + '</td><td class="num">' +
+        num(sh) + ' h</td><td></td><td></td><td class="money total">' + eur(st) + '</td>';
+      tb.appendChild(tr);
+      gh += sh; gt += st;
+    });
+    base = gt;
+    var tr2 = document.createElement('tr'); tr2.className = 'subt';
+    tr2.innerHTML = '<td></td><td>TOTAL HORAS / BASE</td><td class="num"><b>' + num(gh) +
+      ' h</b></td><td></td><td></td><td class="money total">' + eur(gt) + '</td>';
+    tb.appendChild(tr2);
+  }
+  var iva = base * P.iva / 100, total = base + iva;
+  document.getElementById('notas').innerHTML =
+    'OBSERVACIONES: ' + esc(P.observaciones) + '<br><b>' + esc(P.concepto) + '</b><br>' + esc(P.pago);
+  document.getElementById('totales').innerHTML =
+    '<div class="grand">Total: <b>' + eur(total) + '</b></div>' +
+    '<table><tr><td>BASE IMPONIBLE</td><td>' + eur(base) + '</td></tr>' +
+    '<tr><td>TOTAL I.V.A. (' + num(P.iva) + '%)</td><td>' + eur(iva) + '</td></tr></table>';
+  document.getElementById('tP1').className = cual === 'p1' ? 'on' : '';
+  document.getElementById('tP2').className = cual === 'p2' ? 'on' : '';
+  document.getElementById('tBas').className = modo === 'basico' ? 'on' : '';
+  document.getElementById('tDet').className = modo === 'detallado' ? 'on' : '';
+}
+document.getElementById('tP1').onclick = function () { cual = 'p1'; render(); };
+document.getElementById('tP2').onclick = function () { cual = 'p2'; render(); };
+document.getElementById('tBas').onclick = function () { modo = 'basico'; render(); };
+document.getElementById('tDet').onclick = function () { modo = 'detallado'; render(); };
+document.getElementById('tPrint').onclick = function () { window.print(); };
+render();
+</script>
+</body>
+</html>
