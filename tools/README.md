@@ -76,6 +76,22 @@ artista (posición, tamaños, tildes). Dar el visto bueno por idioma.
 3. `python3 tools/cleanfonts.py` (añadirla antes a la lista `FONTS` del script).
 4. Mapear la familia en `pickFont()` de `tools/compose.js`.
 
+## Paso 6 — Demo en navegador (opcional)
+
+`demo/index.html` es la demo operativa: formulario generado desde la
+plantilla + composición con pdf-lib en el propio navegador + descarga.
+Se construye (autocontenida, doble clic) con:
+
+```bash
+python3 tools/build-demo.py --tpl templates/final --bg FinalLayout-Clean.pdf
+```
+
+- El núcleo (`demo/compose-browser.js`, sin `require`/`fs`) es el mismo
+  motor probado en Node: se valida con el test E2E antes de cada demo.
+- Soporta textos rotados (tilts e verticales) y fotos rotadas según el
+  marco (ángulo medido del trazo). Fotos de marcos muy inclinados: ver QA.
+- Fotos del usuario se recortan con canvas al aspecto del marco.
+
 Advertencia conocida: el subsetter de pdf-lib rompe glifos de Caveat
 (ver `tools/compose.js`, `FONTS`); Caveat se incrusta completa. Si otra
 fuente sale con huecos en blanco, probar `subset: false` para ella.

@@ -109,70 +109,208 @@ def pct(v, total):
     return round(v / total * 100, 2)
 
 
+def line_angle(line):
+    import math
+    dx, dy = line['dir'][0], line['dir'][1]
+    a = -math.degrees(math.atan2(dy, dx))
+    a = ((a + 180) % 360) - 180
+    return round(a, 1) if abs(a) >= 0.5 else 0
+
+
+def xscale_of(span, text, width_pt):
+    fp = find_font(span['font'])
+    if fp and text.strip():
+        nat = natural_width(fp, text, span['size'])
+        if nat > 0:
+            return round(width_pt / nat, 2)
+    return None
+
+
+def norm_code(inner):
+    code = re.sub(r'\s+', '_', inner.strip())
+    code = re.sub(r'_+', '_', code).strip('_')
+    code = re.sub(r'^[^A-Za-z0-9]+|[^A-Za-z0-9]+$', '', code)
+    return code
+
+
+def merge_fixed(fixed):
+    """Fusiona cajas consecutivas de misma página/estilo, adyacentes en
+    vertical y solapadas en horizontal (párrafos partidos por líneas).
+    Solo cajas con >1 palabra: números y etiquetas sueltas no se tocan."""
+    out = []
+    for f in fixed:
+        if (out and out[-1]['page'] == f['page']
+                and out[-1]['fontFamily'] == f['fontFamily']
+                and out[-1]['size'] == f['size']
+                and out[-1]['color'] == f['color']
+                and out[-1]['angle'] == f['angle']
+                and len(out[-1]['es'].split()) > 1 and len(f['es'].split()) > 1):
+            p = out[-1]
+            gap = f['y'] - (p['y'] + p['h'])
+            ox0, ox1 = max(p['x'], f['x']), min(p['x'] + p['w'], f['x'] + f['w'])
+            overlap = (ox1 - ox0) / max(min(p['w'], f['w']), 0.01)
+            sizept = p['size'] / 100 * 595
+            if -0.5 <= gap <= sizept / 595 * 100 * 1.6 and overlap > 0.4:
+                p['es'] += '\n' + f['es']
+                x0 = min(p['x'], f['x']); y0 = min(p['y'], f['y'])
+                x1 = max(p['x'] + p['w'], f['x'] + f['w'])
+                y1 = max(p['y'] + p['h'], f['y'] + f['h'])
+                p['x'], p['y'], p['w'], p['h'] = x0, y0, x1 - x0, y1 - y0
+                continue
+        out.append(f)
+    # re-clavar claves únicas tras fusionar
+    seen = {}
+    for f in out:
+        base = slugify(f['es'].replace('\n', ' '))
+        seen[base] = seen.get(base, 0) + 1
+        f['key'] = base + ('' if seen[base] == 1 else '-' + str(seen[base]))
+    return out
+
+
+def span_at(spans, cx, cy):
+    for s in spans:
+        x0, y0, x1, y1 = s['bbox']
+        if x0 - 1 <= cx <= x1 + 1 and y0 - 2 <= cy <= y1 + 2:
+            return s
+    return None
+
+
 def extract_texts(doc):
-    """Devuelve (fixed, slots): cajas fijas y huecos [CODIGO] con geometría en %."""
+    """Cajas fijas y huecos [CODIGO] con geometría exacta por palabras.
+    Soporta códigos multilínea, texto rotado (angle) y estilos por tramo.
+    Líneas adyacentes del mismo estilo y solapadas se fusionan en una caja."""
+    import math
     fixed, slots = [], []
+    key_count = {}
     for pi, page in enumerate(doc):
         W, H = page.rect.width, page.rect.height
-        key_count = {}
-        for b in page.get_text('dict')['blocks']:
+        dd = page.get_text('dict')
+        words = page.get_text('words')
+        span_by_bl = {}
+        all_spans = []
+        for bi, b in enumerate(dd['blocks']):
             if b['type'] != 0:
                 continue
-            for line in b['lines']:
-                spans = [s for s in line['spans'] if s['text'].strip()]
-                if not spans:
+            for li, line in enumerate(b['lines']):
+                span_by_bl[(bi, li)] = (line, line['spans'])
+                all_spans.extend(line['spans'])
+        lines = {}
+        for w in words:
+            if not w[4].strip():
+                continue
+            lines.setdefault((w[5], w[6]), []).append(w)
+        # Ensamblar líneas con corchete sin cerrar (códigos multilínea)
+        order = sorted(lines)
+        asm = []
+        buf = None
+        for key in order:
+            ws = sorted(lines[key], key=lambda w: w[7])
+            if buf is not None:
+                ws = buf + ws
+                key = buf_key
+                buf = None
+            joined = ' '.join(w[4] for w in ws)
+            tail = joined.split('[')[-1]
+            if '[' in joined and ']' not in tail:
+                # Solo se arrastra el tramo sin cerrar; lo ya cerrado se procesa
+                cut = next((i for i, w in enumerate(ws) if '[' in w[4]), 0)
+                if cut:
+                    asm.append((key, ws[:cut]))
+                buf, buf_key = ws[cut:], key
+                continue
+            asm.append((key, ws))
+        if buf is not None:
+            asm.append((buf_key, buf))
+        for (bi, li), ws in asm:
+            ws = sorted(ws, key=lambda w: (w[1], w[7]))
+            entry = span_by_bl.get((bi, li))
+            if entry:
+                line, spans = entry
+                angle = line_angle(line)
+            else:
+                # Sin correspondencia bloque/línea (texto vertical): estilos
+                # por búsqueda global y ángulo por geometría de lectura.
+                spans = all_spans
+                xs = [w[0] for w in ws]; ys = [w[1] for w in ws]
+                bw, bh = max(xs) - min(xs) + 1, max(ys) - min(ys) + 1
+                if bh > bw * 2:
+                    angle = -90 if ys == sorted(ys) else 90
+                else:
+                    angle = 0
+                line = None
+            joined = ' '.join(w[4] for w in ws)
+            # localizar códigos en el texto unido
+            matches = []
+            for m in re.finditer(r'\[([^\[\]]+?)\]', joined):
+                field = norm_code(m.group(1))
+                if field:
+                    matches.append((m.start(), m.end(), field))
+            # cursor de caracteres -> palabras cubiertas
+            pos, wi = 0, []
+            for idx, w in enumerate(ws):
+                wi.append((pos, pos + len(w[4])))
+                pos += len(w[4]) + 1
+            used = set()
+            for (a, b_, field) in matches:
+                cov = [ws[i] for i, (s0, s1) in enumerate(wi) if s0 < b_ and s1 > a]
+                if not cov:
                     continue
-                # Partir la línea en tramos fijos y códigos
-                for s in spans:
-                    parts = CODE_RE.split(s['text'])
-                    x0, y0, x1, y1 = s['bbox']
-                    sw = max(x1 - x0, 1)
-                    total_chars = max(len(s['text']), 1)
-                    cursor = 0
-                    for k, part in enumerate(parts):
-                        plen = len(part)
-                        if plen == 0:
-                            continue
-                        fx0 = x0 + sw * cursor / total_chars
-                        fx1 = x0 + sw * (cursor + plen) / total_chars
-                        cursor += plen
-                        xs = None
-                        fp = find_font(s['font'])
-                        if fp and plen:
-                            nat = natural_width(fp, part, s['size'])
-                            if nat > 0:
-                                xs = round((fx1 - fx0) / nat, 2)
-                        if k % 2 == 1:  # es un [CODIGO]
-                            code = part.strip()
-                            slots.append({
-                                'page': pi + 1, 'field': code,
-                                'x': pct(fx0, W), 'y': pct(s['bbox'][1], H),
-                                'w': pct(fx1 - fx0, W), 'h': pct(s['bbox'][3] - s['bbox'][1], H),
-                                'fontFamily': basefont(s['font']),
-                                'size': round(s['size'] / W * 100, 2),
-                                'color': '#%06X' % (s['color'] & 0xFFFFFF),
-                                'xscale': xs,
-                            })
-                        else:
-                            txt = part.strip()
-                            if txt:
-                                key_count[txt] = key_count.get(txt, 0) + 1
-                                fixed.append({
-                                    'page': pi + 1,
-                                    'key': slugify(txt) + ('' if key_count[txt] == 1 else '-' + str(key_count[txt])),
-                                    'es': txt,
-                                    'x': pct(fx0, W), 'y': pct(s['bbox'][1], H),
-                                    'w': pct(fx1 - fx0, W), 'h': pct(s['bbox'][3] - s['bbox'][1], H),
-                                    'fontFamily': basefont(s['font']),
-                                    'size': round(s['size'] / W * 100, 2),
-                                    'color': '#%06X' % (s['color'] & 0xFFFFFF),
-                                    'xscale': xs,
-                                })
-    return fixed, slots
+                used.update(id(w) for w in cov)
+                x0 = min(w[0] for w in cov); y0 = min(w[1] for w in cov)
+                x1 = max(w[2] for w in cov); y1 = max(w[3] for w in cov)
+                st = span_at(spans, (x0 + x1) / 2, (y0 + y1) / 2) or spans[0]
+                xs = xscale_of(st, joined[a:b_], x1 - x0)
+                slots.append({
+                    'page': pi + 1, 'field': field,
+                    'x': pct(x0, W), 'y': pct(y0, H),
+                    'w': pct(x1 - x0, W), 'h': pct(y1 - y0, H),
+                    'fontFamily': basefont(st['font']),
+                    'size': round(st['size'] / W * 100, 2),
+                    'color': '#%06X' % (st['color'] & 0xFFFFFF),
+                    'xscale': xs, 'angle': angle,
+                })
+            # tramos fijos (palabras no usadas), partidos por estilo
+            run, runstyle = [], None
+            def flush():
+                if not run:
+                    return
+                txt = ' '.join(w[4] for w in run)
+                if not txt.strip():
+                    return
+                x0 = min(w[0] for w in run); y0 = min(w[1] for w in run)
+                x1 = max(w[2] for w in run); y1 = max(w[3] for w in run)
+                st = span_at(spans, (x0 + x1) / 2, (y0 + y1) / 2) or spans[0]
+                key = slugify(txt)
+                key_count[key] = key_count.get(key, 0) + 1
+                xs = xscale_of(st, txt, x1 - x0)
+                fixed.append({
+                    'page': pi + 1,
+                    'key': key + ('' if key_count[key] == 1 else '-' + str(key_count[key])),
+                    'es': txt,
+                    'x': pct(x0, W), 'y': pct(y0, H),
+                    'w': pct(x1 - x0, W), 'h': pct(y1 - y0, H),
+                    'fontFamily': basefont(st['font']),
+                    'size': round(st['size'] / W * 100, 2),
+                    'color': '#%06X' % (st['color'] & 0xFFFFFF),
+                    'xscale': xs, 'angle': angle,
+                })
+            for w in ws:
+                if id(w) in used:
+                    flush(); run, runstyle = [], None
+                    continue
+                st = span_at(spans, (w[0] + w[2]) / 2, (w[1] + w[3]) / 2)
+                style = (st['font'], round(st['size'], 1), st['color']) if st else None
+                if run and style != runstyle:
+                    flush(); run, runstyle = [], None
+                run.append(w); runstyle = style
+            flush()
+    return merge_fixed(fixed), slots
 
 
 def extract_frames(doc):
-    """Marcos de foto: rectángulos con trazo magenta/morado (tolerante)."""
+    """Marcos de foto: rectángulos con trazo magenta/morado (tolerante).
+    Mide la inclinación visual del marco (tilt) desde sus segmentos."""
+    import math
     frames = []
     for pi, page in enumerate(doc):
         W, H = page.rect.width, page.rect.height
@@ -182,26 +320,127 @@ def extract_frames(doc):
                 continue
             r, g, b = col
             area = dr['rect'].width * dr['rect'].height
-            if r > 0.5 and b > 0.5 and g < 0.45 and area > 2000:
-                frames.append({
-                    'page': pi + 1,
-                    'stroke': [round(r, 3), round(g, 3), round(b, 3)],
-                    'x': pct(dr['rect'].x0, W), 'y': pct(dr['rect'].y0, H),
-                    'w': pct(dr['rect'].width, W), 'h': pct(dr['rect'].height, H),
-                })
+            if not (r > 0.5 and b > 0.5 and g < 0.45 and area > 2000):
+                continue
+            tilt = 0
+            for it in dr.get('items', []):
+                if it[0] == 'qu':
+                    q = it[1]
+                    pts = [q.ul, q.ur, q.lr, q.ll]
+                    best = None
+                    for k in range(4):
+                        p0, p1 = pts[k], pts[(k + 1) % 4]
+                        a = math.degrees(math.atan2(p1.y - p0.y, p1.x - p0.x))
+                        while a > 90:
+                            a -= 180
+                        while a <= -90:
+                            a += 180
+                        if best is None or abs(a) < abs(best):
+                            best = a
+                    if best is not None and abs(best) >= 0.5:
+                        tilt = round(best, 1)
+            frames.append({
+                'page': pi + 1,
+                'stroke': [round(r, 3), round(g, 3), round(b, 3)],
+                'x': pct(dr['rect'].x0, W), 'y': pct(dr['rect'].y0, H),
+                'w': pct(dr['rect'].width, W), 'h': pct(dr['rect'].height, H),
+                'tilt': tilt,
+            })
     frames.sort(key=lambda f: (f['page'], f['y'], f['x']))
-    for i, f in enumerate(frames, 1):
-        f['field'] = 'FOTO_%d' % i
+    return frames
+
+
+def dedup_slots(slots):
+    """Fusiona slots del mismo campo/página casi superpuestos
+    (copias sombra del artista): distancia de centros < 2% -> unión."""
+    out = []
+    for s in slots:
+        cx, cy = s['x'] + s['w'] / 2, s['y'] + s['h'] / 2
+        twin = None
+        for o in out:
+            if o['page'] == s['page'] and o['field'] == s['field']:
+                ox, oy = o['x'] + o['w'] / 2, o['y'] + o['h'] / 2
+                if abs(ox - cx) < 2 and abs(oy - cy) < 2:
+                    twin = o
+                    break
+        if twin:
+            x0 = min(twin['x'], s['x']); y0 = min(twin['y'], s['y'])
+            x1 = max(twin['x'] + twin['w'], s['x'] + s['w'])
+            y1 = max(twin['y'] + twin['h'], s['y'] + s['h'])
+            twin.update(x=x0, y=y0, w=x1 - x0, h=y1 - y0)
+        else:
+            out.append(s)
+    return out
+
+
+def remap_resp(slots):
+    """RESP_PERSONALIZADA_k se reutilizan por página para distintos
+    sospechosos: se reasignan por parejas (orden vertical) a
+    S{N}_HIDE{A,B} según los NOMBRE_N de la página. Devuelve log."""
+    import re
+    log = []
+    by_page = {}
+    for s in slots:
+        by_page.setdefault(s['page'], []).append(s)
+    for pg, ss in sorted(by_page.items()):
+        names = sorted(set(re.match(r'NOMBRE_(\d+)$', s['field']).group(1)
+                           for s in ss if re.match(r'NOMBRE_(\d+)$', s['field'] or '')),
+                       key=int)
+        resps = sorted([s for s in ss if (s['field'] or '').startswith('RESP_PERSONALIZADA_')],
+                       key=lambda s: s['y'])
+        if not resps or not names:
+            continue
+        per = len(resps) // len(names)
+        for i, s in enumerate(resps):
+            n = names[min(i // max(per, 1), len(names) - 1)]
+            newf = 'S%s_HIDE%s' % (n, 'A' if i % 2 == 0 else 'B')
+            if s['field'] != newf:
+                log.append('p%d %s -> %s' % (pg, s['field'], newf))
+            s['field'] = newf
+    return log
+
+
+def link_frames(slots, frames):
+    """Vincula cada marco al NOMBRE_N más cercano de su página
+    (misma foto en todas las páginas del sospechoso: FOTO_N).
+    Sin nombre cercano: FOTO_P{página}_{k} único."""
+    import re
+    from collections import Counter
+    names = [s for s in slots
+             if re.match(r'NOMBRE_(\d+)$', s['field'] or '')]
+    cumple = [s for s in slots if (s['field'] or '') == 'NOMBRE_CUMPLE']
+    used = Counter()
+    for f in frames:
+        fx, fy = f['x'] + f['w'] / 2, f['y'] + f['h'] / 2
+        best, bd = None, 1e9
+        for s in names:
+            if s['page'] != f['page']:
+                continue
+            d = abs(s['x'] + s['w'] / 2 - fx) + abs(s['y'] + s['h'] / 2 - fy)
+            if d < bd:
+                best, bd = s, d
+        if best and bd < 40:
+            n = re.match(r'NOMBRE_(\d+)$', best['field']).group(1)
+            f['field'] = 'FOTO_%s' % n
+        elif any(s['page'] == f['page'] for s in cumple):
+            f['field'] = 'FOTO_CUMPLE'
+        else:
+            used[f['page']] += 1
+            f['field'] = 'FOTO_P%d_%d' % (f['page'], used[f['page']])
     return frames
 
 
 def build_template(slots, frames, npages, doc_id, name):
+    import re
     fields = {}
     for s in slots:
         code = s['field']
         if code not in fields:
+            m = re.match(r'S(\d+)_HIDE([AB])$', code)
+            label = ('Sospechoso %s escondite %s' % (m.group(1), m.group(2))) if m \
+                else code.replace('_', ' ').title()
             fields[code] = {'id': code, 'type': 'image' if 'FOTO' in code else 'text',
-                            'label': code.replace('_', ' ').title(), 'maxLength': 70}
+                            'label': label, 'maxLength': 70}
     for f in frames:
         if f['field'] not in fields:
             fields[f['field']] = {'id': f['field'], 'type': 'image', 'label': 'Foto %s' % f['field'].split('_')[-1]}
@@ -213,11 +452,12 @@ def build_template(slots, frames, npages, doc_id, name):
                 pslots.append({'field': s['field'], 'x': s['x'], 'y': s['y'],
                                'w': s['w'], 'h': s['h'], 'size': s['size'],
                                'color': s['color'], 'fontFamily': s['fontFamily'],
-                               'xscale': s.get('xscale')})
+                               'xscale': s.get('xscale'), 'angle': s.get('angle', 0)})
         for f in frames:
             if f['page'] == pi:
                 pslots.append({'field': f['field'], 'x': f['x'], 'y': f['y'],
-                               'w': f['w'], 'h': f['h'], 'fit': 'cover'})
+                               'w': f['w'], 'h': f['h'], 'fit': 'cover',
+                               'angle': round(-(f.get('tilt') or 0), 1)})
         pages.append({'id': 'p%d' % pi, 'title': 'Página %d' % pi,
                       'background': '../assets/pages/%s-fondo-p%d.png' % (doc_id, pi),
                       'slots': pslots})
@@ -303,7 +543,10 @@ def main():
     os.makedirs(out_pages, exist_ok=True)
     doc = fitz.open(os.path.join(ROOT, args.src_text))
     fixed, slots = extract_texts(doc)
-    frames = extract_frames(doc)
+    slots = dedup_slots(slots)
+    for line in remap_resp(slots):
+        print('remap:', line)
+    frames = link_frames(slots, extract_frames(doc))
     npages = doc.page_count
     with open(os.path.join(out_tpl, 'texts.json'), 'w', encoding='utf-8') as f:
         json.dump(fixed, f, ensure_ascii=False, indent=1)
