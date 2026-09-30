@@ -199,6 +199,28 @@ def extract_texts(doc):
             if not w[4].strip():
                 continue
             lines.setdefault((w[5], w[6]), []).append(w)
+        # Quitar copias sombra en TODA la página (mismo texto superpuesto:
+        # negritas duplicadas, incluso entre bloques) y glifos dobles
+        # ('22' estrecho -> '2')
+        allw = []
+        for lk in sorted(lines):
+            allw.extend(sorted(lines[lk], key=lambda w: w[7]))
+        kept = []
+        for w in allw:
+            t = w[4]
+            ww, hh = w[2] - w[0], max(w[3] - w[1], 1)
+            if len(t) >= 2 and len(set(t)) == 1 and ww / hh < 0.75:
+                w = (w[0], w[1], w[0] + ww / len(t), w[3], t[0], w[5], w[6], w[7])
+                t = w[4]
+            cx, cy = (w[0] + w[2]) / 2, (w[1] + w[3]) / 2
+            h = max(w[3] - w[1], 1)
+            if any(o[4] == t and abs((o[0] + o[2]) / 2 - cx) < 0.4 * h
+                   and abs((o[1] + o[3]) / 2 - cy) < 0.4 * h for o in kept):
+                continue
+            kept.append(w)
+        lines = {}
+        for w in kept:
+            lines.setdefault((w[5], w[6]), []).append(w)
         # Ensamblar líneas con corchete sin cerrar (códigos multilínea)
         order = sorted(lines)
         asm = []
