@@ -78,7 +78,8 @@ function fit(font, text, boxPt, size0, single, targetHs, lockSize) {
   const min = size0 * SIZE_MIN;
   let lines = [text], hs = [1];
   const once = (sz) => {
-    const nat = single ? [text] : wrap(font, text, sz, boxPt.w);
+    const budget = boxPt.w / HS_MIN;
+    const nat = single ? [text] : wrap(font, text, sz, budget);
     const h = nat.map((ln) => {
       const nw = font.widthOfTextAtSize(ln, sz) || 1;
       return Math.min(targetHs, boxPt.w / nw);
@@ -96,7 +97,7 @@ function fit(font, text, boxPt, size0, single, targetHs, lockSize) {
   const hsFloor = single ? 0.6 : HS_MIN;
   const sizeFloor = size0 * (single ? 0.5 : SIZE_MIN);
   for (;;) {
-    const nat = single ? [text] : wrap(font, text, size, boxPt.w);
+    const nat = single ? [text] : wrap(font, text, size, boxPt.w / HS_MIN);
     lines = nat;
     hs = nat.map((ln) => {
       const w = font.widthOfTextAtSize(ln, size) || 1;

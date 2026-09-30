@@ -39,7 +39,10 @@ function fit(font, text, boxPt, size0, opt) {
   const floor = single ? 0.6 : HS_MIN;
   let lines = [text], hs = [1];
   const once = (sz) => {
-    const nat = single ? [text] : wrap(font, text, sz, vertical ? boxPt.h : fitW);
+    /* Presupuesto de línea con la condensación mínima (70%): lo que quepa
+       condensado no se parte; luego hs respeta el aspecto de referencia. */
+    const budget = (vertical ? boxPt.h : fitW) / HS_MIN;
+    const nat = single ? [text] : wrap(font, text, sz, budget);
     const h = nat.map((ln) => {
       const nw = font.widthOfTextAtSize(ln, sz) || 1;
       return Math.min(targetHs, (vertical ? boxPt.h : fitW) / nw);
