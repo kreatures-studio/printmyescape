@@ -1299,7 +1299,7 @@
      "color": "#1D1D1B",
      "fontFamily": "OpenSans-Regular",
      "xscale": 0.19,
-     "angle": 0
+     "angle": -90
     },
     {
      "field": "BUSQUEDA_2",
@@ -1311,7 +1311,7 @@
      "color": "#1D1D1B",
      "fontFamily": "OpenSans-Regular",
      "xscale": 0.19,
-     "angle": 0
+     "angle": -90
     },
     {
      "field": "FOTO_5",

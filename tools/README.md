@@ -83,7 +83,7 @@ plantilla + composición con pdf-lib en el propio navegador + descarga.
 Se construye (autocontenida, doble clic) con:
 
 ```bash
-python3 tools/build-demo.py --tpl templates/final --bg FinalLayout-Clean.pdf
+python3 tools/build-demo.py --tpl templates/final2 --bg Final2-Clean.pdf
 ```
 
 - El núcleo (`demo/compose-browser.js`, sin `require`/`fs`) es el mismo
