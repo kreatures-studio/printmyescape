@@ -19,8 +19,8 @@ def b64(path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--tpl', default='templates/final')
-    ap.add_argument('--bg', default='FinalLayout-Clean.pdf')
+    ap.add_argument('--tpl', default='templates/final2')
+    ap.add_argument('--bg', default='Final2-Clean.pdf')
     ap.add_argument('--out', default='demo/index.html')
     args = ap.parse_args()
 
