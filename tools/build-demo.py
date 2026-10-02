@@ -47,6 +47,8 @@ def main():
         'antonSC': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'AntonSC-Regular.ttf')), 'subset': True},
         'opensans': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'OpenSans-Regular.ttf')), 'subset': True},
         'opensansBold': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'OpenSans-Bold.ttf')), 'subset': True},
+        'courier': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'CourierPrime-Regular.ttf')), 'subset': True},
+        'courierBold': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'CourierPrime-Bold.ttf')), 'subset': True},
     }
     data = {'template': json.loads(template), 'texts': json.loads(texts), 'i18n': i18n,
             'fonts': fonts, 'bg': b64(os.path.join(ROOT, args.bg)),

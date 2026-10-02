@@ -14,6 +14,8 @@ FONTS = [
     ('AntonSC-Regular.ttf', 'Anton SC', 'Regular'),
     ('OpenSans-Regular.ttf', 'Open Sans', 'Regular'),
     ('OpenSans-Bold.ttf', 'Open Sans', 'Bold'),
+    ('CourierPrime-Regular.ttf', 'Courier Prime', 'Regular'),
+    ('CourierPrime-Bold.ttf', 'Courier Prime', 'Bold'),
 ]
 DROP = ('GSUB', 'GPOS', 'GDEF', 'STAT', 'HVAR', 'MVAR', 'VVAR', 'avar', 'fvar', 'gvar', 'cvar')
 

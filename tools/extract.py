@@ -133,10 +133,12 @@ def norm_code(inner):
     return code
 
 
-def merge_fixed(fixed):
+def merge_fixed(fixed, slots):
     """Fusiona cajas consecutivas de misma página/estilo, adyacentes en
     vertical y solapadas en horizontal (párrafos partidos por líneas).
-    Solo cajas con >1 palabra: números y etiquetas sueltas no se tocan."""
+    NO fusiona si hay una fila de hueco entre medias (etiquetas con su
+    valor en medio) ni cajas de una palabra (chips, números)."""
+    slot_rows = [(s['page'], s['y'] + s['h'] / 2) for s in slots or []]
     out = []
     for f in fixed:
         if (out and out[-1]['page'] == f['page']
@@ -150,7 +152,10 @@ def merge_fixed(fixed):
             ox0, ox1 = max(p['x'], f['x']), min(p['x'] + p['w'], f['x'] + f['w'])
             overlap = (ox1 - ox0) / max(min(p['w'], f['w']), 0.01)
             sizept = p['size'] / 100 * 595
-            if -0.5 <= gap <= sizept / 595 * 100 * 1.6 and overlap > 0.4:
+            gaplim = sizept / 595 * 100 * 1.6
+            blocked = any(pg == f['page'] and (p['y'] + p['h']) < sy < f['y']
+                          for pg, sy in slot_rows)
+            if not blocked and -0.5 <= gap <= gaplim and overlap > 0.4:
                 p['es'] += '\n' + f['es']
                 x0 = min(p['x'], f['x']); y0 = min(p['y'], f['y'])
                 x1 = max(p['x'] + p['w'], f['x'] + f['w'])
@@ -326,7 +331,7 @@ def extract_texts(doc):
                     flush(); run, runstyle = [], None
                 run.append(w); runstyle = style
             flush()
-    return merge_fixed(fixed), slots
+    return merge_fixed(fixed, slots), slots
 
 
 def extract_frames(doc):
@@ -570,6 +575,18 @@ def main():
         print('remap:', line)
     frames = link_frames(slots, extract_frames(doc))
     npages = doc.page_count
+    # Overrides manuales (textos irrecuperables del PDF: la fuente trae un
+    # mapa roto y se sustituyen por transcripción; queda registrado aquí)
+    ov_path = os.path.join(out_tpl, 'texts-override.json')
+    if os.path.exists(ov_path):
+        with open(ov_path, encoding='utf-8') as f:
+            ov = json.load(f)
+        for bx in fixed:
+            if bx['key'] in ov:
+                for k in ('es', 'fontFamily', 'size', 'color'):
+                    if k in ov[bx['key']]:
+                        bx[k] = ov[bx['key']][k]
+                print('override:', bx['key'])
     with open(os.path.join(out_tpl, 'texts.json'), 'w', encoding='utf-8') as f:
         json.dump(fixed, f, ensure_ascii=False, indent=1)
     tpl = build_template(slots, frames, npages, args.doc, args.name or args.doc)
