@@ -25,6 +25,8 @@ const FONTS = {
   antonSC: { file: '../assets/fonts/AntonSC-Regular.ttf', subset: true },
   opensans: { file: '../assets/fonts/OpenSans-Regular.ttf', subset: true },
   opensansBold: { file: '../assets/fonts/OpenSans-Bold.ttf', subset: true },
+  courier: { file: '../assets/fonts/CourierPrime-Regular.ttf', subset: true },
+  courierBold: { file: '../assets/fonts/CourierPrime-Bold.ttf', subset: true },
 };
 /* La familia extraída manda: manuscritas a Caveat, titulares a Anton SC y
    las Bold del artista a OpenSans-Bold. OpenSans/Myriad Regular van en
@@ -38,6 +40,14 @@ function pickFont(family, size) {
   return 'opensans';
 }
 const ALIGN_OVERRIDE = {}; /* ej: {'notas-y-observaciones': 'center'} */
+/* Factura: typewriter monoespaciada (cifras y columnas legibles). */
+const MONO = { factura: 1, concepto: 1, cant: 1, 'precio-unit': 1, importe: 1, cliente: 1 };
+const MONO_R = /vibrador|1-000|no-2025|^1-9$/;
+function pickFontFor(f) {
+  if (MONO[f.key]) return 'courierBold';
+  if (MONO_R.test(f.key)) return 'courier';
+  return pickFont(f.fontFamily, f.size);
+}
 
 function hex(h) {
   const n = parseInt(h.slice(1), 16);
@@ -172,6 +182,48 @@ function drawFitted(page, font, text, boxPt, size0, color, align, opt) {
     x: cx + (x0 - cx) * c - (y0 - cy) * s,
     y: cy + (x0 - cx) * s + (y0 - cy) * c,
   });
+  /* Líneas posicionales: si la caja trae sus líneas originales y el texto
+     cabe en ellas, cada línea se dibuja en su sitio exacto (sin reflujo). */
+  const lbs = (!vertical && !opt.single && boxPt.lines && boxPt.lines.length > 1) ? boxPt.lines : null;
+  if (lbs) {
+    const words = String(text).split(/\s+/).filter(Boolean);
+    const placed = [];
+    let wi = 0;
+    for (const lb of lbs) {
+      const cur = [];
+      while (wi < words.length) {
+        const t = cur.concat([words[wi]]).join(' ');
+        const nw = font.widthOfTextAtSize(t, size) || 1;
+        if (nw <= lb.w / HS_MIN || cur.length === 0) { cur.push(words[wi++]); }
+        else break;
+      }
+      placed.push({ text: cur.join(' '), box: lb });
+    }
+    if (wi >= words.length) {
+      let bad = false;
+      const drawn = placed.map((pl) => {
+        const nw = font.widthOfTextAtSize(pl.text, size) || 1;
+        const h = Math.min(opt.targetHs || 1, pl.box.w / nw);
+        if (pl.text && h < 0.6) bad = true;
+        return { text: pl.text, box: pl.box, hs: h };
+      });
+      if (!bad) {
+        drawn.forEach((ln) => {
+          if (!ln.text) return;
+          const lb = ln.box;
+          const lcx = lb.x + lb.w / 2, lcy = lb.yTop - lb.h / 2;
+          const base = lcy + (size * 1.25) / 2 - size * 0.95;
+          const w = font.widthOfTextAtSize(ln.text, size) * ln.hs;
+          let x = lb.x;
+          if (align === 'center') x = lcx - w / 2;
+          else if (align === 'right') x = lb.x + lb.w - w;
+          const p = pivot(x, base);
+          drawLine(page, ln.text, p.x, p.y, size, font, color, ln.hs, angle);
+        });
+        return warn;
+      }
+    }
+  }
   if (!vertical) {
     const lh = size * 1.25;
     /* Líneas justificadas en la altura (primera arriba, última abajo):
@@ -295,6 +347,11 @@ async function main() {
     out.addPage(bg);
     const PW = bg.getWidth(), PH = bg.getHeight();
     const box = (b) => ({ x: (b.x / 100) * PW, w: (b.w / 100) * PW, yTop: PH - (b.y / 100) * PH, h: (b.h / 100) * PH });
+    const withLines = (f) => {
+      const bp = box(f);
+      bp.lines = ((f && f.lines) || []).map(box);
+      return bp;
+    };
     /* fijos traducidos */
     const pageFixed = fixed.filter((x) => x.page === pi + 1);
     const sibBoxes = pageFixed.map((x) => {
@@ -303,7 +360,7 @@ async function main() {
     });
     for (const f of pageFixed) {
       const str = i18n[f.key] !== undefined ? i18n[f.key] : f.es;
-      const font = ff[pickFont(f.fontFamily, f.size)];
+      const font = ff[pickFontFor(f)];
       const size0 = (f.size / 100) * PW;
       const align = ALIGN_OVERRIDE[f.key] || f.align || 'left';
       let use = size0;
@@ -344,7 +401,7 @@ async function main() {
           });
         }
       }
-      if (drawFitted(bg, font, str, box(f), size0, hex(f.color), align,
+      if (drawFitted(bg, font, str, withLines(f), size0, hex(f.color), align,
           { targetHs: f.xscale, angle: f.angle || 0, lockSize: use, inline,
             siblings: sibBoxes.filter((sb) => sb.ref !== f) })) {
         warns.push(`${f.key}: encogido fuerte`);

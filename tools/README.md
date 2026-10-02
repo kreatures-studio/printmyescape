@@ -36,6 +36,24 @@ marco magenta. Si algo falla, se corrige en Illustrator y se reexporta
 `--fonts` calcula la condensación horizontal que aplicó el artista
 (imprescindible para que la composición la replique).
 
+## Overrides de texto (`texts-override.json`)
+
+Si alguna caja sale ilegible (fuente con mapa roto, como le pasó a la
+nota de la factura), se crea `templates/<doc>/texts-override.json`:
+
+```json
+{ "clave-de-la-caja": { "es": "Texto verdadero" } }
+```
+
+Se aplica al extraer (queda registrado en consola) y a partir de ahí
+manda sobre el PDF. Traducir después en `i18n-en.json`.
+
+## Cómo dibuja cada línea (fidelidad)
+
+Cada caja guarda sus `lines` originales: si la traducción cabe en ellas,
+cada línea va a su sitio exacto (sin reflujo). Si no cabe, se usa el
+apilado clásico. Las cajas de una línea altas (títulos) se anclan arriba.
+
 ## Paso 3 — Traducir
 
 Copiar `templates/<doc>/i18n-es.json` a `i18n-<idioma>.json`

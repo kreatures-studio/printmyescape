@@ -1528,7 +1528,7 @@
  {
   "page": 11,
   "key": "uar-es-m-est-alg",
-  "es": "ʎuaʏrɛ, esɀɏ ʑɚ mɪɗ estΈ Algɛ",
+  "es": "Algo está mal en este cuadro,",
   "x": 13.48,
   "y": 58.53,
   "w": 71.1,
@@ -1542,7 +1542,7 @@
  {
   "page": 11,
   "key": "us-nt-l-e-n",
-  "es": "ʠusɛ, ʠʖntʝɠ ɰɗ ʡɂɏ lɛ ʛʖȾeɡ nɛ",
+  "es": "no mires lo que el pintor puso,",
   "x": 14.44,
   "y": 60.94,
   "w": 75.78,
@@ -1556,7 +1556,7 @@
  {
   "page": 11,
   "key": "id-l-r",
-  "es": "ɼʙʧidά. ʡɂɏ lɛ ʛʖrɈ",
+  "es": "mira lo que olvidó.",
   "x": 15.4,
   "y": 68.42,
   "w": 47.33,
@@ -2125,7 +2125,7 @@
   "size": 2.35,
   "color": "#725A4C",
   "xscale": 0.33,
-  "angle": -90
+  "angle": 0
  },
  {
   "page": 13,
@@ -2801,7 +2801,7 @@
  },
  {
   "page": 16,
-  "key": "2-badge",
+  "key": "2-10",
   "es": "2",
   "x": 78.4,
   "y": 66.27,

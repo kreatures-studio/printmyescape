@@ -137,6 +137,49 @@ function drawFitted(page, degrees, ops, font, text, boxPt, size0, color, align, 
     x: cx + (x0 - cx) * c - (y0 - cy) * s,
     y: cy + (x0 - cx) * s + (y0 - cy) * c,
   });
+  /* Líneas posicionales: si la caja trae sus líneas originales y el texto
+     cabe en ellas, cada línea se dibuja en su sitio exacto (sin reflujo).
+     Si sobran palabras o alguna no cabe, se usa el apilado clásico. */
+  const lbs = (!vertical && !opt.single && boxPt.lines && boxPt.lines.length > 1) ? boxPt.lines : null;
+  if (lbs) {
+    const words = String(text).split(/\s+/).filter(Boolean);
+    const placed = [];
+    let wi = 0;
+    for (const lb of lbs) {
+      const cur = [];
+      while (wi < words.length) {
+        const t = cur.concat([words[wi]]).join(' ');
+        const nw = font.widthOfTextAtSize(t, size) || 1;
+        if (nw <= lb.w / HS_MIN || cur.length === 0) { cur.push(words[wi++]); }
+        else break;
+      }
+      placed.push({ text: cur.join(' '), box: lb });
+    }
+    if (wi >= words.length) {
+      let bad = false;
+      const drawn = placed.map((pl) => {
+        const nw = font.widthOfTextAtSize(pl.text, size) || 1;
+        const h = Math.min(opt.targetHs || 1, pl.box.w / nw);
+        if (pl.text && h < 0.6) bad = true;
+        return { text: pl.text, box: pl.box, hs: h };
+      });
+      if (!bad) {
+        drawn.forEach((ln) => {
+          if (!ln.text) return;
+          const lb = ln.box;
+          const lcx = lb.x + lb.w / 2, lcy = lb.yTop - lb.h / 2;
+          const base = lcy + (size * 1.25) / 2 - size * 0.95;
+          const w = font.widthOfTextAtSize(ln.text, size) * ln.hs;
+          let x = lb.x;
+          if (align === 'center') x = lcx - w / 2;
+          else if (align === 'right') x = lb.x + lb.w - w;
+          const p = pivot(x, base);
+          drawLine(page, degrees, ops, ln.text, p.x, p.y, size, font, color, ln.hs, angle);
+        });
+        return r.warn;
+      }
+    }
+  }
   if (!vertical) {
     const lh = size * 1.25;
     /* Líneas justificadas en la altura de la caja (primera arriba, última
@@ -278,6 +321,14 @@ async function composeGame(deps) {
     if (/bold|black/i.test(f)) return 'opensansBold';
     return 'opensans';
   };
+  /* Factura: typewriter monoespaciada (cifras y columnas legibles). */
+  const MONO = { factura: 1, concepto: 1, cant: 1, 'precio-unit': 1, importe: 1, cliente: 1 };
+  const MONO_R = /vibrador|1-000|no-2025|^1-9$/;
+  const pickFontFor = (f) => {
+    if (MONO[f.key]) return 'courierBold';
+    if (MONO_R.test(f.key)) return 'courier';
+    return pickFont(f.fontFamily, f.size);
+  };
   const warns = [];
   const n = template.pages.length;
   for (let pi = 0; pi < n; pi++) {
@@ -289,6 +340,12 @@ async function composeGame(deps) {
       x: (b.x / 100) * PW, w: (b.w / 100) * PW,
       yTop: PH - (b.y / 100) * PH, h: (b.h / 100) * PH,
     });
+    /* Caja + sus líneas originales en puntos (dibujo posicional). */
+    const withLines = (f) => {
+      const bp = box(f);
+      bp.lines = ((f && f.lines) || []).map(box);
+      return bp;
+    };
     const pageFixed = fixed.filter((x) => x.page === pi + 1);
     const sibBoxes = pageFixed.map((x) => {
       const bb = box(x);
@@ -296,7 +353,7 @@ async function composeGame(deps) {
     });
     for (const f of pageFixed) {
       const str = i18n[f.key] !== undefined ? i18n[f.key] : f.es;
-      const font = ff[pickFont(f.fontFamily, f.size)];
+      const font = ff[pickFontFor(f)];
       const size0 = (f.size / 100) * PW;
       let use = size0;
       for (const lang of Object.keys(deps.i18nAll || { [deps.lang]: i18n })) {
@@ -333,7 +390,7 @@ async function composeGame(deps) {
           });
         }
       }
-      if (drawFitted(bg, degrees, ops, font, str, box(f), size0, hex(f.color, rgb), f.align || 'left',
+      if (drawFitted(bg, degrees, ops, font, str, withLines(f), size0, hex(f.color, rgb), f.align || 'left',
           { targetHs: f.xscale, angle: f.angle || 0, lockSize: use, inline,
             siblings: sibBoxes.filter((s) => s.ref !== f) })) {
         warns.push(`${f.key}: encogido fuerte`);
