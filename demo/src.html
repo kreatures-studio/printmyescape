@@ -312,7 +312,7 @@ var DRAFT_KEY = 'pme-demo-draft';
 
 var EJEMPLO = {
   NOMBRE_CUMPLE: 'Ian', FAMA: 'Comer hamburguesas',
-  TALENTO: 'Contar chistes', SOSPECHA: 'Robo de tarta', OTRO: 'Roncar',
+  TALENTO: 'Contar chistes', SOSPECHA: 'Robo de tarta',
   RESULTADO_TEST: 'vista', 'NOMBRE_4.2': 'Alex',
   MENSAJE_PERSONALIZADO: '¿Vienes esta noche?\nTe espero a las 9',
   BUSQUEDA_1: 'cómo abrir una caja fuerte', BUSQUEDA_2: 'ideas de regalos',
@@ -326,7 +326,7 @@ var EJEMPLO = {
   S6_HIDEA: 'Apoyado en la encimera', S6_HIDEB: 'Mirando una estantería',
   S7_HIDEA: 'Mirando por una ventana', S7_HIDEB: 'Abriendo un armario',
   S8_HIDEA: 'Al lado de una mesilla', S8_HIDEB: 'Abriendo la nevera',
-  B_ALIAS: 'El Veloz', B_AGE: '30', B_WEAK: 'Llegar tarde||Robar comida ajena',
+  B_ALIAS: 'El Veloz', B_AGE: '30', B_WEAK: 'Llegar tarde||Robar comida ajena||Otro: Roncar',
   B_INFO: 'Le encantan las sorpresas', B_NOTES: 'Alergia a los frutos secos',
   S1_ALIAS: 'El Silencioso', S1_SHAME_PLACE: 'Club de colección de monedas',
   S1_SHAME_RESULT: 'Su colección no se acepta en este club',
@@ -408,9 +408,6 @@ var Q = {
   NOMBRE_CUMPLE: { q: '¿Cómo se llama la persona homenajeada?', req: 1, max: 24 },
   FAMA: { q: '¿Por qué se le conoce?', max: 70, ej: 'Por comer hamburguesas, por pillarse un pedo monumental cada vez que sale de fiesta…' },
   DEBILIDAD: { q: 'Su mayor debilidad', max: 70 },
-  TALENTO: { q: 'Su mayor talento', max: 70 },
-  SOSPECHA: { q: 'Si fuera sospechoso, ¿de qué sería?', max: 70 },
-  OTRO: { q: 'Otra debilidad (línea «Otro:»)', max: 70 },
   FOTO_CUMPLE: { q: 'Sube su foto' },
   B_ALIAS: { q: 'Su alias (opcional)', max: 24 },
   B_AGE: { q: '¿Cuántos años cumple?', num: 1, min: 1, max: 120 },
@@ -456,9 +453,9 @@ Object.keys(SUS_EXTRA).forEach(function (k) {
   });
 });
 var SECDEF = [
-  { id: 'victima', title: 'Personalización de la primera persona: El cumpleañero',
-    hint: 'Sus datos van a la ficha de la víctima.',
-    fields: ['NOMBRE_CUMPLE', 'B_ALIAS', 'FOTO_CUMPLE', 'B_AGE', 'FAMA', 'B_WEAK', 'TALENTO', 'SOSPECHA', 'OTRO', 'B_INFO', 'B_NOTES'],
+  { id: 'victima', title: 'El cumpleañero',
+    hint: 'Aquí vamos a personalizar la ficha de la persona que va a cumplir años.',
+    fields: ['NOMBRE_CUMPLE', 'B_ALIAS', 'FOTO_CUMPLE', 'B_AGE', 'FAMA', 'B_WEAK', 'B_INFO', 'B_NOTES'],
     nameField: 'NOMBRE_CUMPLE', photoField: 'FOTO_CUMPLE' }
 ];
 for (var _sn = 1; _sn <= 8; _sn++) {
@@ -499,7 +496,7 @@ SECDEF.forEach(function (sec) {
   var chunks = [], cur = [];
   fs.forEach(function (f) {
     if (f.type === 'photo') { if (cur.length) chunks.push(cur); chunks.push([f]); cur = []; }
-    else { cur.push(f); if (cur.length >= 3) { chunks.push(cur); cur = []; } }
+    else { cur.push(f); }
   });
   if (cur.length) chunks.push(cur);
   chunks.forEach(function (ch, i) {
@@ -1119,10 +1116,16 @@ function generatePDF() {
       var FD = PME_DEMO_DATA.fonts, fonts = {};
       for (var k in FD) fonts[k] = { bytes: b64ToBytes(FD[k].b64), subset: FD[k].subset };
       var sample = { bytes: b64ToBytes(PME_DEMO_DATA.samplePhoto), format: 'jpg' };
-      if (!answers.DEBILIDAD && answers.B_WEAK) {
-        answers.DEBILIDAD = answers.B_WEAK.split('||').map(function (v) {
-          return v.replace(/^Otro: /, '');
-        }).join(' / ');
+      if (answers.B_WEAK) {
+        var _parts = answers.B_WEAK.split('||');
+        var _main = [], _other = [];
+        _parts.forEach(function (v) {
+          var m = v.match(/^Otro:\s*(.*)$/);
+          if (m) { if (m[1]) _other.push(m[1]); }
+          else if (v) _main.push(v);
+        });
+        if (!answers.DEBILIDAD && _main.length) answers.DEBILIDAD = _main.join(' / ');
+        if (!answers.OTRO && _other.length) answers.OTRO = _other.join(' / ');
       }
       var ph = {};
       TPL.fields.forEach(function (f) {

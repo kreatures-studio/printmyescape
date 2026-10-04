@@ -7,9 +7,13 @@ Tipos: `corto` (1 línea) · `largo` (varias) · `foto` (JPG/PNG) · `multi`.
 ## 0. Mapeos especiales (Google Form → PDF)
 
 - `B_WEAK` (multi: Llegar tarde…) → se une con ` / ` en el hueco `DEBILIDAD`.
+- El texto libre de `B_WEAK` ("Otro: ...") va al hueco `OTRO`.
 - `B_ALIAS`, `B_AGE`, `B_INFO`, `B_NOTES`, `S{N}_ALIAS` y extras
   (`S1_SHAME_PLACE`…) se GUARDAN pero no tienen hueco en este PDF
   (futura maquetación). No quitarlos: el formulario los pide igual.
+- `TALENTO`, `SOSPECHA` y `OTRO` como preguntas se eliminaron (sin
+  equivalente en el formulario de Google); `OTRO` se deriva del "Otro:"
+  libre y `TALENTO`/`SOSPECHA` solo se rellenan con el ejemplo.
 
 ## 1. La víctima
 
