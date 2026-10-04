@@ -493,11 +493,13 @@ var SCREENS = [
 ];
 SECDEF.forEach(function (sec) {
   var fs = sec.fields.map(mkField);
-  var chunks = [], cur = [];
+  var chunks = [], cur = [], w = 0;
   fs.forEach(function (f) {
-    /* Foto sola; resto en grupos de máx. 4 para que la tarjeta quepa sin scroll */
-    if (f.type === 'photo') { if (cur.length) chunks.push(cur); chunks.push([f]); cur = []; }
-    else { cur.push(f); if (cur.length >= 4) { chunks.push(cur); cur = []; } }
+    /* Foto sola; resto en grupos que quepan sin scroll (long=2, multi=3, resto 1; máx 4) */
+    var fw = f.type === 'photo' ? 99 : (f.type === 'long' ? 2 : (f.type === 'multi' ? 3 : 1));
+    if (f.type === 'photo' || w + fw > 4) { if (cur.length) chunks.push(cur); cur = []; w = 0; }
+    if (f.type === 'photo') { chunks.push([f]); }
+    else { cur.push(f); w += fw; }
   });
   if (cur.length) chunks.push(cur);
   chunks.forEach(function (ch, i) {
