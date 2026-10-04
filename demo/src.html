@@ -311,7 +311,7 @@ var store = {
 var DRAFT_KEY = 'pme-demo-draft';
 
 var EJEMPLO = {
-  NOMBRE_CUMPLE: 'Ian', FAMA: 'Comer hamburguesas', DEBILIDAD: 'Llegar tarde',
+  NOMBRE_CUMPLE: 'Ian', FAMA: 'Comer hamburguesas',
   TALENTO: 'Contar chistes', SOSPECHA: 'Robo de tarta', OTRO: 'Roncar',
   RESULTADO_TEST: 'vista', 'NOMBRE_4.2': 'Alex',
   MENSAJE_PERSONALIZADO: '¿Vienes esta noche?\nTe espero a las 9',
@@ -325,7 +325,19 @@ var EJEMPLO = {
   S5_HIDEA: 'Al lado del ordenador', S5_HIDEB: 'En un sillón con portátil',
   S6_HIDEA: 'Apoyado en la encimera', S6_HIDEB: 'Mirando una estantería',
   S7_HIDEA: 'Mirando por una ventana', S7_HIDEB: 'Abriendo un armario',
-  S8_HIDEA: 'Al lado de una mesilla', S8_HIDEB: 'Abriendo la nevera'
+  S8_HIDEA: 'Al lado de una mesilla', S8_HIDEB: 'Abriendo la nevera',
+  B_ALIAS: 'El Veloz', B_AGE: '30', B_WEAK: 'Llegar tarde||Robar comida ajena',
+  B_INFO: 'Le encantan las sorpresas', B_NOTES: 'Alergia a los frutos secos',
+  S1_ALIAS: 'El Silencioso', S1_SHAME_PLACE: 'Club de colección de monedas',
+  S1_SHAME_RESULT: 'Su colección no se acepta en este club',
+  S2_ALIAS: 'La Misteriosa', S2_SECRET_LOVE: 'Un actor famoso',
+  S3_ALIAS: '', S3_SHAME_SHOP: 'Dulces gordos shop', S3_SHAME_PRODUCT: 'Gocholón',
+  S4_ALIAS: '', S4_HIDE_WITH: 'Su mejor amiga', S4_CONFESSION: 'Te debo un secreto',
+  S5_ALIAS: '', S5_SHAME_WEB1: 'tarotistas.com', S5_SHAME_WEB2: 'kebabs4ever',
+  S6_ALIAS: '', S6_POSTCARD_TO: 'Su abuela', S6_POSTCARD_TEXT: 'Recuerdos de la fiesta',
+  S6_BACKPACK_NOTE: 'No mirar: lista de sospechosos',
+  S7_ALIAS: '', S7_HOBBY1: 'Cazar orcos', S7_HOBBY2: 'Dormir en la calle',
+  S8_ALIAS: '', S8_APP1: 'tinder', S8_APP2: 'lácteos4my', S8_APP3: 'Banco', S8_APP4: 'Notas'
 };
 function fillExample() {
   Object.keys(EJEMPLO).forEach(function (k) { answers[k] = EJEMPLO[k]; });
@@ -394,12 +406,17 @@ function tplField(fid) {
 /* Preguntas por campo (texto visible en el formulario) */
 var Q = {
   NOMBRE_CUMPLE: { q: '¿Cómo se llama la persona homenajeada?', req: 1, max: 24 },
-  FAMA: { q: '¿Por qué se le conoce?', max: 70, ej: 'Por comer hamburguesas…' },
+  FAMA: { q: '¿Por qué se le conoce?', max: 70, ej: 'Por comer hamburguesas, por pillarse un pedo monumental cada vez que sale de fiesta…' },
   DEBILIDAD: { q: 'Su mayor debilidad', max: 70 },
   TALENTO: { q: 'Su mayor talento', max: 70 },
   SOSPECHA: { q: 'Si fuera sospechoso, ¿de qué sería?', max: 70 },
   OTRO: { q: 'Otra debilidad (línea «Otro:»)', max: 70 },
   FOTO_CUMPLE: { q: 'Sube su foto' },
+  B_ALIAS: { q: 'Su alias (opcional)', max: 24 },
+  B_AGE: { q: '¿Cuántos años cumple?', num: 1, min: 1, max: 120 },
+  B_WEAK: { q: 'Su mayor debilidad es', desc: 'Puedes seleccionar varias opciones e incluso escribir otra.', multi: 1 },
+  B_INFO: { q: 'Información que sus amigos y familiares consideran importante sobre esta persona', max: 280, long: 1 },
+  B_NOTES: { q: 'Notas y observaciones', max: 280, long: 1 },
   RESULTADO_TEST: { q: 'Resultado del test', max: 70 },
   'NOMBRE_4.2': { q: 'Nombre del contacto del chat', max: 40 },
   MENSAJE_PERSONALIZADO: { q: 'Mensaje de la burbuja del chat', max: 140, long: 1, desc: 'Caben un par de líneas.' },
@@ -408,19 +425,48 @@ var Q = {
 };
 for (var _qn = 1; _qn <= 8; _qn++) {
   Q['NOMBRE_' + _qn] = { q: 'Nombre', req: 1, max: 24 };
-  Q['S' + _qn + '_HIDEA'] = { q: 'Un lugar donde se escondería', req: 1, max: 70 };
-  Q['S' + _qn + '_HIDEB'] = { q: 'Otro posible lugar donde se escondería', req: 1, max: 70 };
+  Q['S' + _qn + '_ALIAS'] = { q: 'Alias (opcional)', max: 24 };
+  Q['S' + _qn + '_HIDEA'] = { q: 'Escribe un lugar dónde se escondería esta persona si robase algo', req: 1, max: 70 };
+  Q['S' + _qn + '_HIDEB'] = { q: 'Ahora escribe otro posible lugar donde se escondería esta persona si robase algo', req: 1, max: 70 };
   Q['FOTO_' + _qn] = { q: 'Sube su foto' };
 }
+var SUS_EXTRA = {
+  1: [['S1_SHAME_PLACE', 'Imagina un sitio que le da vergüenza ir, que no le diría a nadie', 80, 'Un sitio al que va por un resultado: club de colección de monedas, la Tuna…'],
+      ['S1_SHAME_RESULT', 'Imagina ahora el resultado que le darían, como si le diesen la noticia', 280, 'Ej.: «Su colección de monedas no se acepta en este club…»', 1]],
+  2: [['S2_SECRET_LOVE', 'Pon el nombre de una persona a la que le daría vergüenza declarar su amor más prohibido', 80, 'Real, amor platónico, dibujo animado…']],
+  3: [['S3_SHAME_SHOP', 'Una tienda en la que le daría vergüenza comprar algo', 80, 'Ej.: Vibradores SL, Dulces gordos shop…'],
+      ['S3_SHAME_PRODUCT', 'El producto que compraría', 80, 'Ej.: black vibrator, gocholón…']],
+  4: [['S4_HIDE_WITH', 'Pon el nombre de una persona con la que se escondería para hablar', 80, 'Real, inventado, actor o actriz…'],
+      ['S4_CONFESSION', 'Escribe un mensaje que le confesaría a esa persona', 280, '', 1]],
+  5: [['S5_SHAME_WEB1', 'Escribe un sitio web donde le daría vergüenza que le pillasen mirando', 80, 'Ej.: pornhub, tarotistas.com…'],
+      ['S5_SHAME_WEB2', 'Escribe otro sitio web donde le daría vergüenza que le pillasen', 80, '']],
+  6: [['S6_POSTCARD_TO', 'El nombre de una persona a la que le escribiría una postal', 80, 'Real, dibujo animado, actor…'],
+      ['S6_POSTCARD_TEXT', 'Lo que le escribiría en esa postal', 280, '', 1],
+      ['S6_BACKPACK_NOTE', 'Una nota de su mochila que no quiere que vea nadie', 280, '', 1]],
+  7: [['S7_HOBBY1', 'Una afición secreta que le daría vergüenza admitir', 80, 'Ej.: cazar orcos, dormir en la calle…'],
+      ['S7_HOBBY2', 'Otra afición que le daría vergüenza admitir', 80, '']],
+  8: [['S8_APP1', 'Una app de su tablet/smartphone que le da vergüenza admitir', 60, 'Real o inventada. Ej.: tinder…'],
+      ['S8_APP2', 'Segunda app que le da vergüenza admitir', 60, ''],
+      ['S8_APP3', 'Tercera app que le da vergüenza admitir', 60, ''],
+      ['S8_APP4', 'Cuarta app que le da vergüenza admitir', 60, '']]
+};
+Object.keys(SUS_EXTRA).forEach(function (k) {
+  SUS_EXTRA[k].forEach(function (e) {
+    Q[e[0]] = { q: e[1], max: e[2], desc: e[3] || '', long: e[4] ? 1 : 0 };
+  });
+});
 var SECDEF = [
-  { id: 'victima', title: 'La víctima', hint: 'Datos del homenajeado.',
-    fields: ['NOMBRE_CUMPLE', 'FAMA', 'DEBILIDAD', 'TALENTO', 'SOSPECHA', 'OTRO', 'FOTO_CUMPLE'],
+  { id: 'victima', title: 'Personalización de la primera persona: El cumpleañero',
+    hint: 'Sus datos van a la ficha de la víctima.',
+    fields: ['NOMBRE_CUMPLE', 'B_ALIAS', 'FOTO_CUMPLE', 'B_AGE', 'FAMA', 'B_WEAK', 'TALENTO', 'SOSPECHA', 'OTRO', 'B_INFO', 'B_NOTES'],
     nameField: 'NOMBRE_CUMPLE', photoField: 'FOTO_CUMPLE' }
 ];
 for (var _sn = 1; _sn <= 8; _sn++) {
+  var sfields = ['NOMBRE_' + _sn, 'S' + _sn + '_ALIAS', 'FOTO_' + _sn, 'S' + _sn + '_HIDEA', 'S' + _sn + '_HIDEB'];
+  SUS_EXTRA[_sn].forEach(function (e) { sfields.push(e[0]); });
   SECDEF.push({ id: 's' + _sn, title: 'Sospechoso ' + _sn,
     hint: 'Sus datos salen en todas sus páginas con la misma foto.',
-    fields: ['NOMBRE_' + _sn, 'S' + _sn + '_HIDEA', 'S' + _sn + '_HIDEB', 'FOTO_' + _sn],
+    fields: sfields,
     nameField: 'NOMBRE_' + _sn, photoField: 'FOTO_' + _sn });
 }
 SECDEF.push({ id: 'pruebas', title: 'Pruebas y mensajes', hint: 'Textos de las pruebas del juego.',
@@ -431,9 +477,10 @@ SECDEF.forEach(function (s) { SECTIONS.push({ id: s.id, title: s.title }); });
 function mkField(fid) {
   var tf = tplField(fid) || { type: 'text', maxLength: 70 };
   var q = Q[fid] || { q: fid };
-  var type = tf.type === 'image' ? 'photo' : (q.long ? 'long' : 'text');
+  var type = tf.type === 'image' ? 'photo' : (q.multi ? 'multi' : (q.num ? 'number' : (q.long ? 'long' : 'text')));
   return { id: fid, type: type, q: q.q, required: !!q.req,
-    max: q.max || tf.maxLength || 70, desc: q.desc || '', ej: q.ej || '' };
+    max: q.max || tf.maxLength || 70, desc: q.desc || '', ej: q.ej || '',
+    min: q.min };
 }
 var SCREENS = [
   { id: 'intro', sec: 'intro', title: 'Cómo funciona la demo',
@@ -876,10 +923,18 @@ function shortLabel(fid) {
   if (m) return 'S' + m[1] + ' · Escondite ' + (m[2] === 'A' ? '1' : '2');
   m = fid.match(/^FOTO_(\d+)$/);
   if (m) return 'S' + m[1] + ' · Foto';
-  var short = { NOMBRE_CUMPLE: 'Nombre', FAMA: 'Fama', DEBILIDAD: 'Debilidad',
+  var short = { NOMBRE_CUMPLE: 'Nombre', B_ALIAS: 'Alias', B_AGE: 'Años', FAMA: 'Fama',
+    B_WEAK: 'Debilidad', B_INFO: 'Info', B_NOTES: 'Notas', DEBILIDAD: 'Debilidad',
     TALENTO: 'Talento', SOSPECHA: 'Sospecha', OTRO: 'Otro', FOTO_CUMPLE: 'Foto',
     RESULTADO_TEST: 'Resultado', 'NOMBRE_4.2': 'Contacto',
-    MENSAJE_PERSONALIZADO: 'Mensaje', BUSQUEDA_1: 'Búsqueda 1', BUSQUEDA_2: 'Búsqueda 2' };
+    MENSAJE_PERSONALIZADO: 'Mensaje', BUSQUEDA_1: 'Búsqueda 1', BUSQUEDA_2: 'Búsqueda 2',
+    S1_SHAME_PLACE: 'Sitio vergüenza', S1_SHAME_RESULT: 'Resultado',
+    S2_SECRET_LOVE: 'Amor prohibido', S3_SHAME_SHOP: 'Tienda', S3_SHAME_PRODUCT: 'Producto',
+    S4_HIDE_WITH: 'Esconderse con', S4_CONFESSION: 'Confesión',
+    S5_SHAME_WEB1: 'Web 1', S5_SHAME_WEB2: 'Web 2',
+    S6_POSTCARD_TO: 'Postal para', S6_POSTCARD_TEXT: 'Texto postal', S6_BACKPACK_NOTE: 'Nota mochila',
+    S7_HOBBY1: 'Afición 1', S7_HOBBY2: 'Afición 2',
+    S8_APP1: 'App 1', S8_APP2: 'App 2', S8_APP3: 'App 3', S8_APP4: 'App 4' };
   return titles + ' · ' + (short[fid] || fid);
 }
 function dupNames() {
@@ -1064,6 +1119,11 @@ function generatePDF() {
       var FD = PME_DEMO_DATA.fonts, fonts = {};
       for (var k in FD) fonts[k] = { bytes: b64ToBytes(FD[k].b64), subset: FD[k].subset };
       var sample = { bytes: b64ToBytes(PME_DEMO_DATA.samplePhoto), format: 'jpg' };
+      if (!answers.DEBILIDAD && answers.B_WEAK) {
+        answers.DEBILIDAD = answers.B_WEAK.split('||').map(function (v) {
+          return v.replace(/^Otro: /, '');
+        }).join(' / ');
+      }
       var ph = {};
       TPL.fields.forEach(function (f) {
         if (f.type !== 'image') return;

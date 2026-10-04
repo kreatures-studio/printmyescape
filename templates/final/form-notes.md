@@ -1,8 +1,15 @@
 # Notas para el formulario (demo) — documento `final` (15 páginas)
 
 Campos que el usuario debe rellenar, agrupados como secciones del asistente.
-Tipos: `corto` (1 línea) · `largo` (varias) · `foto` (JPG/PNG).
+Tipos: `corto` (1 línea) · `largo` (varias) · `foto` (JPG/PNG) · `multi`.
 ` páginas` = dónde se usa (misma respuesta en todas).
+
+## 0. Mapeos especiales (Google Form → PDF)
+
+- `B_WEAK` (multi: Llegar tarde…) → se une con ` / ` en el hueco `DEBILIDAD`.
+- `B_ALIAS`, `B_AGE`, `B_INFO`, `B_NOTES`, `S{N}_ALIAS` y extras
+  (`S1_SHAME_PLACE`…) se GUARDAN pero no tienen hueco en este PDF
+  (futura maquetación). No quitarlos: el formulario los pide igual.
 
 ## 1. La víctima
 
