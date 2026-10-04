@@ -67,7 +67,8 @@
   "size": 1.68,
   "color": "#725A4C",
   "xscale": 0.74,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 2,
@@ -123,7 +124,8 @@
   "size": 2.82,
   "color": "#021E23",
   "xscale": 0.99,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 3,
@@ -137,7 +139,8 @@
   "size": 2.01,
   "color": "#021E23",
   "xscale": 0.92,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 3,
@@ -165,7 +168,8 @@
   "size": 1.68,
   "color": "#FFFFFF",
   "xscale": 0.74,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 3,
@@ -197,7 +201,7 @@
  },
  {
   "page": 3,
-  "key": "puzzle-del-2",
+  "key": "puzzle-del",
   "es": "PUZZLE DEL",
   "x": 6.07,
   "y": 0.32,
@@ -211,7 +215,7 @@
  },
  {
   "page": 3,
-  "key": "regalo-robado-2",
+  "key": "regalo-robado",
   "es": "REGALO ROBADO",
   "x": 6.07,
   "y": 6.31,
@@ -225,16 +229,30 @@
  },
  {
   "page": 4,
-  "key": "conocida-por-su-mayor-debilidad",
-  "es": "Conocida por\nSu mayor debilidad",
+  "key": "conocida-por",
+  "es": "Conocida por",
   "x": 42.06,
   "y": 17.9,
-  "w": 13.599999999999994,
-  "h": 6.300000000000001,
+  "w": 9.22,
+  "h": 1.88,
   "fontFamily": "OpenSans-Regular",
   "size": 2.02,
   "color": "#1D1D1B",
   "xscale": 0.73,
+  "angle": 0
+ },
+ {
+  "page": 4,
+  "key": "su-mayor-debilidad",
+  "es": "Su mayor debilidad",
+  "x": 42.16,
+  "y": 22.32,
+  "w": 13.5,
+  "h": 1.88,
+  "fontFamily": "OpenSans-Regular",
+  "size": 2.02,
+  "color": "#1D1D1B",
+  "xscale": 0.74,
   "angle": 0
  },
  {
@@ -253,12 +271,26 @@
  },
  {
   "page": 4,
-  "key": "su-mayor-talento-es-si-fuera-sospechoso-",
-  "es": "Su mayor talento es\nSi fuera sospechoso de algo sería de",
+  "key": "su-mayor-talento-es",
+  "es": "Su mayor talento es",
   "x": 42.24,
   "y": 26.47,
-  "w": 25.03000000000001,
-  "h": 6.450000000000003,
+  "w": 13.68,
+  "h": 1.88,
+  "fontFamily": "OpenSans-Regular",
+  "size": 2.02,
+  "color": "#1D1D1B",
+  "xscale": 0.73,
+  "angle": 0
+ },
+ {
+  "page": 4,
+  "key": "si-fuera-sospechoso-de-algo-seria-de",
+  "es": "Si fuera sospechoso de algo sería de",
+  "x": 42.27,
+  "y": 31.04,
+  "w": 25.0,
+  "h": 1.88,
   "fontFamily": "OpenSans-Regular",
   "size": 2.02,
   "color": "#1D1D1B",
@@ -333,7 +365,8 @@
   "size": 2.35,
   "color": "#725A4C",
   "xscale": 0.78,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 4,
@@ -421,7 +454,7 @@
  },
  {
   "page": 5,
-  "key": "3-2",
+  "key": "3",
   "es": "3",
   "x": 48.69,
   "y": 55.89,
@@ -449,7 +482,7 @@
  },
  {
   "page": 5,
-  "key": "3-3",
+  "key": "3",
   "es": "3",
   "x": 48.52,
   "y": 62.97,
@@ -505,7 +538,7 @@
  },
  {
   "page": 5,
-  "key": "2-2",
+  "key": "2",
   "es": "2",
   "x": 56.07,
   "y": 34.91,
@@ -519,7 +552,7 @@
  },
  {
   "page": 5,
-  "key": "3-4",
+  "key": "3",
   "es": "3",
   "x": 48.83,
   "y": 38.39,
@@ -547,7 +580,7 @@
  },
  {
   "page": 5,
-  "key": "5-2",
+  "key": "5",
   "es": "5",
   "x": 48.61,
   "y": 45.43,
@@ -561,7 +594,7 @@
  },
  {
   "page": 5,
-  "key": "1-2",
+  "key": "1",
   "es": "1",
   "x": 49.13,
   "y": 6.73,
@@ -575,7 +608,7 @@
  },
  {
   "page": 5,
-  "key": "2-3",
+  "key": "2",
   "es": "2",
   "x": 56.2,
   "y": 10.33,
@@ -589,7 +622,7 @@
  },
  {
   "page": 5,
-  "key": "3-5",
+  "key": "3",
   "es": "3",
   "x": 48.96,
   "y": 13.81,
@@ -603,7 +636,7 @@
  },
  {
   "page": 5,
-  "key": "4-2",
+  "key": "4",
   "es": "4",
   "x": 56.15,
   "y": 17.23,
@@ -617,7 +650,7 @@
  },
  {
   "page": 5,
-  "key": "5-3",
+  "key": "5",
   "es": "5",
   "x": 48.75,
   "y": 20.85,
@@ -645,7 +678,7 @@
  },
  {
   "page": 5,
-  "key": "posibles-ubicaciones-de-2",
+  "key": "posibles-ubicaciones-de",
   "es": "POSIBLES UBICACIONES DE",
   "x": 38.32,
   "y": 75.79,
@@ -659,7 +692,7 @@
  },
  {
   "page": 5,
-  "key": "posibles-ubicaciones-de-3",
+  "key": "posibles-ubicaciones-de",
   "es": "POSIBLES UBICACIONES DE",
   "x": 38.72,
   "y": 26.63,
@@ -673,7 +706,7 @@
  },
  {
   "page": 5,
-  "key": "posibles-ubicaciones-de-4",
+  "key": "posibles-ubicaciones-de",
   "es": "POSIBLES UBICACIONES DE",
   "x": 38.4,
   "y": 51.21,
@@ -697,7 +730,8 @@
   "size": 1.34,
   "color": "#083839",
   "xscale": 1.0,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 5,
@@ -855,7 +889,7 @@
  },
  {
   "page": 6,
-  "key": "1-3",
+  "key": "1",
   "es": "1",
   "x": 48.04,
   "y": 81.01,
@@ -869,7 +903,7 @@
  },
  {
   "page": 6,
-  "key": "2-4",
+  "key": "2",
   "es": "2",
   "x": 55.11,
   "y": 84.61,
@@ -883,7 +917,7 @@
  },
  {
   "page": 6,
-  "key": "posibles-ubicaciones-de-5",
+  "key": "posibles-ubicaciones-de",
   "es": "POSIBLES UBICACIONES DE",
   "x": 37.75,
   "y": 76.33,
@@ -897,7 +931,7 @@
  },
  {
   "page": 6,
-  "key": "4-3",
+  "key": "4",
   "es": "4",
   "x": 55.14,
   "y": 66.93,
@@ -911,7 +945,7 @@
  },
  {
   "page": 6,
-  "key": "5-4",
+  "key": "5",
   "es": "5",
   "x": 47.73,
   "y": 70.55,
@@ -925,7 +959,7 @@
  },
  {
   "page": 6,
-  "key": "posibles-ubicaciones-de-6",
+  "key": "posibles-ubicaciones-de",
   "es": "POSIBLES UBICACIONES DE",
   "x": 37.83,
   "y": 51.75,
@@ -939,7 +973,7 @@
  },
  {
   "page": 6,
-  "key": "1-4",
+  "key": "1",
   "es": "1",
   "x": 48.43,
   "y": 31.85,
@@ -953,7 +987,7 @@
  },
  {
   "page": 6,
-  "key": "5-5",
+  "key": "5",
   "es": "5",
   "x": 48.04,
   "y": 45.97,
@@ -967,7 +1001,7 @@
  },
  {
   "page": 6,
-  "key": "posibles-ubicaciones-de-7",
+  "key": "posibles-ubicaciones-de",
   "es": "POSIBLES UBICACIONES DE",
   "x": 38.14,
   "y": 27.17,
@@ -995,7 +1029,7 @@
  },
  {
   "page": 6,
-  "key": "2-5",
+  "key": "2",
   "es": "2",
   "x": 55.7,
   "y": 10.89,
@@ -1009,7 +1043,7 @@
  },
  {
   "page": 6,
-  "key": "5-6",
+  "key": "5",
   "es": "5",
   "x": 48.17,
   "y": 21.39,
@@ -1023,7 +1057,7 @@
  },
  {
   "page": 6,
-  "key": "posibles-ubicaciones-de-8",
+  "key": "posibles-ubicaciones-de",
   "es": "POSIBLES UBICACIONES DE",
   "x": 38.23,
   "y": 2.6,
@@ -1103,7 +1137,8 @@
   "size": 1.34,
   "color": "#083839",
   "xscale": 1.0,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 6,
@@ -1163,7 +1198,7 @@
  },
  {
   "page": 6,
-  "key": "estaba-al-lado-del-ordenador-2",
+  "key": "estaba-al-lado-del-ordenador",
   "es": "Estaba al lado del ordenador.",
   "x": 51.51,
   "y": 63.59,
@@ -1187,7 +1222,8 @@
   "size": 1.33,
   "color": "#083839",
   "xscale": 0.99,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 6,
@@ -1397,7 +1433,8 @@
   "size": 2.35,
   "color": "#725A4C",
   "xscale": 1.0,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 9,
@@ -1425,7 +1462,8 @@
   "size": 2.35,
   "color": "#725A4C",
   "xscale": 1.0,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 9,
@@ -1495,7 +1533,8 @@
   "size": 5.04,
   "color": "#725A4C",
   "xscale": 1.03,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 10,
@@ -1509,7 +1548,8 @@
   "size": 2.35,
   "color": "#725A4C",
   "xscale": 1.0,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 11,
@@ -1593,7 +1633,8 @@
   "size": 1.93,
   "color": "#1D1D1B",
   "xscale": 0.78,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 11,
@@ -1625,7 +1666,7 @@
  },
  {
   "page": 11,
-  "key": "1-5",
+  "key": "1",
   "es": "1",
   "x": 47.54,
   "y": 52.76,
@@ -1695,7 +1736,7 @@
  },
  {
   "page": 11,
-  "key": "1-000-00-2",
+  "key": "1-000-00",
   "es": "1.000,00",
   "x": 75.56,
   "y": 52.56,
@@ -1733,7 +1774,8 @@
   "size": 2.35,
   "color": "#725A4C",
   "xscale": 1.0,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 12,
@@ -1747,7 +1789,8 @@
   "size": 2.35,
   "color": "#725A4C",
   "xscale": 1.0,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 12,
@@ -1849,7 +1892,7 @@
  },
  {
   "page": 12,
-  "key": "texto-2",
+  "key": "texto",
   "es": "+",
   "x": 69.12,
   "y": 62.04,
@@ -1877,7 +1920,7 @@
  },
  {
   "page": 12,
-  "key": "texto-3",
+  "key": "texto",
   "es": "+",
   "x": 62.83,
   "y": 66.23,
@@ -1891,7 +1934,7 @@
  },
  {
   "page": 12,
-  "key": "texto-4",
+  "key": "texto",
   "es": "+",
   "x": 68.56,
   "y": 66.59,
@@ -1919,7 +1962,7 @@
  },
  {
   "page": 12,
-  "key": "texto-5",
+  "key": "texto-2",
   "es": "−",
   "x": 62.9,
   "y": 71.81,
@@ -1933,7 +1976,7 @@
  },
  {
   "page": 12,
-  "key": "2-6",
+  "key": "2-2",
   "es": "= 2",
   "x": 73.19,
   "y": 72.45,
@@ -1947,7 +1990,7 @@
  },
  {
   "page": 12,
-  "key": "texto-6",
+  "key": "texto",
   "es": "+",
   "x": 61.16,
   "y": 76.79,
@@ -1961,7 +2004,7 @@
  },
  {
   "page": 12,
-  "key": "texto-7",
+  "key": "texto",
   "es": "+",
   "x": 66.88,
   "y": 77.15,
@@ -1975,7 +2018,7 @@
  },
  {
   "page": 12,
-  "key": "texto-8",
+  "key": "texto-3",
   "es": "= ?",
   "x": 72.57,
   "y": 77.5,
@@ -2017,7 +2060,7 @@
  },
  {
   "page": 12,
-  "key": "texto-9",
+  "key": "texto-4",
   "es": "♥",
   "x": 62.38,
   "y": 41.06,
@@ -2171,7 +2214,7 @@
  },
  {
   "page": 13,
-  "key": "1-6",
+  "key": "1",
   "es": "1",
   "x": 56.29,
   "y": 52.28,
@@ -2185,7 +2228,7 @@
  },
  {
   "page": 13,
-  "key": "2-7",
+  "key": "2",
   "es": "2",
   "x": 51.78,
   "y": 65.86,
@@ -2199,7 +2242,7 @@
  },
  {
   "page": 13,
-  "key": "3-6",
+  "key": "3",
   "es": "3",
   "x": 47.52,
   "y": 52.14,
@@ -2265,7 +2308,8 @@
   "size": 2.35,
   "color": "#725A4C",
   "xscale": 1.0,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 14,
@@ -2293,7 +2337,8 @@
   "size": 3.02,
   "color": "#725A4C",
   "xscale": null,
-  "angle": -5.3
+  "angle": -5.3,
+  "lines": []
  },
  {
   "page": 15,
@@ -2405,7 +2450,8 @@
   "size": 3.02,
   "color": "#725A4C",
   "xscale": null,
-  "angle": -5.3
+  "angle": -5.3,
+  "lines": []
  },
  {
   "page": 15,
@@ -2489,7 +2535,8 @@
   "size": 2.35,
   "color": "#725A4C",
   "xscale": 1.0,
-  "angle": 0
+  "angle": 0,
+  "lines": []
  },
  {
   "page": 16,
@@ -2521,7 +2568,7 @@
  },
  {
   "page": 16,
-  "key": "2-8",
+  "key": "2",
   "es": "2",
   "x": 33.56,
   "y": 41.89,
@@ -2577,7 +2624,7 @@
  },
  {
   "page": 16,
-  "key": "1-7",
+  "key": "1",
   "es": "1",
   "x": 47.67,
   "y": 41.15,
@@ -2661,7 +2708,7 @@
  },
  {
   "page": 16,
-  "key": "2-9",
+  "key": "2",
   "es": "2",
   "x": 49.08,
   "y": 54.59,
@@ -2689,7 +2736,7 @@
  },
  {
   "page": 16,
-  "key": "1-8",
+  "key": "1",
   "es": "1",
   "x": 63.05,
   "y": 53.86,
@@ -2717,7 +2764,7 @@
  },
  {
   "page": 16,
-  "key": "3-7",
+  "key": "3",
   "es": "3",
   "x": 77.02,
   "y": 53.13,
@@ -2759,7 +2806,7 @@
  },
  {
   "page": 16,
-  "key": "3-8",
+  "key": "3",
   "es": "3",
   "x": 50.45,
   "y": 67.73,
@@ -2801,7 +2848,7 @@
  },
  {
   "page": 16,
-  "key": "2-10",
+  "key": "2",
   "es": "2",
   "x": 78.4,
   "y": 66.27,
