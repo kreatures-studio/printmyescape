@@ -467,7 +467,7 @@ for (var _sn = 1; _sn <= 8; _sn++) {
     nameField: 'NOMBRE_' + _sn, photoField: 'FOTO_' + _sn });
 }
 SECDEF.push({ id: 'pruebas', title: 'Pruebas y mensajes', hint: 'Textos de las pruebas del juego.',
-  fields: ['RESULTADO_TEST', 'NOMBRE_4.2', 'MENSAJE_PERSONALIZADO', 'BUSQUEDA_1', 'BUSQUEDA_2'] });
+  fields: ['RESULTADO_TEST', 'NOMBRE_4.2', 'BUSQUEDA_1', 'BUSQUEDA_2', 'MENSAJE_PERSONALIZADO'] });
 var SECTIONS = [{ id: 'intro', title: 'Inicio' }];
 SECDEF.forEach(function (s) { SECTIONS.push({ id: s.id, title: s.title }); });
 
@@ -495,8 +495,9 @@ SECDEF.forEach(function (sec) {
   var fs = sec.fields.map(mkField);
   var chunks = [], cur = [];
   fs.forEach(function (f) {
+    /* Foto sola; resto en grupos de máx. 4 para que la tarjeta quepa sin scroll */
     if (f.type === 'photo') { if (cur.length) chunks.push(cur); chunks.push([f]); cur = []; }
-    else { cur.push(f); }
+    else { cur.push(f); if (cur.length >= 4) { chunks.push(cur); cur = []; } }
   });
   if (cur.length) chunks.push(cur);
   chunks.forEach(function (ch, i) {
