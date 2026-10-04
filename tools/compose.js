@@ -283,12 +283,12 @@ function drawFitted(page, font, text, boxPt, size0, color, align, opt) {
       const len = font.widthOfTextAtSize(ln, size) * hs[i];
       const span = Math.min(len, boxPt.h);
       const colC = down ? cx + total / 2 - i * step : cx - total / 2 + i * step;
-      const x0 = down ? colC + size * 0.35 : colC - size * 0.35;
+      const x0 = down ? colC - size * 0.35 : colC + size * 0.35;
       const y0 = down
         ? boxPt.yTop - (boxPt.h - span) / 2
         : boxPt.yTop - boxPt.h + (boxPt.h - span) / 2;
-      const p = pivot(x0, y0);
-      drawLine(page, ln, p.x, p.y, size, font, color, hs[i], angle);
+      /* SIN pivot: (x0, y0) ya está en el marco rotado. */
+      drawLine(page, ln, x0, y0, size, font, color, hs[i], angle);
     });
   }
   return warn;

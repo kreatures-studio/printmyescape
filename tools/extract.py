@@ -134,41 +134,82 @@ def norm_code(inner):
 
 
 def merge_fixed(fixed, slots):
-    """Fusiona cajas consecutivas de misma página/estilo, adyacentes en
-    vertical y solapadas en horizontal (párrafos partidos por líneas).
-    NO fusiona si hay una fila de hueco entre medias (etiquetas con su
-    valor en medio) ni cajas de una palabra (chips, números)."""
+    """Fusiona cajas consecutivas de misma página/estilo en párrafos.
+    - Texto horizontal: adyacentes en vertical, solapadas en horizontal,
+      sin fila de hueco entre medias; se unen con salto de línea y se
+      conservan las líneas originales (dibujo posicional).
+    - Texto inclinado: proximidad en su propio marco rotado (misma
+      inclinación ±12°); se unen con espacio para refluir.
+    NO fusiona cajas de una palabra (chips, números)."""
+    import math
     slot_rows = [(s['page'], s['y'] + s['h'] / 2) for s in slots or []]
     out = []
     for f in fixed:
+        merged = False
         if (out and out[-1]['page'] == f['page']
                 and out[-1]['fontFamily'] == f['fontFamily']
                 and out[-1]['size'] == f['size']
                 and out[-1]['color'] == f['color']
-                and out[-1]['angle'] == f['angle']
-                and len(out[-1]['es'].split()) > 1 and len(f['es'].split()) > 1):
+                and abs((out[-1]['angle'] or 0) - (f['angle'] or 0)) < 12
+                and (len(out[-1]['es'].split()) > 1 or abs(out[-1]['angle'] or 0) > 15)
+                and (len(f['es'].split()) > 1 or abs(f['angle'] or 0) > 15):
             p = out[-1]
-            gap = f['y'] - (p['y'] + p['h'])
-            ox0, ox1 = max(p['x'], f['x']), min(p['x'] + p['w'], f['x'] + f['w'])
-            overlap = (ox1 - ox0) / max(min(p['w'], f['w']), 0.01)
-            sizept = p['size'] / 100 * 595
-            gaplim = sizept / 595 * 100 * 1.6
-            blocked = any(pg == f['page'] and (p['y'] + p['h']) < sy < f['y']
-                          for pg, sy in slot_rows)
-            if not blocked and -0.5 <= gap <= gaplim and overlap > 0.4:
-                p['es'] += '\n' + f['es']
-                x0 = min(p['x'], f['x']); y0 = min(p['y'], f['y'])
-                x1 = max(p['x'] + p['w'], f['x'] + f['w'])
-                y1 = max(p['y'] + p['h'], f['y'] + f['h'])
-                p['x'], p['y'], p['w'], p['h'] = x0, y0, x1 - x0, y1 - y0
-                continue
-        out.append(f)
-    # re-clavar claves únicas tras fusionar
+            ang = p['angle'] or 0
+            if abs(ang) > 15:
+                # marco rotado: proximidad perpendicular + hueco paralelo.
+                # OJO: las coords % usan y hacia abajo; la dirección de
+                # lectura en ese sistema es (cos, -sin) del ángulo CCW.
+                import math as _m
+                th = _m.radians(ang)
+                dx, dy = _m.cos(th), -_m.sin(th)
+                ux, uy = _m.sin(th), _m.cos(th)
+                # OJO: coordenadas % con y hacia abajo; el ángulo de
+                # extracción ya es compatible con pdf-lib (CCW en y-up).
+                # Para proximidad basta la geometría relativa:
+                c1 = (p['x'] + p['w'] / 2, p['y'] + p['h'] / 2)
+                c2 = (f['x'] + f['w'] / 2, f['y'] + f['h'] / 2)
+                vx, vy = c2[0] - c1[0], c2[1] - c1[1]
+                du = abs(vx * ux + vy * uy)
+                dp = vx * dx + vy * dy - (p['w'] * abs(dx) + p['h'] * abs(dy)
+                                          + f['w'] * abs(dx) + f['h'] * abs(dy)) / 2
+                sizepct = p['size']
+                if du < sizepct * 2.5 and -sizepct < dp < sizepct * 3:
+                    p['es'] += ' ' + f['es']
+                    x0 = min(p['x'], f['x']); y0 = min(p['y'], f['y'])
+                    x1 = max(p['x'] + p['w'], f['x'] + f['w'])
+                    y1 = max(p['y'] + p['h'], f['y'] + f['h'])
+                    p['x'], p['y'], p['w'], p['h'] = x0, y0, x1 - x0, y1 - y0
+                    p.pop('lines', None)
+                    merged = True
+            else:
+                gap = f['y'] - (p['y'] + p['h'])
+                ox0, ox1 = max(p['x'], f['x']), min(p['x'] + p['w'], f['x'] + f['w'])
+                overlap = (ox1 - ox0) / max(min(p['w'], f['w']), 0.01)
+                sizept = p['size'] / 100 * 595
+                gaplim = sizept / 595 * 100 * 1.6
+                blocked = any(pg == f['page'] and (p['y'] + p['h']) < sy < f['y']
+                              for pg, sy in slot_rows)
+                if not blocked and -0.5 <= gap <= gaplim and overlap > 0.4:
+                    p['es'] += '\n' + f['es']
+                    p['lines'] = (p.get('lines') or []) + (f.get('lines') or [])
+                    x0 = min(p['x'], f['x']); y0 = min(p['y'], f['y'])
+                    x1 = max(p['x'] + p['w'], f['x'] + f['w'])
+                    y1 = max(p['y'] + p['h'], f['y'] + f['h'])
+                    p['x'], p['y'], p['w'], p['h'] = x0, y0, x1 - x0, y1 - y0
+                    merged = True
+        if not merged:
+            out.append(f)
+    # re-clavar claves únicas tras fusionar (misma clave solo si mismo texto)
     seen = {}
     for f in out:
         base = slugify(f['es'].replace('\n', ' '))
-        seen[base] = seen.get(base, 0) + 1
-        f['key'] = base + ('' if seen[base] == 1 else '-' + str(seen[base]))
+        key = base
+        n = 1
+        while key in seen and seen[key] != f['es']:
+            n += 1
+            key = '%s-%d' % (base, n)
+        seen[key] = f['es']
+        f['key'] = key
     return out
 
 
