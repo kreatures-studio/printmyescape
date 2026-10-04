@@ -244,14 +244,16 @@ function drawFitted(page, degrees, ops, font, text, boxPt, size0, color, align, 
       const colC = down
         ? cx + total / 2 - i * step
         : cx - total / 2 + i * step;
-      /* La columna del glifo ocupa ~0.35·size a la derecha del origen
-         (para -90): se compensa para centrar la tinta en la columna. */
-      const x0 = down ? colC + size * 0.35 : colC - size * 0.35;
+      /* La columna del glifo queda a la DERECHA del origen para -90
+         (ver probe): se compensa a la izquierda para centrar la tinta.
+         Para +90, al revés. */
+      const x0 = down ? colC - size * 0.35 : colC + size * 0.35;
       const y0 = down
         ? boxPt.yTop - (boxPt.h - span) / 2
         : boxPt.yTop - boxPt.h + (boxPt.h - span) / 2;
-      const p = pivot(x0, y0);
-      drawLine(page, degrees, ops, ln, p.x, p.y, size, font, color, hs[i], angle);
+      /* SIN pivot: (x0, y0) ya está en el marco rotado (el pivot lo
+         rotaría dos veces y amontona las columnas). */
+      drawLine(page, degrees, ops, ln, x0, y0, size, font, color, hs[i], angle);
     });
   }
   return r.warn;
