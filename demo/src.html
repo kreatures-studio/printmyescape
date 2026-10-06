@@ -331,13 +331,13 @@ var EJEMPLO = {
   S1_ALIAS: 'El Silencioso', S1_SHAME_PLACE: 'Club de colección de monedas',
   S1_SHAME_RESULT: 'Su colección no se acepta en este club',
   S2_ALIAS: 'La Misteriosa', S2_SECRET_LOVE: 'Un actor famoso',
-  S3_ALIAS: '', S3_SHAME_SHOP: 'Dulces gordos shop', S3_SHAME_PRODUCT: 'Gocholón',
-  S4_ALIAS: '', S4_HIDE_WITH: 'Su mejor amiga', S4_CONFESSION: 'Te debo un secreto',
-  S5_ALIAS: '', S5_SHAME_WEB1: 'tarotistas.com', S5_SHAME_WEB2: 'kebabs4ever',
-  S6_ALIAS: '', S6_POSTCARD_TO: 'Su abuela', S6_POSTCARD_TEXT: 'Recuerdos de la fiesta',
+  S3_ALIAS: 'La Curiosa', S3_SHAME_SHOP: 'Dulces gordos shop', S3_SHAME_PRODUCT: 'Gocholón',
+  S4_ALIAS: 'El Tranquilo', S4_HIDE_WITH: 'Su mejor amiga', S4_CONFESSION: 'Te debo un secreto',
+  S5_ALIAS: 'El Tecno', S5_SHAME_WEB1: 'tarotistas.com', S5_SHAME_WEB2: 'kebabs4ever',
+  S6_ALIAS: 'El Chef', S6_POSTCARD_TO: 'Su abuela', S6_POSTCARD_TEXT: 'Recuerdos de la fiesta',
   S6_BACKPACK_NOTE: 'No mirar: lista de sospechosos',
-  S7_ALIAS: '', S7_HOBBY1: 'Cazar orcos', S7_HOBBY2: 'Dormir en la calle',
-  S8_ALIAS: '', S8_APP1: 'tinder', S8_APP2: 'lácteos4my', S8_APP3: 'Banco', S8_APP4: 'Notas'
+  S7_ALIAS: 'El Soñador', S7_HOBBY1: 'Cazar orcos', S7_HOBBY2: 'Dormir en la calle',
+  S8_ALIAS: 'La Lista', S8_APP1: 'tinder', S8_APP2: 'lácteos4my', S8_APP3: 'Banco', S8_APP4: 'Notas'
 };
 function fillExample() {
   Object.keys(EJEMPLO).forEach(function (k) { answers[k] = EJEMPLO[k]; });
@@ -923,8 +923,10 @@ function shortLabel(fid) {
     sc.fields.forEach(function (f) { if (f.id === fid && !sec) { sec = sc.sec; } });
   });
   var titles = sec ? secTitle(sec) : '?';
-  var m = fid.match(/^NOMBRE_(\d+)$/);
+  var   m = fid.match(/^NOMBRE_(\d+)$/);
   if (m) return 'S' + m[1] + ' · Nombre';
+  m = fid.match(/^S(\d+)_ALIAS$/);
+  if (m) return 'S' + m[1] + ' · Alias';
   m = fid.match(/^S(\d+)_HIDE([AB])$/);
   if (m) return 'S' + m[1] + ' · Escondite ' + (m[2] === 'A' ? '1' : '2');
   m = fid.match(/^FOTO_(\d+)$/);

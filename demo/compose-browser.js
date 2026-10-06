@@ -332,6 +332,19 @@ async function composeGame(deps) {
     return pickFont(f.fontFamily, f.size);
   };
   const warns = [];
+  /* Alias junto al nombre (la plantilla no trae huecos de alias). */
+  const slotVal = (field) => {
+    const v = values[field] || '';
+    let a = '';
+    if (field === 'NOMBRE_CUMPLE') a = values.B_ALIAS || '';
+    else {
+      const m = /^NOMBRE_([1-8])$/.exec(field || '');
+      if (m) a = values['S' + m[1] + '_ALIAS'] || '';
+    }
+    a = (a || '').trim();
+    if (a && v) return v + ' "' + a + '"';
+    return v;
+  };
   const n = template.pages.length;
   for (let pi = 0; pi < n; pi++) {
     const pages = await out.copyPages(bgDoc, [pi]);
@@ -371,7 +384,7 @@ async function composeGame(deps) {
         for (const s of template.pages[pi].slots) {
           const fld = template.fields.find((x) => x.id === s.field);
           if (!fld || fld.type !== 'text') continue;
-          const val = values[s.field] || '';
+          const val = slotVal(s.field);
           if (!val || val.indexOf('\n') >= 0) continue;
           if (((s.angle || 0) > 45 || (s.angle || 0) < -45)) continue;
           const sfont = ff[pickFont(s.fontFamily || 'caveat', s.size)];
@@ -402,7 +415,7 @@ async function composeGame(deps) {
       const fld = template.fields.find((x) => x.id === s.field);
       if (!fld) continue;
       if (fld.type === 'text') {
-        const val = values[s.field] || '';
+        const val = slotVal(s.field);
         if (!val) continue;
         const font = ff[pickFont(s.fontFamily || 'caveat', s.size)];
         if (drawFitted(bg, degrees, ops, font, val, box(s), (s.size / 100) * PW,

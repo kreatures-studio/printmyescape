@@ -342,6 +342,20 @@ async function main() {
       { subset: o.noSubset ? false : FONTS[k].subset });
   }
   const warns = [];
+  /* Alias junto al nombre: si el sospechoso/cumpleañero tiene alias, el hueco
+     del nombre imprime Nombre "Alias" (la plantilla no trae huecos de alias). */
+  function slotVal(field) {
+    const v = o.values[field] || '';
+    let a = '';
+    if (field === 'NOMBRE_CUMPLE') a = o.values.B_ALIAS || '';
+    else {
+      const m = /^NOMBRE_([1-8])$/.exec(field || '');
+      if (m) a = o.values['S' + m[1] + '_ALIAS'] || '';
+    }
+    a = (a || '').trim();
+    if (a && v) return v + ' "' + a + '"';
+    return v;
+  }
   for (let pi = 0; pi < tpl.pages.length; pi++) {
     const [bg] = await out.copyPages(bgDoc, [pi]);
     out.addPage(bg);
@@ -380,7 +394,7 @@ async function main() {
         for (const s of tpl.pages[pi].slots) {
           const fld = tpl.fields.find((x) => x.id === s.field);
           if (!fld || fld.type !== 'text') continue;
-          const val = o.values[s.field] || '';
+          const val = slotVal(s.field);
           if (!val || val.indexOf('\n') >= 0) continue;
           if (((s.angle || 0) > 45 || (s.angle || 0) < -45)) continue;
           const sfont = ff[pickFont(s.fontFamily || 'caveat', s.size)];
@@ -411,7 +425,7 @@ async function main() {
     for (const s of tpl.pages[pi].slots) {
       const fld = tpl.fields.find((x) => x.id === s.field);
       if (!fld || fld.type !== 'text') continue;
-      const val = o.values[s.field] || '';
+      const val = slotVal(s.field);
       if (!val) continue;
       const font = ff[pickFont(s.fontFamily || 'caveat', s.size)];
       if (process.env.COMPOSE_DEBUG) {
