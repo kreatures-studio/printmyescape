@@ -463,6 +463,33 @@ async function main() {
       }
     }
   }
+  /* Hoja de recortes (p9): la hoja sale en tiras verticales desordenadas
+     para recortar y unir. Se recompone la página con las tiras permutadas. */
+  if (tpl.shuffle) {
+    const sh = tpl.shuffle;
+    const pix = tpl.pages.findIndex((p) => p.id === sh.page);
+    if (pix >= 0) {
+      const src = out.getPage(pix);
+      const PW2 = src.getWidth(), PH2 = src.getHeight();
+      const emb = await out.embedPage(src);
+      out.removePage(pix);
+      const np = out.insertPage(pix, [PW2, PH2]);
+      np.drawPage(emb, { x: 0, y: 0, width: PW2, height: PH2 });
+      const X = (v) => (v / 100) * PW2;
+      const Y = (v) => PH2 - (v / 100) * PH2;
+      const sw = (sh.x1 - sh.x0) / sh.strips;
+      for (let i = 0; i < sh.strips; i++) {
+        const dx0 = X(sh.x0 + i * sw), dx1 = X(sh.x0 + (i + 1) * sw);
+        const sx0 = X(sh.x0 + sh.perm[i] * sw);
+        const yT = Y(sh.y0), yB = Y(sh.y1);
+        np.pushOperators(pushGraphicsState(),
+          moveTo(dx0, yB), lineTo(dx1, yB), lineTo(dx1, yT), lineTo(dx0, yT),
+          closePath(), clip(), endPath());
+        np.drawPage(emb, { x: dx0 - sx0, y: 0, width: PW2, height: PH2 });
+        np.pushOperators(popGraphicsState());
+      }
+    }
+  }
   fs.mkdirSync(path.dirname(path.join(ROOT, o.out)), { recursive: true });
   fs.writeFileSync(path.join(ROOT, o.out), await out.save());
   console.log('OK', o.out, '| valores:', Object.keys(o.values).length, '| fotos:', Object.keys(o.photos).length,
