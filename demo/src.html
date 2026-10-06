@@ -413,12 +413,7 @@ var Q = {
   B_AGE: { q: '¿Cuántos años cumple?', num: 1, min: 1, max: 120 },
   B_WEAK: { q: 'Su mayor debilidad es', desc: 'Puedes seleccionar varias opciones e incluso escribir otra.', multi: 1 },
   B_INFO: { q: 'Información que sus amigos y familiares consideran importante sobre esta persona', max: 280, long: 1 },
-  B_NOTES: { q: 'Notas y observaciones', max: 280, long: 1 },
-  RESULTADO_TEST: { q: 'Resultado del test', max: 70 },
-  'NOMBRE_4.2': { q: 'Nombre del contacto del chat', max: 40 },
-  MENSAJE_PERSONALIZADO: { q: 'Mensaje de la burbuja del chat', max: 140, long: 1, desc: 'Caben un par de líneas.' },
-  BUSQUEDA_1: { q: 'Primera búsqueda del historial', max: 60 },
-  BUSQUEDA_2: { q: 'Segunda búsqueda del historial', max: 60 }
+  B_NOTES: { q: 'Notas y observaciones', max: 280, long: 1 }
 };
 for (var _qn = 1; _qn <= 8; _qn++) {
   Q['NOMBRE_' + _qn] = { q: 'Nombre', req: 1, max: 24 };
@@ -429,14 +424,19 @@ for (var _qn = 1; _qn <= 8; _qn++) {
 }
 var SUS_EXTRA = {
   1: [['S1_SHAME_PLACE', 'Imagina un sitio que le da vergüenza ir, que no le diría a nadie', 80, 'Un sitio al que va por un resultado: club de colección de monedas, la Tuna…'],
-      ['S1_SHAME_RESULT', 'Imagina ahora el resultado que le darían, como si le diesen la noticia', 280, 'Ej.: «Su colección de monedas no se acepta en este club…»', 1]],
+      ['S1_SHAME_RESULT', 'Imagina ahora el resultado que le darían, como si le diesen la noticia', 280, 'Ej.: «Su colección de monedas no se acepta en este club…»', 1],
+      ['RESULTADO_TEST', 'Resultado de su test de inteligencia', 70, 'El resultado que sale impreso en su página (pág. 9).']],
   2: [['S2_SECRET_LOVE', 'Pon el nombre de una persona a la que le daría vergüenza declarar su amor más prohibido', 80, 'Real, amor platónico, dibujo animado…']],
   3: [['S3_SHAME_SHOP', 'Una tienda en la que le daría vergüenza comprar algo', 80, 'Ej.: Vibradores SL, Dulces gordos shop…'],
       ['S3_SHAME_PRODUCT', 'El producto que compraría', 80, 'Ej.: black vibrator, gocholón…']],
   4: [['S4_HIDE_WITH', 'Pon el nombre de una persona con la que se escondería para hablar', 80, 'Real, inventado, actor o actriz…'],
-      ['S4_CONFESSION', 'Escribe un mensaje que le confesaría a esa persona', 280, '', 1]],
+      ['S4_CONFESSION', 'Escribe un mensaje que le confesaría a esa persona', 280, '', 1],
+      ['NOMBRE_4.2', 'Nombre del contacto de su chat', 40, 'El contacto que aparece en su chat (pág. 12).'],
+      ['MENSAJE_PERSONALIZADO', 'Mensaje de la burbuja de su chat', 140, 'Caben un par de líneas (pág. 12).', 1]],
   5: [['S5_SHAME_WEB1', 'Escribe un sitio web donde le daría vergüenza que le pillasen mirando', 80, 'Ej.: pornhub, tarotistas.com…'],
-      ['S5_SHAME_WEB2', 'Escribe otro sitio web donde le daría vergüenza que le pillasen', 80, '']],
+      ['S5_SHAME_WEB2', 'Escribe otro sitio web donde le daría vergüenza que le pillasen', 80, ''],
+      ['BUSQUEDA_1', 'Primera búsqueda del historial de su móvil', 60, 'La búsqueda que aparece en su móvil (pág. 13).'],
+      ['BUSQUEDA_2', 'Segunda búsqueda del historial de su móvil', 60, '']],
   6: [['S6_POSTCARD_TO', 'El nombre de una persona a la que le escribiría una postal', 80, 'Real, dibujo animado, actor…'],
       ['S6_POSTCARD_TEXT', 'Lo que le escribiría en esa postal', 280, '', 1],
       ['S6_BACKPACK_NOTE', 'Una nota de su mochila que no quiere que vea nadie', 280, '', 1]],
@@ -466,8 +466,6 @@ for (var _sn = 1; _sn <= 8; _sn++) {
     fields: sfields,
     nameField: 'NOMBRE_' + _sn, photoField: 'FOTO_' + _sn });
 }
-SECDEF.push({ id: 'pruebas', title: 'Pruebas y mensajes', hint: 'Textos de las pruebas del juego.',
-  fields: ['RESULTADO_TEST', 'NOMBRE_4.2', 'BUSQUEDA_1', 'BUSQUEDA_2', 'MENSAJE_PERSONALIZADO'] });
 var SECTIONS = [{ id: 'intro', title: 'Inicio' }];
 SECDEF.forEach(function (s) { SECTIONS.push({ id: s.id, title: s.title }); });
 
