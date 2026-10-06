@@ -342,6 +342,12 @@ var EJEMPLO = {
 function fillExample() {
   Object.keys(EJEMPLO).forEach(function (k) { answers[k] = EJEMPLO[k]; });
   answers.intro_ok = '1';
+  /* El "Otro:" del multi también alimenta su cajetín para que se vea pintado */
+  multiOther = {};
+  Object.keys(answers).forEach(function (k) {
+    var m = /(?:^|\|\|)Otro:\s*([^|]+)\s*$/.exec(answers[k] || '');
+    if (m) multiOther[k] = m[1];
+  });
   var sample = 'data:image/jpeg;base64,' + PME_DEMO_DATA.samplePhoto;
   TPL.fields.forEach(function (f) {
     if (f.type !== 'image') return;
@@ -452,6 +458,8 @@ Object.keys(SUS_EXTRA).forEach(function (k) {
     Q[e[0]] = { q: e[1], max: e[2], desc: e[3] || '', long: e[4] ? 1 : 0 };
   });
 });
+/* Opciones de la debilidad del cumpleañero (multi-selección + Otro libre) */
+var WEAK_OPTS = ['Llegar tarde', 'Robar comida ajena', 'Contar chistes malos', 'Hacer trampas jugando'];
 var SECDEF = [
   { id: 'victima', title: 'El cumpleañero',
     hint: 'Aquí vamos a personalizar la ficha de la persona que va a cumplir años.',
