@@ -488,6 +488,19 @@ async function main() {
         np.drawPage(emb, { x: dx0 - sx0, y: 0, width: PW2, height: PH2 });
         np.pushOperators(popGraphicsState());
       }
+      /* Guías de corte: discontinuas en cada frontera + tijera arriba */
+      const ink = rgb(0.05, 0.15, 0.16);
+      const yB2 = Y(sh.y1), yT2 = Y(sh.y0);
+      for (let i = 1; i < sh.strips; i++) {
+        const lx = X(sh.x0 + i * sw);
+        np.drawLine({ start: { x: lx, y: yB2 }, end: { x: lx, y: yT2 },
+          thickness: 1, color: ink, dashArray: [6, 4] });
+      }
+      const scx = X(sh.x0 + sw), scy = yT2 + 16;
+      np.drawLine({ start: { x: scx - 5, y: scy + 7 }, end: { x: scx + 5, y: scy - 7 }, thickness: 1.6, color: ink });
+      np.drawLine({ start: { x: scx + 5, y: scy + 7 }, end: { x: scx - 5, y: scy - 7 }, thickness: 1.6, color: ink });
+      np.drawCircle({ x: scx - 6.5, y: scy + 8.5, size: 3.2, borderColor: ink, borderWidth: 1.6 });
+      np.drawCircle({ x: scx + 6.5, y: scy + 8.5, size: 3.2, borderColor: ink, borderWidth: 1.6 });
     }
   }
   fs.mkdirSync(path.dirname(path.join(ROOT, o.out)), { recursive: true });

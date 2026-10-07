@@ -35,7 +35,7 @@
  "1": "1",
  "4": "4",
  "posibles-ubicaciones-de": "POSIBLES UBICACIONES DE",
- "al-lado-de-la-basura-de-la-cocina-al-lad": "Al lado de la basura de la cocina.\nAl lado de la trituradora de papeles\ndel despacho.",
+ "al-lado-de-la-basura-de-la-cocina-al-lad": "Al lado de la basura de la cocina.",
  "frente-al-ordenador": "Frente al ordenador.",
  "en-una-silla-de-la-cocina": "En una silla de la cocina.",
  "en-el-sofa": "En el sofá.",
@@ -52,12 +52,12 @@
  "estaba-en-un-sillon-con-un-ordenador": "Estaba en un sillón con un ordenador",
  "portatil": "portátil.",
  "estaba-en-una-esquina-del-ordenador": "Estaba en una esquina del ordenador.",
- "estaba-en-el-sofa-apoyandose-en-la-encim": "Estaba en el sofá.\nApoyándose en la encimera de la",
+ "estaba-en-el-sofa-apoyandose-en-la-encim": "Estaba en el sofá.",
  "cocina": "cocina.",
  "estaba-mirando-una-estanteria": "Estaba mirando una estantería.",
  "estaba-mirando-por-una-ventana": "Estaba mirando por una ventana.",
  "estaba-abriendo-un-armario": "Estaba abriendo un armario.",
- "estaba-al-lado-de-una-mesilla-estaba-en-": "Estaba al lado de una mesilla.\nEstaba en un sillón.",
+ "estaba-al-lado-de-una-mesilla-estaba-en-": "Estaba al lado de una mesilla.",
  "estaba-abriendo-la-nevera": "Estaba abriendo la nevera.",
  "435": "435",
  "534": "534",
@@ -160,5 +160,8 @@
  "notas": "notas",
  "si-miramos-la-tablet-de": "Si miramos la tablet de",
  "igual": "igual",
- "encontramos-algo": "encontramos algo."
+ "encontramos-algo": "encontramos algo.",
+ "al-lado-de-la-trituradora-de-papeles": "Al lado de la trituradora de papeles\ndel despacho.",
+ "apoyandose-en-la-encimera-de-la-cocina": "Apoyándose en la encimera de la\ncocina.",
+ "estaba-en-un-sillon": "Estaba en un sillón."
 }

@@ -35,7 +35,7 @@
  "1": "1",
  "4": "4",
  "posibles-ubicaciones-de": "POSSIBLE LOCATIONS OF",
- "al-lado-de-la-basura-de-la-cocina-al-lad": "Next to the kitchen bin.\nNext to the office paper\nshredder.",
+ "al-lado-de-la-basura-de-la-cocina-al-lad": "Next to the kitchen bin.",
  "frente-al-ordenador": "In front of the computer.",
  "en-una-silla-de-la-cocina": "On a kitchen chair.",
  "en-el-sofa": "On the sofa.",
@@ -52,12 +52,12 @@
  "estaba-en-un-sillon-con-un-ordenador": "They were in an armchair with a",
  "portatil": "laptop.",
  "estaba-en-una-esquina-del-ordenador": "They were in a corner by the computer.",
- "estaba-en-el-sofa-apoyandose-en-la-encim": "They were on the sofa.\nLeaning on the kitchen",
+ "estaba-en-el-sofa-apoyandose-en-la-encim": "They were on the sofa.",
  "cocina": "counter.",
  "estaba-mirando-una-estanteria": "They were looking at a shelf.",
  "estaba-mirando-por-una-ventana": "They were looking out of a window.",
  "estaba-abriendo-un-armario": "They were opening a wardrobe.",
- "estaba-al-lado-de-una-mesilla-estaba-en-": "They were next to a nightstand.\nThey were in an armchair.",
+ "estaba-al-lado-de-una-mesilla-estaba-en-": "They were next to a nightstand.",
  "estaba-abriendo-la-nevera": "They were opening the fridge.",
  "435": "435",
  "534": "534",
@@ -160,5 +160,8 @@
  "notas": "notes",
  "si-miramos-la-tablet-de": "If we look at the tablet of",
  "igual": "maybe",
- "encontramos-algo": "we'll find something."
+ "encontramos-algo": "we'll find something.",
+ "al-lado-de-la-trituradora-de-papeles": "Next to the office paper\nshredder.",
+ "apoyandose-en-la-encimera-de-la-cocina": "Leaning on the kitchen\ncounter.",
+ "estaba-en-un-sillon": "They were in an armchair."
 }
