@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import sys as _sys
+try:
+    _sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
 """Fase 1 — Extrae del PDF del artista (texto vivo) el mapa de cajas:
   - texts.json .... textos fijos con bbox/estilo (base para i18n)
   - template.json . campos [CODIGO] + marcos de foto como slots
@@ -152,7 +157,7 @@ def merge_fixed(fixed, slots):
                 and out[-1]['color'] == f['color']
                 and abs((out[-1]['angle'] or 0) - (f['angle'] or 0)) < 12
                 and (len(out[-1]['es'].split()) > 1 or abs(out[-1]['angle'] or 0) > 15)
-                and (len(f['es'].split()) > 1 or abs(f['angle'] or 0) > 15):
+                and (len(f['es'].split()) > 1 or abs(f['angle'] or 0) > 15)):
             p = out[-1]
             ang = p['angle'] or 0
             if abs(ang) > 15:
@@ -637,8 +642,12 @@ def main():
     render_pages(os.path.join(ROOT, args.src_text), out_pages, '%s-ref' % args.doc, 80)
     build_verify(fixed, slots, frames, bg_files, out_verify, args.doc)
     print('fijos:', len(fixed), '| slots:', len(slots), '| fotos:', len(frames), '| páginas:', npages)
+    safe = {'errors': 'replace'}
     print('claves:', [f['key'] for f in fixed])
-    print('campos:', [f['id'] for f in tpl['fields']])
+    try:
+        print('campos:', [f['id'] for f in tpl['fields']])
+    except UnicodeEncodeError:
+        print('campos:', len(tpl['fields']))
 
 
 if __name__ == '__main__':

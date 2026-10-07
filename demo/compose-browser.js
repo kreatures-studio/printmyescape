@@ -332,6 +332,61 @@ async function composeGame(deps) {
     return pickFont(f.fontFamily, f.size);
   };
   const warns = [];
+  /* Runas pigpen (p10): igual que en Node. */
+  const RUNE_INK = rgb(0.27, 0.06, 0.08);
+  const RUNE_BG = rgb(0.85, 0.77, 0.64);
+  const PIG_WALLS = { A: 'RB', B: 'LRB', C: 'LB', D: 'TRB', E: 'LRTB', F: 'TLB', G: 'TR', H: 'TLR', I: 'TL' };
+  const PIG_CELLS = { A: [0,0], B: [1,0], C: [2,0], D: [0,1], E: [1,1], F: [2,1], G: [0,2], H: [1,2], I: [2,2] };
+  const PIG_X = { S: [[[0,0],[0.5,0.5]], [[1,0],[0.5,0.5]]], T: [[[0,0],[0.5,0.5]], [[0,1],[0.5,0.5]]],
+    U: [[[1,0],[0.5,0.5]], [[1,1],[0.5,0.5]]], V: [[[0,1],[0.5,0.5]], [[1,1],[0.5,0.5]]] };
+  const normRunes = (s) => (s || '').toUpperCase().replace(/[ÁÀÄÂ]/g, 'A').replace(/[ÉÈËÊ]/g, 'E')
+    .replace(/[ÍÌÏÎ]/g, 'I').replace(/[ÓÒÖÔ]/g, 'O').replace(/[ÚÙÜÛ]/g, 'U').replace(/Ñ/g, 'N')
+    .replace(/[^A-Z ]/g, '').replace(/ +/g, ' ').trim();
+  const runeInfo = (ch) => {
+    if (PIG_WALLS[ch]) return { walls: PIG_WALLS[ch], cell: PIG_CELLS[ch], dot: false };
+    if ('JKLMNOPQR'.indexOf(ch) >= 0) { const b = 'ABCDEFGHI'['JKLMNOPQR'.indexOf(ch)]; return { walls: PIG_WALLS[b], cell: PIG_CELLS[b], dot: true }; }
+    if (PIG_X[ch]) return { xsegs: PIG_X[ch], dot: false };
+    if ('WXYZ'.indexOf(ch) >= 0) return { xsegs: PIG_X['STUV'['WXYZ'.indexOf(ch)]], dot: true };
+    return null;
+  };
+  const drawRunes = (page, text, cx, cy, cell, maxW) => {
+    const layout = (cs) => {
+      const items = [];
+      let total = 0;
+      for (const ch of text) {
+        if (ch === ' ') { total += cs * 0.7; continue; }
+        if (!runeInfo(ch)) continue;
+        items.push({ ch, adv: total });
+        total += cs * 1.3;
+      }
+      return { items, total };
+    };
+    let lay = layout(cell);
+    if (lay.items.length && lay.total > maxW) {
+      cell *= maxW / lay.total;
+      lay = layout(cell);
+    }
+    const x0 = cx - lay.total / 2;
+    for (const it of lay.items) {
+      const ox = x0 + it.adv, oy = cy - cell / 2;
+      const seg = (ax, ay, bx, by) => page.drawLine({
+        start: { x: ox + ax * cell, y: oy + (1 - ay) * cell },
+        end: { x: ox + bx * cell, y: oy + (1 - by) * cell },
+        thickness: 1.6, color: RUNE_INK });
+      const g = runeInfo(it.ch);
+      if (g.xsegs) {
+        g.xsegs.forEach((s) => seg(s[0][0], s[0][1], s[1][0], s[1][1]));
+        if (g.dot) page.drawCircle({ x: ox + cell / 2, y: oy + cell / 2, size: cell * 0.18, color: RUNE_INK });
+      } else {
+        const c = g.cell[0] / 3, r = g.cell[1] / 3, q = 1 / 3;
+        if (g.walls.indexOf('L') >= 0) seg(c, r, c, r + q);
+        if (g.walls.indexOf('R') >= 0) seg(c + q, r, c + q, r + q);
+        if (g.walls.indexOf('T') >= 0) seg(c, r, c + q, r);
+        if (g.walls.indexOf('B') >= 0) seg(c, r + q, c + q, r + q);
+        if (g.dot) page.drawCircle({ x: ox + (c + q / 2) * cell, y: oy + (1 - r - q / 2) * cell, size: cell * 0.18, color: RUNE_INK });
+      }
+    }
+  };
   /* Alias junto al nombre (la plantilla no trae huecos de alias). */
   const slotVal = (field) => {
     const v = values[field] || '';
@@ -343,6 +398,8 @@ async function composeGame(deps) {
     }
     a = (a || '').trim();
     if (a && v) return v + ' "' + a + '"';
+    /* APODO_N lleva su coma (el fijo "," se pierde al extraer): sin apodo, nada */
+    if (/^APODO_[1-8]$/.exec(field || '')) return v ? ', ' + v : v;
     return v;
   };
   const n = template.pages.length;
@@ -430,6 +487,15 @@ async function composeGame(deps) {
         const im = ph.format === 'png' ? await out.embedPng(ph.bytes) : await out.embedJpg(ph.bytes);
         const iw = im.width || 100, ih = im.height || 100;
         drawPhoto(bg, ops, im, iw, ih, box(s), s.angle || 0, degrees);
+      }
+    }
+    /* Nota cifrada (p10): igual que en Node. */
+    if (template.pages[pi].id === 'p10') {
+      const love = normRunes(values.S2_SECRET_LOVE || '');
+      if (love) {
+        const rx = (v) => (v / 100) * PW, ry = (v) => PH - (v / 100) * PH;
+        bg.drawRectangle({ x: rx(8), y: ry(90.5), width: rx(90.5) - rx(8), height: ry(37.5) - ry(90.5), color: RUNE_BG });
+        drawRunes(bg, 'TE QUIERO ' + love, (rx(8) + rx(90.5)) / 2, (ry(37.5) + ry(90.5)) / 2, 13, rx(90.5) - rx(8) - 24);
       }
     }
     tick((pi + 1) / n);
