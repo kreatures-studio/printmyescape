@@ -375,9 +375,10 @@ async function composeGame(deps) {
       if (Math.max(...angs) - Math.min(...angs) > 12) continue;
       const gx0 = Math.min(...ln.items.map((it) => it.x0));
       const gx1 = Math.max(...ln.items.map((it) => it.x1));
-      const lh = Math.max(...ln.items.map((it) => it.h));
+      const gy0 = Math.min(...ln.items.map((it) => it.ref.y));
+      const gy1 = Math.max(...ln.items.map((it) => it.ref.y + it.ref.h));
       const clash = multiBands.some((mb) => gx0 < mb.x1 && gx1 > mb.x0 &&
-        ln.cy >= mb.top - lh && ln.cy <= mb.bot + lh * 0.5);
+        gy0 < mb.bot + 0.3 && gy1 > mb.top - 0.3);
       if (clash) continue;
       let cur = [ln.items[0]];
       const flush = () => {
@@ -462,10 +463,11 @@ async function composeGame(deps) {
     const ccx = (x0 + x1) / 2, ccy = yTop - boxH / 2;
     let pen = xx;
     for (const w of laid.words) {
+      pen += (w.gap || 0) * laid.hs;
       const px = ccx + (pen - ccx) * c - (base - ccy) * s;
       const py = ccy + (pen - ccx) * s + (base - ccy) * c;
       drawLine(bpg, degrees, ops, w.w, px, py, w.sz, w.f, hex(w.color, rgb), laid.hs, angle);
-      pen += (w.nat + (w.gap || 0)) * laid.hs;
+      pen += w.nat * laid.hs;
     }
   };
   /* Runas pigpen (p10): igual que en Node. */
