@@ -1922,7 +1922,8 @@
      "color": "#FFFFFF",
      "fontFamily": "Georgia-Bold",
      "xscale": null,
-     "angle": 0
+     "angle": 0,
+     "align": "center"
     },
     {
      "field": "APP_1",
@@ -1954,11 +1955,12 @@
      "y": 56.31,
      "w": 9.62,
      "h": 5.79,
-     "size": 1.68,
+     "size": 6.31,
      "color": "#FFFFFF",
-     "fontFamily": "ArialMT",
+     "fontFamily": "Georgia-Bold",
      "xscale": null,
-     "angle": 0
+     "angle": 0,
+     "align": "center"
     },
     {
      "field": "APP_4",
@@ -1982,7 +1984,8 @@
      "color": "#FFFFFF",
      "fontFamily": "Georgia-Bold",
      "xscale": null,
-     "angle": 0
+     "angle": 0,
+     "align": "center"
     },
     {
      "field": "APP_3",
@@ -2006,7 +2009,8 @@
      "color": "#FFFFFF",
      "fontFamily": "Georgia-Bold",
      "xscale": null,
-     "angle": 0
+     "angle": 0,
+     "align": "center"
     },
     {
      "field": "NOMBRE_8",

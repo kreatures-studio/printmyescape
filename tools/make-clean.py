@@ -55,19 +55,12 @@ def main():
             r.x0 -= 0.5; r.y0 -= 0.5; r.x1 += 0.5; r.y1 += 0.5
             page.add_redact_annot(r, fill=False)
             n += 1
-        page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE,
-                              graphics=fitz.PDF_REDACT_LINE_ART_NONE)
-        print('p%d: %d redacciones de texto' % (pi + 1, n))
-        # Fase 2: marcos de foto (magenta/rosa): se borra el trazo para que
-        # la foto compuesta no muestre ningún marco de color.
-        m = 0
         for r in frame_rects(page):
             page.add_redact_annot(r + (-1, -1, 1, 1), fill=False)
-            m += 1
-        if m:
-            page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE,
-                                  graphics=fitz.PDF_REDACT_LINE_ART_REMOVE_IF_TOUCHED)
-        print('p%d: %d marcos borrados' % (pi + 1, m))
+            n += 1
+        page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE,
+                              graphics=fitz.PDF_REDACT_LINE_ART_NONE)
+        print('p%d: %d redacciones' % (pi + 1, n))
     doc.save(os.path.join(ROOT, args.out), garbage=4, deflate=True)
     print('OK', args.out)
 
