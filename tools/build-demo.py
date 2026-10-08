@@ -44,7 +44,8 @@ def main():
                 i18n[fn[5:-5]] = json.load(f)
     fonts = {
         'caveatBold': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'Caveat-Bold.ttf')), 'subset': False},
-        'antonSC': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'AntonSC-Regular.ttf')), 'subset': True},
+        'caveat': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'Caveat-Regular.ttf')), 'subset': False},
+        'anton': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'Anton-Regular.ttf')), 'subset': True},
         'opensans': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'OpenSans-Regular.ttf')), 'subset': True},
         'opensansBold': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'OpenSans-Bold.ttf')), 'subset': True},
         'courier': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'CourierPrime-Regular.ttf')), 'subset': True},

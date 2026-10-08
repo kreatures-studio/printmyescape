@@ -311,15 +311,15 @@ async function composeGame(deps) {
   for (const k of Object.keys(fonts)) {
     ff[k] = await out.embedFont(fonts[k].bytes, { subset: fonts[k].subset !== false });
   }
-  /* La familia extraída manda: Anton a Anton SC, manuscritas a Caveat y
-     las Bold del artista (Arial-BoldMT, Georgia-Bold) a OpenSans-Bold.
-     OpenSans/Myriad Regular van en regular: el tamaño NO decide el peso
-     (una negrita indebida ensancha el texto y come el hueco de al lado). */
+  /* La familia extraída manda: manuscritas a Caveat (Bold solo si el
+     artista la marcó Bold), titulares a Anton Regular y las Bold del
+     artista a OpenSans-Bold. OpenSans/Myriad Regular van en regular. */
   const pickFont = (family, size) => {
     void size;
     const f = family || '';
-    if (/myriad|caveat|script|hand/i.test(f)) return 'caveatBold';
-    if (/anton|display/i.test(f)) return 'antonSC';
+    if (/myriad/i.test(f)) return 'caveatBold';
+    if (/caveat|script|hand/i.test(f)) return /bold|black/i.test(f) ? 'caveatBold' : 'caveat';
+    if (/anton|display/i.test(f)) return 'anton';
     if (/bold|black/i.test(f)) return 'opensansBold';
     return 'opensans';
   };
@@ -491,11 +491,17 @@ async function composeGame(deps) {
           warns.push(`${s.field}: valor encogido`);
         }
       } else if (fld.type === 'image') {
+        /* bleed: la foto come 1.5pt por lado para tapar el marco rosa */
+        const b0 = box(s);
+        const b = { x: b0.x - 1.5, w: b0.w + 3, yTop: b0.yTop + 1.5, h: b0.h + 3 };
         const ph = photos[s.field];
-        if (!ph) continue;
+        if (!ph) {
+          bg.drawRectangle({ x: b.x, y: b.yTop - b.h, width: b.w, height: b.h, color: rgb(0.85, 0.85, 0.85) });
+          continue;
+        }
         const im = ph.format === 'png' ? await out.embedPng(ph.bytes) : await out.embedJpg(ph.bytes);
         const iw = im.width || 100, ih = im.height || 100;
-        drawPhoto(bg, ops, im, iw, ih, box(s), s.angle || 0, degrees);
+        drawPhoto(bg, ops, im, iw, ih, b, s.angle || 0, degrees);
       }
     }
     /* Nota cifrada (p10): igual que en Node. */

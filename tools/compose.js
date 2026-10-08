@@ -20,22 +20,25 @@ const OPS = { pushGraphicsState, popGraphicsState, translate, scale: pdfScale,
 
 const ROOT = path.join(__dirname, '..');
 const FONTS = {
-  /* Caveat: embed completo (el subsetter rompe algunos glifos) */
+  /* Caveat: embed completo en los dos pesos (el subsetter rompe glifos) */
   caveatBold: { file: '../assets/fonts/Caveat-Bold.ttf', subset: false },
-  antonSC: { file: '../assets/fonts/AntonSC-Regular.ttf', subset: true },
+  caveat: { file: '../assets/fonts/Caveat-Regular.ttf', subset: false },
+  anton: { file: '../assets/fonts/Anton-Regular.ttf', subset: true },
   opensans: { file: '../assets/fonts/OpenSans-Regular.ttf', subset: true },
   opensansBold: { file: '../assets/fonts/OpenSans-Bold.ttf', subset: true },
   courier: { file: '../assets/fonts/CourierPrime-Regular.ttf', subset: true },
   courierBold: { file: '../assets/fonts/CourierPrime-Bold.ttf', subset: true },
 };
-/* La familia extraída manda: manuscritas a Caveat, titulares a Anton SC y
-   las Bold del artista a OpenSans-Bold. OpenSans/Myriad Regular van en
-   regular: el tamaño NO decide el peso. */
+/* La familia extraída manda: manuscritas a Caveat (Bold solo si el
+   artista la marcó Bold), titulares a Anton Regular y las Bold del
+   artista a OpenSans-Bold. OpenSans/Myriad Regular van en regular:
+   el tamaño NO decide el peso. */
 function pickFont(family, size) {
   void size;
   const f = family || '';
-  if (/myriad|caveat|script|hand/i.test(f)) return 'caveatBold';
-  if (/anton|display/i.test(f)) return 'antonSC';
+  if (/myriad/i.test(f)) return 'caveatBold';
+  if (/caveat|script|hand/i.test(f)) return /bold|black/i.test(f) ? 'caveatBold' : 'caveat';
+  if (/anton|display/i.test(f)) return 'anton';
   if (/bold|black/i.test(f)) return 'opensansBold';
   return 'opensans';
 }
@@ -519,16 +522,18 @@ async function main() {
       const fld = tpl.fields.find((x) => x.id === s.field);
       if (!fld || fld.type !== 'image') continue;
       const b = box(s);
-      const by = b.yTop - b.h;
+      /* bleed: la foto come 1.5pt por lado para tapar el marco rosa del fondo */
+      const bb = { x: b.x - 1.5, w: b.w + 3, yTop: b.yTop + 1.5, h: b.h + 3 };
+      const by = bb.yTop - bb.h;
       const src = o.photos[s.field];
       if (src) {
         const im = await imgFor(src);
-        drawPhoto(bg, im, b, s.angle || 0);
+        drawPhoto(bg, im, bb, s.angle || 0);
       } else {
-        bg.drawRectangle({ x: b.x, y: by, width: b.w, height: b.h, color: rgb(0.85, 0.85, 0.85), borderColor: rgb(0.5, 0.5, 0.5), borderWidth: 1 });
+        bg.drawRectangle({ x: bb.x, y: by, width: bb.w, height: bb.h, color: rgb(0.85, 0.85, 0.85), borderColor: rgb(0.5, 0.5, 0.5), borderWidth: 1 });
         const t = 'FOTO';
         const fs2 = 10, tw = ff.opensansBold.widthOfTextAtSize(t, fs2);
-        bg.drawText(t, { x: b.x + (b.w - tw) / 2, y: by + b.h / 2, size: fs2, font: ff.opensansBold, color: rgb(0.4, 0.4, 0.4) });
+        bg.drawText(t, { x: bb.x + (bb.w - tw) / 2, y: by + bb.h / 2, size: fs2, font: ff.opensansBold, color: rgb(0.4, 0.4, 0.4) });
       }
     }
     /* Nota cifrada (p10): el amor secreto de S2 en runas pigpen sobre la hoja.

@@ -8,8 +8,10 @@ comandos y revisar resultados.
 
 - Python 3.10+ con `pymupdf` y `fonttools`: `pip install pymupdf fonttools`
 - Node 18+ y una vez: `npm install --prefix tools`
-- Las fuentes del proyecto en `assets/fonts/` (ya están: Anton SC,
-  Open Sans, Caveat; si el artista estrena familia, ver punto 5).
+- Las fuentes del proyecto en `assets/fonts/` (ya están: Anton Regular,
+  Open Sans, Caveat Regular y Bold; si el artista estrena familia, ver punto 5).
+  OJO: titulares en Anton **Regular** (no SC: las minúsculas cambian) y
+  manuscritas en Segoe Script (regular→Caveat Regular, bold→Caveat Bold).
 
 ## Paso 1 — Recibir los PDF del artista
 
