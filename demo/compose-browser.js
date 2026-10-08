@@ -332,6 +332,142 @@ async function composeGame(deps) {
     return pickFont(f.fontFamily, f.size);
   };
   const warns = [];
+  /* Reflow por línea: igual que en Node (valores dentro de la frase). */
+  const FLOW_GAP_MAX = 5;
+  const flowPairOk = (segs) => {
+    if (segs.length !== 2) return false;
+    const ids = segs.map((g) => ((g.ref.field || '').toUpperCase()));
+    const m0 = /^(NOMBRE|APODO)_(\d+)$/.exec(ids[0] || '');
+    const m1 = /^(NOMBRE|APODO)_(\d+)$/.exec(ids[1] || '');
+    return !!(m0 && m1 && m0[2] === m1[2] && m0[1] !== m1[1]);
+  };
+  const buildFlowGroups = (tpl, fixed, pi) => {
+    const items = [];
+    for (const f of fixed) {
+      if (f.page !== pi + 1 || Math.abs(f.angle || 0) >= 45) continue;
+      const multi = /\n/.test(f.es || '');
+      items.push({ kind: multi ? 'm' : 'f', ref: f,
+        x0: f.x, x1: f.x + f.w, cy: multi ? f.y : f.y + f.h / 2, h: f.h });
+    }
+    for (const s of tpl.pages[pi].slots) {
+      const fld = tpl.fields.find((x) => x.id === s.field);
+      if (!fld || fld.type !== 'text' || Math.abs(s.angle || 0) >= 45) continue;
+      items.push({ kind: 's', ref: s,
+        x0: s.x, x1: s.x + s.w, cy: s.y + s.h / 2, h: s.h });
+    }
+    items.sort((a, b) => a.cy - b.cy || a.x0 - b.x0);
+    const lines = [];
+    for (const it of items) {
+      let ln = null;
+      for (const l of lines) {
+        if (Math.abs(l.cy - it.cy) <= 0.45 * Math.min(l.minH, it.h)) { ln = l; break; }
+      }
+      if (!ln) lines.push({ cy: it.cy, minH: it.h, items: [it] });
+      else { ln.items.push(it); ln.minH = Math.min(ln.minH, it.h); }
+    }
+    const groups = [];
+    const multiBands = items.filter((it) => it.kind === 'm')
+      .map((it) => ({ x0: it.x0, x1: it.x1, top: it.ref.y, bot: it.ref.y + it.ref.h }));
+    for (const ln of lines) {
+      ln.items.sort((a, b) => a.x0 - b.x0);
+      if (ln.items.some((it) => it.kind === 'm')) continue;
+      const angs = ln.items.map((it) => it.ref.angle || 0);
+      if (Math.max(...angs) - Math.min(...angs) > 12) continue;
+      const gx0 = Math.min(...ln.items.map((it) => it.x0));
+      const gx1 = Math.max(...ln.items.map((it) => it.x1));
+      const lh = Math.max(...ln.items.map((it) => it.h));
+      const clash = multiBands.some((mb) => gx0 < mb.x1 && gx1 > mb.x0 &&
+        ln.cy >= mb.top - lh && ln.cy <= mb.bot + lh * 0.5);
+      if (clash) continue;
+      let cur = [ln.items[0]];
+      const flush = () => {
+        const hasS = cur.some((it) => it.kind === 's');
+        const hasF = cur.some((it) => it.kind === 'f');
+        if (cur.length >= 2 && hasS && (hasF || flowPairOk(cur))) {
+          cur.forEach((it) => { it.ref._flow = true; });
+          groups.push(cur);
+        }
+      };
+      for (let i = 1; i < ln.items.length; i++) {
+        if (ln.items[i].x0 - cur[cur.length - 1].x1 < FLOW_GAP_MAX) cur.push(ln.items[i]);
+        else { flush(); cur = [ln.items[i]]; }
+      }
+      flush();
+    }
+    return groups;
+  };
+  const cleanFlowText = (s) => String(s || '').replace(/\s+/g, ' ')
+    .replace(/\s+([,.;:!?%)\]}])/g, '$1').replace(/([(\[{])\s+/g, '$1').trim();
+  const drawFlowGroup = (bpg, gr, textOf, valOf, PW2, PH2) => {
+    const runs = [];
+    for (const g of gr) {
+      if (g.kind === 'f') {
+        const t = cleanFlowText(textOf(g.ref));
+        if (!t) continue;
+        runs.push({ text: t, fam: g.ref.fontFamily, size: g.ref.size,
+          color: g.ref.color, hsMax: g.ref.xscale || 1, align: g.ref.align || 'left' });
+      } else {
+        const t = cleanFlowText(String(valOf(g.ref.field) || '').replace(/\n/g, ' '));
+        if (!t) continue;
+        runs.push({ text: t, fam: g.ref.fontFamily, size: g.ref.size,
+          color: g.ref.color || '#000000', hsMax: g.ref.xscale || 1, align: g.ref.align || 'left' });
+      }
+    }
+    if (!runs.length) return;
+    const x0 = Math.min(...gr.map((g) => g.x0)) / 100 * PW2;
+    const x1 = Math.max(...gr.map((g) => g.x1)) / 100 * PW2;
+    const yT = Math.min(...gr.map((g) => g.ref.y)) / 100;
+    const yB = Math.max(...gr.map((g) => g.ref.y + g.ref.h)) / 100;
+    const yTop = PH2 - yT * PH2, boxH = (yB - yT) * PH2, maxW = x1 - x0;
+    const fonts = runs.map((r) => ff[pickFont(r.fam, r.size)]);
+    const floorHs = Math.min(0.6, ...runs.map((r) => (r.hsMax > 0 ? r.hsMax : 1)));
+    let scale = 1, laid = null;
+    for (;;) {
+      const words = [];
+      runs.forEach((r, ri) => {
+        const sz = r.size / 100 * PW2 * scale;
+        const f = fonts[ri];
+        r.text.split(' ').filter(Boolean).forEach((w) => {
+          words.push({ w, f, sz, color: r.color, glue: /^[.,;:!?%)\]}]/.test(w) });
+        });
+      });
+      let total = 0;
+      words.forEach((w, i) => {
+        w.nat = w.f.widthOfTextAtSize(w.w, w.sz) || 1;
+        const sp = (i && !w.glue) ? (w.f.widthOfTextAtSize(' ', w.sz) || 0) : 0;
+        w.gap = sp;
+        total += w.nat + sp;
+      });
+      const hs = Math.min(...runs.map((r) => (r.hsMax > 0 ? r.hsMax : 1)), maxW / Math.max(total, 1));
+      const maxSz = Math.max(...words.map((w) => w.sz));
+      if ((hs >= floorHs && maxSz * 1.25 <= boxH + maxSz * 0.5) || scale <= 0.5) {
+        laid = { words, hs: Math.max(hs, 0.1), maxSz, total };
+        if (scale < 0.85) {
+          const lbl = (gr.find((g) => g.kind === 'f') || {}).ref;
+          warns.push(((lbl && lbl.key) || (gr[0].ref.field || 'flujo')) + ': encogido');
+        }
+        break;
+      }
+      scale *= 0.94;
+    }
+    const align = runs[0].align;
+    const ink = Math.min(laid.total, maxW) * laid.hs;
+    let xx = x0;
+    if (align === 'center') xx = (x0 + x1) / 2 - ink / 2;
+    else if (align === 'right') xx = x1 - ink;
+    const cy = yTop - boxH / 2;
+    const base = cy - laid.maxSz * 0.45;
+    const angle = (gr[0].ref.angle || 0);
+    const rad = (angle * Math.PI) / 180, c = Math.cos(rad), s = Math.sin(rad);
+    const ccx = (x0 + x1) / 2, ccy = yTop - boxH / 2;
+    let pen = xx;
+    for (const w of laid.words) {
+      const px = ccx + (pen - ccx) * c - (base - ccy) * s;
+      const py = ccy + (pen - ccx) * s + (base - ccy) * c;
+      drawLine(bpg, degrees, ops, w.w, px, py, w.sz, w.f, hex(w.color, rgb), laid.hs, angle);
+      pen += (w.nat + (w.gap || 0)) * laid.hs;
+    }
+  };
   /* Runas pigpen (p10): igual que en Node. */
   const RUNE_INK = rgb(0.27, 0.06, 0.08);
   const RUNE_BG = rgb(0.85, 0.77, 0.64);
@@ -428,7 +564,9 @@ async function composeGame(deps) {
       return bp;
     };
     const pageFixed = fixed.filter((x) => x.page === pi + 1);
-    const sibBoxes = pageFixed.map((x) => {
+    const textOf = (f) => (i18n[f.key] !== undefined ? i18n[f.key] : f.es);
+    const flowGroups = buildFlowGroups(template, fixed, pi);
+    const sibBoxes = pageFixed.filter((x) => !x._flow).map((x) => {
       const bb = box(x);
       return { ref: x, top: bb.yTop, bot: bb.yTop - bb.h, h: bb.h };
     });
@@ -448,7 +586,8 @@ async function composeGame(deps) {
       drawPhoto(bg, ops, im, iw, ih, b, s.angle || 0, degrees);
     }
     for (const f of pageFixed) {
-      const str = i18n[f.key] !== undefined ? i18n[f.key] : f.es;
+      if (f._flow) continue;
+      const str = textOf(f);
       const font = ff[pickFontFor(f)];
       const size0 = (f.size / 100) * PW;
       let use = size0;
@@ -464,7 +603,7 @@ async function composeGame(deps) {
       if (!((f.angle || 0) > 45 || (f.angle || 0) < -45)) {
         for (const s of template.pages[pi].slots) {
           const fld = template.fields.find((x) => x.id === s.field);
-          if (!fld || fld.type !== 'text') continue;
+          if (!fld || fld.type !== 'text' || s._flow) continue;
           const val = slotVal(s.field);
           if (!val || val.indexOf('\n') >= 0) continue;
           if (((s.angle || 0) > 45 || (s.angle || 0) < -45)) continue;
@@ -496,6 +635,7 @@ async function composeGame(deps) {
       const fld = template.fields.find((x) => x.id === s.field);
       if (!fld) continue;
       if (fld.type === 'text') {
+        if (s._flow) continue;
         const val = slotVal(s.field);
         if (!val) continue;
         const font = ff[pickFont(s.fontFamily || 'caveat', s.size)];
@@ -506,6 +646,10 @@ async function composeGame(deps) {
           warns.push(`${s.field}: valor encogido`);
         }
       }
+    }
+    /* Reflow por línea: igual que en Node. */
+    for (const gr of flowGroups) {
+      drawFlowGroup(bg, gr, textOf, (fid) => slotVal(fid), PW, PH);
     }
     /* Nota cifrada (p10): igual que en Node. */
     if (template.pages[pi].id === 'p10') {
