@@ -336,8 +336,8 @@ var EJEMPLO = {
   APODO_6: 'El Chef', NOMBRE_DEST: 'Su abuela', TEXTO_POSTAL: 'Recuerdos de la fiesta',
   NOTA_PERSONALIZADA: 'No mirar: lista de sospechosos',
   APODO_7: 'El Soñador', PERSONALIZADO_1: 'Cazar orcos', PERSONALIZADO_2: 'Dormir en la calle',
-  APODO_8: 'La Lista', APP_1: 'tinder', S8_ICON_1: '1', APP_2: 'lácteos4my', S8_ICON_2: '2',
-  APP_3: 'Banco', S8_ICON_3: '3', APP_4: 'Notas', S8_ICON_4: '4'
+  APODO_8: 'La Lista', APP_1: 'tinder', APP_2: 'lácteos4my',
+  APP_3: 'Banco', APP_4: 'Notas'
 };
 function fillExample() {
   Object.keys(EJEMPLO).forEach(function (k) { answers[k] = EJEMPLO[k]; });
@@ -443,23 +443,15 @@ var SUS_EXTRA = {
   7: [['PERSONALIZADO_1', 'Una afición secreta que le daría vergüenza admitir', 80, 'Ej.: cazar orcos, dormir en la calle…'],
       ['PERSONALIZADO_2', 'Otra afición que le daría vergüenza admitir', 80, '']],
   8: [['APP_1', 'Una app de su tablet que le da vergüenza admitir', 60, 'Real o inventada. Ej.: tinder…'],
-      ['S8_ICON_1', 'Avisos', 0, ''],
       ['APP_2', 'Segunda app que le da vergüenza admitir', 60, ''],
-      ['S8_ICON_2', 'Avisos', 0, ''],
       ['APP_3', 'Tercera app que le da vergüenza admitir', 60, ''],
-      ['S8_ICON_3', 'Avisos', 0, ''],
-      ['APP_4', 'Cuarta app que le da vergüenza admitir', 60, ''],
-      ['S8_ICON_4', 'Avisos', 0, '']]
+      ['APP_4', 'Cuarta app que le da vergüenza admitir', 60, '']]
 };
+/* Iconos de las apps: inicial derivada al componer (no se pregunta) */
 Object.keys(SUS_EXTRA).forEach(function (k) {
   SUS_EXTRA[k].forEach(function (e) {
     Q[e[0]] = { q: e[1], max: e[2], desc: e[3] || '', long: e[4] ? 1 : 0 };
   });
-});
-/* Los avisos son números (tras el bucle para que no los pise) */
-[['S8_ICON_1', 'Número en el icono de la app 1'], ['S8_ICON_2', 'Número en el icono de la app 2'],
- ['S8_ICON_3', 'Número en el icono de la app 3'], ['S8_ICON_4', 'Número en el icono de la app 4']].forEach(function (b) {
-  Q[b[0]] = { q: b[1], num: 1, min: 0, max: 99 };
 });
 /* Opciones de la debilidad del cumpleañero (multi-selección + Otro libre) */
 var WEAK_OPTS = ['Llegar tarde', 'Robar comida ajena', 'Contar chistes malos', 'Hacer trampas jugando'];

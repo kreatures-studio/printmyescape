@@ -400,6 +400,15 @@ async function composeGame(deps) {
     if (a && v) return v + ' "' + a + '"';
     /* APODO_N lleva su coma (el fijo "," se pierde al extraer): sin apodo, nada */
     if (/^APODO_[1-8]$/.exec(field || '')) return v ? ', ' + v : v;
+    /* S8_ICON_N: inicial del nombre de la app (no se pregunta, se deriva) */
+    {
+      const mi = /^S8_ICON_([1-4])$/.exec(field || '');
+      if (mi) {
+        const av = (values['APP_' + mi[1]] || '').trim();
+        const mc = /[A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF0-9]/.exec(av);
+        return mc ? mc[0].toUpperCase() : '';
+      }
+    }
     return v;
   };
   const n = template.pages.length;
