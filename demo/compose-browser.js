@@ -261,7 +261,7 @@ function drawFitted(page, degrees, ops, font, text, boxPt, size0, color, align, 
 
 /* Foto con ajuste "cover" (sin deformar) recortada al marco rotado. */
 function drawPhoto(page, ops, im, iw, ih, b, angle, degrees) {
-  const fw = b.w * 0.96, fh = b.h * 0.96;
+    const fw = b.w, fh = b.h;
   const cx = b.x + b.w / 2, cy = b.yTop - b.h / 2;
   const th = ((angle || 0) * Math.PI) / 180;
   const c = Math.cos(th), si = Math.sin(th);
@@ -432,6 +432,21 @@ async function composeGame(deps) {
       const bb = box(x);
       return { ref: x, top: bb.yTop, bot: bb.yTop - bb.h, h: bb.h };
     });
+    /* Fotos primero (debajo de textos). Bleed 2.5pt para tapar el marco rosa. */
+    for (const s of template.pages[pi].slots) {
+      const fld = template.fields.find((x) => x.id === s.field);
+      if (!fld || fld.type !== 'image') continue;
+      const b0 = box(s);
+      const b = { x: b0.x - 2.5, w: b0.w + 5, yTop: b0.yTop + 2.5, h: b0.h + 5 };
+      const ph = photos[s.field];
+      if (!ph) {
+        bg.drawRectangle({ x: b.x, y: b.yTop - b.h, width: b.w, height: b.h, color: rgb(0.85, 0.85, 0.85) });
+        continue;
+      }
+      const im = ph.format === 'png' ? await out.embedPng(ph.bytes) : await out.embedJpg(ph.bytes);
+      const iw = im.width || 100, ih = im.height || 100;
+      drawPhoto(bg, ops, im, iw, ih, b, s.angle || 0, degrees);
+    }
     for (const f of pageFixed) {
       const str = i18n[f.key] !== undefined ? i18n[f.key] : f.es;
       const font = ff[pickFontFor(f)];
@@ -490,18 +505,6 @@ async function composeGame(deps) {
               grow: (s.w || 0) < 10 ? 2.5 : 1 })) {
           warns.push(`${s.field}: valor encogido`);
         }
-      } else if (fld.type === 'image') {
-        /* bleed: la foto come 1.5pt por lado para tapar el marco rosa */
-        const b0 = box(s);
-        const b = { x: b0.x - 1.5, w: b0.w + 3, yTop: b0.yTop + 1.5, h: b0.h + 3 };
-        const ph = photos[s.field];
-        if (!ph) {
-          bg.drawRectangle({ x: b.x, y: b.yTop - b.h, width: b.w, height: b.h, color: rgb(0.85, 0.85, 0.85) });
-          continue;
-        }
-        const im = ph.format === 'png' ? await out.embedPng(ph.bytes) : await out.embedJpg(ph.bytes);
-        const iw = im.width || 100, ih = im.height || 100;
-        drawPhoto(bg, ops, im, iw, ih, b, s.angle || 0, degrees);
       }
     }
     /* Nota cifrada (p10): igual que en Node. */

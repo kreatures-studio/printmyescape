@@ -357,7 +357,7 @@ function drawFitted(page, font, text, boxPt, size0, color, align, opt) {
 /* Foto con ajuste "cover" (sin deformar) recortada al marco rotado. */
 function drawPhoto(page, im, b, angle) {
   const iw = im.width || 100, ih = im.height || 100;
-  const fw = b.w * 0.96, fh = b.h * 0.96;
+  const fw = b.w, fh = b.h;
   const cx = b.x + b.w / 2, cy = b.yTop - b.h / 2;
   const th = ((angle || 0) * Math.PI) / 180;
   const c = Math.cos(th), si = Math.sin(th);
@@ -438,6 +438,34 @@ async function main() {
       bp.lines = ((f && f.lines) || []).map(box);
       return bp;
     };
+    /* fotos primero (debajo de textos): JPEG/PNG con ajuste cover recortado
+       al marco (rotado según el ángulo del marco); sin foto, marcador gris.
+       Bleed 2.5pt por lado para tapar el marco rosa del fondo. */
+    const imgCache = {};
+    async function imgFor(p) {
+      if (!imgCache[p]) {
+        const b = fs.readFileSync(path.join(ROOT, p));
+        imgCache[p] = /\.png$/i.test(p) ? await out.embedPng(b) : await out.embedJpg(b);
+      }
+      return imgCache[p];
+    }
+    for (const s of tpl.pages[pi].slots) {
+      const fld = tpl.fields.find((x) => x.id === s.field);
+      if (!fld || fld.type !== 'image') continue;
+      const b = box(s);
+      const bb = { x: b.x - 2.5, w: b.w + 5, yTop: b.yTop + 2.5, h: b.h + 5 };
+      const by = bb.yTop - bb.h;
+      const src = o.photos[s.field];
+      if (src) {
+        const im = await imgFor(src);
+        drawPhoto(bg, im, bb, s.angle || 0);
+      } else {
+        bg.drawRectangle({ x: bb.x, y: by, width: bb.w, height: bb.h, color: rgb(0.85, 0.85, 0.85), borderColor: rgb(0.5, 0.5, 0.5), borderWidth: 1 });
+        const t = 'FOTO';
+        const fs2 = 10, tw = ff.opensansBold.widthOfTextAtSize(t, fs2);
+        bg.drawText(t, { x: bb.x + (bb.w - tw) / 2, y: by + bb.h / 2, size: fs2, font: ff.opensansBold, color: rgb(0.4, 0.4, 0.4) });
+      }
+    }
     /* fijos traducidos */
     const pageFixed = fixed.filter((x) => x.page === pi + 1);
     const sibBoxes = pageFixed.map((x) => {
@@ -506,34 +534,6 @@ async function main() {
       if (drawFitted(bg, font, val, box(s), (s.size / 100) * PW, hex(s.color || '#000000'), s.align || 'left',
           { single: true, targetHs: s.xscale || 1, angle: s.angle || 0, grow: (s.w || 0) < 10 ? 2.5 : 1 })) {
         warns.push(`${s.field}: valor encogido`);
-      }
-    }
-    /* fotos: JPEG/PNG con ajuste cover recortado al marco (rotado según
-       el ángulo del marco); sin foto, marcador gris de geometría */
-    const imgCache = {};
-    async function imgFor(p) {
-      if (!imgCache[p]) {
-        const b = fs.readFileSync(path.join(ROOT, p));
-        imgCache[p] = /\.png$/i.test(p) ? await out.embedPng(b) : await out.embedJpg(b);
-      }
-      return imgCache[p];
-    }
-    for (const s of tpl.pages[pi].slots) {
-      const fld = tpl.fields.find((x) => x.id === s.field);
-      if (!fld || fld.type !== 'image') continue;
-      const b = box(s);
-      /* bleed: la foto come 1.5pt por lado para tapar el marco rosa del fondo */
-      const bb = { x: b.x - 1.5, w: b.w + 3, yTop: b.yTop + 1.5, h: b.h + 3 };
-      const by = bb.yTop - bb.h;
-      const src = o.photos[s.field];
-      if (src) {
-        const im = await imgFor(src);
-        drawPhoto(bg, im, bb, s.angle || 0);
-      } else {
-        bg.drawRectangle({ x: bb.x, y: by, width: bb.w, height: bb.h, color: rgb(0.85, 0.85, 0.85), borderColor: rgb(0.5, 0.5, 0.5), borderWidth: 1 });
-        const t = 'FOTO';
-        const fs2 = 10, tw = ff.opensansBold.widthOfTextAtSize(t, fs2);
-        bg.drawText(t, { x: bb.x + (bb.w - tw) / 2, y: by + bb.h / 2, size: fs2, font: ff.opensansBold, color: rgb(0.4, 0.4, 0.4) });
       }
     }
     /* Nota cifrada (p10): el amor secreto de S2 en runas pigpen sobre la hoja.
