@@ -315,10 +315,10 @@ var EJEMPLO = {
   TALENTO: 'Contar chistes', SOSPECHA: 'Robo de tarta',
   RESULTADO_TEST: 'vista', 'NOMBRE_4.2': 'Alex',
   MENSAJE_PERSONALIZADO: '¿Vienes esta noche?\nTe espero a las 9',
-  BUSQUEDA_1: 'cómo abrir una caja fuerte', BUSQUEDA_2: 'ideas de regalos',
+  BUSQUEDA_1: 'caja fuerte', BUSQUEDA_2: 'regalos',
   NOMBRE_1: 'Celia', NOMBRE_2: 'Nuria', NOMBRE_3: 'Adela', NOMBRE_4: 'Adam',
   NOMBRE_5: 'Dani', NOMBRE_6: 'Pol', NOMBRE_7: 'Marc', NOMBRE_8: 'Clau',
-  S1_HIDEA: 'Al lado de la basura de la cocina', S1_HIDEB: 'Estaba sentada frente al ordenador',
+  S1_HIDEA: 'Al lado de la basura de la cocina', S1_HIDEB: 'Frente al ordenador',
   S2_HIDEA: 'Estaba en la cama', S2_HIDEB: 'Estaba en el sofá',
   S3_HIDEA: 'Delante de un cuadro', S3_HIDEB: 'Viendo arte en la tele',
   S4_HIDEA: 'Estaba tumbado en el sofá', S4_HIDEB: 'Encima de una alfombra',
@@ -328,18 +328,60 @@ var EJEMPLO = {
   S8_HIDEA: 'Al lado de una mesilla', S8_HIDEB: 'Abriendo la nevera',
   EDAD: '30', DEBILIDAD: 'Llegar tarde||Robar comida ajena||Otro: Roncar', OTRO: 'Roncar',
   B_INFO: 'Le encantan las sorpresas', B_NOTES: 'Alergia a los frutos secos',
-  APODO_1: 'El Silencioso',
-  APODO_2: 'La Misteriosa', S2_SECRET_LOVE: 'Un actor famoso',
+  APODO_1: 'El Mudo',
+  APODO_2: 'La Oculta', S2_SECRET_LOVE: 'Eres lo mejor que me ha pasado en la vida y quiero que lo sepas',
   APODO_3: 'La Curiosa', Nombre_Empresa: 'Vibradores 2000', CONCEPTO: 'Vibrador XL',
   APODO_4: 'El Tranquilo',
   APODO_5: 'El Tecno',
-  APODO_6: 'El Chef', NOMBRE_DEST: 'Su abuela', TEXTO_POSTAL: 'Recuerdos de la fiesta',
+  APODO_6: 'El Chef', NOMBRE_DEST: 'Su abuela', TEXTO_POSTAL: 'Recuerdos de fiesta',
   NOTA_PERSONALIZADA: 'No mirar: lista de sospechosos',
   APODO_7: 'El Soñador', PERSONALIZADO_1: 'Cazar orcos', PERSONALIZADO_2: 'Dormir en la calle',
   APODO_8: 'La Lista', APP_1: 'tinder', APP_2: 'lácteos4my',
   APP_3: 'Banco', APP_4: 'Notas'
 };
+
+/* Dos ejemplos más (mismo formato): se generan con el botón "PDF ejemplo 2/3". */
+var EJEMPLO2 = Object.assign({}, EJEMPLO, {
+  NOMBRE_CUMPLE: 'Marta', EDAD: '45', FAMA: 'Cocina para el barrio', TALENTO: 'Imitar acentos',
+  SOSPECHA: 'Robo de joyas', B_INFO: 'Cuidado con sus pastas caseras',
+  B_NOTES: 'Odia madrugar. Le encanta el chocolate negro.',
+  DEBILIDAD: 'Hacer trampas jugando||Otro: Dormir la siesta', OTRO: 'Dormir la siesta',
+  NOMBRE_1: 'Ruth', NOMBRE_2: 'Hugo', NOMBRE_3: 'Lucia', NOMBRE_4: 'Ivan',
+  NOMBRE_5: 'Sara', NOMBRE_6: 'Ruben', NOMBRE_7: 'Nora', NOMBRE_8: 'Eva', 'NOMBRE_4.2': 'Hugo',
+  APODO_1: 'La Discreta', APODO_2: 'El Gruñón', APODO_3: 'La Cotilla', APODO_4: 'El Bromista',
+  APODO_5: 'La Pianista', APODO_6: 'El Callado', APODO_7: 'La Viajera', APODO_8: 'El Madrugón',
+  S1_HIDEA: 'Detrás de la cortina', S1_HIDEB: 'Dentro del armario',
+  S2_HIDEA: 'En la cocina', S2_HIDEB: 'En el garaje',
+  S3_HIDEA: 'En el sofá', S3_HIDEB: 'En la terraza',
+  S4_HIDEA: 'Bajo la mesa', S4_HIDEB: 'En el pasillo',
+  S5_HIDEA: 'Junto al piano', S5_HIDEB: 'En el balcón',
+  S6_HIDEA: 'En la bañera', S6_HIDEB: 'En el dormitorio',
+  S7_HIDEA: 'En la biblioteca', S7_HIDEB: 'En el jardín',
+  S8_HIDEA: 'En la cama', S8_HIDEB: 'En el baño',
+  S2_SECRET_LOVE: 'Mi compañero de la oficina, el del cuaderno azul',
+  MENSAJE_PERSONALIZADO: 'Mañana es el gran día\nNo llegues tarde',
+  BUSQUEDA_1: 'recetas de pasteles', BUSQUEDA_2: 'ideas de regalos',
+  Nombre_Empresa: 'Panadería Dulce', CONCEPTO: 'Tarta chocolate',
+  NOMBRE_DEST: 'Su vecina', TEXTO_POSTAL: 'Gracias por el pastel',
+  NOTA_PERSONALIZADA: 'No digas nada de la receta',
+  PERSONALIZADO_1: 'coser', PERSONALIZADO_2: 'ver series de misterio',
+  APP_1: 'WhatsApp', APP_2: 'Maps', APP_3: 'Fotos', APP_4: 'Recetas'
+});
+var EJEMPLO3 = Object.assign({}, EJEMPLO, {
+  NOMBRE_CUMPLE: 'Javier', EDAD: '71', FAMA: 'Gana a las cartas', TALENTO: 'Hacer magia',
+  SOSPECHA: 'Fraude en bingo', B_INFO: 'Dice que es mago, pero no lo es',
+  B_NOTES: 'Llegó tarde a su boda y tampoco se acuerda de ella.',
+  DEBILIDAD: 'Contar chistes malos||Llegar tarde', OTRO: '',
+  NOMBRE_1: 'Pablo', NOMBRE_2: 'Elena', NOMBRE_3: 'Sofia', NOMBRE_4: 'Mario',
+  NOMBRE_5: 'Laura', NOMBRE_6: 'Diego', NOMBRE_7: 'Julia', NOMBRE_8: 'Raul', 'NOMBRE_4.2': 'Elena',
+  S2_SECRET_LOVE: 'Mi vecina de enfrente, la que riega las plantas',
+  BUSQUEDA_1: 'trucos de magia', BUSQUEDA_2: 'cartas marcadas'
+});
+function hasAnyData() {
+  return Object.keys(answers).some(function (k) { return k !== 'intro_ok' && answers[k]; }) || Object.keys(photos).length > 0;
+}
 function fillExample() {
+  if (hasAnyData() && !confirm('Esto sustituirá tus respuestas y tus fotos por el ejemplo. ¿Continuar?')) return;
   Object.keys(EJEMPLO).forEach(function (k) { answers[k] = EJEMPLO[k]; });
   answers.intro_ok = '1';
   /* El "Otro:" del multi también alimenta su cajetín para que se vea pintado */
@@ -417,7 +459,7 @@ var Q = {
   TALENTO: { q: 'Su mayor talento es', max: 70 },
   SOSPECHA: { q: 'Si fuera sospechoso de algo, ¿de qué sería?', max: 70 },
   FOTO_CUMPLE: { q: 'Sube su foto' },
-  EDAD: { q: '¿Cuántos años cumple?', num: 1, min: 1, max: 120 },
+  EDAD: { q: '¿Cuántos años cumple?', num: 1, min: 1, max: 110 },
   B_INFO: { q: 'Información que sus amigos y familiares consideran importante sobre esta persona', max: 280, long: 1 },
   B_NOTES: { q: 'Notas y observaciones', max: 280, long: 1 }
 };
@@ -472,12 +514,79 @@ for (var _sn = 1; _sn <= 8; _sn++) {
 var SECTIONS = [{ id: 'intro', title: 'Inicio' }];
 SECDEF.forEach(function (s) { SECTIONS.push({ id: s.id, title: s.title }); });
 
+/* Límites por campo (caracteres): los calcula tools/limits.cjs con el motor de ajuste. */
+var LIMITS = {
+ "APODO_1": 12,
+ "APODO_2": 12,
+ "APODO_3": 12,
+ "APODO_4": 12,
+ "APODO_5": 12,
+ "APODO_6": 12,
+ "APODO_7": 12,
+ "APODO_8": 12,
+ "APP_1": 21,
+ "APP_2": 24,
+ "APP_3": 24,
+ "APP_4": 26,
+ "BUSQUEDA_1": 27,
+ "BUSQUEDA_2": 27,
+ "B_INFO": 200,
+ "B_NOTES": 200,
+ "CONCEPTO": 16,
+ "FAMA": 24,
+ "MENSAJE_PERSONALIZADO": 42,
+ "NOMBRE_1": 12,
+ "NOMBRE_2": 12,
+ "NOMBRE_3": 12,
+ "NOMBRE_4": 12,
+ "NOMBRE_4.2": 12,
+ "NOMBRE_5": 12,
+ "NOMBRE_6": 12,
+ "NOMBRE_7": 12,
+ "NOMBRE_8": 12,
+ "NOMBRE_CUMPLE": 12,
+ "NOMBRE_DEST": 20,
+ "NOTA_PERSONALIZADA": 34,
+ "Nombre_Empresa": 20,
+ "OTRO": 18,
+ "PERSONALIZADO_1": 48,
+ "PERSONALIZADO_2": 47,
+ "RESULTADO_TEST": 26,
+ "S1_HIDEA": 37,
+ "S1_HIDEB": 24,
+ "S2_HIDEA": 37,
+ "S2_HIDEB": 24,
+ "S2_SECRET_LOVE": 70,
+ "S3_HIDEA": 23,
+ "S3_HIDEB": 37,
+ "S4_HIDEA": 38,
+ "S4_HIDEB": 38,
+ "S5_HIDEA": 24,
+ "S5_HIDEB": 38,
+ "S6_HIDEA": 37,
+ "S6_HIDEB": 37,
+ "S7_HIDEA": 24,
+ "S7_HIDEB": 37,
+ "S8_HIDEA": 38,
+ "S8_HIDEB": 25,
+ "SOSPECHA": 17,
+ "TALENTO": 15,
+ "TEXTO_POSTAL": 21
+};
+/* Obligatorios: todo salvo apodos, alias (opcionales) y fotos (se guardan aparte; tienen marcador). */
+function isRequiredField(fid) {
+  return !/^APODO_|_ALIAS$/.test(fid);
+}
+/* Un campo obligatorio está resuelto si tiene texto o, en las fotos, una imagen cargada. */
+function hasValue(f) {
+  return f.type === 'photo' ? !!photos['photo_' + f.id] : !!answers[f.id];
+}
 function mkField(fid) {
   var tf = tplField(fid) || { type: 'text', maxLength: 70 };
   var q = Q[fid] || { q: fid };
   var type = tf.type === 'image' ? 'photo' : (q.multi ? 'multi' : (q.num ? 'number' : (q.long ? 'long' : 'text')));
-  return { id: fid, type: type, q: q.q, required: !!q.req,
-    max: q.max || tf.maxLength || 70, desc: q.desc || '', ej: q.ej || '',
+  return { id: fid, type: type, q: q.q, required: isRequiredField(fid),
+    max: LIMITS[fid] || q.max || tf.maxLength || 70, desc: q.desc || '', ej: q.ej || '',
     min: q.min };
 }
 var SCREENS = [
@@ -486,7 +595,7 @@ var SCREENS = [
     fields: [{ id: 'intro_ok', type: 'check', q: 'Comprendo cómo funciona', required: true }],
     bullets: [
       'Te llevará unos <b>10 minutos</b>. Tus respuestas se guardan en este equipo.',
-      'Vas a necesitar: el <b>nombre</b> de 8 sospechosos más la víctima, <b>9 fotos</b> (máx. 10 MB cada una) y <b>2 escondites</b> por sospechoso.',
+      'Vas a necesitar: el <b>nombre</b> de 8 sospechosos más la víctima, <b>9 fotos</b> (máx. 10 MB cada una, al menos 600 px en su lado corto) y <b>2 escondites</b> por sospechoso.',
       'Puedes pulsar <b>Rellenar ejemplo</b> para probar sin escribir nada.',
       'Al final revisaremos todo junto y <b>generarás el PDF</b> aquí mismo, sin subir nada a internet.'
     ],
@@ -529,7 +638,7 @@ function saveDraft() {
 function updateDraftInfo(ts) {
   var el = $('draftinfo');
   var n = 0;
-  SCREENS.forEach(function (s) { s.fields.forEach(function (f) { if (f.required && answers[f.id]) n++; }); });
+  SCREENS.forEach(function (s) { s.fields.forEach(function (f) { if (f.required && hasValue(f)) n++; }); });
   var total = 0;
   SCREENS.forEach(function (s) { s.fields.forEach(function (f) { if (f.required) total++; }); });
   var date = ts ? new Date(ts) : null;
@@ -580,7 +689,7 @@ function requiredOf(sec) {
   return out;
 }
 function missingOf(sec) {
-  return requiredOf(sec).filter(function (f) { return !answers[f.id]; });
+  return requiredOf(sec).filter(function (f) { return !hasValue(f); });
 }
 function isMobile() {
   return window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
@@ -653,8 +762,8 @@ function fieldControl(f, prefix) {
       box.appendChild(t);
       var s2 = document.createElement('div'); s2.className = 'ph-s';
       s2.textContent = idbOK
-        ? 'JPG, PNG o WebP · máx. 10 MB · se guarda en este equipo'
-        : 'JPG, PNG o WebP · máx. 10 MB · solo vive en esta sesión';
+        ? 'JPG, PNG o WebP · máx. 10 MB · mín. 600 px · se guarda en este equipo'
+        : 'JPG, PNG o WebP · máx. 10 MB · mín. 600 px · solo vive en esta sesión';
       box.appendChild(s2);
     }
     box.onclick = function () { photoTarget = f.id; $('filepick').click(); };
@@ -736,6 +845,7 @@ function readAll(scope) {
 function fieldError(f) {
   if (f.type === 'check' && f.required && answers[f.id] !== '1') return 'Marca esta casilla para continuar.';
   if (f.required && (f.type === 'text' || f.type === 'long') && !answers[f.id]) return 'Este campo es obligatorio.';
+  if (f.type === 'photo' && f.required && !photos['photo_' + f.id]) return 'Sube una foto (JPG, PNG o WebP, al menos 600 px).';
   if (f.type === 'number' && f.required) {
     var n = parseInt(answers[f.id], 10);
     if (!answers[f.id] || isNaN(n) || n < f.min || n > f.max) return 'Escribe un número entre ' + f.min + ' y ' + f.max + '.';
@@ -886,7 +996,7 @@ function mobileGoReview() {
   if (view === 'steps') readAll($('mwrap'));
   var missing = [];
   SCREENS.forEach(function (s) { s.fields.forEach(function (f) {
-    if (f.required && !answers[f.id]) missing.push(f);
+    if (f.required && !hasValue(f)) missing.push(f);
   }); });
   if (missing.length) {
     var f0 = missing[0];
@@ -904,9 +1014,9 @@ function mobileGoReview() {
 function mobileProgress() {
   var n = 0, total = 0;
   SCREENS.forEach(function (s) { s.fields.forEach(function (f) {
-    if (f.type === 'photo' || !f.required) return;
+    if (!f.required) return;
     total++;
-    if (answers[f.id]) n++;
+    if (hasValue(f)) n++;
   }); });
   return total ? Math.round(100 * n / total) : 0;
 }
@@ -931,7 +1041,7 @@ function shortLabel(fid) {
     DEBILIDAD: 'Debilidad', B_INFO: 'Info', B_NOTES: 'Notas',
     TALENTO: 'Talento', SOSPECHA: 'Sospecha', OTRO: 'Otro', FOTO_CUMPLE: 'Foto',
     RESULTADO_TEST: 'Resultado', 'NOMBRE_4.2': 'Contacto',
-    MENSAJE_PERSONALIZADO: 'Mensaje', BUSQUEDA_1: 'Búsqueda 1', BUSQUEDA_2: 'Búsqueda 2',
+    MENSAJE_PERSONALIZADO: 'Mensaje', BUSQUEDA_1: 'caja fuerte', BUSQUEDA_2: 'regalos',
     S2_SECRET_LOVE: 'Amor prohibido', Nombre_Empresa: 'Empresa', CONCEPTO: 'Concepto',
     NOMBRE_DEST: 'Postal para', TEXTO_POSTAL: 'Texto postal', NOTA_PERSONALIZADA: 'Nota',
     PERSONALIZADO_1: 'Afición 1', PERSONALIZADO_2: 'Afición 2',
@@ -1045,12 +1155,12 @@ function reviewChrome() {
 function finish() {
   var missing = [];
   SCREENS.forEach(function (s) { s.fields.forEach(function (f) {
-    if (f.required && !answers[f.id]) missing.push(shortLabel(f.id));
+    if (f.required && !hasValue(f)) missing.push(shortLabel(f.id));
   }); });
   if (missing.length) {
     var fid = null;
     SCREENS.forEach(function (s) { s.fields.forEach(function (f) {
-      if (!fid && f.required && !answers[f.id]) fid = f.id;
+      if (!fid && f.required && !hasValue(f)) fid = f.id;
     }); });
     if (isMobile()) { view = 'steps'; render(); editField(fid, true); }
     else { idx = screenOfField(fid); view = 'steps'; render(); }
@@ -1087,6 +1197,15 @@ function finish() {
     store.del(DRAFT_KEY); render(); window.scrollTo(0, 0);
   };
   dl.appendChild(b1); dl.appendChild(b2); d.appendChild(dl);
+  var exRow = document.createElement('p'); exRow.className = 'exrow';
+  exRow.appendChild(document.createTextNode('Generar con un ejemplo (sustituye tus respuestas): '));
+  [1, 2, 3].forEach(function (n) {
+    var be = document.createElement('button'); be.type = 'button'; be.className = 'exbtn';
+    be.textContent = 'Ejemplo ' + n;
+    be.onclick = function () { generateExample(n); };
+    exRow.appendChild(be);
+  });
+  d.appendChild(exRow);
   var st = document.createElement('p'); st.id = 'genstatus'; d.appendChild(st);
   var dw = document.createElement('p');
   var pdl = document.createElement('a'); pdl.id = 'pdflink';
@@ -1110,12 +1229,30 @@ function dataURLToBytes(du) {
   return { bytes: b64ToBytes(parts[1] || ''), format: /png/i.test(mime) ? 'png' : 'jpg' };
 }
 
+/* Reglas de caracteres por campo (mismas que el compositor). */
+var CL_NAME_BAD = /[^A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u017F '\u2019\-.]/g;
+var CL_TEXT_BAD = /[^A-Za-z0-9\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u017F .,;:!?\u00A1\u00BF'"\u2019\u2018\u201C\u201D\-\u2013\u2014()\/%\u20AC\u2026\n\t]/g;
+function kindOfField(fid) {
+  if (fid === 'EDAD') return 'num';
+  if (fid === 'B_NOTES' || fid === 'B_INFO') return 'multi';
+  if (/^NOMBRE_|^APODO_|_ALIAS$|^S2_SECRET_LOVE$/.test(fid)) return 'name';
+  return 'text';
+}
+function stripBad(s, fid) {
+  var k = kindOfField(fid);
+  s = String(s);
+  if (k === 'num') return s.replace(/[^0-9]/g, '');
+  return s.replace(k === 'name' ? CL_NAME_BAD : CL_TEXT_BAD, '');
+}
+document.addEventListener('keydown', function (e) {
+  if (e.target && e.target.type === 'number' && /[eE+\-.,]/.test(e.key)) e.preventDefault();
+}, true);
 /* Filtro en vivo: quita lo que el PDF no puede dibujar (emojis, alfabetos no latinos...). */
 document.addEventListener('input', function (e) {
   var t = e.target;
   if (!t || (t.tagName !== 'INPUT' && t.tagName !== 'TEXTAREA')) return;
-  if (t.type === 'number' || t.type === 'file' || t.type === 'checkbox' || t.type === 'radio') return;
-  var clean = t.value.replace(/[^\t\n\u0020-\u007E\u00A0-\u024F\u20AC\u2013\u2014\u2018\u2019\u201C\u201D\u2026\u00BF\u00A1]/g, '');
+  if (t.type === 'file' || t.type === 'checkbox' || t.type === 'radio') return;
+  var clean = stripBad(t.value, t.getAttribute('data-fid') || '');
   if (clean !== t.value) {
     var p = t.selectionStart;
     t.value = clean;
@@ -1181,6 +1318,10 @@ function textProblems() {
         if (!fld || fld.type !== 'text') return;
         var v = valueForCheck(s.field);
         if (!v) return;
+        if (s.field !== 'DEBILIDAD' && LIMITS[s.field] && String(answers[s.field] || '').trim().length > LIMITS[s.field]) {
+          if (bad.indexOf(s.field) < 0) bad.push(s.field);
+          return;
+        }
         if (!PMECompose.fieldFits(s, v, map, PW, PH) && bad.indexOf(s.field) < 0) bad.push(s.field);
       });
     });
@@ -1211,6 +1352,13 @@ document.addEventListener('input', function (e) {
   clearTimeout(_lenT);
   _lenT = setTimeout(markTooLong, 400);
 });
+function generateExample(n) {
+  if (!confirm('Esto sustituirá tus respuestas por el ejemplo ' + n + '. ¿Continuar?')) return;
+  var set = n === 2 ? EJEMPLO2 : (n === 3 ? EJEMPLO3 : EJEMPLO);
+  Object.keys(set).forEach(function (k) { answers[k] = set[k]; });
+  answers.intro_ok = '1';
+  generatePDF();
+}
 function generatePDF() {
   textProblems().then(function (bad) {
     if (bad.length) {
@@ -1232,7 +1380,6 @@ function generatePDFNow() {
     try {
       var FD = PME_DEMO_DATA.fonts, fonts = {};
       for (var k in FD) fonts[k] = { bytes: b64ToBytes(FD[k].b64), subset: FD[k].subset };
-      var sample = { bytes: b64ToBytes(PME_DEMO_DATA.samplePhoto), format: 'jpg' };
       if (answers.DEBILIDAD && answers.DEBILIDAD.indexOf('||') >= 0) {
         var _parts = answers.DEBILIDAD.split('||');
         var _main = [], _other = [];
@@ -1244,12 +1391,18 @@ function generatePDFNow() {
         answers.DEBILIDAD = _main.join(' / ');
         if (!answers.OTRO && _other.length) answers.OTRO = _other.join(' / ');
       }
-      var ph = {};
+      var ph = {}, faltan = [];
       TPL.fields.forEach(function (f) {
         if (f.type !== 'image') return;
         var key = 'photo_' + f.id;
-        ph[f.id] = photos[key] ? dataURLToBytes(photos[key]) : sample;
+        if (photos[key]) ph[f.id] = dataURLToBytes(photos[key]); else faltan.push(f.id);
       });
+      if (faltan.length) {
+        if (st) st.textContent = '';
+        if (btn) btn.disabled = false;
+        showErr('Faltan fotos (' + faltan.join(', ') + '). Súbelas antes de generar el PDF.');
+        return;
+      }
       var bar = $('progress').firstElementChild;
       PMECompose.composeGame({
         bgBytes: b64ToBytes(PME_DEMO_DATA.bg), fonts: fonts,
@@ -1454,20 +1607,44 @@ if (window.matchMedia) {
     saveDraft(); render();
   });
 }
+/* Carga de foto: se decodifica, se corrige la orientación EXIF y se re-codifica a JPEG.
+   Así cualquier WebP/PNG llega al PDF como JPEG válido y la proporción queda normalizada. */
+var PHOTO_MIN_SIDE = 600, PHOTO_MAX_SIDE = 2000;
+function loadPhoto(file, cb) {
+  var url = URL.createObjectURL(file);
+  var img = new Image();
+  img.onload = function () {
+    URL.revokeObjectURL(url);
+    var w = img.naturalWidth, h = img.naturalHeight;
+    if (!w || !h) { cb('No se pudo leer esa imagen. Prueba con JPG o PNG.'); return; }
+    if (Math.min(w, h) < PHOTO_MIN_SIDE) {
+      cb('La foto es demasiado pequeña (' + w + ' × ' + h + ' px). Usa una de al menos ' + PHOTO_MIN_SIDE + ' px en su lado corto.');
+      return;
+    }
+    var k = Math.min(1, PHOTO_MAX_SIDE / Math.max(w, h));
+    var cv = document.createElement('canvas');
+    cv.width = Math.round(w * k); cv.height = Math.round(h * k);
+    var ctx = cv.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(img, 0, 0, cv.width, cv.height);
+    cb(null, cv.toDataURL('image/jpeg', 0.92));
+  };
+  img.onerror = function () { URL.revokeObjectURL(url); cb('No se pudo leer esa imagen. Prueba con JPG o PNG.'); };
+  img.src = url;
+}
 $('filepick').onchange = function (e) {
   var f = e.target.files[0]; e.target.value = '';
   if (!f || !photoTarget) return;
   var fid = photoTarget; photoTarget = null;
   if (f.size > 10 * 1024 * 1024) { showErr('La foto supera los 10 MB. Elige otra.'); return; }
-  if (!/^image\//.test(f.type)) { showErr('El archivo no es una imagen.'); return; }
-  var r = new FileReader();
-  r.onload = function () {
+  if (f.type && !/^image\//.test(f.type)) { showErr('El archivo no es una imagen. Usa JPG, PNG o WebP.'); return; }
+  loadPhoto(f, function (err, dataUrl) {
+    if (err) { showErr(err); return; }
     var key = 'photo_' + fid;
-    photos[key] = r.result;
-    idb.save(key, r.result);
+    photos[key] = dataUrl;
+    idb.save(key, dataUrl);
     saveDraft(); render();
-  };
-  r.readAsDataURL(f);
+  });
 };
 
 /* ---------- arranque ---------- */
