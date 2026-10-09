@@ -33,6 +33,8 @@ def main():
     ap.add_argument('--tpl', default='templates/final3')
     ap.add_argument('--bg', default='Final3-Clean.pdf')
     ap.add_argument('--out', default='demo/index.html')
+    ap.add_argument('--final', action='store_true',
+                    help='versión final: sin pantalla de control de demostración (DEMO_CONTROL = false)')
     args = ap.parse_args()
 
     tpldir = os.path.join(ROOT, args.tpl)
@@ -66,6 +68,10 @@ def main():
     data = {'template': json.loads(template), 'texts': json.loads(texts), 'i18n': i18n,
             'fonts': fonts, 'bg': b64(os.path.join(ROOT, args.bg)),
             'samplePhotos': sample_photos(json.loads(template))}
+    if 'var DEMO_CONTROL = true;' not in html:
+        raise SystemExit('demo/src.html: no encuentro "var DEMO_CONTROL = true;"')
+    html = html.replace('var DEMO_CONTROL = true;',
+                        'var DEMO_CONTROL = %s;' % ('false' if args.final else 'true'))
     html = html.replace('/*__PDFLIB__*/', pdflib)
     html = html.replace('/*__FONTKIT__*/', fontkit)
     html = html.replace('/*__COMPOSE__*/', compose)
