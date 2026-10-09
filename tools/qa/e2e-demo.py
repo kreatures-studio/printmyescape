@@ -182,6 +182,27 @@ with sync_playwright() as p:
     rec('I1 "Ejemplo N" pide confirmación y, si se cancela, conserva tus datos', v == 'Zoe', 'NOMBRE_CUMPLE=%r' % v)
     b.close()
 
+    # ---------- J. ejemplos en inglés y nueve fotos de muestra distintas ----------
+    b, pg, errs = open_demo(p)
+    fill_and_finish(pg)
+    pg.click('input[name="pdflang"][value="en"]')
+    pg.click("button.exbtn:has-text('Ejemplo 2')")
+    e = wait_done(pg)
+    pdf_en = download_pdf(pg, 'ejemplo-2-en') if not e else None
+    b.close()
+    if pdf_en:
+        txt = subprocess.run(['pdftotext', '-raw', pdf_en, '-'], capture_output=True, text=True).stdout
+        rec('J1 ejemplo 2 en inglés: el PDF sale en inglés (sin textos en español)',
+            'early' in txt and 'madrugar' not in txt and 'Odia' not in txt,
+            'early=%s madrugar=%s' % ('early' in txt, 'madrugar' in txt))
+    else:
+        rec('J1 ejemplo 2 en inglés', False, e or 'sin PDF')
+    b, pg, errs = open_demo(p)
+    fill_and_finish(pg)
+    n_distintas = pg.evaluate("() => { const v = Object.keys(photos).filter(k => k.indexOf('photo_') === 0).map(k => photos[k]); return [v.length, new Set(v).size]; }")
+    rec('J2 nueve fotos de muestra, todas distintas', n_distintas == [9, 9], 'fotos=%s distintas=%s' % (n_distintas[0], n_distintas[1]))
+    b.close()
+
     print('\nRESUMEN: %d/%d OK' % (sum(r['ok'] for r in RES), len(RES)))
     with open(os.path.join(OUT, 'resultados-e2e.json'), 'w', encoding='utf-8') as f:
         json.dump(RES, f, ensure_ascii=False, indent=1)
