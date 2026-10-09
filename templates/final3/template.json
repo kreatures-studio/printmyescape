@@ -677,14 +677,14 @@
       "slots": [
         {
           "field": "NOMBRE_CUMPLE",
-          "x": 59.43,
+          "x": 66.0,
           "y": 12.64,
-          "w": 15.27,
+          "w": 12.8,
           "h": 2.68,
           "size": 2.1,
           "color": "#021E23",
           "fontFamily": "Anton-Regular",
-          "xscale": 1.03,
+          "xscale": 0.8,
           "angle": 0.9
         },
         {
@@ -941,12 +941,11 @@
           "field": "OTRO",
           "x": 19.66,
           "y": 65.02,
-          "w": 6.21,
+          "w": 40.0,
           "h": 2.2,
           "size": 2.35,
           "color": "#725A4C",
           "fontFamily": "OpenSans-Regular",
-          "xscale": 0.78,
           "angle": 0
         },
         {
