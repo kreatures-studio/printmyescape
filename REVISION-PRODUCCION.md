@@ -4,73 +4,51 @@ Fecha: 2026-10-09 · Rama: `studio/artista` · Build: `demo/index.html` (plantil
 
 ## Estado
 
-Los 5 bloqueantes de la primera revisión siguen resueltos. En esta ronda se corrigió lo que revisó el equipo sobre el PDF y el formulario:
+- **Idioma único por juego.** La portada elige ES o EN con dos tarjetas, o con el selector ES · EN de la barra superior. El formulario, las preguntas, los ejemplos y el PDF salen en ese idioma. Cambiar de idioma conserva los datos y traduce las debilidades. Desaparece el selector "Idioma del PDF" de la pantalla final.
+- **Pantalla de demostración (solo para el cliente).** La primera pantalla de la demo elige idioma (ES o EN) y ofrece "Empezar en blanco" o "Rellenar ejemplo 1 / 2 / 3". Lleva la etiqueta "no estará en la versión final". Después, el usuario ve el recorrido real: aviso ("Comprendo cómo funciona", con casilla obligatoria) → formulario → revisión → PDF. Rellenar un ejemplo pasa por el aviso, no salta a la revisión.
+- **Versión final: `--final`.** El build con `--final` quita la pantalla de demostración: el primer paso es el aviso con las tarjetas de idioma.
+- **Notas y observaciones:** el texto se apila desde arriba con el interlineado del diseño (antes se repartía por toda la caja).
+- **Ejemplos en inglés con textos en inglés.** El amor prohibido en inglés sale como "I LOVE …" (antes salía "TE QUIERO" en el PDF inglés).
+- **Nueve fotos de muestra distintas**, sintéticas, una por campo de foto (`assets/retratos/`).
+- **Retirado:** el PDF original de cliente (28 MB), las fotos de personas, los fondos antiguos y las plantillas anteriores (`final`, `final2`, `recurso-1`, `testedit`, `regalo-robado`) con sus páginas de verificación.
 
-- **Notas y observaciones:** el texto se apila desde arriba con el interlineado de las líneas del diseño. Antes se repartía por toda la caja y dejaba saltos enormes. El mismo criterio se aplica a "Información importante".
-- **Ejemplos en inglés:** los PDF en inglés llevan contenido en inglés. Antes el botón "Ejemplo N" cargaba textos en español aunque el PDF fuera en inglés. Ahora hay tres juegos en inglés, y el botón elige el juego según el idioma del PDF.
-- **Nueve fotos de muestra distintas:** una por campo de foto, sintéticas, en `assets/retratos/`. Antes la demo usaba la misma imagen en todas.
-- **Retirados del repositorio:** fotos de personas (`foto.JPG`, `salidas/foto-FOTO_1.jpg`) y fondos antiguos (`Final2-Clean.pdf`, `FinalLayout-Clean.pdf`, `PrintMyScape_FinalLayout.pdf`, `TestEdit*.pdf`, `juego-fondo.pdf`, `juego-con-textos.pdf`, `1.pdf` … `4.pdf`). Siguen en el historial de git.
-- **Ejemplos:** seis PDF nuevos en `demo/ejemplos/` (`ejemplo-1..3-es.pdf` y `ejemplo-1..3-en.pdf`). Se retiran los dos de Lucía, que tenían textos en español en el PDF inglés.
-- **Formulario:** tipografía unificada en botones, cabecera corregida, casilla de aceptación alineada, botones de ejemplo con estilo propio y foco visible para teclado. El formulario sigue en español.
-- **Ejemplos y campo S2:** el campo "persona de su amor prohibido" pide un nombre; los ejemplos ahora usan nombres.
+## Verificación
 
-Pruebas: `tools/qa/e2e-demo.py`, **17/17 OK** (incluye ejemplo en inglés con textos en inglés y nueve fotos distintas). La paridad de 32/32 páginas entre CLI y motor se comprobó antes del cambio de notas. Navegador y CLI usan ahora el mismo código, pero no se ha vuelto a medir la paridad después de ese cambio.
+- **Pruebas E2E: 30/30 OK** (`tools/qa/e2e-demo.py`). Cubren la pantalla de demostración, el aviso con casilla (bloquea hasta marcarla), "Empezar en blanco", ejemplos ES y EN (sin textos en español en el PDF inglés), nueve fotos distintas, formatos y EXIF de foto, límite de 12 caracteres en nombres, móvil sin scroll horizontal y con recorrido completo hasta la revisión, borrador, confirmación al rellenar ejemplo y "Empezar de nuevo".
+- **Paridad navegador ↔ CLI: 96/96 páginas idénticas** (`tools/qa/parity.py`). Son 6 PDF (ejemplos 1–3 en ES y EN) de 16 páginas cada uno, generados por el recorrido real de la demo y comparados a 60 ppp: diferencia de píxel 0 y texto idéntico en los seis.
+- **Errores corregidos durante la revisión:** (1) el aviso no dejaba avanzar aunque se marcara la casilla, porque la comprobación se hacía antes de leerla; (2) en móvil, al cambiar de sección se borraban las debilidades elegidas en otra sección. Las dos quedan cubiertas por las pruebas.
+- **Avisos de maquetación:** 14 por PDF, informativos (cajas fijas de la plantilla). Revisar con el artista.
 
-## 1. Bloqueantes resueltos
+## Pendiente de decisión
 
-| # | Problema | Solución aplicada | Verificación |
-|---|---|---|---|
-| 1 | La foto de muestra era una persona real | Fotos de muestra sintéticas en `assets/retratos/`; el build las incrusta | La foto real ya no está en el repo |
-| 2 | Las fotos WebP (y cualquier formato no JPEG) rompían la generación | Cada foto se decodifica y se re-codifica a JPEG con canvas (máx. 2000 px) | B1: WebP 800×1000 se guarda como JPEG y genera PDF |
-| 3 | Las fotos no eran obligatorias y se usaba la muestra sin avisar | Las 9 fotos son obligatorias; mínimo 600 px en el lado corto; la generación se bloquea si falta alguna | B2, D1, D2 |
-| 4 | Se perdían los saltos de línea del chat | `MENSAJE_PERSONALIZADO` conserva los `\n` en el motor único | E1: con salto y con espacio, el PDF cambia |
-| 5 | Repositorio: demo2 mezclado con la demo | `demo2/` se movió a la rama `web/demo2-edicion` | `studio/artista` ya no lo incluye |
+- **Historial de git.** El PDF original (`Proto PMEs 1.pdf`) y las fotos de personas (`foto.JPG`, `salidas/foto-FOTO_1.jpg`) se eliminan del historial de las ramas locales. Como `studio/artista` ya estaba publicada, subir la reescritura exige `git push --force-with-lease origin studio/artista`, y quien tenga clones debe rehacerlos.
+- **Herramientas del prototipo anterior.** `player/`, `studio/` y `wizard/` leen las plantillas retiradas y ya no funcionan. ¿Se eliminan también?
+- **Peso del repositorio.** Los seis ejemplos suman unos 31 MB. Valorar Git LFS o publicarlos aparte.
+- **Demo en el navegador.** Plantilla, fuentes, fondo y motor van dentro del HTML: quien tenga la demo puede copiar el arte y generar PDF sin pagar. Para vender, la generación final debe hacerse en servidor, con la descarga condicionada al pago.
+- **Fotos reales en producción:** bucket privado, consentimiento y borrado programado.
+- **Duplicados de build.** `demo/index.html` y `docs/index.html` son idénticos (7,7 MB). Propuesta: publicar solo `docs/` con GitHub Pages.
 
-Cambios adicionales: orientación EXIF corregida al cargar (B3); "Rellenar ejemplo" y "Ejemplo N" piden confirmación antes de sustituir datos (I1); mensajes de error en lenguaje humano; el build y la CLI usan `templates/final3` y `Final3-Clean.pdf` por defecto.
-
-## 2. Pendiente antes de publicar
-
-Decisiones que necesitan confirmación:
-- **Historial de git:** las fotos de personas y el PDF original de 28 MB siguen en commits anteriores (y en `origin`). Borrarlos de la rama no los elimina. Reescribir el historial exige force-push: no se ha hecho.
-- **Plantillas antiguas:** `templates/final`, `final2`, `recurso-1`, `testedit` y `regalo-robado` siguen en el repo, pero sus fondos ya no están. No las usa la demo. ¿Se borran?
-- **Peso del repo:** los seis ejemplos suman unos 31 MB (cada PDF pesa unos 5 MB por las fuentes, el fondo y las fotos). Valorar Git LFS o publicarlos aparte.
-- **`demo/index.html` y `docs/index.html`** son idénticos (7,4 MB cada uno) y cada build los reescribe. Propuesta: publicar solo `docs/` con GitHub Pages.
-
-Interfaz:
-- **Idioma del formulario:** las preguntas siguen en español. Si el cliente quiere la interfaz en inglés cuando el PDF sea inglés, hay que traducir las preguntas y las opciones. No se ha hecho.
-
-Calidad y código:
-- **Mensajes técnicos residuales:** los fallos de generación inesperados aún muestran el texto técnico ("Fallo al generar: …").
-- **Avisos de maquetación:** cada PDF trae 14–15 avisos "encogido fuerte" en cajas fijas del artista (`concepto`, `eres-fuerte`, `hoy-tu-libro`, `pictures`…). Revisar con el artista.
-- **Código muerto:** `B_ALIAS` y `S*_ALIAS` se leen al componer, pero ningún campo los define. `idb.loadAll` hace dos lecturas.
-- **Calidad de foto:** no se exige proporción 4:5. El recorte la ajusta, pero puede cortar la cara.
-
-Producción:
-- **Todo va en el navegador:** plantilla, fuentes, fondo y motor. Quien tenga la demo puede copiar el arte y generar PDFs sin pagar. Para vender, la generación final debe hacerse en servidor, con la descarga condicionada al pago.
-- **Fotos de personas reales** en IndexedDB del navegador. En producción: bucket privado, consentimiento y borrado programado.
-
-## 3. Cómo repetir las pruebas
+## Cómo repetir las pruebas
 
 ```
-# 1. Build de la demo (y copia para GitHub Pages)
+# 1. Build de la demo para el cliente (con pantalla de demostración) y copia para GitHub Pages
 python3 tools/build-demo.py --tpl templates/final3 --bg Final3-Clean.pdf
 cp demo/index.html docs/index.html
+# Versión final (sin pantalla de demostración): --final --out <ruta>
 
-# 2. Pruebas E2E en Chromium (requiere pip install playwright y playwright install chromium)
+# 2. E2E en Chromium (pip install playwright; pdftotext de poppler)
 PME_DEMO=demo/index.html PME_OUT=salida python3 tools/qa/e2e-demo.py
 
-# 3. CLI: generar con el motor y rasterizar a 40 ppi
-node tools/compose.js --tpl templates/final3 --bg Final3-Clean.pdf --lang es \
-  --values-file valores.json --photos-file fotos.json --out salidas/prueba-ES.pdf
-pdftoppm -r 40 -png salidas/prueba-ES.pdf salidas/prueba-ES
+# 3. Paridad navegador ↔ CLI (96 páginas)
+PME_DEMO=demo/index.html PME_OUT=salida-paridad python3 tools/qa/parity.py
 ```
 
 Las fotos de `tools/qa/fixtures/` y `assets/retratos/` son sintéticas: ninguna es una persona real.
 
-## 4. Entregables
+## Entregables
 
-- Código: `demo/src.html`, `tools/pme-compose-core.js` (motor único), `tools/compose.js` (CLI), `tools/build-demo.py`, `tools/apply-limits.py`, `tools/limits.json`, `tools/README.md`, `VARIABLES-Y-FOTOS.md`, `templates/final3/template.json`, `demo/index.html` y `docs/index.html` (build).
+- Código: `demo/src.html` (UI bilingüe), `tools/pme-compose-core.js` (motor único), `tools/compose.js` (CLI), `tools/build-demo.py`, `tools/apply-limits.py`, `tools/limits.json`, `tools/README.md`, `VARIABLES-Y-FOTOS.md`, `templates/final3/`, `demo/index.html` y `docs/index.html` (build).
 - Recursos: `assets/retratos/` (nueve retratos sintéticos distintos).
-- Pruebas: `tools/qa/e2e-demo.py` y `tools/qa/fixtures/` (todo sintético).
-- Ejemplos: `demo/ejemplos/ejemplo-1..3-es.pdf` y `ejemplo-1..3-en.pdf`.
+- Pruebas: `tools/qa/e2e-demo.py`, `tools/qa/parity.py` y `tools/qa/fixtures/` (sintéticos).
+- Ejemplos: `demo/ejemplos/ejemplo-{1,2,3}-{es,en}.pdf`.
 - Ramas: `studio/artista` (la demo) y `web/demo2-edicion` (pruebas de edición web, separadas).

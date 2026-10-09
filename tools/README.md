@@ -16,14 +16,14 @@ comandos y revisar resultados.
 ## Paso 1 — Recibir los PDF del artista
 
 Pedir **2 archivos** (ver `GUIA-ARTISTA.md`):
-`juego-con-textos.pdf` (todo visible) y `juego-fondo.pdf` (solo fondo).
+`<texto>.pdf` (todo visible) y `<fondo>.pdf` (solo fondo).
 Dejarlos en la raíz del repo (o indicar su ruta con `--src-text/--src-bg`).
 
 ## Paso 2 — Extraer el mapa de cajas
 
 ```bash
-python3 tools/extract.py --doc recurso-1 --name "Nombre del juego" \
-  --src-text juego-con-textos.pdf --src-bg juego-fondo.pdf \
+python3 tools/extract.py --doc <nueva-plantilla> --name "Nombre del juego" \
+  --src-text <texto>.pdf --src-bg <fondo>.pdf \
   --fonts assets/fonts
 ```
 
@@ -104,12 +104,15 @@ plantilla + composición con pdf-lib en el propio navegador + descarga.
 Se construye (autocontenida, doble clic) con:
 
 ```bash
-python3 tools/build-demo.py --tpl templates/final3 --bg Final3-Clean.pdf
+python3 tools/build-demo.py --tpl templates/final3 --bg Final3-Clean.pdf          # demo para el cliente
+python3 tools/build-demo.py --tpl templates/final3 --bg Final3-Clean.pdf --final  # versión final
 ```
+
+- Sin `--final`, la demo empieza con una **pantalla de demostración** (`DEMO_CONTROL = true`): elegir ES o EN, y "Empezar en blanco" o "Rellenar ejemplo 1/2/3". Esa pantalla no estará en la versión final. Con `--final` (`DEMO_CONTROL = false`) el primer paso es la bienvenida con las tarjetas de idioma.
 
 - El motor es **único**: `tools/pme-compose-core.js`. Lo inserta el build en
   la demo y lo usa `tools/compose.js` desde Node. No hay dos copias que mantener.
-  Antes de cada demo: `python3 tools/qa/e2e-demo.py`.
+  Antes de cada demo: `python3 tools/qa/e2e-demo.py` (flujo completo, 30 pruebas) y `python3 tools/qa/parity.py` (navegador ↔ CLI, 96 páginas).
 - Soporta textos rotados (tilts e verticales) y fotos rotadas según el
   marco (ángulo medido del trazo). Fotos de marcos muy inclinados: ver QA.
 - Fotos del usuario: se decodifican, se corrige la orientación EXIF y se re-codifican a JPEG con canvas (máx. 2000 px, mín. 600 px en el lado corto). El recorte al marco se hace al componer.

@@ -23,9 +23,8 @@ más reciente.
 
 | Ruta | Qué es |
 |---|---|
-| `1.pdf`…`4.pdf` | Diseños originales de referencia |
 | `assets/pages/page-N.png` | Fondos exportados de los PDF (150 dpi) para maquetar encima |
-| `templates/regalo-robado/template.json` | **Fuente de verdad**: campos globales + huecos por página (coordenadas en %) |
+| `templates/final3/template.json` | **Fuente de verdad** de la demo: campos globales + huecos por página (coordenadas en %). Las plantillas anteriores se retiraron (siguen en el historial) |
 | `shared/template.js` | Motor de render compartido maquetador ↔ jugador |
 | `studio/index.html` | Interfaz interna: mover/redimensionar huecos, vincular campo, guardar JSON |
 | `player/index.html` | Interfaz del comprador: edita **directo sobre las páginas** (clic-escribir, clic-subir foto), ve el resultado final e imprime/guardar PDF (borrador en `localStorage`) |
