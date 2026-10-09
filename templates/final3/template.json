@@ -1769,7 +1769,7 @@
      "size": 2.35,
      "color": "#725A4C",
      "fontFamily": "OpenSans-Regular",
-     "xscale": 0.25,
+     "xscale": 1.0,
      "angle": -88.8
     },
     {
@@ -1777,11 +1777,11 @@
      "x": 80.11,
      "y": 55.56,
      "w": 2.22,
-     "h": 8.32,
-     "size": 1.68,
+     "h": 13.0,
+     "size": 1.9,
      "color": "#1D1D1B",
      "fontFamily": "OpenSans-Regular",
-     "xscale": 0.19,
+     "xscale": 0.7,
      "angle": -90.0
     },
     {
@@ -1789,11 +1789,11 @@
      "x": 80.11,
      "y": 70.11,
      "w": 2.22,
-     "h": 8.32,
-     "size": 1.68,
+     "h": 13.0,
+     "size": 1.9,
      "color": "#1D1D1B",
      "fontFamily": "OpenSans-Regular",
-     "xscale": 0.19,
+     "xscale": 0.7,
      "angle": -90.0
     },
     {
@@ -2070,10 +2070,10 @@
      "y": 26.14,
      "w": 16.39,
      "h": 4.53,
-     "size": 1.68,
+     "size": 3.55,
      "color": "#FFFFFF",
-     "fontFamily": "ArialMT",
-     "xscale": null,
+     "fontFamily": "Anton-Regular",
+     "xscale": 1.0,
      "angle": 0
     },
     {
