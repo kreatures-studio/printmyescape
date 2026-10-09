@@ -1,2 +1,11 @@
 tools/node_modules/
 tools/__pycache__/
+
+# Salidas generadas por el pipeline (no se versionan)
+salidas/
+!salidas/foto-FOTO_1.jpg
+# Volcados de depuración y pruebas
+_dom*.txt
+*.v05.pdf
+tools/verify-final3.html
+demo2/
