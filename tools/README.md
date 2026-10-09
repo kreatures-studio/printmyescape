@@ -113,6 +113,7 @@ python3 tools/build-demo.py --tpl templates/final3 --bg Final3-Clean.pdf
 - Soporta textos rotados (tilts e verticales) y fotos rotadas según el
   marco (ángulo medido del trazo). Fotos de marcos muy inclinados: ver QA.
 - Fotos del usuario: se decodifican, se corrige la orientación EXIF y se re-codifican a JPEG con canvas (máx. 2000 px, mín. 600 px en el lado corto). El recorte al marco se hace al componer.
+- Fotos de muestra de la demo: nueve retratos sintéticos distintos en `assets/retratos/` (uno por campo de foto: `retrato-CUMPLE.jpg` y `retrato-1.jpg` … `retrato-8.jpg`). El build los incrusta; nunca usar fotos de personas reales.
 
 Advertencia conocida: el subsetter de pdf-lib rompe glifos de Caveat
 (ver `FONTS` en `tools/compose.js`); Caveat se incrusta completa. Si otra
