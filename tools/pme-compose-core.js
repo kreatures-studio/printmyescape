@@ -91,7 +91,7 @@ function fit(font, text, boxPt, size0, opt) {
   for (;;) {
     const r = once(size);
     lines = r.lines; hs = r.hs;
-    const lh = size * 1.25;
+    const lh = opt.leading || size * 1.25;
     const tooNarrow = Math.min.apply(null, hs.concat([1])) < floor;
     const multi = !single || lines.length > 1;
     const tooTall = vertical
@@ -130,7 +130,7 @@ function drawFitted(page, degrees, ops, font, text, boxPt, size0, color, align, 
   const vertical = Math.abs(angle) > 45;
   const r = fit(font, text, boxPt, size0, {
     single: opt.single, targetHs: opt.targetHs, angle, lockSize: opt.lockSize,
-    grow: opt.grow,
+    grow: opt.grow, leading: opt.leading,
   });
   const { lines, hs, size } = r;
   const rad = (angle * Math.PI) / 180;
@@ -186,7 +186,7 @@ function drawFitted(page, degrees, ops, font, text, boxPt, size0, color, align, 
     }
   }
   if (!vertical) {
-    const lh = size * 1.25;
+    const lh = opt.leading || size * 1.25;
     /* Líneas justificadas en la altura de la caja (primera arriba, última
        abajo): en cajas normales equivale al apilado clásico centrado, y en
        cajas altas de fijos (unión de varias líneas de origen, con valores
@@ -195,7 +195,7 @@ function drawFitted(page, degrees, ops, font, text, boxPt, size0, color, align, 
     const topBase = boxPt.yTop - size * 0.8;
     const botBase = boxPt.yTop - boxPt.h + size * 0.3;
     const spread = lines.length > 1 ? (topBase - botBase) / (lines.length - 1) : 0;
-    let useSpread = lines.length > 1 && spread >= lh * 0.9 && !opt.tight;
+    let useSpread = lines.length > 1 && spread >= lh * 0.9 && !opt.tight && !opt.vTop;
     /* No dispersar si alguna línea caería dentro de la caja de otro fijo
        (cajas de extracción solapadas, como la carta de la p15): en ese
        caso, bloque centrado clásico. */
@@ -214,7 +214,7 @@ function drawFitted(page, degrees, ops, font, text, boxPt, size0, color, align, 
     }
     const totalH = (lines.length - 1) * lh + size;
     const firstBase = (opt.baseY !== undefined && lines.length === 1)
-      ? opt.baseY : (opt.vTop && lines.length === 1) ? topBase : cy + totalH / 2 - size * 0.95;
+      ? opt.baseY : opt.vTop ? topBase : cy + totalH / 2 - size * 0.95;
     /* Continuación inline: si un valor de la misma página comparte línea
        con este fijo y lo pisa (p. ej. "A [NOMBRE] le daba..."), el fijo
        continúa tras el valor en vez de sobreescribirlo. */
@@ -777,7 +777,8 @@ async function composeGame(deps) {
         if (drawFitted(bg, degrees, ops, font, val, box(s), ptSize(s.fontFamily, s.size, PW),
             hex(s.color || '#000000', rgb), s.align || 'left',
             { single: !s.wrap, targetHs: s.xscale || 1, angle: s.angle || 0,
-              grow: (s.w || 0) < 10 ? 2.5 : 1, baseY: baseOverride.get(s), vStart: colLeft.has(s), vTop: !!s.vTop, tight: !!s.tight })) {
+              grow: (s.w || 0) < 10 ? 2.5 : 1, baseY: baseOverride.get(s), vStart: colLeft.has(s), vTop: !!s.vTop, tight: !!s.tight,
+              leading: s.leading ? (s.leading / 100) * PW : 0 })) {
           warns.push(`${s.field}: valor encogido`);
         }
       }
