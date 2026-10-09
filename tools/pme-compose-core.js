@@ -468,7 +468,7 @@ async function composeGame(deps) {
         runs.push({ text: t, fam: g.ref.fontFamily, size: g.ref.size,
           color: g.ref.color, hsMax: g.ref.xscale || 1, align: g.ref.align || 'left' });
       } else {
-        const t = cleanFlowText(String(valOf(g.ref.field) || '').replace(/\n/g, ' '));
+        const t = cleanFlowText(caseOf(g.ref, String(valOf(g.ref.field) || '')).replace(/\n/g, ' '));
         if (!t) continue;
         runs.push({ text: t, fam: g.ref.fontFamily, size: g.ref.size,
           color: g.ref.color || '#000000', hsMax: g.ref.xscale || 1, align: g.ref.align || 'left' });
@@ -598,6 +598,8 @@ async function composeGame(deps) {
     }
   };
   /* Alias junto al nombre (la plantilla no trae huecos de alias). */
+  /* slot.upper: el valor se muestra en mayúsculas (p. ej. el nombre en "POSIBLES UBICACIONES DE") */
+  const caseOf = (s, v) => (s && s.upper ? v.toUpperCase() : v);
   const slotVal = (field) => {
     if (field === 'S2_SECRET_LOVE') {
       const nv = normRunes(values.S2_SECRET_LOVE || '');
@@ -737,7 +739,7 @@ async function composeGame(deps) {
         for (const s of template.pages[pi].slots) {
           const fld = template.fields.find((x) => x.id === s.field);
           if (!fld || fld.type !== 'text' || s._flow) continue;
-          const val = (s.wrap ? slotVal(s.field) : slotVal(s.field).replace(/\s*\n\s*/g, ' ').trim());
+          const val = caseOf(s, s.wrap ? slotVal(s.field) : slotVal(s.field).replace(/\s*\n\s*/g, ' ').trim());
           if (!val || val.indexOf('\n') >= 0) continue;
           if (((s.angle || 0) > 45 || (s.angle || 0) < -45)) continue;
           const sfont = ff[pickFont(s.fontFamily || 'caveat', s.size)];
@@ -771,7 +773,7 @@ async function composeGame(deps) {
       if (!fld) continue;
       if (fld.type === 'text') {
         if (s._flow) continue;
-        const val = (s.wrap ? slotVal(s.field) : slotVal(s.field).replace(/\s*\n\s*/g, ' ').trim());
+        const val = caseOf(s, s.wrap ? slotVal(s.field) : slotVal(s.field).replace(/\s*\n\s*/g, ' ').trim());
         if (!val) continue;
         const font = ff[pickFont(s.fontFamily || 'caveat', s.size)];
         if (drawFitted(bg, degrees, ops, font, val, box(s), ptSize(s.fontFamily, s.size, PW),
