@@ -17,6 +17,17 @@ def b64(path):
         return base64.b64encode(f.read()).decode('ascii')
 
 
+def sample_photos(tpl):
+    """Una foto de muestra distinta por cada campo de foto (assets/retratos/retrato-<sufijo>.jpg)."""
+    out = {}
+    for f in tpl['fields']:
+        if f.get('type') != 'image':
+            continue
+        suffix = f['id'][len('FOTO_'):]
+        out[f['id']] = b64(os.path.join(ROOT, 'assets', 'retratos', 'retrato-%s.jpg' % suffix))
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--tpl', default='templates/final3')
@@ -54,7 +65,7 @@ def main():
     }
     data = {'template': json.loads(template), 'texts': json.loads(texts), 'i18n': i18n,
             'fonts': fonts, 'bg': b64(os.path.join(ROOT, args.bg)),
-            'samplePhoto': b64(os.path.join(ROOT, 'assets', 'placeholder-retrato.jpg'))}
+            'samplePhotos': sample_photos(json.loads(template))}
     html = html.replace('/*__PDFLIB__*/', pdflib)
     html = html.replace('/*__FONTKIT__*/', fontkit)
     html = html.replace('/*__COMPOSE__*/', compose)

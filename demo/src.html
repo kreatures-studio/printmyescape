@@ -238,6 +238,32 @@
     .review-row { flex-wrap: wrap; }
     .review-row b { flex-basis: 100%; }
   }
+  /* ---- pulido visual ---- */
+  button, input, textarea, select { font-family: inherit; }
+  :focus-visible { outline: 3px solid var(--sage); outline-offset: 2px; }
+  #top h1 .sub::before { content: ' · '; }
+  #card { background-image: linear-gradient(180deg, rgba(183,194,155,.2), rgba(183,194,155,0) 160px); }
+  #card ul { padding-left: 20px; margin: 0 0 14px; }
+  #card li { margin-bottom: 6px; }
+  #q { letter-spacing: -.01em; }
+  .checkline { align-items: center; cursor: pointer; transition: background .15s ease; }
+  .checkline:hover { background: rgba(14,116,99,.14); }
+  .checkline input { margin-top: 0; }
+  #bExample {
+    font-size: 15px; font-weight: 800; cursor: pointer; background: #fff; color: var(--teal-deep);
+    border: 2px solid var(--teal); border-radius: 999px; padding: 11px 22px; min-height: 46px;
+    transition: background .15s ease, color .15s ease;
+  }
+  #bExample:hover { background: var(--teal); color: #fff; }
+  .exrow { font-size: 13px; color: #4c5d53; margin: 14px 0 6px; line-height: 1.8; }
+  .exbtn {
+    font-size: 14px; font-weight: 800; cursor: pointer; background: #fff; color: var(--teal-deep);
+    border: 2px solid var(--teal); border-radius: 999px; padding: 7px 16px; min-height: 38px; margin: 2px 4px 2px 0;
+    transition: background .15s ease, color .15s ease;
+  }
+  .exbtn:hover { background: var(--teal); color: #fff; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  .checkline { gap: 12px; }
 </style>
 </head>
 <body>
@@ -329,7 +355,7 @@ var EJEMPLO = {
   EDAD: '30', DEBILIDAD: 'Llegar tarde||Robar comida ajena||Otro: Roncar', OTRO: 'Roncar',
   B_INFO: 'Le encantan las sorpresas', B_NOTES: 'Alergia a los frutos secos',
   APODO_1: 'El Mudo',
-  APODO_2: 'La Oculta', S2_SECRET_LOVE: 'Eres lo mejor que me ha pasado en la vida y quiero que lo sepas',
+  APODO_2: 'La Oculta', S2_SECRET_LOVE: 'Carmen Ruiz',
   APODO_3: 'La Curiosa', Nombre_Empresa: 'Vibradores 2000', CONCEPTO: 'Vibrador XL',
   APODO_4: 'El Tranquilo',
   APODO_5: 'El Tecno',
@@ -358,7 +384,7 @@ var EJEMPLO2 = Object.assign({}, EJEMPLO, {
   S6_HIDEA: 'En la bañera', S6_HIDEB: 'En el dormitorio',
   S7_HIDEA: 'En la biblioteca', S7_HIDEB: 'En el jardín',
   S8_HIDEA: 'En la cama', S8_HIDEB: 'En el baño',
-  S2_SECRET_LOVE: 'Mi compañero de la oficina, el del cuaderno azul',
+  S2_SECRET_LOVE: 'Tomás Vega',
   MENSAJE_PERSONALIZADO: 'Mañana es el gran día\nNo llegues tarde',
   BUSQUEDA_1: 'recetas de pasteles', BUSQUEDA_2: 'ideas de regalos',
   Nombre_Empresa: 'Panadería Dulce', CONCEPTO: 'Tarta chocolate',
@@ -374,29 +400,106 @@ var EJEMPLO3 = Object.assign({}, EJEMPLO, {
   DEBILIDAD: 'Contar chistes malos||Llegar tarde', OTRO: '',
   NOMBRE_1: 'Pablo', NOMBRE_2: 'Elena', NOMBRE_3: 'Sofia', NOMBRE_4: 'Mario',
   NOMBRE_5: 'Laura', NOMBRE_6: 'Diego', NOMBRE_7: 'Julia', NOMBRE_8: 'Raul', 'NOMBRE_4.2': 'Elena',
-  S2_SECRET_LOVE: 'Mi vecina de enfrente, la que riega las plantas',
+  S2_SECRET_LOVE: 'Rosa Montero',
   BUSQUEDA_1: 'trucos de magia', BUSQUEDA_2: 'cartas marcadas'
+});
+/* Ejemplos en inglés: mismas claves y mismos límites que los españoles.
+   Se usan cuando "Idioma del PDF" es English. */
+var EJEMPLO_EN = {
+  NOMBRE_CUMPLE: 'Ian', FAMA: 'Eating burgers', TALENTO: 'Telling jokes', SOSPECHA: 'Stealing a cake',
+  RESULTADO_TEST: 'Sharp-eyed', 'NOMBRE_4.2': 'Alex',
+  MENSAJE_PERSONALIZADO: 'Coming over tonight?\nSee you at 9',
+  BUSQUEDA_1: 'safe brands', BUSQUEDA_2: 'gift ideas',
+  NOMBRE_1: 'Chloe', NOMBRE_2: 'Nathan', NOMBRE_3: 'Ruby', NOMBRE_4: 'Adam',
+  NOMBRE_5: 'Danny', NOMBRE_6: 'Paul', NOMBRE_7: 'Mark', NOMBRE_8: 'Clare',
+  S1_HIDEA: 'Next to the kitchen bin', S1_HIDEB: 'In front of the computer',
+  S2_HIDEA: 'Lying in bed', S2_HIDEB: 'Sitting on the sofa',
+  S3_HIDEA: 'Behind a painting', S3_HIDEB: 'Watching art on TV',
+  S4_HIDEA: 'Lying on the sofa', S4_HIDEB: 'On top of a rug',
+  S5_HIDEA: 'Next to the computer', S5_HIDEB: 'In an armchair with a laptop',
+  S6_HIDEA: 'Leaning on the worktop', S6_HIDEB: 'Looking at a bookshelf',
+  S7_HIDEA: 'Looking out the window', S7_HIDEB: 'Opening a wardrobe',
+  S8_HIDEA: 'Next to a bedside table', S8_HIDEB: 'Opening the fridge',
+  EDAD: '30', DEBILIDAD: 'Being late||Stealing food from others||Otro: Snoring', OTRO: 'Snoring',
+  B_INFO: 'Loves surprises', B_NOTES: 'Allergic to nuts',
+  APODO_1: 'The Mute', APODO_2: 'The Hidden', APODO_3: 'The Curious', APODO_4: 'The Calm One',
+  APODO_5: 'The Techie', APODO_6: 'The Chef', APODO_7: 'The Dreamer', APODO_8: 'The Smart',
+  S2_SECRET_LOVE: 'Rose Brown', Nombre_Empresa: 'Vibrators 2000', CONCEPTO: 'XL vibrator',
+  NOMBRE_DEST: 'Her grandma', TEXTO_POSTAL: 'Memories of the party', NOTA_PERSONALIZADA: 'Do not look: suspect list',
+  PERSONALIZADO_1: 'Hunting orcs', PERSONALIZADO_2: 'Sleeping rough',
+  APP_1: 'Tinder', APP_2: 'Duolingo', APP_3: 'Banking', APP_4: 'Notes'
+};
+var EJEMPLO2_EN = Object.assign({}, EJEMPLO_EN, {
+  NOMBRE_CUMPLE: 'Martha', EDAD: '45', FAMA: 'Cooks for the street', TALENTO: 'Doing accents',
+  SOSPECHA: 'Stealing jewels', B_INFO: 'Watch out for her homemade pasta',
+  B_NOTES: 'Hates early mornings. Loves dark chocolate.',
+  DEBILIDAD: 'Cheating at games||Otro: Napping', OTRO: 'Napping',
+  NOMBRE_1: 'Ruth', NOMBRE_2: 'Hugo', NOMBRE_3: 'Lucy', NOMBRE_4: 'Ivan',
+  NOMBRE_5: 'Sara', NOMBRE_6: 'Rob', NOMBRE_7: 'Nora', NOMBRE_8: 'Eve', 'NOMBRE_4.2': 'Hugo',
+  APODO_1: 'The Discreet', APODO_2: 'The Grump', APODO_3: 'The Gossip', APODO_4: 'The Joker',
+  APODO_5: 'The Pianist', APODO_6: 'The Quiet', APODO_7: 'The Wanderer', APODO_8: 'Early Bird',
+  S1_HIDEA: 'Behind the curtain', S1_HIDEB: 'Inside the wardrobe',
+  S2_HIDEA: 'In the kitchen', S2_HIDEB: 'In the garage',
+  S3_HIDEA: 'On the sofa', S3_HIDEB: 'On the terrace',
+  S4_HIDEA: 'Under the table', S4_HIDEB: 'In the hallway',
+  S5_HIDEA: 'Next to the piano', S5_HIDEB: 'On the balcony',
+  S6_HIDEA: 'In the bathtub', S6_HIDEB: 'In the bedroom',
+  S7_HIDEA: 'In the library', S7_HIDEB: 'In the garden',
+  S8_HIDEA: 'Under the bed', S8_HIDEB: 'In the bathroom',
+  S2_SECRET_LOVE: 'Tom Walsh',
+  MENSAJE_PERSONALIZADO: 'Tomorrow is the big day\nDon\'t be late',
+  BUSQUEDA_1: 'cake recipes', BUSQUEDA_2: 'gift ideas',
+  Nombre_Empresa: 'Sweet Bakery', CONCEPTO: 'Chocolate cake',
+  NOMBRE_DEST: 'Her neighbour', TEXTO_POSTAL: 'Thanks for the cake',
+  NOTA_PERSONALIZADA: 'Say nothing about the recipe',
+  PERSONALIZADO_1: 'Sewing', PERSONALIZADO_2: 'Watching mystery series',
+  APP_1: 'WhatsApp', APP_2: 'Maps', APP_3: 'Photos', APP_4: 'Recipes'
+});
+var EJEMPLO3_EN = Object.assign({}, EJEMPLO_EN, {
+  NOMBRE_CUMPLE: 'Jack', EDAD: '71', FAMA: 'Wins at cards', TALENTO: 'Doing magic',
+  SOSPECHA: 'Cheating at bingo', B_INFO: 'Says he is a magician, but he is not',
+  B_NOTES: 'Arrived late to his own wedding and does not remember most of it.',
+  DEBILIDAD: 'Telling bad jokes||Being late', OTRO: '',
+  NOMBRE_1: 'Peter', NOMBRE_2: 'Ellen', NOMBRE_3: 'Sophie', NOMBRE_4: 'Martin',
+  NOMBRE_5: 'Laura', NOMBRE_6: 'Dean', NOMBRE_7: 'Julia', NOMBRE_8: 'Ray', 'NOMBRE_4.2': 'Ellen',
+  S2_SECRET_LOVE: 'Rose Brown',
+  BUSQUEDA_1: 'magic tricks', BUSQUEDA_2: 'marked cards'
 });
 function hasAnyData() {
   return Object.keys(answers).some(function (k) { return k !== 'intro_ok' && answers[k]; }) || Object.keys(photos).length > 0;
 }
-function fillExample() {
-  if (hasAnyData() && !confirm('Esto sustituirá tus respuestas y tus fotos por el ejemplo. ¿Continuar?')) return;
-  Object.keys(EJEMPLO).forEach(function (k) { answers[k] = EJEMPLO[k]; });
+/* Idioma elegido para el PDF (en el intro no hay selector: español). */
+function pdfLangNow() {
+  var el = document.querySelector('input[name="pdflang"]:checked');
+  return el ? el.value : 'es';
+}
+/* Juego de ejemplo n en el idioma del PDF: el texto del PDF no se mezcla. */
+function exampleSet(n) {
+  var en = pdfLangNow() === 'en';
+  if (n === 2) return en ? EJEMPLO2_EN : EJEMPLO2;
+  if (n === 3) return en ? EJEMPLO3_EN : EJEMPLO3;
+  return en ? EJEMPLO_EN : EJEMPLO;
+}
+/* Carga un ejemplo: respuestas y nueve fotos de muestra (una distinta por foto). */
+function applyExample(set) {
+  Object.keys(set).forEach(function (k) { answers[k] = set[k]; });
   answers.intro_ok = '1';
-  /* El "Otro:" del multi también alimenta su cajetín para que se vea pintado */
   multiOther = {};
   Object.keys(answers).forEach(function (k) {
     var m = /(?:^|\|\|)Otro:\s*([^|]+)\s*$/.exec(answers[k] || '');
     if (m) multiOther[k] = m[1];
   });
-  var sample = 'data:image/jpeg;base64,' + PME_DEMO_DATA.samplePhoto;
   TPL.fields.forEach(function (f) {
-    if (f.type !== 'image') return;
+    if (f.type !== 'image' || !PME_DEMO_DATA.samplePhotos[f.id]) return;
     var key = 'photo_' + f.id;
-    photos[key] = sample;
-    idb.save(key, sample);
+    var url = 'data:image/jpeg;base64,' + PME_DEMO_DATA.samplePhotos[f.id];
+    photos[key] = url;
+    idb.save(key, url);
   });
+}
+function fillExample() {
+  if (hasAnyData() && !confirm('Esto sustituirá tus respuestas y tus fotos por el ejemplo. ¿Continuar?')) return;
+  applyExample(exampleSet(1));
   saveDraft(); render(); window.scrollTo(0, 0);
 }
 /* ---------- fotos en IndexedDB (persisten recargas) ---------- */
@@ -1353,10 +1456,9 @@ document.addEventListener('input', function (e) {
   _lenT = setTimeout(markTooLong, 400);
 });
 function generateExample(n) {
-  if (!confirm('Esto sustituirá tus respuestas por el ejemplo ' + n + '. ¿Continuar?')) return;
-  var set = n === 2 ? EJEMPLO2 : (n === 3 ? EJEMPLO3 : EJEMPLO);
-  Object.keys(set).forEach(function (k) { answers[k] = set[k]; });
-  answers.intro_ok = '1';
+  if (!confirm('Esto sustituirá tus respuestas y tus fotos por el ejemplo ' + n + '. ¿Continuar?')) return;
+  applyExample(exampleSet(n));
+  saveDraft();
   generatePDF();
 }
 function generatePDF() {
