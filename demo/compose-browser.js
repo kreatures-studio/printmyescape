@@ -190,7 +190,7 @@ function drawFitted(page, degrees, ops, font, text, boxPt, size0, color, align, 
     const topBase = boxPt.yTop - size * 0.8;
     const botBase = boxPt.yTop - boxPt.h + size * 0.3;
     const spread = lines.length > 1 ? (topBase - botBase) / (lines.length - 1) : 0;
-    let useSpread = lines.length > 1 && spread >= lh * 0.9;
+    let useSpread = lines.length > 1 && spread >= lh * 0.9 && !opt.tight;
     /* No dispersar si alguna línea caería dentro de la caja de otro fijo
        (cajas de extracción solapadas, como la carta de la p15): en ese
        caso, bloque centrado clásico. */
@@ -208,7 +208,8 @@ function drawFitted(page, degrees, ops, font, text, boxPt, size0, color, align, 
       }
     }
     const totalH = (lines.length - 1) * lh + size;
-    const firstBase = cy + totalH / 2 - size * 0.95;
+    const firstBase = (opt.baseY !== undefined && lines.length === 1)
+      ? opt.baseY : (opt.vTop && lines.length === 1) ? topBase : cy + totalH / 2 - size * 0.95;
     /* Continuación inline: si un valor de la misma página comparte línea
        con este fijo y lo pisa (p. ej. "A [NOMBRE] le daba..."), el fijo
        continúa tras el valor en vez de sobreescribirlo. */
@@ -221,6 +222,9 @@ function drawFitted(page, degrees, ops, font, text, boxPt, size0, color, align, 
       else if (align === 'right') x0 = boxPt.x + boxPt.w - nw * hsi;
       const y0 = useSpread ? topBase - i * spread : firstBase - i * lh;
       for (const g of runs) {
+        const dyb = Math.abs(y0 - g.base);
+        if (dyb < Math.max(size, g.size) * 0.8 && g.x0 >= boxPt.x - 1 && g.x0 < boxPt.x + boxPt.w &&
+            (g.bestDy === undefined || dyb < g.bestDy)) { g.bestDy = dyb; g.matchedY = y0; }
         if (Math.abs(y0 - g.base) < Math.max(size, g.size) * 0.4 &&
             g.x0 < x0 + nw * hsi && g.x1 > x0 && g.x0 >= boxPt.x - 1) {
           x0 = Math.max(x0, g.x1 + size * 0.25);
@@ -249,7 +253,7 @@ function drawFitted(page, degrees, ops, font, text, boxPt, size0, color, align, 
          Para +90, al revés. */
       const x0 = down ? colC - size * 0.35 : colC + size * 0.35;
       const y0 = down
-        ? boxPt.yTop - (boxPt.h - span) / 2
+        ? (opt.vStart ? boxPt.yTop : boxPt.yTop - (boxPt.h - span) / 2)
         : boxPt.yTop - boxPt.h + (boxPt.h - span) / 2;
       /* SIN pivot: (x0, y0) ya está en el marco rotado (el pivot lo
          rotaría dos veces y amontona las columnas). */
@@ -271,7 +275,9 @@ function drawPhoto(page, ops, im, iw, ih, b, angle, degrees) {
      coincida con el del marco. */
   const x0 = cx - (dw * c - dh * si) / 2, y0 = cy - (dw * si + dh * c) / 2;
   const fx = cx - fw / 2, fy = cy - fh / 2;
-  const corner = (u, v) => ({ x: fx + u * c - v * si, y: fy + u * si + v * c });
+  /* esquinas del marco girado alrededor de SU CENTRO (no de la esquina inferior) */
+  const corner = (u, v) => ({ x: cx + (u - fw / 2) * c - (v - fh / 2) * si,
+    y: cy + (u - fw / 2) * si + (v - fh / 2) * c });
   const p1 = corner(0, 0), p2 = corner(fw, 0), p3 = corner(fw, fh), p4 = corner(0, fh);
   if (ops) {
     page.pushOperators(
@@ -288,6 +294,27 @@ function drawPhoto(page, ops, im, iw, ih, b, angle, degrees) {
   }
 }
 
+/* Saneado de entradas: solo texto que las fuentes del PDF pueden dibujar.
+   Fuera: emojis, controles, marcas invisibles, alfabetos no latinos. Longitud acotada. */
+const CLEAN_BAD = /[^\t\n\u0020-\u007E\u00A0-\u024F\u20AC\u2013\u2014\u2018\u2019\u201C\u201D\u2026\u00BF\u00A1]/g;
+const CLEAN_MAX = 400;
+function cleanText(s, multiline) {
+  let t = String(s == null ? '' : s).normalize('NFC').replace(/\r/g, '').replace(CLEAN_BAD, '');
+  if (multiline) {
+    t = t.split('\n').map((l) => l.replace(/[ \t]+/g, ' ').trim()).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  } else {
+    t = t.replace(/\s+/g, ' ').trim();
+  }
+  return t.slice(0, CLEAN_MAX);
+}
+function cleanValues(values) {
+  const out = {};
+  Object.keys(values || {}).forEach((k) => {
+    const v = values[k];
+    out[k] = typeof v === 'string' ? cleanText(v, k === 'B_NOTES' || k === 'B_INFO') : v;
+  });
+  return out;
+}
 async function composeGame(deps) {
   const PDFLib = globalThis.PDFLib, fontkit = globalThis.fontkit;
   if (!PDFLib || !fontkit) throw new Error('faltan PDFLib/fontkit');
@@ -302,7 +329,8 @@ async function composeGame(deps) {
     moveTo: PDFLib.moveTo, lineTo: PDFLib.lineTo, closePath: PDFLib.closePath,
     clip: PDFLib.clip, endPath: PDFLib.endPath,
   } : null;
-  const { bgBytes, fonts, template, fixed, i18n, values, photos, onProgress } = deps;
+  const { bgBytes, fonts, template, fixed, i18n, photos, onProgress } = deps;
+  const values = cleanValues(deps.values);
   const tick = onProgress || (() => {});
   const out = await PDFDocument.create();
   out.registerFontkit(fontkit);
@@ -314,9 +342,14 @@ async function composeGame(deps) {
   /* La familia extraída manda: manuscritas a Caveat (Bold solo si el
      artista la marcó Bold), titulares a Anton Regular y las Bold del
      artista a OpenSans-Bold. OpenSans/Myriad Regular van en regular. */
+  /* Textos manuscritos: Caveat ~1,65x mas estrecha que Segoe Script. */
+  const SCRIPT_K = 1.65;
+  const isScriptFam = (family) => !family || /caveat|script|hand|myriad/i.test(family);
+  const ptSize = (family, pct, PW) => (pct / 100) * PW * (isScriptFam(family) ? SCRIPT_K : 1);
   const pickFont = (family, size) => {
     void size;
     const f = family || '';
+    if (/pigpen|runes/i.test(f)) return 'runes';
     if (/myriad/i.test(f)) return 'caveatBold';
     if (/caveat|script|hand/i.test(f)) return /bold|black/i.test(f) ? 'caveatBold' : 'caveat';
     if (/anton|display/i.test(f)) return 'anton';
@@ -345,6 +378,8 @@ async function composeGame(deps) {
     const items = [];
     for (const f of fixed) {
       if (f.page !== pi + 1 || Math.abs(f.angle || 0) >= 45) continue;
+    /* numeros de pildora (chips): no entran en el reflow, se quedan en su sitio */
+    if (/^\d+$/.test(String(f.es || '').trim())) continue;
       const multi = /\n/.test(f.es || '');
       items.push({ kind: multi ? 'm' : 'f', ref: f,
         x0: f.x, x1: f.x + f.w, cy: multi ? f.y : f.y + f.h / 2, h: f.h });
@@ -369,7 +404,9 @@ async function composeGame(deps) {
     const multiBands = items.filter((it) => it.kind === 'm')
       .map((it) => ({ x0: it.x0, x1: it.x1, top: it.ref.y, bot: it.ref.y + it.ref.h }));
     for (const ln of lines) {
-      ln.items.sort((a, b) => a.x0 - b.x0);
+      /* Orden de lectura por centro (caja ancha puede empezar a la
+         izquierda pero leerse después) */
+      ln.items.sort((a, b) => ((a.x0 + a.x1) - (b.x0 + b.x1)));
       if (ln.items.some((it) => it.kind === 'm')) continue;
       const angs = ln.items.map((it) => it.ref.angle || 0);
       if (Math.max(...angs) - Math.min(...angs) > 12) continue;
@@ -378,7 +415,7 @@ async function composeGame(deps) {
       const gy0 = Math.min(...ln.items.map((it) => it.ref.y));
       const gy1 = Math.max(...ln.items.map((it) => it.ref.y + it.ref.h));
       const clash = multiBands.some((mb) => gx0 < mb.x1 && gx1 > mb.x0 &&
-        gy0 < mb.bot + 0.3 && gy1 > mb.top - 0.3);
+        gy0 < mb.bot - 0.3 && gy1 > mb.top + 0.3);
       if (clash) continue;
       let cur = [ln.items[0]];
       const flush = () => {
@@ -426,7 +463,7 @@ async function composeGame(deps) {
     for (;;) {
       const words = [];
       runs.forEach((r, ri) => {
-        const sz = r.size / 100 * PW2 * scale;
+        const sz = ptSize(r.fam, r.size, PW2) * scale;
         const f = fonts[ri];
         r.text.split(' ').filter(Boolean).forEach((w) => {
           words.push({ w, f, sz, color: r.color, glue: /^[.,;:!?%)\]}]/.test(w) });
@@ -487,6 +524,18 @@ async function composeGame(deps) {
     if ('WXYZ'.indexOf(ch) >= 0) return { xsegs: PIG_X['STUV'['WXYZ'.indexOf(ch)]], dot: true };
     return null;
   };
+  const runeWrap = (text, max) => {
+    const words = String(text || '').split(' ').filter(Boolean);
+    const out = [];
+    let cur = '';
+    for (const w of words) {
+      if (!cur) cur = w;
+      else if ((cur + ' ' + w).length <= max) cur += ' ' + w;
+      else { out.push(cur); cur = w; }
+    }
+    if (cur) out.push(cur);
+    return out;
+  };
   const drawRunes = (page, text, cx, cy, cell, maxW) => {
     const layout = (cs) => {
       const items = [];
@@ -510,24 +559,33 @@ async function composeGame(deps) {
       const seg = (ax, ay, bx, by) => page.drawLine({
         start: { x: ox + ax * cell, y: oy + (1 - ay) * cell },
         end: { x: ox + bx * cell, y: oy + (1 - by) * cell },
-        thickness: 1.6, color: RUNE_INK });
+        thickness: Math.max(0.45, cell * 0.04), color: RUNE_INK });
       const g = runeInfo(it.ch);
       if (g.xsegs) {
         g.xsegs.forEach((s) => seg(s[0][0], s[0][1], s[1][0], s[1][1]));
-        if (g.dot) page.drawCircle({ x: ox + cell / 2, y: oy + cell / 2, size: cell * 0.18, color: RUNE_INK });
+        if (g.dot) page.drawCircle({ x: ox + cell / 2, y: oy + cell / 2, size: cell * 0.11, color: RUNE_INK });
       } else {
         const c = g.cell[0] / 3, r = g.cell[1] / 3, q = 1 / 3;
         if (g.walls.indexOf('L') >= 0) seg(c, r, c, r + q);
         if (g.walls.indexOf('R') >= 0) seg(c + q, r, c + q, r + q);
         if (g.walls.indexOf('T') >= 0) seg(c, r, c + q, r);
         if (g.walls.indexOf('B') >= 0) seg(c, r + q, c + q, r + q);
-        if (g.dot) page.drawCircle({ x: ox + (c + q / 2) * cell, y: oy + (1 - r - q / 2) * cell, size: cell * 0.18, color: RUNE_INK });
+        if (g.dot) page.drawCircle({ x: ox + (c + q / 2) * cell, y: oy + (1 - r - q / 2) * cell, size: cell * 0.11, color: RUNE_INK });
       }
     }
   };
   /* Alias junto al nombre (la plantilla no trae huecos de alias). */
   const slotVal = (field) => {
-    const v = values[field] || '';
+    if (field === 'S2_SECRET_LOVE') {
+      const nv = normRunes(values.S2_SECRET_LOVE || '');
+      return nv ? 'TE QUIERO ' + nv : '';
+    }
+    let v = String(values[field] || '').replace(/[ \t]+/g, ' ')
+      .split('\n').map((l) => l.trim()).join('\n').trim();
+    /* debilidad multiple: 'a||b||Otro: x' -> 'a / b' (el Otro va en OTRO), igual que en Node */
+    if (field === 'DEBILIDAD' && v.indexOf('||') >= 0) {
+      v = v.split('||').filter((x) => x && !/^Otro:/.test(x)).join(' / ');
+    }
     let a = '';
     if (field === 'NOMBRE_CUMPLE') a = values.B_ALIAS || '';
     else {
@@ -565,7 +623,13 @@ async function composeGame(deps) {
       bp.lines = ((f && f.lines) || []).map(box);
       return bp;
     };
+    /* fondo de la nota cifrada (p10): tapa el ejemplo del artista */
+    if (template.pages[pi].id === 'p10') {
+      const rx = (v) => (v / 100) * PW, ry = (v) => PH - (v / 100) * PH;
+      bg.drawRectangle({ x: rx(8), y: ry(90.5), width: rx(90.5) - rx(8), height: ry(37.5) - ry(90.5), color: RUNE_BG });
+    }
     const pageFixed = fixed.filter((x) => x.page === pi + 1);
+    const baseOverride = new Map();
     const textOf = (f) => (i18n[f.key] !== undefined ? i18n[f.key] : f.es);
     const flowGroups = buildFlowGroups(template, fixed, pi);
     const sibBoxes = pageFixed.filter((x) => !x._flow).map((x) => {
@@ -587,11 +651,55 @@ async function composeGame(deps) {
       const iw = im.width || 100, ih = im.height || 100;
       drawPhoto(bg, ops, im, iw, ih, b, s.angle || 0, degrees);
     }
+    /* Columnas giradas (angulo entre -135 y -45, se leen de arriba abajo): un
+       valor seguido de un fijo en la misma columna ("Sabemos que [NOMBRE], estaba").
+       El valor empieza pegado a su caja y el fijo que sigue se desplaza justo tras el valor. */
+    const colShift = new Map();
+    const colLeft = new Set();
+    {
+      const cols = [];
+      for (const s of template.pages[pi].slots) {
+        const fld = template.fields.find((x) => x.id === s.field);
+        if (!fld || fld.type !== 'text' || s._flow) continue;
+        if (!((s.angle || 0) < -45 && (s.angle || 0) > -135)) continue;
+        const val = String(slotVal(s.field) || '').replace(/\s*\n\s*/g, ' ').trim();
+        if (!val) continue;
+        const bb = box(s);
+        const sfont = ff[pickFont(s.fontFamily || 'caveat', s.size)];
+        const ssize0 = ptSize(s.fontFamily, s.size, PW);
+        const sr = fit(sfont, val, bb, ssize0,
+          { single: true, targetHs: s.xscale || 1, angle: s.angle || 0, grow: (s.w || 0) < 10 ? 2.5 : 1 });
+        const len = (sfont.widthOfTextAtSize(val, sr.size) || 0) * (sr.hs[0] || 1);
+        cols.push({ s, bb, len, size: sr.size });
+      }
+      for (const c of cols) {
+        for (const f of pageFixed) {
+          if (f._flow || !((f.angle || 0) < -45 && (f.angle || 0) > -135)) continue;
+          if (c.s.size > 3 || Math.abs((f.size || 0) - (c.s.size || 0)) > 0.2) continue;
+          const fb = box(f);
+          const ov = Math.min(c.bb.x + c.bb.w, fb.x + fb.w) - Math.max(c.bb.x, fb.x);
+          if (ov < 0.8 * Math.min(c.bb.w, fb.w)) continue;
+          if (!(fb.yTop < c.bb.yTop - 0.5 && fb.yTop > c.bb.yTop - c.bb.h - c.size * 0.8)) continue;
+          const newTop = c.bb.yTop - c.len - c.size * 0.3;
+          if (newTop <= fb.yTop) continue;
+          const nh = newTop - (fb.yTop - fb.h);
+          if (nh < fb.h * 0.6) continue;
+          colShift.set(f, { yTop: newTop, h: nh });
+          colLeft.add(c.s);
+        }
+      }
+    }
+    const fixedBox = (f) => {
+      const bp = withLines(f);
+      const o = colShift.get(f);
+      if (o) { bp.yTop = o.yTop; bp.h = o.h; }
+      return bp;
+    };
     for (const f of pageFixed) {
       if (f._flow) continue;
       const str = textOf(f);
       const font = ff[pickFontFor(f)];
-      const size0 = (f.size / 100) * PW;
+      const size0 = ptSize(f.fontFamily, f.size, PW);
       let use = size0;
       for (const lang of Object.keys(deps.i18nAll || { [deps.lang]: i18n })) {
         const t = (deps.i18nAll[lang] || {})[f.key] !== undefined ? deps.i18nAll[lang][f.key] : f.es;
@@ -606,11 +714,11 @@ async function composeGame(deps) {
         for (const s of template.pages[pi].slots) {
           const fld = template.fields.find((x) => x.id === s.field);
           if (!fld || fld.type !== 'text' || s._flow) continue;
-          const val = slotVal(s.field);
+          const val = (s.wrap ? slotVal(s.field) : slotVal(s.field).replace(/\s*\n\s*/g, ' ').trim());
           if (!val || val.indexOf('\n') >= 0) continue;
           if (((s.angle || 0) > 45 || (s.angle || 0) < -45)) continue;
           const sfont = ff[pickFont(s.fontFamily || 'caveat', s.size)];
-          const ssize0 = (s.size / 100) * PW;
+          const ssize0 = ptSize(s.fontFamily, s.size, PW);
           const bb = box(s);
           const sr = fit(sfont, val, bb, ssize0,
             { single: true, targetHs: s.xscale || 1, angle: s.angle || 0,
@@ -622,29 +730,31 @@ async function composeGame(deps) {
           if ((s.align || 'left') === 'center') vx0 = cx2 - ink / 2;
           else if ((s.align || 'left') === 'right') vx0 = bb.x + bb.w - ink;
           inline.push({
-            x0: vx0, x1: vx0 + ink, base: cy2 - sr.size * 0.45,
+            x0: vx0, x1: vx0 + ink, base: cy2 - sr.size * 0.45, ref: s,
             size: sr.size, angle: s.angle || 0,
           });
         }
       }
-      if (drawFitted(bg, degrees, ops, font, str, withLines(f), size0, hex(f.color, rgb), f.align || 'left',
-          { targetHs: f.xscale, angle: f.angle || 0, lockSize: use, inline,
+      if (drawFitted(bg, degrees, ops, font, str, fixedBox(f), size0, hex(f.color, rgb), f.align || 'left',
+          { targetHs: f.xscale, angle: f.angle || 0, lockSize: use, inline, vStart: colShift.has(f),
             siblings: sibBoxes.filter((s) => s.ref !== f) })) {
         warns.push(`${f.key}: encogido fuerte`);
       }
+      /* el nombre intercalado toma la línea base de la frase donde va */
+      for (const g of inline) if (g.matchedY !== undefined) baseOverride.set(g.ref, g.matchedY);
     }
     for (const s of template.pages[pi].slots) {
       const fld = template.fields.find((x) => x.id === s.field);
       if (!fld) continue;
       if (fld.type === 'text') {
         if (s._flow) continue;
-        const val = slotVal(s.field);
+        const val = (s.wrap ? slotVal(s.field) : slotVal(s.field).replace(/\s*\n\s*/g, ' ').trim());
         if (!val) continue;
         const font = ff[pickFont(s.fontFamily || 'caveat', s.size)];
-        if (drawFitted(bg, degrees, ops, font, val, box(s), (s.size / 100) * PW,
+        if (drawFitted(bg, degrees, ops, font, val, box(s), ptSize(s.fontFamily, s.size, PW),
             hex(s.color || '#000000', rgb), s.align || 'left',
-            { single: true, targetHs: s.xscale || 1, angle: s.angle || 0,
-              grow: (s.w || 0) < 10 ? 2.5 : 1 })) {
+            { single: !s.wrap, targetHs: s.xscale || 1, angle: s.angle || 0,
+              grow: (s.w || 0) < 10 ? 2.5 : 1, baseY: baseOverride.get(s), vStart: colLeft.has(s), vTop: !!s.vTop, tight: !!s.tight })) {
           warns.push(`${s.field}: valor encogido`);
         }
       }
@@ -654,14 +764,6 @@ async function composeGame(deps) {
       drawFlowGroup(bg, gr, textOf, (fid) => slotVal(fid), PW, PH);
     }
     /* Nota cifrada (p10): igual que en Node. */
-    if (template.pages[pi].id === 'p10') {
-      const love = normRunes(values.S2_SECRET_LOVE || '');
-      if (love) {
-        const rx = (v) => (v / 100) * PW, ry = (v) => PH - (v / 100) * PH;
-        bg.drawRectangle({ x: rx(8), y: ry(90.5), width: rx(90.5) - rx(8), height: ry(37.5) - ry(90.5), color: RUNE_BG });
-        drawRunes(bg, 'TE QUIERO ' + love, (rx(8) + rx(90.5)) / 2, (ry(37.5) + ry(90.5)) / 2, 13, rx(90.5) - rx(8) - 24);
-      }
-    }
     tick((pi + 1) / n);
   }
   /* Hoja de recortes: igual que en Node (tiras permutadas sobre la página). */
@@ -706,5 +808,25 @@ async function composeGame(deps) {
   return { bytes: await out.save(), warns };
 }
 
-globalThis.PMECompose = { composeGame, fit, wrap, drawFitted, drawLine, drawPhoto };
+  /* ¿Cabe el texto en su hueco sin encogerse más del 15 %? Mismo ajuste que el PDF. */
+  function fieldFits(slot, text, fontMap, PW, PH) {
+    /* mismas reglas que pickFont / ptSize de composeGame (ámbitos distintos) */
+    const fam = slot.fontFamily || 'caveat';
+    let key = 'opensans';
+    if (/pigpen|runes/i.test(fam)) key = 'runes';
+    else if (/myriad/i.test(fam)) key = 'caveatBold';
+    else if (/caveat|script|hand/i.test(fam)) key = /bold|black/i.test(fam) ? 'caveatBold' : 'caveat';
+    else if (/anton|display/i.test(fam)) key = 'anton';
+    else if (/bold|black/i.test(fam)) key = 'opensansBold';
+    const font = fontMap[key];
+    if (!font) return true;
+    const bb = { x: (slot.x / 100) * PW, w: (slot.w / 100) * PW,
+      yTop: PH - (slot.y / 100) * PH, h: (slot.h / 100) * PH };
+    const scale = /caveat|script|hand|myriad/i.test(fam) ? 1.65 : 1;
+    const r = fit(font, text, bb, (slot.size / 100) * PW * scale,
+      { single: !slot.wrap, targetHs: slot.xscale || 1, angle: slot.angle || 0,
+        grow: (slot.w || 0) < 10 ? 2.5 : 1 });
+    return !r.warn;
+  }
+globalThis.PMECompose = { composeGame, fit, wrap, drawFitted, drawLine, drawPhoto, fieldFits };
 })();

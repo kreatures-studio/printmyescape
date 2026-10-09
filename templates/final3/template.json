@@ -427,6 +427,11 @@
    "id": "B_NOTES",
    "type": "text",
    "label": "B_NOTES"
+  },
+  {
+   "id": "S2_SECRET_LOVE",
+   "type": "text",
+   "label": "Nota cifrada"
   }
  ],
  "pages": [
@@ -900,7 +905,7 @@
      "field": "DEBILIDAD",
      "x": 42.06,
      "y": 23.68,
-     "w": 13.83,
+     "w": 27.94,
      "h": 2.36,
      "size": 2.02,
      "color": "#1D1D1B",
@@ -968,24 +973,28 @@
     {
      "field": "B_NOTES",
      "x": 70,
-     "y": 15,
+     "y": 16.6,
      "w": 23,
      "h": 28,
      "size": 2.2,
      "color": "#1D1D1B",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "wrap": 1,
+     "vTop": 1
     },
     {
      "field": "B_INFO",
      "x": 10,
-     "y": 78,
+     "y": 78.6,
      "w": 36,
      "h": 16,
      "size": 2.2,
      "color": "#1D1D1B",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "wrap": 1,
+     "vTop": 1
     }
    ]
   },
@@ -1094,97 +1103,105 @@
      "field": "S1_HIDEA",
      "x": 52.21,
      "y": 6.75,
-     "w": 16.49,
+     "w": 22.79,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S1_HIDEB",
      "x": 59.18,
      "y": 17.31,
-     "w": 16.49,
+     "w": 15.82,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S2_HIDEA",
      "x": 52.41,
      "y": 38.47,
-     "w": 16.5,
+     "w": 22.59,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S2_HIDEB",
      "x": 59.74,
      "y": 41.89,
-     "w": 16.5,
+     "w": 15.26,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S3_HIDEA",
      "x": 59.85,
      "y": 59.5,
-     "w": 16.49,
+     "w": 15.15,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S3_HIDEB",
      "x": 52.08,
      "y": 63.05,
-     "w": 16.5,
+     "w": 22.92,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S4_HIDEA",
      "x": 51.69,
      "y": 87.8,
-     "w": 16.49,
+     "w": 23.31,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S4_HIDEB",
      "x": 51.69,
      "y": 94.68,
-     "w": 16.49,
+     "w": 23.31,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "FOTO_1",
@@ -1281,97 +1298,105 @@
      "field": "S5_HIDEA",
      "x": 59.26,
      "y": 10.88,
-     "w": 16.49,
+     "w": 15.74,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S5_HIDEB",
      "x": 51.64,
      "y": 21.48,
-     "w": 16.49,
+     "w": 23.36,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S6_HIDEA",
      "x": 51.75,
      "y": 32.07,
-     "w": 16.5,
+     "w": 23.25,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S6_HIDEB",
      "x": 51.86,
      "y": 46.14,
-     "w": 16.49,
+     "w": 23.14,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S7_HIDEA",
      "x": 59.37,
      "y": 67.01,
-     "w": 16.5,
+     "w": 15.63,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S7_HIDEB",
      "x": 51.78,
      "y": 70.75,
-     "w": 16.5,
+     "w": 23.22,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S8_HIDEA",
      "x": 51.62,
      "y": 81.01,
-     "w": 16.49,
+     "w": 23.38,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "S8_HIDEB",
      "x": 58.94,
      "y": 84.69,
-     "w": 16.49,
+     "w": 16.06,
      "h": 1.25,
-     "size": 1.34,
+     "size": 1.8,
      "color": "#083839",
      "fontFamily": "OpenSans-Regular",
      "xscale": 1.0,
-     "angle": 0
+     "angle": 0,
+     "align": "left"
     },
     {
      "field": "NOMBRE_5",
@@ -1560,6 +1585,20 @@
      "h": 18.44,
      "fit": "cover",
      "angle": 0.9
+    },
+    {
+     "field": "S2_SECRET_LOVE",
+     "x": 14.0,
+     "y": 37.5,
+     "w": 76.0,
+     "h": 53.0,
+     "size": 3.4,
+     "fontFamily": "Pigpen",
+     "align": "center",
+     "wrap": 1,
+     "angle": 0,
+     "tight": 1,
+     "color": "#450f14"
     }
    ]
   },
@@ -1674,11 +1713,12 @@
      "y": 46.31,
      "w": 16.85,
      "h": 3.62,
-     "size": 0.79,
+     "size": 2.02,
      "color": "#4D524B",
      "fontFamily": "ArialMT",
      "xscale": null,
-     "angle": 0
+     "angle": 0,
+     "wrap": 1
     },
     {
      "field": "NOMBRE_4.2",
@@ -1758,12 +1798,12 @@
     },
     {
      "field": "FOTO_5",
-     "x": 58.89,
-     "y": 6.72,
-     "w": 26.08,
-     "h": 15.82,
+     "x": 60.74,
+     "y": 5.41,
+     "w": 22.37,
+     "h": 18.44,
      "fit": "cover",
-     "angle": 0
+     "angle": -90
     }
    ]
   },
@@ -1854,7 +1894,7 @@
      "y": 69.2,
      "w": 36.77,
      "h": 3.6,
-     "size": 3.02,
+     "size": 2.0,
      "color": "#725A4C",
      "fontFamily": "SegoeScript",
      "xscale": null,
@@ -1866,7 +1906,7 @@
      "y": 71.76,
      "w": 36.49,
      "h": 3.6,
-     "size": 3.02,
+     "size": 2.0,
      "color": "#725A4C",
      "fontFamily": "SegoeScript",
      "xscale": null,

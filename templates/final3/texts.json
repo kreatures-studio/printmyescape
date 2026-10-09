@@ -57,12 +57,12 @@
  },
  {
   "page": 1,
-  "key": "ha-desaparecido-curiosamente-nadie-recue",
-  "es": "ha desaparecido.\nCuriosamente, nadie recuerda haberlo visto en persona, aunque todos",
+  "key": "ha-desaparecido",
+  "es": "ha desaparecido.",
   "x": 15.62,
   "y": 15.66,
   "w": 70.34,
-  "h": 5.399999999999999,
+  "h": 2.7,
   "fontFamily": "SegoeScript",
   "size": 1.85,
   "color": "#725A4C",
@@ -72,26 +72,12 @@
  },
  {
   "page": 1,
-  "key": "juran-que-estaba-ahi-y-todo-apunta-a-que",
-  "es": "juran que estaba ahí. Y todo apunta a que alguien muy cercano se lo",
-  "x": 15.6,
-  "y": 20.25,
-  "w": 69.65,
-  "h": 2.38,
-  "fontFamily": "SegoeScript",
-  "size": 1.85,
-  "color": "#725A4C",
-  "xscale": null,
-  "angle": 0
- },
- {
-  "page": 1,
-  "key": "ha-llevado-aqui-teneis-la-lista-de-sospe",
-  "es": "ha llevado.\nAquí tenéis la lista de sospechosos:",
+  "key": "aqui-teneis-la-lista-de-sospechosos",
+  "es": "Aquí tenéis la lista de sospechosos:",
   "x": 15.52,
-  "y": 21.82,
+  "y": 24.52,
   "w": 34.53,
-  "h": 5.399999999999999,
+  "h": 2.7,
   "fontFamily": "SegoeScript",
   "size": 1.85,
   "color": "#725A4C",
@@ -2244,7 +2230,7 @@
  {
   "page": 13,
   "key": "estaba",
-  "es": "estaba",
+  "es": ", estaba",
   "x": 28.98,
   "y": 31.91,
   "w": 3.26,
@@ -2966,7 +2952,7 @@
  {
   "page": 15,
   "fontFamily": "SegoeScript",
-  "size": 3.02,
+  "size": 2.0,
   "color": "#725A4C",
   "xscale": 1.0,
   "angle": 0,
@@ -3008,7 +2994,7 @@
  {
   "page": 15,
   "fontFamily": "SegoeScript",
-  "size": 3.02,
+  "size": 2.0,
   "color": "#725A4C",
   "xscale": 1.0,
   "angle": 0,
@@ -3022,7 +3008,7 @@
  {
   "page": 15,
   "fontFamily": "SegoeScript",
-  "size": 3.02,
+  "size": 2.0,
   "color": "#725A4C",
   "xscale": 1.0,
   "angle": 0,
@@ -3036,7 +3022,7 @@
  {
   "page": 15,
   "fontFamily": "SegoeScript",
-  "size": 3.02,
+  "size": 2.0,
   "color": "#725A4C",
   "xscale": 1.0,
   "angle": 0,
@@ -3050,7 +3036,7 @@
  {
   "page": 15,
   "fontFamily": "SegoeScript",
-  "size": 3.02,
+  "size": 2.0,
   "color": "#725A4C",
   "xscale": 1.0,
   "angle": 0,
@@ -3064,7 +3050,7 @@
  {
   "page": 15,
   "fontFamily": "SegoeScript",
-  "size": 3.02,
+  "size": 2.0,
   "color": "#725A4C",
   "xscale": 1.0,
   "angle": 0,
@@ -3088,5 +3074,20 @@
   "y": 76.8,
   "w": 57,
   "h": 8.5
+ },
+ {
+  "page": 1,
+  "key": "curiosamente-nadie-recuerda",
+  "es": "Curiosamente, nadie recuerda haberlo visto en persona, aunque todos\njuran que estaba ahí. Y todo apunta a que alguien muy cercano se lo\nha llevado.",
+  "x": 15.52,
+  "y": 18.36,
+  "w": 70.44000000000001,
+  "h": 6.16,
+  "fontFamily": "SegoeScript",
+  "size": 1.85,
+  "color": "#725A4C",
+  "xscale": null,
+  "angle": 0,
+  "lines": []
  }
 ]

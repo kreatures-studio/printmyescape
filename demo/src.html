@@ -1109,7 +1109,119 @@ function dataURLToBytes(du) {
   var mime = (m && m[1]) || 'image/jpeg';
   return { bytes: b64ToBytes(parts[1] || ''), format: /png/i.test(mime) ? 'png' : 'jpg' };
 }
+
+/* Filtro en vivo: quita lo que el PDF no puede dibujar (emojis, alfabetos no latinos...). */
+document.addEventListener('input', function (e) {
+  var t = e.target;
+  if (!t || (t.tagName !== 'INPUT' && t.tagName !== 'TEXTAREA')) return;
+  if (t.type === 'number' || t.type === 'file' || t.type === 'checkbox' || t.type === 'radio') return;
+  var clean = t.value.replace(/[^\t\n\u0020-\u007E\u00A0-\u024F\u20AC\u2013\u2014\u2018\u2019\u201C\u201D\u2026\u00BF\u00A1]/g, '');
+  if (clean !== t.value) {
+    var p = t.selectionStart;
+    t.value = clean;
+    try { var np = Math.min(p == null ? clean.length : p, clean.length); t.setSelectionRange(np, np); } catch (x) {}
+    t.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+}, true);
+/* Marca de agua para la vista previa (no sustituye a un control de impresión). */
+function watermarkPdf(bytes) {
+  var P = window.PDFLib;
+  return P.PDFDocument.load(bytes).then(function (doc) {
+    return doc.embedFont(P.StandardFonts.HelveticaBold).then(function (font) {
+      doc.getPages().forEach(function (pg) {
+        var w = pg.getWidth(), h = pg.getHeight();
+        pg.drawText('VISTA PREVIA - NO VALIDA PARA IMPRIMIR', {
+          x: w * 0.06, y: h * 0.45, size: 30, font: font,
+          color: P.rgb(0.75, 0.1, 0.1), opacity: 0.3, rotate: P.degrees(35)
+        });
+      });
+      return doc.save();
+    });
+  });
+}
+
+/* ---- Comprobación de huecos: cada texto debe caber en su sitio (mismo motor que el PDF) ---- */
+var _formFonts = null;
+function formFonts() {
+  if (!_formFonts) {
+    _formFonts = window.PDFLib.PDFDocument.create().then(function (doc) {
+      doc.registerFontkit(window.fontkit);
+      var FD = PME_DEMO_DATA.fonts, map = {}, chain = Promise.resolve();
+      Object.keys(FD).forEach(function (k) {
+        chain = chain.then(function () {
+          return doc.embedFont(b64ToBytes(FD[k].b64), { subset: !!FD[k].subset }).then(function (fnt) { map[k] = fnt; });
+        });
+      });
+      return chain.then(function () { return map; });
+    });
+  }
+  return _formFonts;
+}
+function valueForCheck(fid) {
+  var v = String(answers[fid] || '');
+  if (fid === 'DEBILIDAD' && v.indexOf('||') >= 0) {
+    v = v.split('||').filter(function (x) { return x && !/^Otro:/.test(x); }).join(' / ');
+  }
+  if (fid === 'S2_SECRET_LOVE') {
+    var nv = v.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z ]/g, '').replace(/ +/g, ' ').trim();
+    return nv ? 'TE QUIERO ' + nv : '';
+  }
+  var m = /^NOMBRE_([1-8])$/.exec(fid);
+  var alias = fid === 'NOMBRE_CUMPLE' ? answers.B_ALIAS : (m ? answers['S' + m[1] + '_ALIAS'] : '');
+  alias = String(alias || '').trim();
+  if (alias && v) v = v + ' "' + alias + '"';
+  return v.replace(/\s+/g, ' ').trim();
+}
+function textProblems() {
+  return formFonts().then(function (map) {
+    var bad = [], PW = 595.276, PH = 841.89;
+    TPL.pages.forEach(function (pg) {
+      (pg.slots || []).forEach(function (s) {
+        var fld = TPL.fields.find(function (x) { return x.id === s.field; });
+        if (!fld || fld.type !== 'text') return;
+        var v = valueForCheck(s.field);
+        if (!v) return;
+        if (!PMECompose.fieldFits(s, v, map, PW, PH) && bad.indexOf(s.field) < 0) bad.push(s.field);
+      });
+    });
+    return bad;
+  });
+}
+function markTooLong() {
+  textProblems().then(function (bad) {
+    document.querySelectorAll('[data-fid]').forEach(function (el) {
+      var hit = bad.indexOf(el.getAttribute('data-fid')) >= 0;
+      el.style.borderColor = hit ? '#c0392b' : '';
+      el.title = hit ? 'No cabe en su hueco: acórtalo' : '';
+    });
+    var ban = document.getElementById('lenbanner');
+    if (!ban) {
+      ban = document.createElement('div'); ban.id = 'lenbanner';
+      ban.style.cssText = 'background:#fdecea;color:#8a1c12;padding:8px 10px;border-radius:6px;margin:8px 0;font-size:14px';
+      var ans = $('answer'); if (ans && ans.parentNode) ans.parentNode.insertBefore(ban, ans);
+    }
+    ban.textContent = bad.length ? 'Estos textos no caben en su hueco: ' + bad.join(', ') + '. Acórtalos antes de generar el PDF.' : '';
+    ban.style.display = bad.length ? '' : 'none';
+  }, function () {});
+}
+var _lenT = null;
+document.addEventListener('input', function (e) {
+  var t = e.target;
+  if (!t || !t.getAttribute || !t.getAttribute('data-fid')) return;
+  clearTimeout(_lenT);
+  _lenT = setTimeout(markTooLong, 400);
+});
 function generatePDF() {
+  textProblems().then(function (bad) {
+    if (bad.length) {
+      showErr('Hay textos que no caben en su hueco (' + bad.join(', ') + '). Acórtalos antes de generar el PDF.');
+      markTooLong();
+      return;
+    }
+    generatePDFNow();
+  }, function () { generatePDFNow(); });
+}
+function generatePDFNow() {
   var st = $('genstatus');
   var langEl = document.querySelector('input[name="pdflang"]:checked');
   var lang = langEl ? langEl.value : 'es';
@@ -1152,6 +1264,19 @@ function generatePDF() {
         a.href = URL.createObjectURL(blob);
         a.download = 'escape-personalizado-' + lang + '.pdf';
         a.style.display = 'inline-block';
+        var pv = $('pdfprev');
+        if (!pv) {
+          pv = document.createElement('a'); pv.id = 'pdfprev';
+          pv.textContent = 'Vista previa (con marca de agua)';
+          pv.style.marginLeft = '14px';
+          a.parentNode.insertBefore(pv, a.nextSibling);
+        }
+        watermarkPdf(res.bytes).then(function (wb) {
+          try { if (pv.href && pv.href.indexOf('blob:') === 0) URL.revokeObjectURL(pv.href); } catch (e) {}
+          pv.href = URL.createObjectURL(new Blob([wb], { type: 'application/pdf' }));
+          pv.download = 'vista-previa-' + lang + '.pdf';
+          pv.style.display = 'inline-block';
+        });
         if (st) st.textContent = 'Listo (' + (res.bytes.length / 1048576).toFixed(1) + ' MB)';
         var det = $('warndet');
         if (det) {

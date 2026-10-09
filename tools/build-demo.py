@@ -43,6 +43,7 @@ def main():
             with open(os.path.join(tpldir, fn), encoding='utf-8') as f:
                 i18n[fn[5:-5]] = json.load(f)
     fonts = {
+        'runes': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'PigpenRunes.ttf')), 'subset': False},
         'caveatBold': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'Caveat-Bold.ttf')), 'subset': False},
         'caveat': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'Caveat-Regular.ttf')), 'subset': False},
         'anton': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'Anton-Regular.ttf')), 'subset': True},

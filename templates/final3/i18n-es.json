@@ -3,9 +3,6 @@
  "cumpleanos-de": "cumpleaños de",
  "pero-lo-cierto-es-que-no-todo-es-fiesta-": "Pero lo cierto es que no todo es fiesta y diversión. Justo antes de empe-",
  "zar-el-regalo-de": "zar, el regalo de",
- "ha-desaparecido-curiosamente-nadie-recue": "ha desaparecido.\nCuriosamente, nadie recuerda haberlo visto en persona, aunque todos",
- "juran-que-estaba-ahi-y-todo-apunta-a-que": "juran que estaba ahí. Y todo apunta a que alguien muy cercano se lo",
- "ha-llevado-aqui-teneis-la-lista-de-sospe": "ha llevado.\nAquí tenéis la lista de sospechosos:",
  "cada-uno-de-ellos-estaba-haciendo-algo-d": "Cada uno de ellos estaba haciendo algo distinto en el momento del",
  "robo-en-un-lugar-distinto-ocupado-en-alg": "robo, en un lugar distinto, ocupado en algo distinto, y ha dejado un",
  "rastro": "rastro.",
@@ -123,7 +120,7 @@
  "11-32": "11:32",
  "texto-4": "♥",
  "sabemos-que": "Sabemos que",
- "estaba": "estaba",
+ "estaba": ", estaba",
  "mirando-el-ordenador-cuando-le": "mirando el ordenador cuando le",
  "pillamos-entonces-abrio-una-web": "pillamos. Entonces, abrió una web",
  "rapida-pero-tal-vez-nos-haya": "rápida, pero tal vez nos haya",
@@ -171,5 +168,8 @@
  "carta7-yme": ", y me",
  "carta7-encanta": "encanta",
  "carta7-punto": ".",
- "carta7-p5": "Espero que podamos compartir mis\naficiones en otro\nmomento todos juntos."
+ "carta7-p5": "Espero que podamos compartir mis\naficiones en otro\nmomento todos juntos.",
+ "ha-desaparecido": "ha desaparecido.",
+ "curiosamente-nadie-recuerda": "Curiosamente, nadie recuerda haberlo visto en persona, aunque todos\njuran que estaba ahí. Y todo apunta a que alguien muy cercano se lo\nha llevado.",
+ "aqui-teneis-la-lista-de-sospechosos": "Aquí tenéis la lista de sospechosos:"
 }
