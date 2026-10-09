@@ -352,7 +352,10 @@ async function composeGame(deps) {
     moveTo: PDFLib.moveTo, lineTo: PDFLib.lineTo, closePath: PDFLib.closePath,
     clip: PDFLib.clip, endPath: PDFLib.endPath,
   } : null;
-  const { bgBytes, fonts, template, fixed, i18n, photos, onProgress } = deps;
+  const { bgBytes, fonts, template, i18n, photos, onProgress } = deps;
+  /* texto.en: ajustes propios del inglés (caja, escala, tamaño...) que sustituyen
+     a los del texto en esa versión; el español no cambia. */
+  const fixed = (deps.fixed || []).map((t) => (deps.lang === 'en' && t.en ? Object.assign({}, t, t.en) : t));
   const values = cleanValues(deps.values);
   const tick = onProgress || (() => {});
   const out = await PDFDocument.create();
@@ -638,8 +641,10 @@ async function composeGame(deps) {
     const bg = pages[0];
     out.addPage(bg);
     const PW = bg.getWidth(), PH = bg.getHeight();
+    /* slot.xEn: posición horizontal solo en inglés (p. ej. el nombre abre la línea
+       en inglés y va tras "A" en español). */
     const box = (b) => ({
-      x: (b.x / 100) * PW, w: (b.w / 100) * PW,
+      x: ((deps.lang === 'en' && b.xEn !== undefined ? b.xEn : b.x) / 100) * PW, w: (b.w / 100) * PW,
       yTop: PH - (b.y / 100) * PH, h: (b.h / 100) * PH,
     });
     /* Caja + sus líneas originales en puntos (dibujo posicional). */
@@ -761,7 +766,9 @@ async function composeGame(deps) {
         }
       }
       if (drawFitted(bg, degrees, ops, font, str, fixedBox(f), size0, hex(f.color, rgb), f.align || 'left',
-          { targetHs: f.xscale, angle: f.angle || 0, lockSize: use, inline, vStart: colShift.has(f),
+          { targetHs: (deps.lang === 'en' && f.xscaleEn !== undefined) ? f.xscaleEn : f.xscale,
+            angle: f.angle || 0, lockSize: use, inline, vStart: colShift.has(f) || !!f.vStart,
+            tight: !!f.tight,
             siblings: sibBoxes.filter((s) => s.ref !== f) })) {
         warns.push(`${f.key}: encogido fuerte`);
       }

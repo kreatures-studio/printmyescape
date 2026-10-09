@@ -1930,7 +1930,8 @@
           "color": "#725A4C",
           "fontFamily": "OpenSans-Regular",
           "xscale": 1.0,
-          "angle": 0
+          "angle": 0,
+          "xEn": 50.41
         },
         {
           "field": "NOMBRE_7",
