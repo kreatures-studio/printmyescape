@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Ensambla demo/index.html autocontenida (doble clic, sin servidor):
-inserta pdf-lib + fontkit + núcleo + fuentes + fondo + plantilla + ejemplo.
-Uso: python3 tools/build-demo.py [--tpl templates/final] [--bg FinalLayout-Clean.pdf]
+inserta pdf-lib + fontkit + motor (tools/pme-compose-core.js) + fuentes + fondo + plantilla + ejemplo.
+Uso: python3 tools/build-demo.py [--tpl templates/final3] [--bg Final3-Clean.pdf]
 """
 import argparse
 import base64
@@ -19,8 +19,8 @@ def b64(path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--tpl', default='templates/final2')
-    ap.add_argument('--bg', default='Final2-Clean.pdf')
+    ap.add_argument('--tpl', default='templates/final3')
+    ap.add_argument('--bg', default='Final3-Clean.pdf')
     ap.add_argument('--out', default='demo/index.html')
     args = ap.parse_args()
 
@@ -31,7 +31,7 @@ def main():
         pdflib = f.read()
     with open(os.path.join(ROOT, 'tools', 'node_modules', '@pdf-lib', 'fontkit', 'dist', 'fontkit.umd.min.js'), encoding='utf-8') as f:
         fontkit = f.read()
-    with open(os.path.join(ROOT, 'demo', 'compose-browser.js'), encoding='utf-8') as f:
+    with open(os.path.join(ROOT, 'tools', 'pme-compose-core.js'), encoding='utf-8') as f:
         compose = f.read()
     with open(os.path.join(tpldir, 'template.json'), encoding='utf-8') as f:
         template = f.read()
@@ -54,7 +54,7 @@ def main():
     }
     data = {'template': json.loads(template), 'texts': json.loads(texts), 'i18n': i18n,
             'fonts': fonts, 'bg': b64(os.path.join(ROOT, args.bg)),
-            'samplePhoto': b64(os.path.join(ROOT, 'foto.JPG'))}
+            'samplePhoto': b64(os.path.join(ROOT, 'assets', 'placeholder-retrato.jpg'))}
     html = html.replace('/*__PDFLIB__*/', pdflib)
     html = html.replace('/*__FONTKIT__*/', fontkit)
     html = html.replace('/*__COMPOSE__*/', compose)

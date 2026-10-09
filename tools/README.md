@@ -67,14 +67,15 @@ que las corrija y reexporte.
 ## Paso 4 — Componer los PDF por idioma
 
 ```bash
-node tools/compose.js --tpl templates/recurso-1 --bg juego-fondo.pdf \
-  --lang es --out salidas/recurso-1-ES.pdf \
+node tools/compose.js --tpl templates/final3 --bg Final3-Clean.pdf \
+  --lang es --out salidas/final3-ES.pdf \
   --values-file valores.json --photos-file fotos.json
 ```
 
-- `valores.json`: `{"NOMBRE": "Mariana", ...}` (datos del cliente).
-- `fotos.json`: `{"FOTO_1": "salidas/foto-FOTO_1.jpg"}` (fotos ya
-  recortadas al aspecto del marco; en producción lo hace el wizard).
+- `valores.json`: `{"NOMBRE_CUMPLE": "Mariana", ...}` (datos del cliente;
+  los códigos están en `VARIABLES-Y-FOTOS.md`).
+- `fotos.json`: `{"FOTO_1": "ruta/a/foto.jpg"}` (rutas desde la raíz del
+  repo, JPG o PNG; el recorte al marco lo hace el motor).
 - Repetir con `--lang en` (y cada idioma) cambiando `--out`.
 
 **Avisos**: si sale `"X: encogido fuerte"`, esa caja va justa en ese
@@ -94,7 +95,7 @@ artista (posición, tamaños, tildes). Dar el visto bueno por idioma.
 2. Si es variable, instanciar el peso: `python3 -m fontTools.varLib.instancer
    X-VF.ttf wght=700 wdth=100 -o assets/fonts/X-Bold.ttf` (fijar TODOS los ejes).
 3. `python3 tools/cleanfonts.py` (añadirla antes a la lista `FONTS` del script).
-4. Mapear la familia en `pickFont()` de `tools/compose.js`.
+4. Mapear la familia en `pickFont()` de `tools/pme-compose-core.js`.
 
 ## Paso 6 — Demo en navegador (opcional)
 
@@ -103,15 +104,16 @@ plantilla + composición con pdf-lib en el propio navegador + descarga.
 Se construye (autocontenida, doble clic) con:
 
 ```bash
-python3 tools/build-demo.py --tpl templates/final2 --bg Final2-Clean.pdf
+python3 tools/build-demo.py --tpl templates/final3 --bg Final3-Clean.pdf
 ```
 
-- El núcleo (`demo/compose-browser.js`, sin `require`/`fs`) es el mismo
-  motor probado en Node: se valida con el test E2E antes de cada demo.
+- El motor es **único**: `tools/pme-compose-core.js`. Lo inserta el build en
+  la demo y lo usa `tools/compose.js` desde Node. No hay dos copias que mantener.
+  Antes de cada demo: `python3 tools/qa/e2e-demo.py`.
 - Soporta textos rotados (tilts e verticales) y fotos rotadas según el
   marco (ángulo medido del trazo). Fotos de marcos muy inclinados: ver QA.
-- Fotos del usuario se recortan con canvas al aspecto del marco.
+- Fotos del usuario: se decodifican, se corrige la orientación EXIF y se re-codifican a JPEG con canvas (máx. 2000 px, mín. 600 px en el lado corto). El recorte al marco se hace al componer.
 
 Advertencia conocida: el subsetter de pdf-lib rompe glifos de Caveat
-(ver `tools/compose.js`, `FONTS`); Caveat se incrusta completa. Si otra
+(ver `FONTS` en `tools/compose.js`); Caveat se incrusta completa. Si otra
 fuente sale con huecos en blanco, probar `subset: false` para ella.

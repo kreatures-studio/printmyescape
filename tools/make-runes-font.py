@@ -1,6 +1,6 @@
 """Genera assets/fonts/PigpenRunes.ttf: cifrado pigpen de la página 10.
 
-Misma geometría que tools/compose.js (PIG_WALLS / PIG_CELLS / PIG_X):
+Misma geometría que tools/pme-compose-core.js (PIG_WALLS / PIG_CELLS / PIG_X):
   A-I   celda 3x3 con paredes (L, R, T, B) de la subcelda
   J-R   igual que A-I con punto en el centro de la subcelda
   S-V   aspas (medias diagonales) desde los vértices al centro
