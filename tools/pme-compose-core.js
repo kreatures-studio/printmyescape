@@ -601,13 +601,13 @@ async function composeGame(deps) {
   const slotVal = (field) => {
     if (field === 'S2_SECRET_LOVE') {
       const nv = normRunes(values.S2_SECRET_LOVE || '');
-      return nv ? 'TE QUIERO ' + nv : '';
+      return nv ? (deps.lang === 'en' ? 'I LOVE ' : 'TE QUIERO ') + nv : '';
     }
     let v = String(values[field] || '').replace(/[ \t]+/g, ' ')
       .split('\n').map((l) => l.trim()).join('\n').trim();
-    /* debilidad multiple: 'a||b||Otro: x' -> 'a / b' (el Otro va en OTRO), igual que en Node */
+    /* debilidad multiple: 'a||b||Otro: x' (o 'Other: x') -> 'a / b' (el Otro va en OTRO) */
     if (field === 'DEBILIDAD' && v.indexOf('||') >= 0) {
-      v = v.split('||').filter((x) => x && !/^Otro:/.test(x)).join(' / ');
+      v = v.split('||').filter((x) => x && !/^(Otro|Other):/.test(x)).join(' / ');
     }
     let a = '';
     if (field === 'NOMBRE_CUMPLE') a = values.B_ALIAS || '';
