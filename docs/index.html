@@ -93,6 +93,8 @@
   .field input:focus, .field textarea:focus { border-bottom-color: var(--teal); }
   /* tamaño fijo, pensado para que quepan los 200 caracteres sin barra de desplazamiento */
   .field textarea { border: 2px solid var(--abyss); border-radius: 8px; padding: 12px; height: 216px; font-size: 16px; line-height: 1.5; resize: none; overflow-y: auto; }
+  /* textos cortos (hasta 60 caracteres): caja de 3 líneas */
+  .field textarea.short { height: 96px; }
   .field textarea:focus { border-color: var(--teal); }
   .count { font-size: 11px; color: var(--muted); text-align: right; margin-top: 2px; }
   .ferr { display: none; color: #fff; background: var(--danger); font-size: 13px; font-weight: 700; padding: 8px 12px; border-radius: 6px; margin-top: 8px; }
@@ -1792,18 +1794,18 @@ var SUS_EXTRA = {
          'Example: "Their Pokémon coin collection is not accepted in this club; we consider their use of the triangle very basic, and we believe their farming skills are dreadful for the programme."'), 1]],
   2: [['S2_SECRET_LOVE', B('Pon el nombre de una persona a la que esta persona le daría vergüenza declarar su amor más prohibido, puede ser una persona real, un amor platónico, un dibujo animado...',
                            'Write the name of a person this person would be embarrassed to confess their most forbidden love to. It can be a real person, a secret crush, a cartoon character...'), 80,
-       B('Se codifica en runas en su nota (pág. 10).', 'It is encoded in runes in their note (p. 10).')]],
+       B('Se codifica en runas en su nota.', 'It is encoded in runes in their note.')]],
   3: [['Nombre_Empresa', B('Una tienda en la que le daría vergüenza comprar algo', 'A shop where they would be embarrassed to buy something'), 40,
        B('Ejemplo: Vibradores SL, Dulces gordos shop, batamanta 3000.', 'Example: Vibradores SL, Dulces gordos shop, batamanta 3000.')],
       ['CONCEPTO', B('El producto que compraría', 'The product they would buy'), 40,
        B('Ejemplo: black vibrator, gocholón, batamanta 2400', 'Example: black vibrator, gocholón, batamanta 2400')]],
   4: [['NOMBRE_4.2', B('Pon el nombre de una persona con la que se escondería para hablar con ella', 'Write the name of a person they would hide with to talk to them'), 40,
-       B('Puede ser real, inventado, un actor o actriz. Es el contacto de su chat (pág. 12).',
-         'It can be real, made up, an actor or actress. It is the contact in their chat (p. 12).')],
+       B('Puede ser real, inventado, un actor o actriz.',
+         'It can be real, made up, an actor or actress.')],
       ['MENSAJE_PERSONALIZADO', B('Escribe un mensaje que le confesaría este sospechoso a esa persona', 'Write a message this suspect would confess to that person'), 140,
-       B('Caben un par de líneas (pág. 12).', 'Room for a couple of lines (p. 12).'), 1]],
+       '', 1]],
   5: [['BUSQUEDA_1', B('Escribe un sitio web donde le daría vergüenza que le pillasen mirando:', 'Write a website where they would be embarrassed to be caught looking at'), 60,
-       B('Ej.: pornhub, tarotistas.com, kebabs4ever. Sale en su móvil (pág. 13).', 'E.g.: pornhub, tarotistas.com, kebabs4ever. Appears on their phone (p. 13).')],
+       B('Ej.: pornhub, tarotistas.com, kebabs4ever.', 'E.g.: pornhub, tarotistas.com, kebabs4ever.')],
       ['BUSQUEDA_2', B('Escribe otro sitio web donde le daría vergüenza que le pillasen mirando', 'Write another website where they would be embarrassed to be caught looking at'), 60, '']],
   6: [['NOMBRE_DEST', B('El nombre de una persona a la que le escribiría una postal', 'The name of a person they would send a postcard to'), 80,
        B('Real, dibujo animado, actor…', 'Real, cartoon, actor…')],
@@ -1888,9 +1890,9 @@ SECDEF.forEach(function (sec) {
   });
   if (cur.length) chunks.push(cur);
   chunks.forEach(function (ch, i) {
-    var title = sec.title;
+    /* el nombre de la sección ya sale arriba (cabecera): las pantallas no lo repiten */
+    var title = null;
     if (ch.length === 1 && ch[0].type === 'photo') title = UI.yourPhoto;
-    /* las pantallas siguientes de una sección conservan su título (sin "(cont.)") */
     SCREENS.push({ id: sec.id + (i + 1), sec: sec.id, title: title, fields: ch });
   });
 });
@@ -2028,6 +2030,7 @@ function fieldControl(f) {
     ctl.placeholder = t('writeHere');
   } else if (f.type === 'long') {
     ctl = document.createElement('textarea');
+    if (LIMITS[f.id] && LIMITS[f.id] <= 60) ctl.className = 'short';
     if (f.max) ctl.maxLength = f.max;
     ctl.value = answers[f.id] || '';
     ctl._good = ctl.value;
@@ -2304,7 +2307,7 @@ function fillExample(n) {
 function renderLandingDesktop() {
   $('kicker').innerHTML = '';
   $('kicker').appendChild(el('span', null, LANG ? t('landingKicker') : t('pickKicker')));
-  $('q').textContent = LANG ? t('controlTitle') : t('pickTitle');
+  $('q').textContent = LANG ? t('controlTitle') : t('pickTitle'); $('q').style.display = '';
   $('desc').textContent = '';
   var A = $('answer'); A.innerHTML = '';
   A.appendChild(landingNode());
@@ -2315,7 +2318,7 @@ function renderLandingDesktop() {
 function renderWelcomeDesktop() {
   $('kicker').innerHTML = '';
   $('kicker').appendChild(el('span', null, t('welcomeKicker')));
-  $('q').textContent = t('welcomeTitle');
+  $('q').textContent = t('welcomeTitle'); $('q').style.display = '';
   $('desc').textContent = '';
   var A = $('answer'); A.innerHTML = '';
   A.appendChild(welcomeNode());
@@ -2333,7 +2336,8 @@ function renderStep() {
   k.appendChild(el('span', null, kickerFor(s.sec)));
   var th = photoOf(s.sec);
   if (th) { var ti = document.createElement('img'); ti.src = th; ti.alt = ''; k.appendChild(ti); }
-  $('q').textContent = pick(s.title);
+  $('q').textContent = s.title ? pick(s.title) : '';
+  $('q').style.display = s.title ? '' : 'none';
   $('desc').textContent = '';
   var A = $('answer'); A.innerHTML = '';
   s.fields.forEach(function (f) { A.appendChild(fieldControl(f)); });
@@ -2426,7 +2430,7 @@ function renderMobile() {
   SCREENS.forEach(function (s) {
     if (s.sec !== sec.id) return;
     var ms = el('div', 'mscreen');
-    ms.appendChild(el('h3', null, pick(s.title)));
+    if (s.title) ms.appendChild(el('h3', null, pick(s.title)));
     s.fields.forEach(function (f) { ms.appendChild(fieldControl(f)); });
     box.appendChild(ms);
   });
@@ -2539,7 +2543,7 @@ function renderReview(A, fromMobile) {
   view = 'review';
   var k = $('kicker'); k.innerHTML = '';
   k.appendChild(el('span', null, t('lastStep')));
-  $('q').textContent = t('reviewTitle');
+  $('q').textContent = t('reviewTitle'); $('q').style.display = '';
   $('desc').textContent = idbOK ? t('reviewDescSaved') : t('reviewDescSession');
   A.innerHTML = '';
   var tools = el('label', 'review-tools');
@@ -2641,7 +2645,7 @@ function finish() {
   var A = $('answer'); A.innerHTML = '';
   var k = $('kicker'); k.innerHTML = '';
   k.appendChild(el('span', null, t('completed')));
-  $('q').textContent = t('doneTitle');
+  $('q').textContent = t('doneTitle'); $('q').style.display = '';
   $('desc').textContent = t('doneDesc');
   var dups = dupNames();
   var d = el('div'); d.id = 'done';
