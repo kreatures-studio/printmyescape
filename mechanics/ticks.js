@@ -41,7 +41,8 @@
         ctx.page.drawLine({ start: { x: bx - d, y: by + d }, end: { x: bx + d, y: by - d }, thickness: 0.9, color: tinta });
       });
     },
-    validate(game, params) {
+    validate(game, m) {
+      const params = m.params || {};
       const campo = (game.fields || {})[params.field];
       if (!campo) return [{ path: 'params.field', message: `no existe el campo «${params.field}»` }];
       const casillas = (campo.options || []).length + (campo.allowOther ? 1 : 0);

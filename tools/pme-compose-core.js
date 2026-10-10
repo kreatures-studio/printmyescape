@@ -398,10 +398,15 @@ async function composeGame(deps) {
   const campos = deps.fields || {};
   const registro = globalThis.PMEMechanics || {};
   mecanicas.forEach((m) => { if (!registro[m.type]) warns.push(`mecánica sin implementar: ${m.type}`); });
+  /* Campos derivados (contrato 3.2): cada mecánica calcula sus valores antes de dibujar. */
+  mecanicas.forEach((m) => {
+    const def = registro[m.type];
+    if (def && def.derive) Object.assign(values, def.derive(values, m.params || {}, campos));
+  });
   function correrMecanicas(pageId, capa, page, PW, PH) {
     mecanicas.forEach((m) => {
       const def = registro[m.type];
-      if (!def || m.page !== pageId || (def.layer || 'final') !== capa) return;
+      if (!def || !def.drawPage || m.page !== pageId || (def.layer || 'final') !== capa) return;
       def.drawPage({ page, PW, PH, rgb, values, lang: deps.lang, fields: campos }, m.params || {});
     });
   }
@@ -622,21 +627,8 @@ async function composeGame(deps) {
       const nv = normRunes(values.S2_SECRET_LOVE || '');
       return nv ? (deps.lang === 'en' ? 'I LOVE ' : 'TE QUIERO ') + nv : '';
     }
-    /* ficha del cumpleañero: nombre y alias juntos (el alias va entre comillas) */
-    if (field === 'NOMBRE_CUMPLE_FICHA') {
-      const nm = String(values.NOMBRE_CUMPLE || '').trim();
-      const al = String(values.B_ALIAS || '').trim();
-      return nm && al ? nm + ' "' + al + '"' : nm;
-    }
     let v = String(values[field] || '').replace(/[ \t]+/g, ' ')
       .split('\n').map((l) => l.trim()).join('\n').trim();
-    let a = '';
-    {
-      const m = /^NOMBRE_([1-8])$/.exec(field || '');
-      if (m) a = values['S' + m[1] + '_ALIAS'] || '';
-    }
-    a = (a || '').trim();
-    if (a && v) return v + ' "' + a + '"';
     /* APODO_N lleva su coma (el fijo "," se pierde al extraer): sin apodo, nada */
     if (/^APODO_[1-8]$/.exec(field || '')) return v ? ', ' + v : v;
     /* S8_ICON_N: inicial del nombre de la app (no se pregunta, se deriva) */

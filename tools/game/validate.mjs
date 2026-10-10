@@ -13,9 +13,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
+import { createRequire } from 'node:module';
 import { loadGame } from './load.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
+// Registro de mecánicas (mechanics/index.js, el mismo que usa el motor en Node).
+const MECANICAS = createRequire(import.meta.url)(path.join(HERE, '..', '..', 'mechanics', 'index.js'));
 const SCHEMA = path.join(HERE, '..', '..', 'schema', 'pme-game-1.schema.json');
 const TEXT_TYPES = new Set(['name', 'text', 'long']);
 
@@ -82,6 +85,10 @@ export function crossErrors(game, { submit = false } = {}) {
   const pageIds = new Set(pages.map((p) => p.id));
   mechanics.forEach((m, i) => {
     if (!pageIds.has(m.page)) errs.push(`mechanics/${i} (${m.type}): la página «${m.page}» no existe en template.pages`);
+    const def = MECANICAS[m.type];
+    if (def && def.validate) {
+      for (const e of def.validate(game, m)) errs.push(`mechanics/${i} (${m.type}) ${e.path}: ${e.message}`);
+    }
     for (const f of m.derives || []) {
       if (fields[f]) errs.push(`mechanics/${i} (${m.type}): «${f}» deriva un campo que ya está en fields`);
     }

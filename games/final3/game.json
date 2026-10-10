@@ -6610,14 +6610,15 @@
    }
   },
   {
-   "type": "nombre-alias",
+   "type": "join",
    "page": "p4",
    "derives": [
     "NOMBRE_CUMPLE_FICHA"
    ],
    "params": {
     "name": "NOMBRE_CUMPLE",
-    "alias": "B_ALIAS"
+    "alias": "B_ALIAS",
+    "target": "NOMBRE_CUMPLE_FICHA"
    }
   },
   {

@@ -13,8 +13,8 @@
 //   requerido = todo menos APODO_* y *_ALIAS (y OTRO, que la demo no pregunta aparte).
 //   cap     = LIMITS[campo] || q.max || tope de la plantilla || 70 (solo textos).
 //
-// Lo que la demo calcula en el motor (NOMBRE_CUMPLE_FICHA, S8_ICON_N, el tick de
-// DEBILIDAD) se declara como mecánica; el motor sigue haciéndolo igual hasta M2.
+// Lo que la demo calculaba en el motor se declara como mecánica (T2.1 y siguientes):
+// las casillas (ticks), la ficha nombre+alias (join) y el icono de la app (inicial-app).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -100,7 +100,7 @@ function main() {
     },
     mechanics: [
       { type: 'ticks', page: 'p4', params: { field: 'DEBILIDAD', half: TICK_HALF, boxes: TICK_BOX } },
-      { type: 'nombre-alias', page: 'p4', derives: ['NOMBRE_CUMPLE_FICHA'], params: { name: 'NOMBRE_CUMPLE', alias: 'B_ALIAS' } },
+      { type: 'join', page: 'p4', derives: ['NOMBRE_CUMPLE_FICHA'], params: { name: 'NOMBRE_CUMPLE', alias: 'B_ALIAS', target: 'NOMBRE_CUMPLE_FICHA' } },
       { type: 'inicial-app', page: 'p16', derives: ['S8_ICON_1', 'S8_ICON_2', 'S8_ICON_3', 'S8_ICON_4'], params: { prefix: 'APP_' } },
     ],
     examples: [1, 2, 3].map((n) => {
