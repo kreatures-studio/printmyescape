@@ -507,6 +507,8 @@ var UI = {
   lenBanner: B('Estos textos no caben en su hueco: %1. Acórtalos antes de generar el PDF.',
                'These texts do not fit: %1. Shorten them before generating the PDF.'),
   tooLong: B('No cabe en su hueco: acórtalo', 'Does not fit: shorten it'),
+  fullField: B('Ya no cabe más texto en este hueco.', 'No more text fits in this box.'),
+  fullPills: B('No cabe otra opción: quita una antes.', 'No room for another option: remove one first.'),
   generating: B('Componiendo PDF…', 'Composing PDF…'),
   ready: B('Listo (%1 MB)', 'Ready (%1 MB)'),
   warnsCount: B('%1 avisos de maquetación (informativos)', '%1 layout notices (for information)'),
@@ -870,17 +872,16 @@ SECDEF.forEach(function (s) { SECTIONS.push({ id: s.id, title: s.title }); });
 
 /* Límites por campo (caracteres): los calcula tools/limits.cjs con el motor de ajuste. */
 var LIMITS = {
- "APODO_1": 12, "APODO_2": 12, "APODO_3": 12, "APODO_4": 12, "APODO_5": 12, "APODO_6": 12, "APODO_7": 12, "APODO_8": 12,
- "APP_1": 21, "APP_2": 24, "APP_3": 24, "APP_4": 26,
- "BUSQUEDA_1": 27, "BUSQUEDA_2": 27, "B_INFO": 200, "B_NOTES": 200,
- "CONCEPTO": 16, "FAMA": 24, "MENSAJE_PERSONALIZADO": 42,
- "NOMBRE_1": 12, "NOMBRE_2": 12, "NOMBRE_3": 12, "NOMBRE_4": 12, "NOMBRE_4.2": 12, "NOMBRE_5": 12, "NOMBRE_6": 12,
- "NOMBRE_7": 12, "NOMBRE_8": 12, "NOMBRE_CUMPLE": 12, "NOMBRE_DEST": 20, "NOTA_PERSONALIZADA": 34,
- "Nombre_Empresa": 20, "OTRO": 18, "PERSONALIZADO_1": 48, "PERSONALIZADO_2": 47, "RESULTADO_TEST": 26,
- "S1_HIDEA": 37, "S1_HIDEB": 24, "S2_HIDEA": 37, "S2_HIDEB": 24, "S2_SECRET_LOVE": 70,
- "S3_HIDEA": 23, "S3_HIDEB": 37, "S4_HIDEA": 38, "S4_HIDEB": 38, "S5_HIDEA": 24, "S5_HIDEB": 38,
- "S6_HIDEA": 37, "S6_HIDEB": 37, "S7_HIDEA": 24, "S7_HIDEB": 37, "S8_HIDEA": 38, "S8_HIDEB": 25,
- "SOSPECHA": 17, "TALENTO": 15, "TEXTO_POSTAL": 21
+  "APODO_1": 12, "APODO_2": 12, "APODO_3": 12, "APODO_4": 12, "APODO_5": 12, "APODO_6": 12, "APODO_7": 12,
+  "APODO_8": 12, "APP_1": 12, "APP_2": 12, "APP_3": 12, "APP_4": 12, "BUSQUEDA_1": 20, "BUSQUEDA_2": 20,
+  "B_INFO": 200, "B_NOTES": 200, "CONCEPTO": 16, "FAMA": 24, "MENSAJE_PERSONALIZADO": 42, "NOMBRE_1": 12,
+  "NOMBRE_2": 12, "NOMBRE_3": 12, "NOMBRE_4": 12, "NOMBRE_4.2": 12, "NOMBRE_5": 12, "NOMBRE_6": 12,
+  "NOMBRE_7": 12, "NOMBRE_8": 12, "NOMBRE_CUMPLE": 12, "NOMBRE_DEST": 28, "Nombre_Empresa": 20,
+  "NOTA_PERSONALIZADA": 40, "OTRO": 40, "PERSONALIZADO_1": 47, "PERSONALIZADO_2": 47, "RESULTADO_TEST": 26,
+  "S1_HIDEA": 37, "S1_HIDEB": 37, "S2_HIDEA": 37, "S2_HIDEB": 37, "S2_SECRET_LOVE": 70, "S3_HIDEA": 37,
+  "S3_HIDEB": 37, "S4_HIDEA": 37, "S4_HIDEB": 37, "S5_HIDEA": 37, "S5_HIDEB": 37, "S6_HIDEA": 37,
+  "S6_HIDEB": 37, "S7_HIDEA": 37, "S7_HIDEB": 37, "S8_HIDEA": 37, "S8_HIDEB": 37, "SOSPECHA": 17,
+  "TALENTO": 15, "TEXTO_POSTAL": 28
 };
 /* Obligatorios: todo salvo apodos (opcionales). Las fotos se guardan aparte y tienen marcador. */
 function isRequiredField(fid) {
@@ -1049,11 +1050,13 @@ function fieldControl(f) {
     ctl.type = f.type === 'number' ? 'number' : 'text';
     if (f.max) { if (f.type === 'number') { ctl.min = f.min; ctl.max = f.max; } else ctl.maxLength = f.max; }
     ctl.value = answers[f.id] || '';
+    ctl._good = ctl.value;
     ctl.placeholder = t('writeHere');
   } else if (f.type === 'long') {
     ctl = document.createElement('textarea');
     if (f.max) ctl.maxLength = f.max;
     ctl.value = answers[f.id] || '';
+    ctl._good = ctl.value;
     ctl.placeholder = t('writeHere');
   }
   if (ctl) {
@@ -1091,7 +1094,11 @@ function fieldControl(f) {
       var v = pick(w);
       var b = el('button', 'pill' + (cur[v] ? ' on' : ''), v);
       b.type = 'button'; b.setAttribute('data-v', v); b.setAttribute('data-fid', f.id);
-      b.onclick = function () { b.classList.toggle('on'); collectMulti(f.id); };
+      b.onclick = function () {
+        b.classList.toggle('on');
+        if (!fitsOptions(f.id, wrap)) { b.classList.remove('on'); showToast(t('fullPills')); return; }
+        collectMulti(f.id);
+      };
       pills.appendChild(b);
     });
     var bo = el('button', 'pill' + (multiOther[f.id] ? ' on' : ''), t('otherPill'));
@@ -1106,7 +1113,7 @@ function fieldControl(f) {
     var ow2 = el('div', 'otherWrap' + (multiOther[f.id] ? ' show' : ''));
     var oi2 = document.createElement('input'); oi2.type = 'text';
     oi2.className = 'otherInput'; oi2.setAttribute('data-other', f.id);
-    oi2.placeholder = t('otherPh'); oi2.maxLength = 60;
+    oi2.placeholder = t('otherPh'); oi2.maxLength = LIMITS.OTRO;
     oi2.value = multiOther[f.id] || '';
     oi2.oninput = function () { collectMulti(f.id); };
     ow2.appendChild(oi2);
@@ -1830,6 +1837,44 @@ document.addEventListener('input', function (e) {
   clearTimeout(_lenT);
   _lenT = setTimeout(markTooLong, 400);
 });
+/* Límite real: el texto se mide con el mismo motor que el PDF. Si ya no cabe, no se admite el último cambio. */
+var _fitMap = null;
+function fitsText(fid, raw, multiline) {
+  if (!_fitMap || fid === 'S2_SECRET_LOVE') return true;
+  var v = multiline ? String(raw || '') : String(raw || '').replace(/\s+/g, ' ').trim();
+  var ok = true;
+  TPL.pages.forEach(function (pg) {
+    (pg.slots || []).forEach(function (s) {
+      if (!ok || s.field !== fid) return;
+      var txt = s.upper ? v.toUpperCase() : v;
+      if (!PMECompose.fieldFits(s, txt, _fitMap, 595.276, 841.89)) ok = false;
+    });
+  });
+  return ok;
+}
+document.addEventListener('input', function (e) {
+  var tg = e.target;
+  var fid = tg && tg.getAttribute ? tg.getAttribute('data-fid') : null;
+  if (!fid || !tg.tagName || (tg.tagName !== 'INPUT' && tg.tagName !== 'TEXTAREA') || tg.type === 'number') return;
+  var multi = tg.tagName === 'TEXTAREA';
+  if (fitsText(fid, tg.value, multi)) { tg._good = tg.value; return; }
+  /* se queda el trozo más largo que cabe (un pegado largo no borra lo que ya cabía) */
+  var caret = tg.selectionStart, full = tg.value, lo = 0, hi = full.length;
+  while (lo < hi) {
+    var mid = Math.ceil((lo + hi) / 2);
+    if (fitsText(fid, full.slice(0, mid), multi)) lo = mid; else hi = mid - 1;
+  }
+  tg.value = full.slice(0, lo);
+  tg._good = tg.value;
+  try { var np = Math.min(caret == null ? lo : caret, lo); tg.setSelectionRange(np, np); } catch (x) {}
+  showToast(t('fullField'));
+}, true);
+/* Opciones múltiples (debilidades): no se añade una opción si ya no cabe en su hueco. */
+function fitsOptions(fid, wrap) {
+  var labels = [];
+  wrap.querySelectorAll('.pill.on[data-v]').forEach(function (p) { labels.push(p.getAttribute('data-v')); });
+  return fitsText(fid, labels.join(' / '), false);
+}
 function generatePDF() {
   textProblems().then(function (bad) {
     if (bad.length) {
@@ -2098,6 +2143,7 @@ $('filepick').onchange = function (e) {
 };
 
 /* ---------- arranque ---------- */
+formFonts().then(function (m) { _fitMap = m; }, function () {});
 try {
   applyStatic();
   saveDraft();
