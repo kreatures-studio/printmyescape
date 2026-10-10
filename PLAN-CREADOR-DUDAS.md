@@ -134,3 +134,13 @@ Pendiente (no bloquea M2):
   debería traer esa etiqueta (decisión para M2 o M5).
 - Equivalencia con la demo anterior en final3: sin diferencias de valor en `SECDEF`, `LIMITS`,
   ejemplos, secciones ni descriptores de campo; solo aparecen las opciones y el «Otro» de DEBILIDAD.
+
+## Solución «tiras-p9» (verificada por el validador)
+
+- El validador comprueba que la hoja de tiras (`template.shuffle`) apunta a una página existente y
+  que `perm` es una permutación de `0..strips-1`.
+- Cada campo de la solución tiene que tener un hueco en su página, y si la página es la de la
+  hoja, el hueco tiene que estar dentro de ella. `tiras-p9` cumple las tres comprobaciones.
+- Cinco casos a propósito, todos detectados.
+- La redacción en español y en inglés sigue siendo nuestra y la confirma el artista.
+- Las etiquetas cortas de la revisión (`SHORT`) pasan a M2, como acordado.
