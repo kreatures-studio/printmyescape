@@ -9,3 +9,6 @@ _dom*.txt
 *.v05.pdf
 tools/verify-final3.html
 demo2/
+
+# Salida de las pruebas E2E (se regenera en cada ejecución)
+tools/qa/salida-qa/
