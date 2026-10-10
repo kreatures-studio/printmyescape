@@ -10,6 +10,9 @@
     --abyss: #0c2a2f; --abyss-2: #14404a; --teal: #0e7463; --teal-deep: #0a574a;
     --sage: #b7c29b; --paper: #faf6ec; --ink: #22302a; --danger: #c0392b; --muted: #4c5d53;
   }
+  /* Hasta que el script monta la interfaz (la página lleva varios MB de librerías en línea),
+     no se pinta el esqueleto: así no aparece un destello de la maquetación de escritorio en móvil. */
+  body:not(.ready) #progress, body:not(.ready) #top, body:not(.ready) main, body:not(.ready) #nav, body:not(.ready) #foot { visibility: hidden; }
   * { box-sizing: border-box; }
   ::selection { background: var(--teal); color: #fff; }
   html, body { height: 100%; }
@@ -180,9 +183,9 @@
   body.mobile #drawer {
     width: 100%; position: fixed; top: auto; bottom: 0; right: 0; left: 0; max-height: 70dvh;
     border: 0; border-top: 4px solid var(--abyss); border-radius: 14px 14px 0 0;
-    transform: translateY(105%); transition: transform .25s ease; z-index: 41;
+    transform: translateY(105%); transition: none; z-index: 41; /* sin transición al entrar en móvil: no debe deslizarse en pantalla */
   }
-  body.mobile #drawer.open { transform: none; }
+  body.mobile #drawer.open { transform: none; transition: transform .25s ease; }
   .secItem {
     display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
     font-family: inherit; font-size: 15px; font-weight: 800; cursor: pointer;
@@ -2081,9 +2084,14 @@ $('filepick').onchange = function (e) {
 };
 
 /* ---------- arranque ---------- */
-applyStatic();
-saveDraft();
-render();
+try {
+  applyStatic();
+  saveDraft();
+  render();
+} finally {
+  /* muestra la interfaz ya montada (con la maquetación correcta para el ancho de pantalla) */
+  document.body.classList.add('ready');
+}
 idb.open(function () {
   idb.loadAll(function (ph) {
     var n = 0;
