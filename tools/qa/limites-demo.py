@@ -100,7 +100,16 @@ def main():
         pg.wait_for_timeout(100)
         rec('pegar texto largo en APP_2 deja como máximo 10', len(inp.input_value()) <= 10, 'len=%d' % len(inp.input_value()))
 
-        # 4) Opciones de debilidades: una tercera opción no se añade si no cabe
+        # 3b) Nuevos campos de texto: debilidad escrita, apodo del cumpleañero, respuesta del test
+        for fid, lim in (('DEBILIDAD_TEXTO', 38), ('B_ALIAS', 12), ('TEST_RESULTADO', 180)):
+            inp = mount(pg, fid)
+            inp.click(); inp.fill('')
+            pg.evaluate("(a) => { var el = document.querySelector(a[0]); el.value = a[1].repeat(60); el.dispatchEvent(new Event('input', {bubbles: true})); }",
+                        ['.test-mount [data-fid="%s"]' % fid, 'z '])
+            pg.wait_for_timeout(100)
+            rec('pegar texto largo en %s deja como máximo %d' % (fid, lim), len(inp.input_value()) <= lim, 'len=%d' % len(inp.input_value()))
+
+        # 4) Casillas de delitos: son fijas (4 + Otro), todas se pueden marcar
         mount(pg, 'DEBILIDAD')
         pills = pg.locator('.test-mount .pill[data-v]')
         n = pills.count()
@@ -108,7 +117,7 @@ def main():
             pills.nth(i).click()
             pg.wait_for_timeout(60)
         on = pg.locator('.test-mount .pill.on[data-v]').count()
-        rec('debilidades: no se marcan más opciones que las que caben', on <= 2, 'marcadas=%d de %d' % (on, n))
+        rec('delitos: se pueden marcar todas las casillas', on == n, 'marcadas=%d de %d' % (on, n))
 
         # 5) Ejemplo de prueba "al tope": genera el PDF sin avisos ni bloqueos
         pg.evaluate("() => document.querySelectorAll('.test-mount').forEach(n => n.remove())")
@@ -132,7 +141,7 @@ def main():
             rec('borrador: pista S1 recortada a 30', len(ans.get('S1_HIDEA', '')) <= 30, 'len=%d' % len(ans.get('S1_HIDEA', '')))
             rec('borrador: nota recortada a lo que cabe', 0 < len(ans.get('NOTA_PERSONALIZADA', '')) < 200, 'len=%d' % len(ans.get('NOTA_PERSONALIZADA', '')))
             kept = [x for x in (ans.get('DEBILIDAD', '') or '').split('||') if x and not x.startswith('Otro')]
-            rec('borrador: debilidades sobrantes quitadas, "Otro" se conserva', len(kept) <= 2 and any(x.startswith('Otro') for x in ans.get('DEBILIDAD', '').split('||')), 'opciones=%s' % kept)
+            rec('borrador: casillas de delitos se conservan, "Otro" incluido', len(kept) == 3 and any(x.startswith('Otro') for x in ans.get('DEBILIDAD', '').split('||')), 'opciones=%s' % kept)
             bad2 = pg.evaluate("async () => await textProblems()")
             rec('borrador recortado: sin avisos de texto largo', bad2 == [], 'fuera=%s' % bad2)
 

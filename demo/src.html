@@ -590,9 +590,9 @@ var UI = {
 
 /* ---------- datos de ejemplo ---------- */
 var EJEMPLO = {
-  NOMBRE_CUMPLE: 'Ian', FAMA: 'Comer hamburguesas',
+  NOMBRE_CUMPLE: 'Ian', B_ALIAS: 'El Pelota', DEBILIDAD_TEXTO: 'Llegar tarde a todo', FAMA: 'Comer hamburguesas',
   TALENTO: 'Contar chistes', SOSPECHA: 'Robo de tarta',
-  RESULTADO_TEST: 'vista', 'NOMBRE_4.2': 'Alex',
+  TEST_LUGAR: 'Club de coleccionistas', TEST_RESULTADO: 'Su colección de monedas no se acepta en este club; su uso del triángulo es de nivel muy básico.', 'NOMBRE_4.2': 'Alex',
   MENSAJE_PERSONALIZADO: '¿Vienes esta noche?\nTe espero a las 9',
   BUSQUEDA_1: 'caja fuerte', BUSQUEDA_2: 'regalos',
   NOMBRE_1: 'Celia', NOMBRE_2: 'Nuria', NOMBRE_3: 'Adela', NOMBRE_4: 'Adam',
@@ -619,7 +619,7 @@ var EJEMPLO = {
   APP_3: 'Banco', APP_4: 'Notas'
 };
 var EJEMPLO2 = Object.assign({}, EJEMPLO, {
-  NOMBRE_CUMPLE: 'Marta', EDAD: '45', FAMA: 'Cocina para el barrio', TALENTO: 'Imitar acentos',
+  NOMBRE_CUMPLE: 'Marta', B_ALIAS: 'La Reina', DEBILIDAD_TEXTO: 'Dormir siestas eternas', TEST_LUGAR: 'La Tuna de los viernes', TEST_RESULTADO: 'Nos encanta su sombrero, pero la bandurria no entra en la tuna.', EDAD: '45', FAMA: 'Cocina para el barrio', TALENTO: 'Imitar acentos',
   SOSPECHA: 'Robo de joyas', B_INFO: 'Cuidado con sus pastas caseras',
   B_NOTES: 'Odia madrugar. Le encanta el chocolate negro.',
   DEBILIDAD: 'Hacer trampas jugando||Otro: Dormir la siesta', OTRO: 'Dormir la siesta',
@@ -645,7 +645,7 @@ var EJEMPLO2 = Object.assign({}, EJEMPLO, {
   APP_1: 'WhatsApp', APP_2: 'Maps', APP_3: 'Fotos', APP_4: 'Recetas'
 });
 var EJEMPLO3 = Object.assign({}, EJEMPLO, {
-  NOMBRE_CUMPLE: 'Javier Ortiz', NOMBRE_1: 'Isabel María',
+  NOMBRE_CUMPLE: 'Javier Ortiz', B_ALIAS: 'El Pianista', DEBILIDAD_TEXTO: 'Llegar siempre el último a todo', NOMBRE_1: 'Isabel María',
   NOMBRE_2: 'Pedro Alonso', NOMBRE_3: 'Rocío Vargas',
   NOMBRE_4: 'Lourdes Peña', NOMBRE_5: 'Óscar Medina',
   NOMBRE_6: 'Raquel Soler', NOMBRE_7: 'Pilar Montes',
@@ -662,7 +662,7 @@ var EJEMPLO3 = Object.assign({}, EJEMPLO, {
   S6_HIDEA: 'Tras el espejo grande del baño', S6_HIDEB: 'En la estantería de la terraza',
   S7_HIDEA: 'Escondido en la nevera vacía', S7_HIDEB: 'En el maletero del coche azul',
   S8_HIDEA: 'Bajo la alfombra del vestíbulo', S8_HIDEB: 'Metido tras las cortinas rojas',
-  RESULTADO_TEST: 'Ojo de halcón y humor fino', Nombre_Empresa: 'Fiestas Mágicas Ruiz',
+  TEST_LUGAR: 'Club de monedas antiguas', TEST_RESULTADO: 'Su capacidad granjera es nefasta para el programa y su uso del triángulo es de nivel muy básico. Le aconsejamos seguir buscando esposa por otros medios, quizá en la tuna.', Nombre_Empresa: 'Fiestas Mágicas Ruiz',
   CONCEPTO: 'Caja sorpresa XL', MENSAJE_PERSONALIZADO: 'Mañana a las nueve en la plaza, no faltes.',
   BUSQUEDA_1: 'trucos de mago fácil', BUSQUEDA_2: 'regalos para mayores',
   NOMBRE_DEST: 'Su abuela Carmen de Sevilla', TEXTO_POSTAL: 'Te echo de menos, nos vemos el sábado en el parque',
@@ -676,8 +676,8 @@ var EJEMPLO3 = Object.assign({}, EJEMPLO, {
   EDAD: '71', DEBILIDAD: 'Llegar tarde||Robar comida ajena||Otro: Roncar como un tractor en las siestas!!!'
 });
 var EJEMPLO_EN = {
-  NOMBRE_CUMPLE: 'Ian', FAMA: 'Eating burgers', TALENTO: 'Telling jokes', SOSPECHA: 'Stealing a cake',
-  RESULTADO_TEST: 'Sharp-eyed', 'NOMBRE_4.2': 'Alex',
+  NOMBRE_CUMPLE: 'Ian', B_ALIAS: 'The Smooth', DEBILIDAD_TEXTO: 'Being late to everything', FAMA: 'Eating burgers', TALENTO: 'Telling jokes', SOSPECHA: 'Stealing a cake',
+  TEST_LUGAR: 'Coin collectors club', TEST_RESULTADO: 'Your Pokémon coin collection is not accepted here; your use of the triangle is very basic.', 'NOMBRE_4.2': 'Alex',
   MENSAJE_PERSONALIZADO: 'Coming over tonight?\nSee you at 9',
   BUSQUEDA_1: 'safe brands', BUSQUEDA_2: 'gift ideas',
   NOMBRE_1: 'Chloe', NOMBRE_2: 'Nathan', NOMBRE_3: 'Ruby', NOMBRE_4: 'Adam',
@@ -700,7 +700,7 @@ var EJEMPLO_EN = {
   APP_1: 'Tinder', APP_2: 'Duolingo', APP_3: 'Banking', APP_4: 'Notes'
 };
 var EJEMPLO2_EN = Object.assign({}, EJEMPLO_EN, {
-  NOMBRE_CUMPLE: 'Martha', EDAD: '45', FAMA: 'Cooks for the street', TALENTO: 'Doing accents',
+  NOMBRE_CUMPLE: 'Martha', B_ALIAS: 'The Queen', DEBILIDAD_TEXTO: 'Endless naps', TEST_LUGAR: 'Folk band rehearsal', TEST_RESULTADO: 'We love the hat, but the banjo does not fit in the band.', EDAD: '45', FAMA: 'Cooks for the street', TALENTO: 'Doing accents',
   SOSPECHA: 'Stealing jewels', B_INFO: 'Watch out for her homemade pasta',
   B_NOTES: 'Hates early mornings. Loves dark chocolate.',
   DEBILIDAD: 'Cheating at games||Other: Napping', OTRO: 'Napping',
@@ -726,7 +726,7 @@ var EJEMPLO2_EN = Object.assign({}, EJEMPLO_EN, {
   APP_1: 'WhatsApp', APP_2: 'Maps', APP_3: 'Photos', APP_4: 'Recipes'
 });
 var EJEMPLO3_EN = Object.assign({}, EJEMPLO_EN, {
-  NOMBRE_CUMPLE: 'Javier Ortiz', NOMBRE_1: 'Isabel María',
+  NOMBRE_CUMPLE: 'Javier Ortiz', B_ALIAS: 'The Pianist', DEBILIDAD_TEXTO: 'Always the last to arrive', NOMBRE_1: 'Isabel María',
   NOMBRE_2: 'Pedro Alonso', NOMBRE_3: 'Rocío Vargas',
   NOMBRE_4: 'Lourdes Peña', NOMBRE_5: 'Óscar Medina',
   NOMBRE_6: 'Raquel Soler', NOMBRE_7: 'Pilar Montes',
@@ -743,7 +743,7 @@ var EJEMPLO3_EN = Object.assign({}, EJEMPLO_EN, {
   S6_HIDEA: 'Behind the big bathroom mirror', S6_HIDEB: 'On the terrace shelf',
   S7_HIDEA: 'Hidden in the empty fridge', S7_HIDEB: 'In the blue car boot',
   S8_HIDEA: 'Under the hallway rug', S8_HIDEB: 'Tucked behind red curtains',
-  RESULTADO_TEST: 'Eagle eyes and dry humor', Nombre_Empresa: 'Magic Party Planners',
+  TEST_LUGAR: 'Old coin club', TEST_RESULTADO: 'Their farming skills are dreadful for the programme and their use of the triangle is very basic. We advise them to keep looking for a wife somewhere else, maybe in the band.', Nombre_Empresa: 'Magic Party Planners',
   CONCEPTO: 'Surprise box XXL', MENSAJE_PERSONALIZADO: 'Tomorrow at 9 in the square. Be on time.',
   BUSQUEDA_1: 'cheap magic tricks', BUSQUEDA_2: 'gifts for old people',
   NOMBRE_DEST: 'Grandma Carmen from Seville', TEXTO_POSTAL: 'I miss you, see you on Saturday at the park',
@@ -844,8 +844,10 @@ var Q = {
   FAMA: { q: B('¿Por qué se le conoce?', 'What are they known for?'), max: 70,
           ej: B('Por comer hamburguesas, por pillarse un pedo monumental cada vez que sale de fiesta…',
                 'For eating burgers, for getting wasted every time they go out…') },
-  DEBILIDAD: { q: B('Su mayor debilidad es', 'Their biggest weakness is'),
+  DEBILIDAD_TEXTO: { q: B('Su mayor debilidad es', 'Their biggest weakness is'), max: 38 },
+  DEBILIDAD: { q: B('Delitos conocidos', 'Known offences'),
                desc: B('Puedes seleccionar varias opciones e incluso escribir otra.', 'You can select several options or even write another one.'), multi: 1 },
+  B_ALIAS: { q: B('Apodo (opcional)', 'Nickname (optional)'), max: 12 },
   TALENTO: { q: B('Su mayor talento es', 'Their greatest talent is'), max: 70 },
   SOSPECHA: { q: B('Si fuera sospechoso de algo, ¿de qué sería?', 'If they were a suspect, what would they be suspected of?'), max: 70 },
   FOTO_CUMPLE: { q: B('Sube su foto', 'Upload their photo') },
@@ -865,9 +867,13 @@ for (var _qn = 1; _qn <= 8; _qn++) {
 }
 /* Preguntas extra de cada personaje: [campo, pregunta, máximo, ayuda, largo] */
 var SUS_EXTRA = {
-  1: [['RESULTADO_TEST', B('Resultado de su test', 'Result of their test'), 70,
-       B('El test es de lo que escribas aquí (en el original: de gonorrea). Sale en su página (pág. 9).',
-         'The test result is whatever you write here (in the original it was a gonorrhoea test). It appears on their page (p. 9).')]],
+  1: [['TEST_LUGAR', B('Imagina un sitio que le da vergüenza ir, que no le diría a nadie y que es un sitio al que va a por un tipo de resultado',
+                       'Imagine a place they are embarrassed to go to, that they would never tell anyone about, and that they go to for one particular kind of result'), 26,
+       B('Ej.: Club de colección de monedas, la Tuna, granjero busca esposa.', 'E.g.: Coin collectors club, the folk group, farmer seeks wife.')],
+      ['TEST_RESULTADO', B('Imagina ahora el resultado que le darían, como si le estuviesen dando la noticia.',
+                           'Now imagine the result they would be given, as if someone were breaking the news to them.'), 180,
+       B('Ejemplo: "Su colección de monedas de Pokémon no se acepta en este club; consideramos que su uso del triángulo es de nivel muy básico, creemos que su capacidad granjera es nefasta para el programa".',
+         'Example: "Their Pokémon coin collection is not accepted in this club; we consider their use of the triangle very basic, and we believe their farming skills are dreadful for the programme."'), 1]],
   2: [['S2_SECRET_LOVE', B('Pon el nombre de una persona a la que le daría vergüenza declarar su amor más prohibido',
                            'Write the name of a person they would be embarrassed to confess their most forbidden love for'), 80,
        B('Se codifica en runas en su nota (pág. 10). Real, amor platónico, dibujo animado…',
@@ -904,7 +910,7 @@ Object.keys(SUS_EXTRA).forEach(function (k) {
 var SECDEF = [
   { id: 'victima', title: B('El cumpleañero', 'The birthday person'),
     hint: B('Aquí personalizamos la ficha de la persona que cumple años.', 'Here we personalise the file of the person celebrating.'),
-    fields: ['NOMBRE_CUMPLE', 'FOTO_CUMPLE', 'EDAD', 'FAMA', 'DEBILIDAD', 'TALENTO', 'SOSPECHA', 'B_INFO', 'B_NOTES'],
+    fields: ['NOMBRE_CUMPLE', 'B_ALIAS', 'FOTO_CUMPLE', 'EDAD', 'FAMA', 'DEBILIDAD_TEXTO', 'TALENTO', 'SOSPECHA', 'DEBILIDAD', 'B_INFO', 'B_NOTES'],
     nameField: 'NOMBRE_CUMPLE', photoField: 'FOTO_CUMPLE' }
 ];
 for (var _sn = 1; _sn <= 8; _sn++) {
@@ -925,7 +931,8 @@ var LIMITS = {
   "B_INFO": 200, "B_NOTES": 200, "CONCEPTO": 16, "FAMA": 24, "MENSAJE_PERSONALIZADO": 42, "NOMBRE_1": 12,
   "NOMBRE_2": 12, "NOMBRE_3": 12, "NOMBRE_4": 12, "NOMBRE_4.2": 12, "NOMBRE_5": 12, "NOMBRE_6": 12,
   "NOMBRE_7": 12, "NOMBRE_8": 12, "NOMBRE_CUMPLE": 12, "NOMBRE_DEST": 28, "Nombre_Empresa": 20,
-  "NOTA_PERSONALIZADA": 200, "OTRO": 40, "PERSONALIZADO_1": 47, "PERSONALIZADO_2": 47, "RESULTADO_TEST": 26,
+  "NOTA_PERSONALIZADA": 200, "OTRO": 40, "PERSONALIZADO_1": 47, "PERSONALIZADO_2": 47,
+  "TEST_LUGAR": 26, "TEST_RESULTADO": 180, "DEBILIDAD_TEXTO": 38, "B_ALIAS": 12,
   "S1_HIDEA": 30, "S1_HIDEB": 30, "S2_HIDEA": 30, "S2_HIDEB": 30, "S2_SECRET_LOVE": 70, "S3_HIDEA": 30,
   "S3_HIDEB": 30, "S4_HIDEA": 30, "S4_HIDEB": 30, "S5_HIDEA": 30, "S5_HIDEB": 30, "S6_HIDEA": 30,
   "S6_HIDEB": 30, "S7_HIDEA": 30, "S7_HIDEB": 30, "S8_HIDEA": 30, "S8_HIDEB": 30, "SOSPECHA": 17,
@@ -1576,7 +1583,7 @@ var SHORT = {
   NOMBRE_CUMPLE: B('Nombre', 'Name'), EDAD: B('Años', 'Age'), FAMA: B('Fama', 'Known for'),
   DEBILIDAD: B('Debilidad', 'Weakness'), B_INFO: B('Info', 'Info'), B_NOTES: B('Notas', 'Notes'),
   TALENTO: B('Talento', 'Talent'), SOSPECHA: B('Sospecha', 'Suspicion'), OTRO: B('Otro', 'Other'),
-  FOTO_CUMPLE: B('Foto', 'Photo'), RESULTADO_TEST: B('Resultado', 'Result'), 'NOMBRE_4.2': B('Contacto', 'Contact'),
+  FOTO_CUMPLE: B('Foto', 'Photo'), TEST_LUGAR: B('Lugar del test', 'Test place'), TEST_RESULTADO: B('Resultado del test', 'Test result'), 'NOMBRE_4.2': B('Contacto', 'Contact'),
   MENSAJE_PERSONALIZADO: B('Mensaje', 'Message'), BUSQUEDA_1: B('Búsqueda 1', 'Search 1'), BUSQUEDA_2: B('Búsqueda 2', 'Search 2'),
   S2_SECRET_LOVE: B('Amor prohibido', 'Forbidden love'), Nombre_Empresa: B('Empresa', 'Company'), CONCEPTO: B('Concepto', 'Item'),
   NOMBRE_DEST: B('Postal para', 'Postcard to'), TEXTO_POSTAL: B('Texto postal', 'Postcard text'), NOTA_PERSONALIZADA: B('Nota', 'Note'),
@@ -1964,19 +1971,8 @@ function trimStored() {
       }
       return;
     }
-    if (fid === 'DEBILIDAD') {
-      var parts = String(raw).split('||'), before = parts.length;
-      var isOt = function (x) { return /^(Otro|Other):/.test(x); };
-      var labels = function () { return parts.filter(function (x) { return x && !isOt(x); }).join(' / '); };
-      while (!fitsText(fid, labels(), false)) {
-        var k = parts.length - 1;
-        while (k >= 0 && (!parts[k] || isOt(parts[k]))) k--;
-        if (k < 0) break;
-        parts.splice(k, 1);
-      }
-      if (parts.length !== before) { answers[fid] = parts.join('||'); changed = true; }
-      return;
-    }
+    /* casillas de delitos: opciones fijas, no se recortan */
+    if (fid === 'DEBILIDAD') return;
     var v = String(raw);
     if (LIMITS[fid] && v.length > LIMITS[fid]) v = v.slice(0, LIMITS[fid]);
     v = longestFit(fid, v, f.type === 'long');

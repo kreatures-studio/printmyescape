@@ -1663,7 +1663,7 @@
  {
   "page": 9,
   "key": "resultados-de-su-test-de",
-  "es": "Resultados de su test de",
+  "es": "Sitio al que le da vergüenza ir:",
   "x": 14.08,
   "y": 43.81,
   "w": 57.21,
@@ -1677,7 +1677,7 @@
  {
   "page": 9,
   "key": "parece-ser-de-dimensiones",
-  "es": "Parece ser de dimensiones",
+  "es": "Le dan la noticia:",
   "x": 13.88,
   "y": 56.78,
   "w": 65.03,
@@ -1691,7 +1691,7 @@
  {
   "page": 9,
   "key": "extraordinarias",
-  "es": "extraordinarias.",
+  "es": "",
   "x": 13.88,
   "y": 61.05,
   "w": 40.71,

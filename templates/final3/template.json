@@ -234,12 +234,6 @@
       "maxLength": 70
     },
     {
-      "id": "RESULTADO_TEST",
-      "type": "text",
-      "label": "Resultado Test",
-      "maxLength": 70
-    },
-    {
       "id": "Nombre_Empresa",
       "type": "text",
       "label": "Nombre Empresa",
@@ -432,6 +426,30 @@
       "id": "S2_SECRET_LOVE",
       "type": "text",
       "label": "Nota cifrada"
+    },
+    {
+      "id": "TEST_LUGAR",
+      "type": "text",
+      "label": "Test lugar",
+      "maxLength": 70
+    },
+    {
+      "id": "TEST_RESULTADO",
+      "type": "text",
+      "label": "Test resultado",
+      "maxLength": 140
+    },
+    {
+      "id": "DEBILIDAD_TEXTO",
+      "type": "text",
+      "label": "Debilidad texto",
+      "maxLength": 70
+    },
+    {
+      "id": "NOMBRE_CUMPLE_FICHA",
+      "type": "text",
+      "label": "Nombre cumple ficha",
+      "maxLength": 70
     }
   ],
   "pages": [
@@ -878,7 +896,7 @@
       "background": "../assets/pages/final3-fondo-p4.png",
       "slots": [
         {
-          "field": "NOMBRE_CUMPLE",
+          "field": "NOMBRE_CUMPLE_FICHA",
           "x": 41.91,
           "y": 14.61,
           "w": 22.11,
@@ -902,7 +920,7 @@
           "angle": 0
         },
         {
-          "field": "DEBILIDAD",
+          "field": "DEBILIDAD_TEXTO",
           "x": 42.06,
           "y": 23.68,
           "w": 27.94,
@@ -1531,7 +1549,7 @@
           "angle": 0
         },
         {
-          "field": "RESULTADO_TEST",
+          "field": "TEST_LUGAR",
           "x": 14.11,
           "y": 48.16,
           "w": 46.56,
@@ -1541,6 +1559,20 @@
           "fontFamily": "OpenSans-Regular",
           "xscale": 1.03,
           "angle": 0
+        },
+        {
+          "field": "TEST_RESULTADO",
+          "x": 13.88,
+          "y": 61.5,
+          "w": 74.56,
+          "h": 9.6,
+          "size": 4.0,
+          "color": "#725A4C",
+          "fontFamily": "OpenSans-Regular",
+          "xscale": 1.0,
+          "angle": 0,
+          "wrap": 1,
+          "vTop": 1
         },
         {
           "field": "NOMBRE_1",
