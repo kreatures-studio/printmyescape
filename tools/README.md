@@ -104,8 +104,8 @@ plantilla + composición con pdf-lib en el propio navegador + descarga.
 Se construye (autocontenida, doble clic) con:
 
 ```bash
-python3 tools/build-demo.py --tpl templates/final3 --bg Final3-Clean.pdf          # demo para el cliente
-python3 tools/build-demo.py --tpl templates/final3 --bg Final3-Clean.pdf --final  # versión final
+python3 tools/build-demo.py --game games/final3          # demo para el cliente
+python3 tools/build-demo.py --game games/final3 --final  # versión final
 ```
 
 - Sin `--final`, la demo empieza con una **pantalla de demostración** (`DEMO_CONTROL = true`): elegir ES o EN, y "Empezar en blanco" o "Rellenar ejemplo 1/2/3". Esa pantalla no estará en la versión final. Con `--final` (`DEMO_CONTROL = false`) el primer paso es la bienvenida con las tarjetas de idioma.

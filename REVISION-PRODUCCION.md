@@ -32,7 +32,7 @@ Fecha: 2026-10-09 · Rama: `studio/artista` · Build: `demo/index.html` (plantil
 
 ```
 # 1. Build de la demo para el cliente (con pantalla de demostración) y copia para GitHub Pages
-python3 tools/build-demo.py --tpl templates/final3 --bg Final3-Clean.pdf
+python3 tools/build-demo.py --game games/final3
 cp demo/index.html docs/index.html
 # Versión final (sin pantalla de demostración): --final --out <ruta>
 

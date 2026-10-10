@@ -91,3 +91,18 @@ Pendiente (no bloquea M2):
 - `games/final3/_dump.json` ya no lo lee la demo (desde T1.1). Sigue siendo la fuente de la
   migración, así que se conserva como registro del formulario anterior.
 - `status` de final3 queda en `borrador`: pasar a `en-produccion` es decisión humana.
+
+## T1.1 (la demo se construye desde el juego)
+
+- `build-demo.py` lee `--game` (por defecto `games/final3`). `--tpl` y `--bg` desaparecen: la
+  plantilla, los textos, los idiomas, el fondo y las fotos de muestra salen del juego.
+- `demo/src.html`: `formFromGame(game)` construye `Q`, `SECDEF`, `LIMITS`, `WEAK` y los ejemplos.
+  Los literales a mano (`EJEMPLO*`, `WEAK`, `Q`, `SUS_EXTRA`, `SECDEF`, `LIMITS`) se borraron
+  en este commit, porque el juego los reemplaza: `SUS_EXTRA` ya no existe.
+- Comprobación de equivalencia (no se commitea): la demo anterior y la nueva dan lo mismo en
+  `SECDEF`, `LIMITS`, `WEAK`, los seis ejemplos, las secciones y `mkField` de todos los campos
+  del formulario. En `Q` solo cambian entradas vacías (`desc: ''`, `long: 0`), `req` (sin uso) y
+  `Q.max` (que `mkField` no lee: usa `LIMITS` primero), y aparece `OTRO`, que ninguna sección muestra.
+- Tamaño de `demo/index.html`: 7,4 → 7,5 MB, porque el juego se incrusta además de la plantilla
+  y los textos. Se puede quitar la duplicación en un paso posterior.
+- Pruebas: E2E 30/30, límites 26/26, paridad 96/96, dorada 96/96.

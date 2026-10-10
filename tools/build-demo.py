@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """Ensambla demo/index.html autocontenida (doble clic, sin servidor):
 inserta pdf-lib + fontkit + motor (tools/pme-compose-core.js) + fuentes + fondo + plantilla + ejemplo.
-Uso: python3 tools/build-demo.py [--tpl templates/final3] [--bg Final3-Clean.pdf]
+Uso: python3 tools/build-demo.py [--game games/final3] [--out demo/index.html] [--final]
+El juego (game.json, pme-game/1) trae plantilla, textos, idiomas, fondo, ejemplos y fotos de muestra.
 """
 import argparse
 import base64
@@ -17,27 +18,28 @@ def b64(path):
         return base64.b64encode(f.read()).decode('ascii')
 
 
-def sample_photos(tpl):
-    """Una foto de muestra distinta por cada campo de foto (assets/retratos/retrato-<sufijo>.jpg)."""
+def sample_photos(game, gdir):
+    """Una foto de muestra por cada campo de foto: las del primer ejemplo del juego."""
     out = {}
-    for f in tpl['fields']:
-        if f.get('type') != 'image':
+    photos = game['examples'][0].get('photos', {})
+    for f in game['template']['fields']:
+        if f.get('type') != 'image' or f['id'] not in photos:
             continue
-        suffix = f['id'][len('FOTO_'):]
-        out[f['id']] = b64(os.path.join(ROOT, 'assets', 'retratos', 'retrato-%s.jpg' % suffix))
+        out[f['id']] = b64(os.path.normpath(os.path.join(gdir, photos[f['id']])))
     return out
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--tpl', default='templates/final3')
-    ap.add_argument('--bg', default='Final3-Clean.pdf')
+    ap.add_argument('--game', default='games/final3', help='carpeta del juego (game.json)')
     ap.add_argument('--out', default='demo/index.html')
     ap.add_argument('--final', action='store_true',
                     help='versión final: sin pantalla de control de demostración (DEMO_CONTROL = false)')
     args = ap.parse_args()
 
-    tpldir = os.path.join(ROOT, args.tpl)
+    gdir = os.path.join(ROOT, args.game)
+    with open(os.path.join(gdir, 'game.json'), encoding='utf-8') as f:
+        game = json.load(f)
     with open(os.path.join(ROOT, 'demo', 'src.html'), encoding='utf-8') as f:
         html = f.read()
     with open(os.path.join(ROOT, 'tools', 'node_modules', 'pdf-lib', 'dist', 'pdf-lib.min.js'), encoding='utf-8') as f:
@@ -46,15 +48,6 @@ def main():
         fontkit = f.read()
     with open(os.path.join(ROOT, 'tools', 'pme-compose-core.js'), encoding='utf-8') as f:
         compose = f.read()
-    with open(os.path.join(tpldir, 'template.json'), encoding='utf-8') as f:
-        template = f.read()
-    with open(os.path.join(tpldir, 'texts.json'), encoding='utf-8') as f:
-        texts = f.read()
-    i18n = {}
-    for fn in sorted(os.listdir(tpldir)):
-        if fn.startswith('i18n-') and fn.endswith('.json'):
-            with open(os.path.join(tpldir, fn), encoding='utf-8') as f:
-                i18n[fn[5:-5]] = json.load(f)
     fonts = {
         'runes': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'PigpenRunes.ttf')), 'subset': False},
         'caveatBold': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'Caveat-Bold.ttf')), 'subset': False},
@@ -65,9 +58,13 @@ def main():
         'courier': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'CourierPrime-Regular.ttf')), 'subset': True},
         'courierBold': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'CourierPrime-Bold.ttf')), 'subset': True},
     }
-    data = {'template': json.loads(template), 'texts': json.loads(texts), 'i18n': i18n,
-            'fonts': fonts, 'bg': b64(os.path.join(ROOT, args.bg)),
-            'samplePhotos': sample_photos(json.loads(template))}
+    if game.get('schema') != 'pme-game/1':
+        raise SystemExit('%s: no es un juego pme-game/1' % args.game)
+    if game['background'].get('kind') != 'pdf':
+        raise SystemExit('%s: el fondo debe ser un PDF' % args.game)
+    data = {'game': game, 'template': game['template'], 'texts': game['texts'], 'i18n': game['i18n'],
+            'fonts': fonts, 'bg': b64(os.path.normpath(os.path.join(gdir, game['background']['file']))),
+            'samplePhotos': sample_photos(game, gdir)}
     if 'var DEMO_CONTROL = true;' not in html:
         raise SystemExit('demo/src.html: no encuentro "var DEMO_CONTROL = true;"')
     html = html.replace('var DEMO_CONTROL = true;',

@@ -57,7 +57,7 @@ templates/<juego>/
 | `tools/compose.js` | CLI: valores JSON + fotos → PDF | Desarrollo / QA | Pruebas |
 | `demo/src.html` | **Formulario**: preguntas, secciones, ejemplos, límites, textos de la interfaz | Desarrollo y revisión de textos | Cada cambio de contenido |
 | `tools/limits.cjs` + `tools/limits.json` + `tools/apply-limits.py` | Mide cuántos caracteres caben en cada hueco y los escribe en `src.html` | Desarrollo | Cada cambio de huecos |
-| `tools/build-demo.py` | Construye `demo/index.html` (`--tpl`, `--bg`, `--out`, `--final`) | Desarrollo | Cada versión |
+| `tools/build-demo.py` | Construye `demo/index.html` (`--game`, `--out`, `--final`) | Desarrollo | Cada versión |
 | `tools/qa/*.py` | Pruebas (ver sección 4) | Desarrollo | Antes de cada entrega |
 | `demo/ejemplos/*.pdf` | Seis PDF de ejemplo (3 juegos de muestra × ES/EN) | Generados por la paridad | Cada cambio visible |
 
@@ -74,7 +74,7 @@ templates/<juego>/
    la interfaz. Hoy esto es **código escrito a mano**, no se genera desde la plantilla.
 5. **Límites**: medir con `tools/limits.cjs` y aplicar con `tools/apply-limits.py`.
    **Ver la advertencia de la sección 6: hoy esto no es fiable.**
-6. **Build**: `python3 tools/build-demo.py --tpl templates/<juego> --bg <fondo>.pdf` (demo) o con `--final` (sin pantalla de demostración). Copiar a `docs/index.html` si toca publicar.
+6. **Build**: `python3 tools/build-demo.py --game games/<juego>` (demo) o con `--final` (sin pantalla de demostración). Copiar a `docs/index.html` si toca publicar.
 7. **Pruebas**: sección 4. Regenerar `demo/ejemplos/` a partir de la salida de paridad.
 
 ## 4. Pruebas

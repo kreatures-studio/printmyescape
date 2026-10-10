@@ -590,174 +590,39 @@ var UI = {
   toPdf: B('Generar PDF →', 'Generate PDF →')
 };
 
-/* ---------- datos de ejemplo ---------- */
-var EJEMPLO = {
-  NOMBRE_CUMPLE: 'Ian', B_ALIAS: 'El Pelota', DEBILIDAD_TEXTO: 'Llegar tarde a todo', FAMA: 'Comer hamburguesas',
-  TALENTO: 'Contar chistes', SOSPECHA: 'Robo de tarta',
-  TEST_LUGAR: 'Club de coleccionistas', TEST_RESULTADO: 'Su colección de monedas no se acepta en este club; su uso del triángulo es de nivel muy básico.', 'NOMBRE_4.2': 'Alex',
-  MENSAJE_PERSONALIZADO: '¿Vienes esta noche?\nTe espero a las 9',
-  BUSQUEDA_1: 'tarotistas.com', BUSQUEDA_2: 'kebabs4ever',
-  NOMBRE_1: 'Celia', NOMBRE_2: 'Nuria', NOMBRE_3: 'Adela', NOMBRE_4: 'Adam',
-  NOMBRE_5: 'Dani', NOMBRE_6: 'Pol', NOMBRE_7: 'Marc', NOMBRE_8: 'Clau',
-  S1_HIDEA: 'Junto a la basura de la cocina', S1_HIDEB: 'Frente al ordenador',
-  S2_HIDEA: 'Estaba en la cama', S2_HIDEB: 'Estaba en el sofá',
-  S3_HIDEA: 'Delante de un cuadro', S3_HIDEB: 'Viendo arte en la tele',
-  S4_HIDEA: 'Estaba tumbado en el sofá', S4_HIDEB: 'Encima de una alfombra',
-  S5_HIDEA: 'Al lado del ordenador', S5_HIDEB: 'En un sillón con portátil',
-  S6_HIDEA: 'Apoyado en la encimera', S6_HIDEB: 'Mirando una estantería',
-  S7_HIDEA: 'Mirando por una ventana', S7_HIDEB: 'Abriendo un armario',
-  S8_HIDEA: 'Al lado de una mesilla', S8_HIDEB: 'Abriendo la nevera',
-  EDAD: '30', DEBILIDAD: 'Llegar tarde||Robar comida ajena||Otro: Roncar', OTRO: 'Roncar',
-  B_INFO: 'Le encantan las sorpresas', B_NOTES: 'Alergia a los frutos secos',
-  APODO_1: 'El Mudo',
-  APODO_2: 'La Oculta', S2_SECRET_LOVE: 'Carmen Ruiz',
-  APODO_3: 'La Curiosa', Nombre_Empresa: 'Vibradores 2000', CONCEPTO: 'Vibrador XL',
-  APODO_4: 'El Tranquilo',
-  APODO_5: 'El Tecno',
-  APODO_6: 'El Chef', NOMBRE_DEST: 'Su abuela', TEXTO_POSTAL: 'Recuerdos de fiesta',
-  NOTA_PERSONALIZADA: 'No mirar: lista de sospechosos',
-  APODO_7: 'El Soñador', PERSONALIZADO_1: 'Cazar orcos', PERSONALIZADO_2: 'Dormir en la calle',
-  APODO_8: 'La Lista', APP_1: 'tinder', APP_2: 'lácteos4my',
-  APP_3: 'Banco', APP_4: 'Notas'
-};
-var EJEMPLO2 = Object.assign({}, EJEMPLO, {
-  NOMBRE_CUMPLE: 'Marta', B_ALIAS: 'La Reina', DEBILIDAD_TEXTO: 'Dormir siestas eternas', TEST_LUGAR: 'La Tuna de los viernes', TEST_RESULTADO: 'Nos encanta su sombrero, pero la bandurria no entra en la tuna.', EDAD: '45', FAMA: 'Cocina para el barrio', TALENTO: 'Imitar acentos',
-  SOSPECHA: 'Robo de joyas', B_INFO: 'Cuidado con sus pastas caseras',
-  B_NOTES: 'Odia madrugar. Le encanta el chocolate negro.',
-  DEBILIDAD: 'Hacer trampas jugando||Otro: Dormir la siesta', OTRO: 'Dormir la siesta',
-  NOMBRE_1: 'Ruth', NOMBRE_2: 'Hugo', NOMBRE_3: 'Lucia', NOMBRE_4: 'Ivan',
-  NOMBRE_5: 'Sara', NOMBRE_6: 'Ruben', NOMBRE_7: 'Nora', NOMBRE_8: 'Eva', 'NOMBRE_4.2': 'Hugo',
-  APODO_1: 'La Discreta', APODO_2: 'El Gruñón', APODO_3: 'La Cotilla', APODO_4: 'El Bromista',
-  APODO_5: 'La Pianista', APODO_6: 'El Callado', APODO_7: 'La Viajera', APODO_8: 'El Madrugón',
-  S1_HIDEA: 'Detrás de la cortina', S1_HIDEB: 'Dentro del armario',
-  S2_HIDEA: 'En la cocina', S2_HIDEB: 'En el garaje',
-  S3_HIDEA: 'En el sofá', S3_HIDEB: 'En la terraza',
-  S4_HIDEA: 'Bajo la mesa', S4_HIDEB: 'En el pasillo',
-  S5_HIDEA: 'Junto al piano', S5_HIDEB: 'En el balcón',
-  S6_HIDEA: 'En la bañera', S6_HIDEB: 'En el dormitorio',
-  S7_HIDEA: 'En la biblioteca', S7_HIDEB: 'En el jardín',
-  S8_HIDEA: 'En la cama', S8_HIDEB: 'En el baño',
-  S2_SECRET_LOVE: 'Tomás Vega',
-  MENSAJE_PERSONALIZADO: 'Mañana es el gran día\nNo llegues tarde',
-  BUSQUEDA_1: 'cursos-de-baile.es', BUSQUEDA_2: 'bingo-online.com',
-  Nombre_Empresa: 'Panadería Dulce', CONCEPTO: 'Tarta chocolate',
-  NOMBRE_DEST: 'Su vecina', TEXTO_POSTAL: 'Gracias por el pastel',
-  NOTA_PERSONALIZADA: 'No digas nada de la receta',
-  PERSONALIZADO_1: 'coser', PERSONALIZADO_2: 'ver series de misterio',
-  APP_1: 'WhatsApp', APP_2: 'Maps', APP_3: 'Fotos', APP_4: 'Recetas'
-});
-var EJEMPLO3 = Object.assign({}, EJEMPLO, {
-  NOMBRE_CUMPLE: 'Javier Ortiz', B_ALIAS: 'El Pianista', DEBILIDAD_TEXTO: 'Llegar siempre el último a todo', NOMBRE_1: 'Isabel María',
-  NOMBRE_2: 'Pedro Alonso', NOMBRE_3: 'Rocío Vargas',
-  NOMBRE_4: 'Lourdes Peña', NOMBRE_5: 'Óscar Medina',
-  NOMBRE_6: 'Raquel Soler', NOMBRE_7: 'Pilar Montes',
-  NOMBRE_8: 'Elena Soler', 'NOMBRE_4.2': 'Pedro Alonso',
-  APODO_1: 'La Presumida', APODO_2: 'La Discreta',
-  APODO_3: 'La Cotilla', APODO_4: 'El Tranquilo',
-  APODO_5: 'El Pianista', APODO_6: 'El Cantarín',
-  APODO_7: 'El Madrugón', APODO_8: 'La Cariñosa',
-  S1_HIDEA: 'Detrás de la estantería grande', S1_HIDEB: 'En el cajón de los cubiertos',
-  S2_HIDEA: 'Debajo de la cama del cuarto', S2_HIDEB: 'Metido en el hueco del sofá',
-  S3_HIDEA: 'Colgado detrás de la puerta', S3_HIDEB: 'Entre los libros de la cocina',
-  S4_HIDEA: 'Encima del armario del pasillo', S4_HIDEB: 'Debajo de la mesa del jardín',
-  S5_HIDEA: 'Justo junto al piano del salón', S5_HIDEB: 'En el bolsillo de la chaqueta',
-  S6_HIDEA: 'Tras el espejo grande del baño', S6_HIDEB: 'En la estantería de la terraza',
-  S7_HIDEA: 'Escondido en la nevera vacía', S7_HIDEB: 'En el maletero del coche azul',
-  S8_HIDEA: 'Bajo la alfombra del vestíbulo', S8_HIDEB: 'Metido tras las cortinas rojas',
-  TEST_LUGAR: 'Club de monedas antiguas', TEST_RESULTADO: 'Su capacidad granjera es nefasta para el programa y su uso del triángulo es de nivel muy básico. Le aconsejamos seguir buscando esposa por otros medios, quizá en la tuna.', Nombre_Empresa: 'Fiestas Mágicas Ruiz',
-  CONCEPTO: 'Caja sorpresa XL', MENSAJE_PERSONALIZADO: 'Mañana a las nueve en la plaza, no faltes.',
-  BUSQUEDA_1: 'magia-facil.es', BUSQUEDA_2: 'bingo-nocturno.es',
-  NOMBRE_DEST: 'Su abuela Carmen de Sevilla', TEXTO_POSTAL: 'Te echo de menos, nos vemos el sábado en el parque',
-  PERSONALIZADO_1: 'Cantar boleros en la ducha cuando nadie oye', PERSONALIZADO_2: 'Coleccionar cromos de fútbol de los años 80',
-  APP_1: 'Calendario', APP_2: 'Mensajería',
-  APP_3: 'Cronómetro', APP_4: 'Ejercicios',
-  FAMA: 'Campeón de mus y el tute', TALENTO: 'Hacer malabares',
-  SOSPECHA: 'Robo de las velas', B_INFO: 'Le encanta cocinar para toda la familia los domingos, pero si le pides una receta siempre cambia algún ingrediente en secreto para que nadie la copie. Dice que es su toque personal. Nunca lo cuenta.',
-  B_NOTES: 'Tiene alergia a los frutos secos y no soporta el ruido de las bolsas de patatas. Pide siempre bizcocho de limón con mucha canela, y se pone nervioso con las sorpresas de última hora. Le gusta avisar.', NOTA_PERSONALIZADA: 'No mirar el altillo del armario: ahí está la lista de sospechosos que preparé el mes pasado. Si pregunta, dile que son ideas para su regalo, y que nadie se entere de la fiesta del sábado.',
-  S2_SECRET_LOVE: 'Marta Lozano Bermúdez de la Peña Villalba Ortega Gómez Ruiz Pérez', OTRO: 'Roncar como un tractor en las siestas!!!',
-  EDAD: '71', DEBILIDAD: 'Llegar tarde||Robar comida ajena||Otro: Roncar como un tractor en las siestas!!!'
-});
-var EJEMPLO_EN = {
-  NOMBRE_CUMPLE: 'Ian', B_ALIAS: 'The Smooth', DEBILIDAD_TEXTO: 'Being late to everything', FAMA: 'Eating burgers', TALENTO: 'Telling jokes', SOSPECHA: 'Stealing a cake',
-  TEST_LUGAR: 'Coin collectors club', TEST_RESULTADO: 'Your Pokémon coin collection is not accepted here; your use of the triangle is very basic.', 'NOMBRE_4.2': 'Alex',
-  MENSAJE_PERSONALIZADO: 'Coming over tonight?\nSee you at 9',
-  BUSQUEDA_1: 'horoscopes4u.com', BUSQUEDA_2: 'bingo-hub.com',
-  NOMBRE_1: 'Chloe', NOMBRE_2: 'Nathan', NOMBRE_3: 'Ruby', NOMBRE_4: 'Adam',
-  NOMBRE_5: 'Danny', NOMBRE_6: 'Paul', NOMBRE_7: 'Mark', NOMBRE_8: 'Clare',
-  S1_HIDEA: 'Next to the kitchen bin', S1_HIDEB: 'In front of the computer',
-  S2_HIDEA: 'Lying in bed', S2_HIDEB: 'Sitting on the sofa',
-  S3_HIDEA: 'Behind a painting', S3_HIDEB: 'Watching art on TV',
-  S4_HIDEA: 'Lying on the sofa', S4_HIDEB: 'On top of a rug',
-  S5_HIDEA: 'Next to the computer', S5_HIDEB: 'In an armchair with a laptop',
-  S6_HIDEA: 'Leaning on the worktop', S6_HIDEB: 'Looking at a bookshelf',
-  S7_HIDEA: 'Looking out the window', S7_HIDEB: 'Opening a wardrobe',
-  S8_HIDEA: 'Next to a bedside table', S8_HIDEB: 'Opening the fridge',
-  EDAD: '30', DEBILIDAD: 'Being late||Stealing food from others||Other: Snoring', OTRO: 'Snoring',
-  B_INFO: 'Loves surprises', B_NOTES: 'Allergic to nuts',
-  APODO_1: 'The Mute', APODO_2: 'The Hidden', APODO_3: 'The Curious', APODO_4: 'The Calm One',
-  APODO_5: 'The Techie', APODO_6: 'The Chef', APODO_7: 'The Dreamer', APODO_8: 'The Smart',
-  S2_SECRET_LOVE: 'Rose Brown', Nombre_Empresa: 'Vibrators 2000', CONCEPTO: 'XL vibrator',
-  NOMBRE_DEST: 'Her grandma', TEXTO_POSTAL: 'Memories of the party', NOTA_PERSONALIZADA: 'Do not look: suspect list',
-  PERSONALIZADO_1: 'Hunting orcs', PERSONALIZADO_2: 'Sleeping rough',
-  APP_1: 'Tinder', APP_2: 'Duolingo', APP_3: 'Banking', APP_4: 'Notes'
-};
-var EJEMPLO2_EN = Object.assign({}, EJEMPLO_EN, {
-  NOMBRE_CUMPLE: 'Martha', B_ALIAS: 'The Queen', DEBILIDAD_TEXTO: 'Endless naps', TEST_LUGAR: 'Folk band rehearsal', TEST_RESULTADO: 'We love the hat, but the banjo does not fit in the band.', EDAD: '45', FAMA: 'Cooks for the street', TALENTO: 'Doing accents',
-  SOSPECHA: 'Stealing jewels', B_INFO: 'Watch out for her homemade pasta',
-  B_NOTES: 'Hates early mornings. Loves dark chocolate.',
-  DEBILIDAD: 'Cheating at games||Other: Napping', OTRO: 'Napping',
-  NOMBRE_1: 'Ruth', NOMBRE_2: 'Hugo', NOMBRE_3: 'Lucy', NOMBRE_4: 'Ivan',
-  NOMBRE_5: 'Sara', NOMBRE_6: 'Rob', NOMBRE_7: 'Nora', NOMBRE_8: 'Eve', 'NOMBRE_4.2': 'Hugo',
-  APODO_1: 'The Discreet', APODO_2: 'The Grump', APODO_3: 'The Gossip', APODO_4: 'The Joker',
-  APODO_5: 'The Pianist', APODO_6: 'The Quiet', APODO_7: 'The Wanderer', APODO_8: 'Early Bird',
-  S1_HIDEA: 'Behind the curtain', S1_HIDEB: 'Inside the wardrobe',
-  S2_HIDEA: 'In the kitchen', S2_HIDEB: 'In the garage',
-  S3_HIDEA: 'On the sofa', S3_HIDEB: 'On the terrace',
-  S4_HIDEA: 'Under the table', S4_HIDEB: 'In the hallway',
-  S5_HIDEA: 'Next to the piano', S5_HIDEB: 'On the balcony',
-  S6_HIDEA: 'In the bathtub', S6_HIDEB: 'In the bedroom',
-  S7_HIDEA: 'In the library', S7_HIDEB: 'In the garden',
-  S8_HIDEA: 'Under the bed', S8_HIDEB: 'In the bathroom',
-  S2_SECRET_LOVE: 'Tom Walsh',
-  MENSAJE_PERSONALIZADO: 'Tomorrow is the big day\nDon\'t be late',
-  BUSQUEDA_1: 'knitting-forum.org', BUSQUEDA_2: 'ballroom-classes.com',
-  Nombre_Empresa: 'Sweet Bakery', CONCEPTO: 'Chocolate cake',
-  NOMBRE_DEST: 'Her neighbour', TEXTO_POSTAL: 'Thanks for the cake',
-  NOTA_PERSONALIZADA: 'Say nothing about the recipe',
-  PERSONALIZADO_1: 'Sewing', PERSONALIZADO_2: 'Watching mystery series',
-  APP_1: 'WhatsApp', APP_2: 'Maps', APP_3: 'Photos', APP_4: 'Recipes'
-});
-var EJEMPLO3_EN = Object.assign({}, EJEMPLO_EN, {
-  NOMBRE_CUMPLE: 'Javier Ortiz', B_ALIAS: 'The Pianist', DEBILIDAD_TEXTO: 'Always the last to arrive', NOMBRE_1: 'Isabel María',
-  NOMBRE_2: 'Pedro Alonso', NOMBRE_3: 'Rocío Vargas',
-  NOMBRE_4: 'Lourdes Peña', NOMBRE_5: 'Óscar Medina',
-  NOMBRE_6: 'Raquel Soler', NOMBRE_7: 'Pilar Montes',
-  NOMBRE_8: 'Elena Soler', 'NOMBRE_4.2': 'Pedro Alonso',
-  APODO_1: 'The Nosy One', APODO_2: 'The Dreamer',
-  APODO_3: 'Miss Nosy', APODO_4: 'The Tranquil',
-  APODO_5: 'The Pianist', APODO_6: 'The Joker',
-  APODO_7: 'Early Riser', APODO_8: 'The Chatty',
-  S1_HIDEA: 'Behind the big bookcase', S1_HIDEB: 'In the cutlery drawer',
-  S2_HIDEA: 'Under the bed, in the attic', S2_HIDEB: 'Tucked in the sofa gap',
-  S3_HIDEA: 'Hanging behind the door', S3_HIDEB: 'Between the cookbooks',
-  S4_HIDEA: 'On top of the hallway wardrobe', S4_HIDEB: 'Under the garden table',
-  S5_HIDEA: 'Right next to the piano', S5_HIDEB: 'In the jacket pocket',
-  S6_HIDEA: 'Behind the big bathroom mirror', S6_HIDEB: 'On the terrace shelf',
-  S7_HIDEA: 'Hidden in the empty fridge', S7_HIDEB: 'In the blue car boot',
-  S8_HIDEA: 'Under the hallway rug', S8_HIDEB: 'Tucked behind red curtains',
-  TEST_LUGAR: 'Old coin club', TEST_RESULTADO: 'Their farming skills are dreadful for the programme and their use of the triangle is very basic. We advise them to keep looking for a wife somewhere else, maybe in the band.', Nombre_Empresa: 'Magic Party Planners',
-  CONCEPTO: 'Surprise box XXL', MENSAJE_PERSONALIZADO: 'Tomorrow at 9 in the square. Be on time.',
-  BUSQUEDA_1: 'magic-shop.net', BUSQUEDA_2: 'bingo-nights.com',
-  NOMBRE_DEST: 'Grandma Carmen from Seville', TEXTO_POSTAL: 'I miss you, see you on Saturday at the park',
-  PERSONALIZADO_1: 'Singing boleros in the shower when no one hears', PERSONALIZADO_2: 'Collecting football stickers from the 80s',
-  APP_1: 'Calendar', APP_2: 'Messenger',
-  APP_3: 'Stopwatch', APP_4: 'Workouts',
-  FAMA: 'Wins at cards every week', TALENTO: 'Juggling clubs',
-  SOSPECHA: 'Stealing the cake', B_INFO: 'Loves cooking for the whole family on Sundays, but if you ask for a recipe he always changes one ingredient in secret so nobody can copy it. He says that is his personal touch. Nobody knows how.',
-  B_NOTES: 'Allergic to nuts and cannot stand the noise of crisp packets. Always asks for lemon sponge with plenty of cinnamon, and gets nervous about last-minute surprises. He hates surprise parties too.', NOTA_PERSONALIZADA: 'Do not look in the attic cupboard: that is where the suspect list I made last month is. If he asks, say they are only ideas for his present, and that nobody should find out about Saturday\'s party.',
-  S2_SECRET_LOVE: 'Marta Lozano Bermúdez de la Peña Villalba Ortega Gómez Ruiz Pérez', OTRO: 'Snoring like a tractor at naps!!!',
-  EDAD: '71', DEBILIDAD: 'Being late||Stealing food from others||Other: Snoring like a tractor at naps!!!'
-});
+/* ---------- datos del juego (game.json, pme-game/1) ---------- */
+/* Formulario, ejemplos, opciones y límites a partir del juego que mete build-demo.py.
+   Devuelve las mismas estructuras que antes se escribían a mano en esta página. */
+function formFromGame(game) {
+  var out = { Q: {}, LIMITS: {}, WEAK: [], SECDEF: [], examples: { es: [], en: [] } };
+  Object.keys(game.fields).forEach(function (id) {
+    var f = game.fields[id], q = { q: f.q };
+    if (f.desc) q.desc = f.desc;
+    if (f.ej) q.ej = f.ej;
+    if (f.type === 'multi') { q.multi = 1; out.WEAK = f.options; }
+    if (f.type === 'number') {
+      q.num = 1;
+      if (f.min !== undefined) q.min = f.min;
+      if (f.max !== undefined) q.max = f.max;
+    }
+    if (f.type === 'long') q.long = 1;
+    if (f.cap !== undefined) { out.LIMITS[id] = f.cap; q.max = f.cap; }
+    out.Q[id] = q;
+  });
+  game.form.sections.forEach(function (s) {
+    var sec = { id: s.id, title: s.title, fields: s.fields, nameField: s.nameField, photoField: s.photoField };
+    if (s.hint) sec.hint = s.hint;
+    out.SECDEF.push(sec);
+  });
+  game.examples.forEach(function (ex) {
+    out.examples.es.push(ex.values.es);
+    out.examples.en.push(ex.values.en);
+  });
+  return out;
+}
+var FORM = formFromGame(PME_DEMO_DATA.game);
+var EJEMPLO = FORM.examples.es[0], EJEMPLO2 = FORM.examples.es[1], EJEMPLO3 = FORM.examples.es[2];
+var EJEMPLO_EN = FORM.examples.en[0], EJEMPLO2_EN = FORM.examples.en[1], EJEMPLO3_EN = FORM.examples.en[2];
 /* Juego de ejemplo n en el idioma elegido. */
 function exampleSet(n) {
   var en = LANG === 'en';
@@ -767,12 +632,7 @@ function exampleSet(n) {
 }
 
 /* Debilidades: opciones de la lista y su traducción (para cambiar de idioma sin perder la elección). */
-var WEAK = [
-  B('Llegar tarde', 'Being late'),
-  B('Robar comida ajena', 'Stealing food from others'),
-  B('Contar chistes malos', 'Telling bad jokes'),
-  B('Hacer trampas jugando', 'Cheating at games')
-];
+var WEAK = FORM.WEAK;
 function translateWeak(v, to) {
   return String(v || '').split('||').map(function (p) {
     if (!p) return p;
@@ -840,107 +700,15 @@ function tplField(fid) {
   for (var i = 0; i < TPL.fields.length; i++) if (TPL.fields[i].id === fid) return TPL.fields[i];
   return null;
 }
-/* Preguntas por campo: q, desc y ej son bilingües. */
-var Q = {
-  NOMBRE_CUMPLE: { q: B('¿Cómo se llama la persona homenajeada?', 'What is the name of the birthday person?'), req: 1, max: 24 },
-  FAMA: { q: B('¿Por qué se le conoce?', 'What are they known for?'), max: 70,
-          ej: B('Por comer hamburguesas, por pillarse un pedo monumental cada vez que sale de fiesta…',
-                'For eating burgers, for getting wasted every time they go out…') },
-  DEBILIDAD_TEXTO: { q: B('Su mayor debilidad es', 'Their biggest weakness is'), max: 38 },
-  DEBILIDAD: { q: B('Delitos conocidos', 'Known offences'),
-               desc: B('Puedes seleccionar varias opciones e incluso escribir otra.', 'You can select several options or even write another one.'), multi: 1 },
-  B_ALIAS: { q: B('Alias (opcional)', 'Alias (optional)'), max: 12 },
-  TALENTO: { q: B('Su mayor talento es', 'Their greatest talent is'), max: 70 },
-  SOSPECHA: { q: B('Si fuera sospechoso de algo, ¿de qué sería?', 'If they were a suspect, what would they be suspected of?'), max: 70 },
-  FOTO_CUMPLE: { q: B('Sube su foto', 'Upload their photo') },
-  EDAD: { q: B('¿Cuántos años cumple?', 'How old are they turning?'), num: 1, min: 1, max: 110 },
-  B_INFO: { q: B('Información que sus amigos y familiares consideran importante sobre esta persona',
-                 'Information that their friends and family consider important about this person'), max: 280, long: 1 },
-  B_NOTES: { q: B('Notas y observaciones', 'Notes and observations'), max: 280, long: 1 }
-};
-for (var _qn = 1; _qn <= 8; _qn++) {
-  Q['NOMBRE_' + _qn] = { q: B('Nombre', 'Name'), req: 1, max: 24 };
-  Q['APODO_' + _qn] = { q: B('Alias (opcional)', 'Alias (optional)'), max: 24 };
-  Q['S' + _qn + '_HIDEA'] = { q: B('Escribe un lugar donde se escondería esta persona si robase algo',
-                                   'Write a place where this person would hide if they stole something'), req: 1, max: 70 };
-  Q['S' + _qn + '_HIDEB'] = { q: B('Ahora escribe otro posible lugar donde se escondería esta persona si robase algo',
-                                   'Now write another possible hiding place for this person if they stole something'), req: 1, max: 70 };
-  Q['FOTO_' + _qn] = { q: B('Sube su foto', 'Upload their photo') };
-}
-/* Preguntas extra de cada personaje: [campo, pregunta, máximo, ayuda, largo] */
-var SUS_EXTRA = {
-  1: [['TEST_LUGAR', B('Imagina un sitio que le da vergüenza ir, que no le diría a nadie y que es un sitio al que va a por un tipo de resultado',
-                       'Imagine a place they are embarrassed to go to, that they would never tell anyone about, and that they go to for one particular kind of result'), 26,
-       B('Ej.: Club de colección de monedas, la Tuna, granjero busca esposa.', 'E.g.: Coin collectors club, the folk group, farmer seeks wife.')],
-      ['TEST_RESULTADO', B('Imagina ahora el resultado que le darían, como si le estuviesen dando la noticia.',
-                           'Now imagine the result they would be given, as if someone were breaking the news to them.'), 180,
-       B('Ejemplo: "Su colección de monedas de Pokémon no se acepta en este club; consideramos que su uso del triángulo es de nivel muy básico, creemos que su capacidad granjera es nefasta para el programa".',
-         'Example: "Their Pokémon coin collection is not accepted in this club; we consider their use of the triangle very basic, and we believe their farming skills are dreadful for the programme."'), 1]],
-  2: [['S2_SECRET_LOVE', B('Pon el nombre de una persona a la que esta persona le daría vergüenza declarar su amor más prohibido, puede ser una persona real, un amor platónico, un dibujo animado...',
-                           'Write the name of a person this person would be embarrassed to confess their most forbidden love to. It can be a real person, a secret crush, a cartoon character...'), 70,
-       B('Se codifica en runas en su nota.', 'It is encoded in runes in their note.'), 1]],
-  3: [['Nombre_Empresa', B('Una tienda en la que le daría vergüenza comprar algo', 'A shop where they would be embarrassed to buy something'), 40,
-       B('Ejemplo: Vibradores SL, Dulces gordos shop, batamanta 3000.', 'Example: Vibradores SL, Dulces gordos shop, batamanta 3000.')],
-      ['CONCEPTO', B('El producto que compraría', 'The product they would buy'), 40,
-       B('Ejemplo: black vibrator, gocholón, batamanta 2400', 'Example: black vibrator, gocholón, batamanta 2400')]],
-  4: [['NOMBRE_4.2', B('Pon el nombre de una persona con la que se escondería para hablar con ella', 'Write the name of a person they would hide with to talk to them'), 40,
-       B('Puede ser real, inventado, un actor o actriz.',
-         'It can be real, made up, an actor or actress.')],
-      ['MENSAJE_PERSONALIZADO', B('Escribe un mensaje que le confesaría este sospechoso a esa persona', 'Write a message this suspect would confess to that person'), 140,
-       '', 1]],
-  5: [['BUSQUEDA_1', B('Escribe un sitio web donde le daría vergüenza que le pillasen mirando:', 'Write a website where they would be embarrassed to be caught looking at'), 60,
-       B('Ej.: pornhub, tarotistas.com, kebabs4ever.', 'E.g.: pornhub, tarotistas.com, kebabs4ever.')],
-      ['BUSQUEDA_2', B('Escribe otro sitio web donde le daría vergüenza que le pillasen mirando', 'Write another website where they would be embarrassed to be caught looking at'), 60, '']],
-  6: [['NOMBRE_DEST', B('El nombre de una persona a la que le escribiría una postal', 'The name of a person they would send a postcard to'), 80,
-       B('Real, dibujo animado, actor…', 'Real, cartoon, actor…')],
-      ['TEXTO_POSTAL', B('Lo que le escribiría en esa postal', 'What they would write on that postcard'), 280, '', 1],
-      ['NOTA_PERSONALIZADA', B('Una nota que no quiere que vea nadie', 'A note they do not want anyone to see'), 280, '', 1]],
-  7: [['PERSONALIZADO_1', B('Una afición secreta que le daría vergüenza admitir', 'A secret hobby they would be embarrassed to admit'), 50,
-       B('Ej.: cazar orcos, dormir en la calle…', 'E.g.: hunting orcs, sleeping rough…'), 1],
-      ['PERSONALIZADO_2', B('Otra afición que le daría vergüenza admitir', 'Another hobby they would be embarrassed to admit'), 50, '', 1]],
-  8: [['APP_1', B('Escribe el nombre de una aplicación que puede tener en su tablet o smartphone que le dé vergüenza admitir, puede ser real o no: tinder, lácteos4my.',
-                                 'Write the name of an app they might have on their tablet or smartphone that they are embarrassed to admit to. It can be real or not: tinder, lácteos4my.'), 60, ''],
-      ['APP_2', B('Segunda app que le da vergüenza admitir', 'Second app they are embarrassed to admit to'), 60, ''],
-      ['APP_3', B('Tercera app que le da vergüenza admitir', 'Third app they are embarrassed to admit to'), 60, ''],
-      ['APP_4', B('Cuarta app que le da vergüenza admitir', 'Fourth app they are embarrassed to admit to'), 60, '']]
-};
-Object.keys(SUS_EXTRA).forEach(function (k) {
-  SUS_EXTRA[k].forEach(function (e) {
-    Q[e[0]] = { q: e[1], max: e[2], desc: e[3] || '', long: e[4] ? 1 : 0 };
-  });
-});
+/* Preguntas por campo: q, desc y ej son bilingües (vienen del juego). */
+var Q = FORM.Q;
 
-var SECDEF = [
-  { id: 'victima', title: B('El cumpleañero', 'The birthday person'),
-    hint: B('Aquí personalizamos la ficha de la persona que cumple años.', 'Here we personalise the file of the person celebrating.'),
-    fields: ['NOMBRE_CUMPLE', 'B_ALIAS', 'FOTO_CUMPLE', 'EDAD', 'FAMA', 'DEBILIDAD_TEXTO', 'TALENTO', 'SOSPECHA', 'DEBILIDAD', 'B_INFO', 'B_NOTES'],
-    nameField: 'NOMBRE_CUMPLE', photoField: 'FOTO_CUMPLE' }
-];
-for (var _sn = 1; _sn <= 8; _sn++) {
-  var sfields = ['NOMBRE_' + _sn, 'APODO_' + _sn, 'FOTO_' + _sn, 'S' + _sn + '_HIDEA', 'S' + _sn + '_HIDEB'];
-  SUS_EXTRA[_sn].forEach(function (e) { sfields.push(e[0]); });
-  SECDEF.push({ id: 's' + _sn, title: B('Sospechoso ' + _sn, 'Suspect ' + _sn),
-    hint: B('Sus datos salen en todas sus páginas con la misma foto.', 'Their details appear on all their pages with the same photo.'),
-    fields: sfields,
-    nameField: 'NOMBRE_' + _sn, photoField: 'FOTO_' + _sn });
-}
+var SECDEF = FORM.SECDEF;
 var SECTIONS = [{ id: 'intro', title: UI.introShort }];
 SECDEF.forEach(function (s) { SECTIONS.push({ id: s.id, title: s.title }); });
 
-/* Límites por campo (caracteres): los calcula tools/limits.cjs con el motor de ajuste. */
-var LIMITS = {
-  "APODO_1": 12, "APODO_2": 12, "APODO_3": 12, "APODO_4": 12, "APODO_5": 12, "APODO_6": 12, "APODO_7": 12,
-  "APODO_8": 12, "APP_1": 10, "APP_2": 10, "APP_3": 10, "APP_4": 10, "BUSQUEDA_1": 20, "BUSQUEDA_2": 20,
-  "B_INFO": 200, "B_NOTES": 200, "CONCEPTO": 16, "FAMA": 24, "MENSAJE_PERSONALIZADO": 42, "NOMBRE_1": 12,
-  "NOMBRE_2": 12, "NOMBRE_3": 12, "NOMBRE_4": 12, "NOMBRE_4.2": 12, "NOMBRE_5": 12, "NOMBRE_6": 12,
-  "NOMBRE_7": 12, "NOMBRE_8": 12, "NOMBRE_CUMPLE": 12, "NOMBRE_DEST": 28, "Nombre_Empresa": 20,
-  "NOTA_PERSONALIZADA": 200, "OTRO": 40, "PERSONALIZADO_1": 50, "PERSONALIZADO_2": 50,
-  "TEST_LUGAR": 26, "TEST_RESULTADO": 180, "DEBILIDAD_TEXTO": 38, "B_ALIAS": 12,
-  "S1_HIDEA": 30, "S1_HIDEB": 30, "S2_HIDEA": 30, "S2_HIDEB": 30, "S2_SECRET_LOVE": 70, "S3_HIDEA": 30,
-  "S3_HIDEB": 30, "S4_HIDEA": 30, "S4_HIDEB": 30, "S5_HIDEA": 30, "S5_HIDEB": 30, "S6_HIDEA": 30,
-  "S6_HIDEB": 30, "S7_HIDEA": 30, "S7_HIDEB": 30, "S8_HIDEA": 30, "S8_HIDEB": 30, "SOSPECHA": 17,
-  "TALENTO": 15, "TEXTO_POSTAL": 50
-};
+/* Límites por campo (caracteres): el tope de cada campo viene del juego. */
+var LIMITS = FORM.LIMITS;
 /* Obligatorios: todo salvo apodos (opcionales). Las fotos se guardan aparte y tienen marcador. */
 function isRequiredField(fid) {
   return !/^APODO_|_ALIAS$/.test(fid);
