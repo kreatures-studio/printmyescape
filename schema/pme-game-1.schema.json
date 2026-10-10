@@ -233,7 +233,12 @@
       "properties": {
         "type": { "$ref": "#/$defs/slug" },
         "page": { "type": "string", "pattern": "^p\\d+$" },
-        "params": { "type": "object" }
+        "params": { "type": "object" },
+        "derives": {
+          "type": "array",
+          "description": "Campos que esta mecánica calcula y que no están en fields (por ejemplo, un nombre con su alias).",
+          "items": { "$ref": "#/$defs/fieldId" }
+        }
       }
     },
 
