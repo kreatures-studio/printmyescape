@@ -173,6 +173,7 @@
         "cap": { "type": "integer", "minimum": 1 },
         "q": { "$ref": "#/$defs/i18n" },
         "desc": { "$ref": "#/$defs/i18n" },
+        "ej": { "$ref": "#/$defs/i18n", "description": "Ejemplo de respuesta, se muestra aparte de desc (en cursiva)." },
         "min": { "type": "number" },
         "max": { "type": "number" },
         "options": {
