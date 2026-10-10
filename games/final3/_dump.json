@@ -1,0 +1,1455 @@
+{
+ "Q": {
+  "NOMBRE_CUMPLE": {
+   "q": {
+    "es": "¿Cómo se llama la persona homenajeada?",
+    "en": "What is the name of the birthday person?"
+   },
+   "req": 1,
+   "max": 24
+  },
+  "FAMA": {
+   "q": {
+    "es": "¿Por qué se le conoce?",
+    "en": "What are they known for?"
+   },
+   "max": 70,
+   "ej": {
+    "es": "Por comer hamburguesas, por pillarse un pedo monumental cada vez que sale de fiesta…",
+    "en": "For eating burgers, for getting wasted every time they go out…"
+   }
+  },
+  "DEBILIDAD_TEXTO": {
+   "q": {
+    "es": "Su mayor debilidad es",
+    "en": "Their biggest weakness is"
+   },
+   "max": 38
+  },
+  "DEBILIDAD": {
+   "q": {
+    "es": "Delitos conocidos",
+    "en": "Known offences"
+   },
+   "desc": {
+    "es": "Puedes seleccionar varias opciones e incluso escribir otra.",
+    "en": "You can select several options or even write another one."
+   },
+   "multi": 1
+  },
+  "B_ALIAS": {
+   "q": {
+    "es": "Alias (opcional)",
+    "en": "Alias (optional)"
+   },
+   "max": 12
+  },
+  "TALENTO": {
+   "q": {
+    "es": "Su mayor talento es",
+    "en": "Their greatest talent is"
+   },
+   "max": 70
+  },
+  "SOSPECHA": {
+   "q": {
+    "es": "Si fuera sospechoso de algo, ¿de qué sería?",
+    "en": "If they were a suspect, what would they be suspected of?"
+   },
+   "max": 70
+  },
+  "FOTO_CUMPLE": {
+   "q": {
+    "es": "Sube su foto",
+    "en": "Upload their photo"
+   }
+  },
+  "EDAD": {
+   "q": {
+    "es": "¿Cuántos años cumple?",
+    "en": "How old are they turning?"
+   },
+   "num": 1,
+   "min": 1,
+   "max": 110
+  },
+  "B_INFO": {
+   "q": {
+    "es": "Información que sus amigos y familiares consideran importante sobre esta persona",
+    "en": "Information that their friends and family consider important about this person"
+   },
+   "max": 280,
+   "long": 1
+  },
+  "B_NOTES": {
+   "q": {
+    "es": "Notas y observaciones",
+    "en": "Notes and observations"
+   },
+   "max": 280,
+   "long": 1
+  },
+  "NOMBRE_1": {
+   "q": {
+    "es": "Nombre",
+    "en": "Name"
+   },
+   "req": 1,
+   "max": 24
+  },
+  "APODO_1": {
+   "q": {
+    "es": "Alias (opcional)",
+    "en": "Alias (optional)"
+   },
+   "max": 24
+  },
+  "S1_HIDEA": {
+   "q": {
+    "es": "Escribe un lugar donde se escondería esta persona si robase algo",
+    "en": "Write a place where this person would hide if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "S1_HIDEB": {
+   "q": {
+    "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
+    "en": "Now write another possible hiding place for this person if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "FOTO_1": {
+   "q": {
+    "es": "Sube su foto",
+    "en": "Upload their photo"
+   }
+  },
+  "NOMBRE_2": {
+   "q": {
+    "es": "Nombre",
+    "en": "Name"
+   },
+   "req": 1,
+   "max": 24
+  },
+  "APODO_2": {
+   "q": {
+    "es": "Alias (opcional)",
+    "en": "Alias (optional)"
+   },
+   "max": 24
+  },
+  "S2_HIDEA": {
+   "q": {
+    "es": "Escribe un lugar donde se escondería esta persona si robase algo",
+    "en": "Write a place where this person would hide if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "S2_HIDEB": {
+   "q": {
+    "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
+    "en": "Now write another possible hiding place for this person if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "FOTO_2": {
+   "q": {
+    "es": "Sube su foto",
+    "en": "Upload their photo"
+   }
+  },
+  "NOMBRE_3": {
+   "q": {
+    "es": "Nombre",
+    "en": "Name"
+   },
+   "req": 1,
+   "max": 24
+  },
+  "APODO_3": {
+   "q": {
+    "es": "Alias (opcional)",
+    "en": "Alias (optional)"
+   },
+   "max": 24
+  },
+  "S3_HIDEA": {
+   "q": {
+    "es": "Escribe un lugar donde se escondería esta persona si robase algo",
+    "en": "Write a place where this person would hide if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "S3_HIDEB": {
+   "q": {
+    "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
+    "en": "Now write another possible hiding place for this person if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "FOTO_3": {
+   "q": {
+    "es": "Sube su foto",
+    "en": "Upload their photo"
+   }
+  },
+  "NOMBRE_4": {
+   "q": {
+    "es": "Nombre",
+    "en": "Name"
+   },
+   "req": 1,
+   "max": 24
+  },
+  "APODO_4": {
+   "q": {
+    "es": "Alias (opcional)",
+    "en": "Alias (optional)"
+   },
+   "max": 24
+  },
+  "S4_HIDEA": {
+   "q": {
+    "es": "Escribe un lugar donde se escondería esta persona si robase algo",
+    "en": "Write a place where this person would hide if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "S4_HIDEB": {
+   "q": {
+    "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
+    "en": "Now write another possible hiding place for this person if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "FOTO_4": {
+   "q": {
+    "es": "Sube su foto",
+    "en": "Upload their photo"
+   }
+  },
+  "NOMBRE_5": {
+   "q": {
+    "es": "Nombre",
+    "en": "Name"
+   },
+   "req": 1,
+   "max": 24
+  },
+  "APODO_5": {
+   "q": {
+    "es": "Alias (opcional)",
+    "en": "Alias (optional)"
+   },
+   "max": 24
+  },
+  "S5_HIDEA": {
+   "q": {
+    "es": "Escribe un lugar donde se escondería esta persona si robase algo",
+    "en": "Write a place where this person would hide if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "S5_HIDEB": {
+   "q": {
+    "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
+    "en": "Now write another possible hiding place for this person if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "FOTO_5": {
+   "q": {
+    "es": "Sube su foto",
+    "en": "Upload their photo"
+   }
+  },
+  "NOMBRE_6": {
+   "q": {
+    "es": "Nombre",
+    "en": "Name"
+   },
+   "req": 1,
+   "max": 24
+  },
+  "APODO_6": {
+   "q": {
+    "es": "Alias (opcional)",
+    "en": "Alias (optional)"
+   },
+   "max": 24
+  },
+  "S6_HIDEA": {
+   "q": {
+    "es": "Escribe un lugar donde se escondería esta persona si robase algo",
+    "en": "Write a place where this person would hide if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "S6_HIDEB": {
+   "q": {
+    "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
+    "en": "Now write another possible hiding place for this person if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "FOTO_6": {
+   "q": {
+    "es": "Sube su foto",
+    "en": "Upload their photo"
+   }
+  },
+  "NOMBRE_7": {
+   "q": {
+    "es": "Nombre",
+    "en": "Name"
+   },
+   "req": 1,
+   "max": 24
+  },
+  "APODO_7": {
+   "q": {
+    "es": "Alias (opcional)",
+    "en": "Alias (optional)"
+   },
+   "max": 24
+  },
+  "S7_HIDEA": {
+   "q": {
+    "es": "Escribe un lugar donde se escondería esta persona si robase algo",
+    "en": "Write a place where this person would hide if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "S7_HIDEB": {
+   "q": {
+    "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
+    "en": "Now write another possible hiding place for this person if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "FOTO_7": {
+   "q": {
+    "es": "Sube su foto",
+    "en": "Upload their photo"
+   }
+  },
+  "NOMBRE_8": {
+   "q": {
+    "es": "Nombre",
+    "en": "Name"
+   },
+   "req": 1,
+   "max": 24
+  },
+  "APODO_8": {
+   "q": {
+    "es": "Alias (opcional)",
+    "en": "Alias (optional)"
+   },
+   "max": 24
+  },
+  "S8_HIDEA": {
+   "q": {
+    "es": "Escribe un lugar donde se escondería esta persona si robase algo",
+    "en": "Write a place where this person would hide if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "S8_HIDEB": {
+   "q": {
+    "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
+    "en": "Now write another possible hiding place for this person if they stole something"
+   },
+   "req": 1,
+   "max": 70
+  },
+  "FOTO_8": {
+   "q": {
+    "es": "Sube su foto",
+    "en": "Upload their photo"
+   }
+  },
+  "TEST_LUGAR": {
+   "q": {
+    "es": "Imagina un sitio que le da vergüenza ir, que no le diría a nadie y que es un sitio al que va a por un tipo de resultado",
+    "en": "Imagine a place they are embarrassed to go to, that they would never tell anyone about, and that they go to for one particular kind of result"
+   },
+   "max": 26,
+   "desc": {
+    "es": "Ej.: Club de colección de monedas, la Tuna, granjero busca esposa.",
+    "en": "E.g.: Coin collectors club, the folk group, farmer seeks wife."
+   },
+   "long": 0
+  },
+  "TEST_RESULTADO": {
+   "q": {
+    "es": "Imagina ahora el resultado que le darían, como si le estuviesen dando la noticia.",
+    "en": "Now imagine the result they would be given, as if someone were breaking the news to them."
+   },
+   "max": 180,
+   "desc": {
+    "es": "Ejemplo: \"Su colección de monedas de Pokémon no se acepta en este club; consideramos que su uso del triángulo es de nivel muy básico, creemos que su capacidad granjera es nefasta para el programa\".",
+    "en": "Example: \"Their Pokémon coin collection is not accepted in this club; we consider their use of the triangle very basic, and we believe their farming skills are dreadful for the programme.\""
+   },
+   "long": 1
+  },
+  "S2_SECRET_LOVE": {
+   "q": {
+    "es": "Pon el nombre de una persona a la que esta persona le daría vergüenza declarar su amor más prohibido, puede ser una persona real, un amor platónico, un dibujo animado...",
+    "en": "Write the name of a person this person would be embarrassed to confess their most forbidden love to. It can be a real person, a secret crush, a cartoon character..."
+   },
+   "max": 70,
+   "desc": {
+    "es": "Se codifica en runas en su nota.",
+    "en": "It is encoded in runes in their note."
+   },
+   "long": 1
+  },
+  "Nombre_Empresa": {
+   "q": {
+    "es": "Una tienda en la que le daría vergüenza comprar algo",
+    "en": "A shop where they would be embarrassed to buy something"
+   },
+   "max": 40,
+   "desc": {
+    "es": "Ejemplo: Vibradores SL, Dulces gordos shop, batamanta 3000.",
+    "en": "Example: Vibradores SL, Dulces gordos shop, batamanta 3000."
+   },
+   "long": 0
+  },
+  "CONCEPTO": {
+   "q": {
+    "es": "El producto que compraría",
+    "en": "The product they would buy"
+   },
+   "max": 40,
+   "desc": {
+    "es": "Ejemplo: black vibrator, gocholón, batamanta 2400",
+    "en": "Example: black vibrator, gocholón, batamanta 2400"
+   },
+   "long": 0
+  },
+  "NOMBRE_4.2": {
+   "q": {
+    "es": "Pon el nombre de una persona con la que se escondería para hablar con ella",
+    "en": "Write the name of a person they would hide with to talk to them"
+   },
+   "max": 40,
+   "desc": {
+    "es": "Puede ser real, inventado, un actor o actriz.",
+    "en": "It can be real, made up, an actor or actress."
+   },
+   "long": 0
+  },
+  "MENSAJE_PERSONALIZADO": {
+   "q": {
+    "es": "Escribe un mensaje que le confesaría este sospechoso a esa persona",
+    "en": "Write a message this suspect would confess to that person"
+   },
+   "max": 140,
+   "desc": "",
+   "long": 1
+  },
+  "BUSQUEDA_1": {
+   "q": {
+    "es": "Escribe un sitio web donde le daría vergüenza que le pillasen mirando:",
+    "en": "Write a website where they would be embarrassed to be caught looking at"
+   },
+   "max": 60,
+   "desc": {
+    "es": "Ej.: pornhub, tarotistas.com, kebabs4ever.",
+    "en": "E.g.: pornhub, tarotistas.com, kebabs4ever."
+   },
+   "long": 0
+  },
+  "BUSQUEDA_2": {
+   "q": {
+    "es": "Escribe otro sitio web donde le daría vergüenza que le pillasen mirando",
+    "en": "Write another website where they would be embarrassed to be caught looking at"
+   },
+   "max": 60,
+   "desc": "",
+   "long": 0
+  },
+  "NOMBRE_DEST": {
+   "q": {
+    "es": "El nombre de una persona a la que le escribiría una postal",
+    "en": "The name of a person they would send a postcard to"
+   },
+   "max": 80,
+   "desc": {
+    "es": "Real, dibujo animado, actor…",
+    "en": "Real, cartoon, actor…"
+   },
+   "long": 0
+  },
+  "TEXTO_POSTAL": {
+   "q": {
+    "es": "Lo que le escribiría en esa postal",
+    "en": "What they would write on that postcard"
+   },
+   "max": 280,
+   "desc": "",
+   "long": 1
+  },
+  "NOTA_PERSONALIZADA": {
+   "q": {
+    "es": "Una nota que no quiere que vea nadie",
+    "en": "A note they do not want anyone to see"
+   },
+   "max": 280,
+   "desc": "",
+   "long": 1
+  },
+  "PERSONALIZADO_1": {
+   "q": {
+    "es": "Una afición secreta que le daría vergüenza admitir",
+    "en": "A secret hobby they would be embarrassed to admit"
+   },
+   "max": 50,
+   "desc": {
+    "es": "Ej.: cazar orcos, dormir en la calle…",
+    "en": "E.g.: hunting orcs, sleeping rough…"
+   },
+   "long": 1
+  },
+  "PERSONALIZADO_2": {
+   "q": {
+    "es": "Otra afición que le daría vergüenza admitir",
+    "en": "Another hobby they would be embarrassed to admit"
+   },
+   "max": 50,
+   "desc": "",
+   "long": 1
+  },
+  "APP_1": {
+   "q": {
+    "es": "Escribe el nombre de una aplicación que puede tener en su tablet o smartphone que le dé vergüenza admitir, puede ser real o no: tinder, lácteos4my.",
+    "en": "Write the name of an app they might have on their tablet or smartphone that they are embarrassed to admit to. It can be real or not: tinder, lácteos4my."
+   },
+   "max": 60,
+   "desc": "",
+   "long": 0
+  },
+  "APP_2": {
+   "q": {
+    "es": "Segunda app que le da vergüenza admitir",
+    "en": "Second app they are embarrassed to admit to"
+   },
+   "max": 60,
+   "desc": "",
+   "long": 0
+  },
+  "APP_3": {
+   "q": {
+    "es": "Tercera app que le da vergüenza admitir",
+    "en": "Third app they are embarrassed to admit to"
+   },
+   "max": 60,
+   "desc": "",
+   "long": 0
+  },
+  "APP_4": {
+   "q": {
+    "es": "Cuarta app que le da vergüenza admitir",
+    "en": "Fourth app they are embarrassed to admit to"
+   },
+   "max": 60,
+   "desc": "",
+   "long": 0
+  }
+ },
+ "SECDEF": [
+  {
+   "id": "victima",
+   "title": {
+    "es": "El cumpleañero",
+    "en": "The birthday person"
+   },
+   "hint": {
+    "es": "Aquí personalizamos la ficha de la persona que cumple años.",
+    "en": "Here we personalise the file of the person celebrating."
+   },
+   "fields": [
+    "NOMBRE_CUMPLE",
+    "B_ALIAS",
+    "FOTO_CUMPLE",
+    "EDAD",
+    "FAMA",
+    "DEBILIDAD_TEXTO",
+    "TALENTO",
+    "SOSPECHA",
+    "DEBILIDAD",
+    "B_INFO",
+    "B_NOTES"
+   ],
+   "nameField": "NOMBRE_CUMPLE",
+   "photoField": "FOTO_CUMPLE"
+  },
+  {
+   "id": "s1",
+   "title": {
+    "es": "Sospechoso 1",
+    "en": "Suspect 1"
+   },
+   "hint": {
+    "es": "Sus datos salen en todas sus páginas con la misma foto.",
+    "en": "Their details appear on all their pages with the same photo."
+   },
+   "fields": [
+    "NOMBRE_1",
+    "APODO_1",
+    "FOTO_1",
+    "S1_HIDEA",
+    "S1_HIDEB",
+    "TEST_LUGAR",
+    "TEST_RESULTADO"
+   ],
+   "nameField": "NOMBRE_1",
+   "photoField": "FOTO_1"
+  },
+  {
+   "id": "s2",
+   "title": {
+    "es": "Sospechoso 2",
+    "en": "Suspect 2"
+   },
+   "hint": {
+    "es": "Sus datos salen en todas sus páginas con la misma foto.",
+    "en": "Their details appear on all their pages with the same photo."
+   },
+   "fields": [
+    "NOMBRE_2",
+    "APODO_2",
+    "FOTO_2",
+    "S2_HIDEA",
+    "S2_HIDEB",
+    "S2_SECRET_LOVE"
+   ],
+   "nameField": "NOMBRE_2",
+   "photoField": "FOTO_2"
+  },
+  {
+   "id": "s3",
+   "title": {
+    "es": "Sospechoso 3",
+    "en": "Suspect 3"
+   },
+   "hint": {
+    "es": "Sus datos salen en todas sus páginas con la misma foto.",
+    "en": "Their details appear on all their pages with the same photo."
+   },
+   "fields": [
+    "NOMBRE_3",
+    "APODO_3",
+    "FOTO_3",
+    "S3_HIDEA",
+    "S3_HIDEB",
+    "Nombre_Empresa",
+    "CONCEPTO"
+   ],
+   "nameField": "NOMBRE_3",
+   "photoField": "FOTO_3"
+  },
+  {
+   "id": "s4",
+   "title": {
+    "es": "Sospechoso 4",
+    "en": "Suspect 4"
+   },
+   "hint": {
+    "es": "Sus datos salen en todas sus páginas con la misma foto.",
+    "en": "Their details appear on all their pages with the same photo."
+   },
+   "fields": [
+    "NOMBRE_4",
+    "APODO_4",
+    "FOTO_4",
+    "S4_HIDEA",
+    "S4_HIDEB",
+    "NOMBRE_4.2",
+    "MENSAJE_PERSONALIZADO"
+   ],
+   "nameField": "NOMBRE_4",
+   "photoField": "FOTO_4"
+  },
+  {
+   "id": "s5",
+   "title": {
+    "es": "Sospechoso 5",
+    "en": "Suspect 5"
+   },
+   "hint": {
+    "es": "Sus datos salen en todas sus páginas con la misma foto.",
+    "en": "Their details appear on all their pages with the same photo."
+   },
+   "fields": [
+    "NOMBRE_5",
+    "APODO_5",
+    "FOTO_5",
+    "S5_HIDEA",
+    "S5_HIDEB",
+    "BUSQUEDA_1",
+    "BUSQUEDA_2"
+   ],
+   "nameField": "NOMBRE_5",
+   "photoField": "FOTO_5"
+  },
+  {
+   "id": "s6",
+   "title": {
+    "es": "Sospechoso 6",
+    "en": "Suspect 6"
+   },
+   "hint": {
+    "es": "Sus datos salen en todas sus páginas con la misma foto.",
+    "en": "Their details appear on all their pages with the same photo."
+   },
+   "fields": [
+    "NOMBRE_6",
+    "APODO_6",
+    "FOTO_6",
+    "S6_HIDEA",
+    "S6_HIDEB",
+    "NOMBRE_DEST",
+    "TEXTO_POSTAL",
+    "NOTA_PERSONALIZADA"
+   ],
+   "nameField": "NOMBRE_6",
+   "photoField": "FOTO_6"
+  },
+  {
+   "id": "s7",
+   "title": {
+    "es": "Sospechoso 7",
+    "en": "Suspect 7"
+   },
+   "hint": {
+    "es": "Sus datos salen en todas sus páginas con la misma foto.",
+    "en": "Their details appear on all their pages with the same photo."
+   },
+   "fields": [
+    "NOMBRE_7",
+    "APODO_7",
+    "FOTO_7",
+    "S7_HIDEA",
+    "S7_HIDEB",
+    "PERSONALIZADO_1",
+    "PERSONALIZADO_2"
+   ],
+   "nameField": "NOMBRE_7",
+   "photoField": "FOTO_7"
+  },
+  {
+   "id": "s8",
+   "title": {
+    "es": "Sospechoso 8",
+    "en": "Suspect 8"
+   },
+   "hint": {
+    "es": "Sus datos salen en todas sus páginas con la misma foto.",
+    "en": "Their details appear on all their pages with the same photo."
+   },
+   "fields": [
+    "NOMBRE_8",
+    "APODO_8",
+    "FOTO_8",
+    "S8_HIDEA",
+    "S8_HIDEB",
+    "APP_1",
+    "APP_2",
+    "APP_3",
+    "APP_4"
+   ],
+   "nameField": "NOMBRE_8",
+   "photoField": "FOTO_8"
+  }
+ ],
+ "SUS_EXTRA": {
+  "1": [
+   [
+    "TEST_LUGAR",
+    {
+     "es": "Imagina un sitio que le da vergüenza ir, que no le diría a nadie y que es un sitio al que va a por un tipo de resultado",
+     "en": "Imagine a place they are embarrassed to go to, that they would never tell anyone about, and that they go to for one particular kind of result"
+    },
+    26,
+    {
+     "es": "Ej.: Club de colección de monedas, la Tuna, granjero busca esposa.",
+     "en": "E.g.: Coin collectors club, the folk group, farmer seeks wife."
+    }
+   ],
+   [
+    "TEST_RESULTADO",
+    {
+     "es": "Imagina ahora el resultado que le darían, como si le estuviesen dando la noticia.",
+     "en": "Now imagine the result they would be given, as if someone were breaking the news to them."
+    },
+    180,
+    {
+     "es": "Ejemplo: \"Su colección de monedas de Pokémon no se acepta en este club; consideramos que su uso del triángulo es de nivel muy básico, creemos que su capacidad granjera es nefasta para el programa\".",
+     "en": "Example: \"Their Pokémon coin collection is not accepted in this club; we consider their use of the triangle very basic, and we believe their farming skills are dreadful for the programme.\""
+    },
+    1
+   ]
+  ],
+  "2": [
+   [
+    "S2_SECRET_LOVE",
+    {
+     "es": "Pon el nombre de una persona a la que esta persona le daría vergüenza declarar su amor más prohibido, puede ser una persona real, un amor platónico, un dibujo animado...",
+     "en": "Write the name of a person this person would be embarrassed to confess their most forbidden love to. It can be a real person, a secret crush, a cartoon character..."
+    },
+    70,
+    {
+     "es": "Se codifica en runas en su nota.",
+     "en": "It is encoded in runes in their note."
+    },
+    1
+   ]
+  ],
+  "3": [
+   [
+    "Nombre_Empresa",
+    {
+     "es": "Una tienda en la que le daría vergüenza comprar algo",
+     "en": "A shop where they would be embarrassed to buy something"
+    },
+    40,
+    {
+     "es": "Ejemplo: Vibradores SL, Dulces gordos shop, batamanta 3000.",
+     "en": "Example: Vibradores SL, Dulces gordos shop, batamanta 3000."
+    }
+   ],
+   [
+    "CONCEPTO",
+    {
+     "es": "El producto que compraría",
+     "en": "The product they would buy"
+    },
+    40,
+    {
+     "es": "Ejemplo: black vibrator, gocholón, batamanta 2400",
+     "en": "Example: black vibrator, gocholón, batamanta 2400"
+    }
+   ]
+  ],
+  "4": [
+   [
+    "NOMBRE_4.2",
+    {
+     "es": "Pon el nombre de una persona con la que se escondería para hablar con ella",
+     "en": "Write the name of a person they would hide with to talk to them"
+    },
+    40,
+    {
+     "es": "Puede ser real, inventado, un actor o actriz.",
+     "en": "It can be real, made up, an actor or actress."
+    }
+   ],
+   [
+    "MENSAJE_PERSONALIZADO",
+    {
+     "es": "Escribe un mensaje que le confesaría este sospechoso a esa persona",
+     "en": "Write a message this suspect would confess to that person"
+    },
+    140,
+    "",
+    1
+   ]
+  ],
+  "5": [
+   [
+    "BUSQUEDA_1",
+    {
+     "es": "Escribe un sitio web donde le daría vergüenza que le pillasen mirando:",
+     "en": "Write a website where they would be embarrassed to be caught looking at"
+    },
+    60,
+    {
+     "es": "Ej.: pornhub, tarotistas.com, kebabs4ever.",
+     "en": "E.g.: pornhub, tarotistas.com, kebabs4ever."
+    }
+   ],
+   [
+    "BUSQUEDA_2",
+    {
+     "es": "Escribe otro sitio web donde le daría vergüenza que le pillasen mirando",
+     "en": "Write another website where they would be embarrassed to be caught looking at"
+    },
+    60,
+    ""
+   ]
+  ],
+  "6": [
+   [
+    "NOMBRE_DEST",
+    {
+     "es": "El nombre de una persona a la que le escribiría una postal",
+     "en": "The name of a person they would send a postcard to"
+    },
+    80,
+    {
+     "es": "Real, dibujo animado, actor…",
+     "en": "Real, cartoon, actor…"
+    }
+   ],
+   [
+    "TEXTO_POSTAL",
+    {
+     "es": "Lo que le escribiría en esa postal",
+     "en": "What they would write on that postcard"
+    },
+    280,
+    "",
+    1
+   ],
+   [
+    "NOTA_PERSONALIZADA",
+    {
+     "es": "Una nota que no quiere que vea nadie",
+     "en": "A note they do not want anyone to see"
+    },
+    280,
+    "",
+    1
+   ]
+  ],
+  "7": [
+   [
+    "PERSONALIZADO_1",
+    {
+     "es": "Una afición secreta que le daría vergüenza admitir",
+     "en": "A secret hobby they would be embarrassed to admit"
+    },
+    50,
+    {
+     "es": "Ej.: cazar orcos, dormir en la calle…",
+     "en": "E.g.: hunting orcs, sleeping rough…"
+    },
+    1
+   ],
+   [
+    "PERSONALIZADO_2",
+    {
+     "es": "Otra afición que le daría vergüenza admitir",
+     "en": "Another hobby they would be embarrassed to admit"
+    },
+    50,
+    "",
+    1
+   ]
+  ],
+  "8": [
+   [
+    "APP_1",
+    {
+     "es": "Escribe el nombre de una aplicación que puede tener en su tablet o smartphone que le dé vergüenza admitir, puede ser real o no: tinder, lácteos4my.",
+     "en": "Write the name of an app they might have on their tablet or smartphone that they are embarrassed to admit to. It can be real or not: tinder, lácteos4my."
+    },
+    60,
+    ""
+   ],
+   [
+    "APP_2",
+    {
+     "es": "Segunda app que le da vergüenza admitir",
+     "en": "Second app they are embarrassed to admit to"
+    },
+    60,
+    ""
+   ],
+   [
+    "APP_3",
+    {
+     "es": "Tercera app que le da vergüenza admitir",
+     "en": "Third app they are embarrassed to admit to"
+    },
+    60,
+    ""
+   ],
+   [
+    "APP_4",
+    {
+     "es": "Cuarta app que le da vergüenza admitir",
+     "en": "Fourth app they are embarrassed to admit to"
+    },
+    60,
+    ""
+   ]
+  ]
+ },
+ "LIMITS": {
+  "APODO_1": 12,
+  "APODO_2": 12,
+  "APODO_3": 12,
+  "APODO_4": 12,
+  "APODO_5": 12,
+  "APODO_6": 12,
+  "APODO_7": 12,
+  "APODO_8": 12,
+  "APP_1": 10,
+  "APP_2": 10,
+  "APP_3": 10,
+  "APP_4": 10,
+  "BUSQUEDA_1": 20,
+  "BUSQUEDA_2": 20,
+  "B_INFO": 200,
+  "B_NOTES": 200,
+  "CONCEPTO": 16,
+  "FAMA": 24,
+  "MENSAJE_PERSONALIZADO": 42,
+  "NOMBRE_1": 12,
+  "NOMBRE_2": 12,
+  "NOMBRE_3": 12,
+  "NOMBRE_4": 12,
+  "NOMBRE_4.2": 12,
+  "NOMBRE_5": 12,
+  "NOMBRE_6": 12,
+  "NOMBRE_7": 12,
+  "NOMBRE_8": 12,
+  "NOMBRE_CUMPLE": 12,
+  "NOMBRE_DEST": 28,
+  "Nombre_Empresa": 20,
+  "NOTA_PERSONALIZADA": 200,
+  "OTRO": 40,
+  "PERSONALIZADO_1": 50,
+  "PERSONALIZADO_2": 50,
+  "TEST_LUGAR": 26,
+  "TEST_RESULTADO": 180,
+  "DEBILIDAD_TEXTO": 38,
+  "B_ALIAS": 12,
+  "S1_HIDEA": 30,
+  "S1_HIDEB": 30,
+  "S2_HIDEA": 30,
+  "S2_HIDEB": 30,
+  "S2_SECRET_LOVE": 70,
+  "S3_HIDEA": 30,
+  "S3_HIDEB": 30,
+  "S4_HIDEA": 30,
+  "S4_HIDEB": 30,
+  "S5_HIDEA": 30,
+  "S5_HIDEB": 30,
+  "S6_HIDEA": 30,
+  "S6_HIDEB": 30,
+  "S7_HIDEA": 30,
+  "S7_HIDEB": 30,
+  "S8_HIDEA": 30,
+  "S8_HIDEB": 30,
+  "SOSPECHA": 17,
+  "TALENTO": 15,
+  "TEXTO_POSTAL": 50
+ },
+ "WEAK": [
+  {
+   "es": "Llegar tarde",
+   "en": "Being late"
+  },
+  {
+   "es": "Robar comida ajena",
+   "en": "Stealing food from others"
+  },
+  {
+   "es": "Contar chistes malos",
+   "en": "Telling bad jokes"
+  },
+  {
+   "es": "Hacer trampas jugando",
+   "en": "Cheating at games"
+  }
+ ],
+ "EJEMPLO": {
+  "NOMBRE_CUMPLE": "Ian",
+  "B_ALIAS": "El Pelota",
+  "DEBILIDAD_TEXTO": "Llegar tarde a todo",
+  "FAMA": "Comer hamburguesas",
+  "TALENTO": "Contar chistes",
+  "SOSPECHA": "Robo de tarta",
+  "TEST_LUGAR": "Club de coleccionistas",
+  "TEST_RESULTADO": "Su colección de monedas no se acepta en este club; su uso del triángulo es de nivel muy básico.",
+  "NOMBRE_4.2": "Alex",
+  "MENSAJE_PERSONALIZADO": "¿Vienes esta noche?\nTe espero a las 9",
+  "BUSQUEDA_1": "tarotistas.com",
+  "BUSQUEDA_2": "kebabs4ever",
+  "NOMBRE_1": "Celia",
+  "NOMBRE_2": "Nuria",
+  "NOMBRE_3": "Adela",
+  "NOMBRE_4": "Adam",
+  "NOMBRE_5": "Dani",
+  "NOMBRE_6": "Pol",
+  "NOMBRE_7": "Marc",
+  "NOMBRE_8": "Clau",
+  "S1_HIDEA": "Junto a la basura de la cocina",
+  "S1_HIDEB": "Frente al ordenador",
+  "S2_HIDEA": "Estaba en la cama",
+  "S2_HIDEB": "Estaba en el sofá",
+  "S3_HIDEA": "Delante de un cuadro",
+  "S3_HIDEB": "Viendo arte en la tele",
+  "S4_HIDEA": "Estaba tumbado en el sofá",
+  "S4_HIDEB": "Encima de una alfombra",
+  "S5_HIDEA": "Al lado del ordenador",
+  "S5_HIDEB": "En un sillón con portátil",
+  "S6_HIDEA": "Apoyado en la encimera",
+  "S6_HIDEB": "Mirando una estantería",
+  "S7_HIDEA": "Mirando por una ventana",
+  "S7_HIDEB": "Abriendo un armario",
+  "S8_HIDEA": "Al lado de una mesilla",
+  "S8_HIDEB": "Abriendo la nevera",
+  "EDAD": "30",
+  "DEBILIDAD": "Llegar tarde||Robar comida ajena||Otro: Roncar",
+  "OTRO": "Roncar",
+  "B_INFO": "Le encantan las sorpresas",
+  "B_NOTES": "Alergia a los frutos secos",
+  "APODO_1": "El Mudo",
+  "APODO_2": "La Oculta",
+  "S2_SECRET_LOVE": "Carmen Ruiz",
+  "APODO_3": "La Curiosa",
+  "Nombre_Empresa": "Vibradores 2000",
+  "CONCEPTO": "Vibrador XL",
+  "APODO_4": "El Tranquilo",
+  "APODO_5": "El Tecno",
+  "APODO_6": "El Chef",
+  "NOMBRE_DEST": "Su abuela",
+  "TEXTO_POSTAL": "Recuerdos de fiesta",
+  "NOTA_PERSONALIZADA": "No mirar: lista de sospechosos",
+  "APODO_7": "El Soñador",
+  "PERSONALIZADO_1": "Cazar orcos",
+  "PERSONALIZADO_2": "Dormir en la calle",
+  "APODO_8": "La Lista",
+  "APP_1": "tinder",
+  "APP_2": "lácteos4my",
+  "APP_3": "Banco",
+  "APP_4": "Notas"
+ },
+ "EJEMPLO2": {
+  "NOMBRE_CUMPLE": "Marta",
+  "B_ALIAS": "La Reina",
+  "DEBILIDAD_TEXTO": "Dormir siestas eternas",
+  "FAMA": "Cocina para el barrio",
+  "TALENTO": "Imitar acentos",
+  "SOSPECHA": "Robo de joyas",
+  "TEST_LUGAR": "La Tuna de los viernes",
+  "TEST_RESULTADO": "Nos encanta su sombrero, pero la bandurria no entra en la tuna.",
+  "NOMBRE_4.2": "Hugo",
+  "MENSAJE_PERSONALIZADO": "Mañana es el gran día\nNo llegues tarde",
+  "BUSQUEDA_1": "cursos-de-baile.es",
+  "BUSQUEDA_2": "bingo-online.com",
+  "NOMBRE_1": "Ruth",
+  "NOMBRE_2": "Hugo",
+  "NOMBRE_3": "Lucia",
+  "NOMBRE_4": "Ivan",
+  "NOMBRE_5": "Sara",
+  "NOMBRE_6": "Ruben",
+  "NOMBRE_7": "Nora",
+  "NOMBRE_8": "Eva",
+  "S1_HIDEA": "Detrás de la cortina",
+  "S1_HIDEB": "Dentro del armario",
+  "S2_HIDEA": "En la cocina",
+  "S2_HIDEB": "En el garaje",
+  "S3_HIDEA": "En el sofá",
+  "S3_HIDEB": "En la terraza",
+  "S4_HIDEA": "Bajo la mesa",
+  "S4_HIDEB": "En el pasillo",
+  "S5_HIDEA": "Junto al piano",
+  "S5_HIDEB": "En el balcón",
+  "S6_HIDEA": "En la bañera",
+  "S6_HIDEB": "En el dormitorio",
+  "S7_HIDEA": "En la biblioteca",
+  "S7_HIDEB": "En el jardín",
+  "S8_HIDEA": "En la cama",
+  "S8_HIDEB": "En el baño",
+  "EDAD": "45",
+  "DEBILIDAD": "Hacer trampas jugando||Otro: Dormir la siesta",
+  "OTRO": "Dormir la siesta",
+  "B_INFO": "Cuidado con sus pastas caseras",
+  "B_NOTES": "Odia madrugar. Le encanta el chocolate negro.",
+  "APODO_1": "La Discreta",
+  "APODO_2": "El Gruñón",
+  "S2_SECRET_LOVE": "Tomás Vega",
+  "APODO_3": "La Cotilla",
+  "Nombre_Empresa": "Panadería Dulce",
+  "CONCEPTO": "Tarta chocolate",
+  "APODO_4": "El Bromista",
+  "APODO_5": "La Pianista",
+  "APODO_6": "El Callado",
+  "NOMBRE_DEST": "Su vecina",
+  "TEXTO_POSTAL": "Gracias por el pastel",
+  "NOTA_PERSONALIZADA": "No digas nada de la receta",
+  "APODO_7": "La Viajera",
+  "PERSONALIZADO_1": "coser",
+  "PERSONALIZADO_2": "ver series de misterio",
+  "APODO_8": "El Madrugón",
+  "APP_1": "WhatsApp",
+  "APP_2": "Maps",
+  "APP_3": "Fotos",
+  "APP_4": "Recetas"
+ },
+ "EJEMPLO3": {
+  "NOMBRE_CUMPLE": "Javier Ortiz",
+  "B_ALIAS": "El Pianista",
+  "DEBILIDAD_TEXTO": "Llegar siempre el último a todo",
+  "FAMA": "Campeón de mus y el tute",
+  "TALENTO": "Hacer malabares",
+  "SOSPECHA": "Robo de las velas",
+  "TEST_LUGAR": "Club de monedas antiguas",
+  "TEST_RESULTADO": "Su capacidad granjera es nefasta para el programa y su uso del triángulo es de nivel muy básico. Le aconsejamos seguir buscando esposa por otros medios, quizá en la tuna.",
+  "NOMBRE_4.2": "Pedro Alonso",
+  "MENSAJE_PERSONALIZADO": "Mañana a las nueve en la plaza, no faltes.",
+  "BUSQUEDA_1": "magia-facil.es",
+  "BUSQUEDA_2": "bingo-nocturno.es",
+  "NOMBRE_1": "Isabel María",
+  "NOMBRE_2": "Pedro Alonso",
+  "NOMBRE_3": "Rocío Vargas",
+  "NOMBRE_4": "Lourdes Peña",
+  "NOMBRE_5": "Óscar Medina",
+  "NOMBRE_6": "Raquel Soler",
+  "NOMBRE_7": "Pilar Montes",
+  "NOMBRE_8": "Elena Soler",
+  "S1_HIDEA": "Detrás de la estantería grande",
+  "S1_HIDEB": "En el cajón de los cubiertos",
+  "S2_HIDEA": "Debajo de la cama del cuarto",
+  "S2_HIDEB": "Metido en el hueco del sofá",
+  "S3_HIDEA": "Colgado detrás de la puerta",
+  "S3_HIDEB": "Entre los libros de la cocina",
+  "S4_HIDEA": "Encima del armario del pasillo",
+  "S4_HIDEB": "Debajo de la mesa del jardín",
+  "S5_HIDEA": "Justo junto al piano del salón",
+  "S5_HIDEB": "En el bolsillo de la chaqueta",
+  "S6_HIDEA": "Tras el espejo grande del baño",
+  "S6_HIDEB": "En la estantería de la terraza",
+  "S7_HIDEA": "Escondido en la nevera vacía",
+  "S7_HIDEB": "En el maletero del coche azul",
+  "S8_HIDEA": "Bajo la alfombra del vestíbulo",
+  "S8_HIDEB": "Metido tras las cortinas rojas",
+  "EDAD": "71",
+  "DEBILIDAD": "Llegar tarde||Robar comida ajena||Otro: Roncar como un tractor en las siestas!!!",
+  "OTRO": "Roncar como un tractor en las siestas!!!",
+  "B_INFO": "Le encanta cocinar para toda la familia los domingos, pero si le pides una receta siempre cambia algún ingrediente en secreto para que nadie la copie. Dice que es su toque personal. Nunca lo cuenta.",
+  "B_NOTES": "Tiene alergia a los frutos secos y no soporta el ruido de las bolsas de patatas. Pide siempre bizcocho de limón con mucha canela, y se pone nervioso con las sorpresas de última hora. Le gusta avisar.",
+  "APODO_1": "La Presumida",
+  "APODO_2": "La Discreta",
+  "S2_SECRET_LOVE": "Marta Lozano Bermúdez de la Peña Villalba Ortega Gómez Ruiz Pérez",
+  "APODO_3": "La Cotilla",
+  "Nombre_Empresa": "Fiestas Mágicas Ruiz",
+  "CONCEPTO": "Caja sorpresa XL",
+  "APODO_4": "El Tranquilo",
+  "APODO_5": "El Pianista",
+  "APODO_6": "El Cantarín",
+  "NOMBRE_DEST": "Su abuela Carmen de Sevilla",
+  "TEXTO_POSTAL": "Te echo de menos, nos vemos el sábado en el parque",
+  "NOTA_PERSONALIZADA": "No mirar el altillo del armario: ahí está la lista de sospechosos que preparé el mes pasado. Si pregunta, dile que son ideas para su regalo, y que nadie se entere de la fiesta del sábado.",
+  "APODO_7": "El Madrugón",
+  "PERSONALIZADO_1": "Cantar boleros en la ducha cuando nadie oye",
+  "PERSONALIZADO_2": "Coleccionar cromos de fútbol de los años 80",
+  "APODO_8": "La Cariñosa",
+  "APP_1": "Calendario",
+  "APP_2": "Mensajería",
+  "APP_3": "Cronómetro",
+  "APP_4": "Ejercicios"
+ },
+ "EJEMPLO_EN": {
+  "NOMBRE_CUMPLE": "Ian",
+  "B_ALIAS": "The Smooth",
+  "DEBILIDAD_TEXTO": "Being late to everything",
+  "FAMA": "Eating burgers",
+  "TALENTO": "Telling jokes",
+  "SOSPECHA": "Stealing a cake",
+  "TEST_LUGAR": "Coin collectors club",
+  "TEST_RESULTADO": "Your Pokémon coin collection is not accepted here; your use of the triangle is very basic.",
+  "NOMBRE_4.2": "Alex",
+  "MENSAJE_PERSONALIZADO": "Coming over tonight?\nSee you at 9",
+  "BUSQUEDA_1": "horoscopes4u.com",
+  "BUSQUEDA_2": "bingo-hub.com",
+  "NOMBRE_1": "Chloe",
+  "NOMBRE_2": "Nathan",
+  "NOMBRE_3": "Ruby",
+  "NOMBRE_4": "Adam",
+  "NOMBRE_5": "Danny",
+  "NOMBRE_6": "Paul",
+  "NOMBRE_7": "Mark",
+  "NOMBRE_8": "Clare",
+  "S1_HIDEA": "Next to the kitchen bin",
+  "S1_HIDEB": "In front of the computer",
+  "S2_HIDEA": "Lying in bed",
+  "S2_HIDEB": "Sitting on the sofa",
+  "S3_HIDEA": "Behind a painting",
+  "S3_HIDEB": "Watching art on TV",
+  "S4_HIDEA": "Lying on the sofa",
+  "S4_HIDEB": "On top of a rug",
+  "S5_HIDEA": "Next to the computer",
+  "S5_HIDEB": "In an armchair with a laptop",
+  "S6_HIDEA": "Leaning on the worktop",
+  "S6_HIDEB": "Looking at a bookshelf",
+  "S7_HIDEA": "Looking out the window",
+  "S7_HIDEB": "Opening a wardrobe",
+  "S8_HIDEA": "Next to a bedside table",
+  "S8_HIDEB": "Opening the fridge",
+  "EDAD": "30",
+  "DEBILIDAD": "Being late||Stealing food from others||Other: Snoring",
+  "OTRO": "Snoring",
+  "B_INFO": "Loves surprises",
+  "B_NOTES": "Allergic to nuts",
+  "APODO_1": "The Mute",
+  "APODO_2": "The Hidden",
+  "APODO_3": "The Curious",
+  "APODO_4": "The Calm One",
+  "APODO_5": "The Techie",
+  "APODO_6": "The Chef",
+  "APODO_7": "The Dreamer",
+  "APODO_8": "The Smart",
+  "S2_SECRET_LOVE": "Rose Brown",
+  "Nombre_Empresa": "Vibrators 2000",
+  "CONCEPTO": "XL vibrator",
+  "NOMBRE_DEST": "Her grandma",
+  "TEXTO_POSTAL": "Memories of the party",
+  "NOTA_PERSONALIZADA": "Do not look: suspect list",
+  "PERSONALIZADO_1": "Hunting orcs",
+  "PERSONALIZADO_2": "Sleeping rough",
+  "APP_1": "Tinder",
+  "APP_2": "Duolingo",
+  "APP_3": "Banking",
+  "APP_4": "Notes"
+ },
+ "EJEMPLO2_EN": {
+  "NOMBRE_CUMPLE": "Martha",
+  "B_ALIAS": "The Queen",
+  "DEBILIDAD_TEXTO": "Endless naps",
+  "FAMA": "Cooks for the street",
+  "TALENTO": "Doing accents",
+  "SOSPECHA": "Stealing jewels",
+  "TEST_LUGAR": "Folk band rehearsal",
+  "TEST_RESULTADO": "We love the hat, but the banjo does not fit in the band.",
+  "NOMBRE_4.2": "Hugo",
+  "MENSAJE_PERSONALIZADO": "Tomorrow is the big day\nDon't be late",
+  "BUSQUEDA_1": "knitting-forum.org",
+  "BUSQUEDA_2": "ballroom-classes.com",
+  "NOMBRE_1": "Ruth",
+  "NOMBRE_2": "Hugo",
+  "NOMBRE_3": "Lucy",
+  "NOMBRE_4": "Ivan",
+  "NOMBRE_5": "Sara",
+  "NOMBRE_6": "Rob",
+  "NOMBRE_7": "Nora",
+  "NOMBRE_8": "Eve",
+  "S1_HIDEA": "Behind the curtain",
+  "S1_HIDEB": "Inside the wardrobe",
+  "S2_HIDEA": "In the kitchen",
+  "S2_HIDEB": "In the garage",
+  "S3_HIDEA": "On the sofa",
+  "S3_HIDEB": "On the terrace",
+  "S4_HIDEA": "Under the table",
+  "S4_HIDEB": "In the hallway",
+  "S5_HIDEA": "Next to the piano",
+  "S5_HIDEB": "On the balcony",
+  "S6_HIDEA": "In the bathtub",
+  "S6_HIDEB": "In the bedroom",
+  "S7_HIDEA": "In the library",
+  "S7_HIDEB": "In the garden",
+  "S8_HIDEA": "Under the bed",
+  "S8_HIDEB": "In the bathroom",
+  "EDAD": "45",
+  "DEBILIDAD": "Cheating at games||Other: Napping",
+  "OTRO": "Napping",
+  "B_INFO": "Watch out for her homemade pasta",
+  "B_NOTES": "Hates early mornings. Loves dark chocolate.",
+  "APODO_1": "The Discreet",
+  "APODO_2": "The Grump",
+  "APODO_3": "The Gossip",
+  "APODO_4": "The Joker",
+  "APODO_5": "The Pianist",
+  "APODO_6": "The Quiet",
+  "APODO_7": "The Wanderer",
+  "APODO_8": "Early Bird",
+  "S2_SECRET_LOVE": "Tom Walsh",
+  "Nombre_Empresa": "Sweet Bakery",
+  "CONCEPTO": "Chocolate cake",
+  "NOMBRE_DEST": "Her neighbour",
+  "TEXTO_POSTAL": "Thanks for the cake",
+  "NOTA_PERSONALIZADA": "Say nothing about the recipe",
+  "PERSONALIZADO_1": "Sewing",
+  "PERSONALIZADO_2": "Watching mystery series",
+  "APP_1": "WhatsApp",
+  "APP_2": "Maps",
+  "APP_3": "Photos",
+  "APP_4": "Recipes"
+ },
+ "EJEMPLO3_EN": {
+  "NOMBRE_CUMPLE": "Javier Ortiz",
+  "B_ALIAS": "The Pianist",
+  "DEBILIDAD_TEXTO": "Always the last to arrive",
+  "FAMA": "Wins at cards every week",
+  "TALENTO": "Juggling clubs",
+  "SOSPECHA": "Stealing the cake",
+  "TEST_LUGAR": "Old coin club",
+  "TEST_RESULTADO": "Their farming skills are dreadful for the programme and their use of the triangle is very basic. We advise them to keep looking for a wife somewhere else, maybe in the band.",
+  "NOMBRE_4.2": "Pedro Alonso",
+  "MENSAJE_PERSONALIZADO": "Tomorrow at 9 in the square. Be on time.",
+  "BUSQUEDA_1": "magic-shop.net",
+  "BUSQUEDA_2": "bingo-nights.com",
+  "NOMBRE_1": "Isabel María",
+  "NOMBRE_2": "Pedro Alonso",
+  "NOMBRE_3": "Rocío Vargas",
+  "NOMBRE_4": "Lourdes Peña",
+  "NOMBRE_5": "Óscar Medina",
+  "NOMBRE_6": "Raquel Soler",
+  "NOMBRE_7": "Pilar Montes",
+  "NOMBRE_8": "Elena Soler",
+  "S1_HIDEA": "Behind the big bookcase",
+  "S1_HIDEB": "In the cutlery drawer",
+  "S2_HIDEA": "Under the bed, in the attic",
+  "S2_HIDEB": "Tucked in the sofa gap",
+  "S3_HIDEA": "Hanging behind the door",
+  "S3_HIDEB": "Between the cookbooks",
+  "S4_HIDEA": "On top of the hallway wardrobe",
+  "S4_HIDEB": "Under the garden table",
+  "S5_HIDEA": "Right next to the piano",
+  "S5_HIDEB": "In the jacket pocket",
+  "S6_HIDEA": "Behind the big bathroom mirror",
+  "S6_HIDEB": "On the terrace shelf",
+  "S7_HIDEA": "Hidden in the empty fridge",
+  "S7_HIDEB": "In the blue car boot",
+  "S8_HIDEA": "Under the hallway rug",
+  "S8_HIDEB": "Tucked behind red curtains",
+  "EDAD": "71",
+  "DEBILIDAD": "Being late||Stealing food from others||Other: Snoring like a tractor at naps!!!",
+  "OTRO": "Snoring like a tractor at naps!!!",
+  "B_INFO": "Loves cooking for the whole family on Sundays, but if you ask for a recipe he always changes one ingredient in secret so nobody can copy it. He says that is his personal touch. Nobody knows how.",
+  "B_NOTES": "Allergic to nuts and cannot stand the noise of crisp packets. Always asks for lemon sponge with plenty of cinnamon, and gets nervous about last-minute surprises. He hates surprise parties too.",
+  "APODO_1": "The Nosy One",
+  "APODO_2": "The Dreamer",
+  "APODO_3": "Miss Nosy",
+  "APODO_4": "The Tranquil",
+  "APODO_5": "The Pianist",
+  "APODO_6": "The Joker",
+  "APODO_7": "Early Riser",
+  "APODO_8": "The Chatty",
+  "S2_SECRET_LOVE": "Marta Lozano Bermúdez de la Peña Villalba Ortega Gómez Ruiz Pérez",
+  "Nombre_Empresa": "Magic Party Planners",
+  "CONCEPTO": "Surprise box XXL",
+  "NOMBRE_DEST": "Grandma Carmen from Seville",
+  "TEXTO_POSTAL": "I miss you, see you on Saturday at the park",
+  "NOTA_PERSONALIZADA": "Do not look in the attic cupboard: that is where the suspect list I made last month is. If he asks, say they are only ideas for his present, and that nobody should find out about Saturday's party.",
+  "PERSONALIZADO_1": "Singing boleros in the shower when no one hears",
+  "PERSONALIZADO_2": "Collecting football stickers from the 80s",
+  "APP_1": "Calendar",
+  "APP_2": "Messenger",
+  "APP_3": "Stopwatch",
+  "APP_4": "Workouts"
+ }
+}
