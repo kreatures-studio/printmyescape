@@ -110,15 +110,14 @@ Notas operativas:
 
 **Bloqueante para la revisión.**
 
-- **`tools/limits.json` no está al día.** Contiene `RESULTADO_TEST` (ya eliminado),
-  no contiene `TEST_LUGAR`, `TEST_RESULTADO`, `DEBILIDAD_TEXTO` ni `B_ALIAS`, y guarda valores
-  antiguos (`TEXTO_POSTAL` 21, `APP_1` 21, `PERSONALIZADO_1` 48). Los límites actuales de
-  `demo/src.html` se han ajustado a mano en esta ronda. **Ejecutar `apply-limits.py` ahora
-  revertiría esos límites** (la postal volvería a 21 caracteres y los campos nuevos
-  desaparecerían). El comentario de `apply-limits.py` dice que `limits.json` es la fuente
-  única; hoy no lo es. Hay que regenerar `limits.json` desde la demo o eliminar el paso.
-- `tools/limits.cjs` usa por defecto una ruta de Chrome de Windows (`C:\Program Files\...`).
-  Hay que pasar `CHROME=` en Linux.
+- **`tools/limits.json` regenerado (2026-10-10).** Ya contiene todos los campos de texto
+  de la plantilla. Son capacidades medidas al 75 %, no los límites de la demo: la demo usa
+  además **topes de producto** (postal 50, notas 200, nota cifrada 70, personalizados 50, etc.)
+  que hoy no están en ninguna tabla de `tools/`. **No ejecutar `apply-limits.py` hasta
+  añadir esos topes a su política**: si se ejecuta tal cual, la postal pasa a 100 y las
+  notas a 300. Hasta entonces, `demo/src.html` es la fuente de los límites.
+- `tools/limits.cjs` usa por defecto una ruta de Chrome de Windows. En otros sistemas hay
+  que pasar `CHROME=` y `PUPPETEER_CORE=` (ejemplo: `CHROME=/ruta/chrome PUPPETEER_CORE=/ruta/puppeteer-core node tools/limits.cjs`).
 - La política de `apply-limits.py` (75 % de la capacidad medida, nombres fijos a 12) no
   coincide con los límites que se han fijado a mano (capacidad exacta en algunos campos).
 
