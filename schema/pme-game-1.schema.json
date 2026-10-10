@@ -192,6 +192,22 @@
         {
           "if": { "properties": { "allowOther": { "const": true } }, "required": ["allowOther"] },
           "then": { "required": ["otherField"] }
+        },
+        {
+          "if": { "required": ["type"], "properties": { "type": { "not": { "enum": ["choice", "multi"] } } } },
+          "then": { "not": { "required": ["options"] } }
+        },
+        {
+          "if": { "required": ["type"], "properties": { "type": { "not": { "const": "multi" } } } },
+          "then": { "not": { "anyOf": [{ "required": ["allowOther"] }, { "required": ["otherField"] }] } }
+        },
+        {
+          "if": { "required": ["type"], "properties": { "type": { "not": { "const": "number" } } } },
+          "then": { "not": { "anyOf": [{ "required": ["min"] }, { "required": ["max"] }] } }
+        },
+        {
+          "if": { "required": ["type"], "properties": { "type": { "const": "photo" } } },
+          "then": { "not": { "required": ["cap"] } }
         }
       ]
     },

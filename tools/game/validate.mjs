@@ -69,6 +69,7 @@ export function crossErrors(game, { submit = false } = {}) {
     }
     for (const key of ['nameField', 'photoField']) {
       if (s[key] && !fields[s[key]]) errs.push(`form/${s.id}: ${key} «${s[key]}» no existe en fields`);
+      else if (s[key] && !(s.fields || []).includes(s[key])) errs.push(`form/${s.id}: ${key} «${s[key]}» no está entre los campos de la sección`);
     }
   }
 
@@ -98,6 +99,8 @@ export function crossErrors(game, { submit = false } = {}) {
     }
   }
   for (const t of game.texts || []) {
+    // El motor usa el número de página como índice (pi + 1), no el id de la página.
+    if (!(t.page >= 1 && t.page <= pages.length)) errs.push(`texts/${t.key}: la página ${t.page} no existe (hay ${pages.length})`);
     for (const l of langs) {
       const dict = (game.i18n && game.i18n[l]) || {};
       if (!(t.key in dict)) errs.push(`texts/${t.key} (página ${t.page}): falta la clave en i18n «${l}»`);

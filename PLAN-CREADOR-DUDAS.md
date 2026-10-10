@@ -62,3 +62,32 @@ Registro de decisiones tomadas al implementar `PLAN-CREADOR.md` (lo escribe quie
 - Pendiente para M2: el motor todavía tiene dentro los casos de p4, p10 y p16 (ticks, runas,
   inicial de la app) y los campos NOMBRE_CUMPLE_FICHA / S8_ICON_N. Las mecánicas ya están
   declaradas en el juego, pero el motor las ignora.
+
+## Revisión de M0 (antes de M2)
+
+Lo que se revisó: el esquema contra el contrato 3.1, el validador con errores a propósito y la
+migración contra la demo.
+
+Corregido en esta revisión:
+- El validador dejaba pasar un `nameField`/`photoField` fuera de los campos de su sección.
+  Ahora da error.
+- Un `texts.page` que no existe pasaba. El motor usa el número como índice (`pi + 1`), así que
+  la comprobación es «entre 1 y el número de páginas».
+- El esquema dejaba `options` en campos que no son choice/multi, `allowOther`/`otherField` fuera
+  de multi, `min`/`max` fuera de number y `cap` en fotos. Ahora cada caso falla con error de esquema.
+  Los mensajes de ajv dicen «must NOT be valid»: son poco claros, pero el fallo sí se señala.
+- Seis casos a propósito, todos detectados: nombre fuera de la sección, página 99, opciones en
+  number, cap en foto, min en texto, allowOther en texto. Los juegos buenos (minimo, final3) pasan.
+
+Comprobado sin cambios:
+- La migración reproduce `games/final3/game.json` byte a byte.
+- Todas las páginas tienen textos y todos los textos apuntan a una página existente.
+
+Pendiente (no bloquea M2):
+- El validador no comprueba que existan los ficheros (`background.file`, fotos de ejemplo). Va
+  con T3.2. Hay que decidir antes qué hacer con `minimo.json`, que apunta a `fondo.pdf`, inexistente.
+- La solución `tiras-p9` es una propuesta nuestra: el artista debe confirmar la descripción y la
+  traducción al inglés.
+- `games/final3/_dump.json` ya no lo lee la demo (desde T1.1). Sigue siendo la fuente de la
+  migración, así que se conserva como registro del formulario anterior.
+- `status` de final3 queda en `borrador`: pasar a `en-produccion` es decisión humana.
