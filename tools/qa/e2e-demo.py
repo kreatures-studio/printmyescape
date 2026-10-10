@@ -137,7 +137,7 @@ with sync_playwright() as p:
     # ---------- W. bienvenida: aviso con casilla antes de rellenar ----------
     b, pg, errs = open_demo(p)
     rec('W0 la primera pantalla es la de demostración (idioma + ejemplos + en blanco)',
-        pg.locator('.demo-banner').count() == 1 and pg.locator('.ex-card').count() == 3
+        pg.locator('.demo-banner').count() == 1 and pg.locator('.ex-card:not(.blank-card)').count() == 3
         and pg.locator('button:has-text("Empezar en blanco")').count() == 1,
         'banner=%s ejemplos=%s' % (pg.locator('.demo-banner').count(), pg.locator('.ex-card').count()))
     choose_lang(pg, 'es')

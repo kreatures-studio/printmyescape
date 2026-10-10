@@ -299,6 +299,15 @@
   }
   .ex-card button:hover { filter: brightness(1.1); }
   .ex-card button:disabled { background: #8a9a92; box-shadow: none; cursor: not-allowed; }
+  .ex-grid .blank-card { grid-column: 1 / -1; }
+  /* en escritorio, una sola fila (texto a la izquierda, botón a la derecha) para que quepa en la pantalla */
+  .blank-card { display: flex; flex-direction: row; align-items: center; gap: 16px; }
+  .blank-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .blank-card button { margin-top: 0; flex: none; min-width: 220px; }
+  @media (max-width: 640px) {
+    .blank-card { flex-direction: column; align-items: stretch; }
+    .blank-card button { margin-top: 6px; min-width: 0; }
+  }
   .ex-note { font-size: 13px; color: var(--muted); background: rgba(183,194,155,.3); border-radius: 8px; padding: 10px 12px; }
   .landing-foot { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; font-size: 13px; color: var(--muted); }
   .linkish {
@@ -555,6 +564,9 @@ var UI = {
             'Fills in the whole form with sample data. You can change anything afterwards.'),
   suspectOf: B('Sospechoso de: %1', 'Suspected of: %1'),
   scratch: B('Empezar en blanco', 'Start blank'),
+  blankHead: B('Sin ejemplo', 'No example'),
+  blankWho: B('Desde cero', 'From scratch'),
+  blankTeaser: B('Rellena tus propios datos, sin usar ningún ejemplo.', 'Fill in your own details, without using any example.'),
   confirmBlank: B('Esto borrará tus respuestas y tus fotos. ¿Continuar?', 'This will delete your answers and photos. Continue?'),
   landingKicker: B('Paso 1 · Idioma y ejemplos', 'Step 1 · Language and examples'),
   landingTitle: B('Crea tu escape room personalizado', 'Create your custom escape room'),
@@ -1225,15 +1237,23 @@ function landingNode() {
     c.appendChild(b);
     exg.appendChild(c);
   });
+  /* "Empezar en blanco" tiene la misma tarjeta que los ejemplos, a todo el ancho */
+  var bl = el('div', 'ex-card blank-card' + (LANG ? '' : ' locked'));
+  var blt = el('div', 'blank-text');
+  blt.appendChild(el('span', 'n', tl('blankHead')));
+  blt.appendChild(el('span', 'who', tl('blankWho')));
+  blt.appendChild(el('span', 'teaser', LANG ? t('blankTeaser') : ''));
+  bl.appendChild(blt);
+  var sc = el('button', null, tl('scratch'));
+  sc.type = 'button';
+  sc.disabled = !LANG;
+  sc.onclick = startFromScratch;
+  bl.appendChild(sc);
+  exg.appendChild(bl);
   root.appendChild(exg);
 
   var foot = el('div', 'landing-foot');
   foot.appendChild(el('span', null, LANG ? t('landingNote') : 'Unos 10 minutos · About 10 minutes'));
-  var sc = el('button', 'btn-ghost', t('scratch'));
-  sc.type = 'button';
-  sc.disabled = !LANG;
-  sc.onclick = startFromScratch;
-  foot.appendChild(sc);
   root.appendChild(foot);
   return root;
 }
