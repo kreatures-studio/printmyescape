@@ -91,7 +91,8 @@
     padding: 10px 2px; outline: none;
   }
   .field input:focus, .field textarea:focus { border-bottom-color: var(--teal); }
-  .field textarea { border: 2px solid var(--abyss); border-radius: 8px; padding: 12px; min-height: 90px; font-size: 16px; line-height: 1.5; resize: vertical; }
+  /* tamaño fijo, pensado para que quepan los 200 caracteres sin barra de desplazamiento */
+  .field textarea { border: 2px solid var(--abyss); border-radius: 8px; padding: 12px; height: 216px; font-size: 16px; line-height: 1.5; resize: none; overflow-y: auto; }
   .field textarea:focus { border-color: var(--teal); }
   .count { font-size: 11px; color: var(--muted); text-align: right; margin-top: 2px; }
   .ferr { display: none; color: #fff; background: var(--danger); font-size: 13px; font-weight: 700; padding: 8px 12px; border-radius: 6px; margin-top: 8px; }
@@ -661,7 +662,7 @@ var EJEMPLO3 = Object.assign({}, EJEMPLO, {
   S6_HIDEA: 'Tras el espejo grande del baño', S6_HIDEB: 'En la estantería de la terraza',
   S7_HIDEA: 'Escondido en la nevera vacía', S7_HIDEB: 'En el maletero del coche azul',
   S8_HIDEA: 'Bajo la alfombra del vestíbulo', S8_HIDEB: 'Metido tras las cortinas rojas',
-  RESULTADO_TEST: 'Ojo de halcón y humor fino', Nombre_Empresa: 'Fiestas Mágicas S.L.',
+  RESULTADO_TEST: 'Ojo de halcón y humor fino', Nombre_Empresa: 'Fiestas Mágicas Ruiz',
   CONCEPTO: 'Caja sorpresa XL', MENSAJE_PERSONALIZADO: 'Mañana a las nueve en la plaza, no faltes.',
   BUSQUEDA_1: 'trucos de mago fácil', BUSQUEDA_2: 'regalos para mayores',
   NOMBRE_DEST: 'Su abuela Carmen de Sevilla', TEXTO_POSTAL: 'Te echo de menos, nos vemos el sábado en el parque',
@@ -1785,7 +1786,8 @@ function stripBad(s, fid) {
   return s.replace(k === 'name' ? CL_NAME_BAD : CL_TEXT_BAD, '');
 }
 document.addEventListener('keydown', function (e) {
-  if (e.target && e.target.type === 'number' && /[eE+\-.,]/.test(e.key)) e.preventDefault();
+  /* solo caracteres sueltos (no Backspace, Delete...) */
+  if (e.target && e.target.type === 'number' && e.key && e.key.length === 1 && /[eE+\-.,]/.test(e.key)) e.preventDefault();
 }, true);
 /* Números fuera de rango (edad): se ajusta al máximo o al mínimo y se avisa. */
 document.addEventListener('input', function (e) {

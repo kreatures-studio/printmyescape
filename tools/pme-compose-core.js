@@ -829,7 +829,7 @@ async function composeGame(deps) {
       for (let i = 1; i < sh.strips; i++) {
         const lx = X(sh.x0 + i * sw);
         np.drawLine({ start: { x: lx, y: yB2 }, end: { x: lx, y: yT2 },
-          thickness: 1, color: ink, dashArray: [6, 4] });
+          thickness: 1, color: ink, dashArray: [6, 4], opacity: 0.3 });
       }
       const scx = X(sh.x0 + sw), scy = yT2 + 16;
       np.drawLine({ start: { x: scx - 5, y: scy + 7 }, end: { x: scx + 5, y: scy - 7 }, thickness: 1.6, color: ink });

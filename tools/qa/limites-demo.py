@@ -87,6 +87,11 @@ def main():
         toast = pg.inner_text('#toast')
         rec('edad 0: aviso de mínimo', '1' in toast and ('mínima' in toast or 'minimum' in toast.lower()), toast)
         rec('edad: el valor corregido queda guardado', pg.evaluate("() => answers.EDAD") == '1', pg.evaluate("() => answers.EDAD"))
+        inp.focus(); inp.press('Backspace'); pg.wait_for_timeout(100)
+        rec('edad: se puede borrar con Backspace (también en el mínimo)', inp.input_value() == '', 'valor=%r' % inp.input_value())
+        inp.press_sequentially('110', delay=0); pg.wait_for_timeout(100)
+        inp.press('Backspace'); pg.wait_for_timeout(100)
+        rec('edad en el máximo (110): se puede borrar', inp.input_value() == '11', 'valor=%r' % inp.input_value())
 
         # 3) Pegar un texto enorme en un hueco corto deja el trozo que cabe
         inp = mount(pg, 'APP_2')
