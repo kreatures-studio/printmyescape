@@ -93,7 +93,7 @@
   .field input:focus, .field textarea:focus { border-bottom-color: var(--teal); }
   /* tamaño fijo, pensado para que quepan los 200 caracteres sin barra de desplazamiento */
   .field textarea { border: 2px solid var(--abyss); border-radius: 8px; padding: 12px; height: 216px; font-size: 16px; line-height: 1.5; resize: none; overflow-y: auto; }
-  /* textos cortos (hasta 60 caracteres): caja de 3 líneas */
+  /* textos cortos (hasta 70 caracteres): caja de 3 líneas */
   .field textarea.short { height: 96px; }
   .field textarea:focus { border-color: var(--teal); }
   .count { font-size: 11px; color: var(--muted); text-align: right; margin-top: 2px; }
@@ -877,8 +877,8 @@ var SUS_EXTRA = {
        B('Ejemplo: "Su colección de monedas de Pokémon no se acepta en este club; consideramos que su uso del triángulo es de nivel muy básico, creemos que su capacidad granjera es nefasta para el programa".',
          'Example: "Their Pokémon coin collection is not accepted in this club; we consider their use of the triangle very basic, and we believe their farming skills are dreadful for the programme."'), 1]],
   2: [['S2_SECRET_LOVE', B('Pon el nombre de una persona a la que esta persona le daría vergüenza declarar su amor más prohibido, puede ser una persona real, un amor platónico, un dibujo animado...',
-                           'Write the name of a person this person would be embarrassed to confess their most forbidden love to. It can be a real person, a secret crush, a cartoon character...'), 80,
-       B('Se codifica en runas en su nota.', 'It is encoded in runes in their note.')]],
+                           'Write the name of a person this person would be embarrassed to confess their most forbidden love to. It can be a real person, a secret crush, a cartoon character...'), 70,
+       B('Se codifica en runas en su nota.', 'It is encoded in runes in their note.'), 1]],
   3: [['Nombre_Empresa', B('Una tienda en la que le daría vergüenza comprar algo', 'A shop where they would be embarrassed to buy something'), 40,
        B('Ejemplo: Vibradores SL, Dulces gordos shop, batamanta 3000.', 'Example: Vibradores SL, Dulces gordos shop, batamanta 3000.')],
       ['CONCEPTO', B('El producto que compraría', 'The product they would buy'), 40,
@@ -895,9 +895,9 @@ var SUS_EXTRA = {
        B('Real, dibujo animado, actor…', 'Real, cartoon, actor…')],
       ['TEXTO_POSTAL', B('Lo que le escribiría en esa postal', 'What they would write on that postcard'), 280, '', 1],
       ['NOTA_PERSONALIZADA', B('Una nota que no quiere que vea nadie', 'A note they do not want anyone to see'), 280, '', 1]],
-  7: [['PERSONALIZADO_1', B('Una afición secreta que le daría vergüenza admitir', 'A secret hobby they would be embarrassed to admit'), 80,
-       B('Ej.: cazar orcos, dormir en la calle…', 'E.g.: hunting orcs, sleeping rough…')],
-      ['PERSONALIZADO_2', B('Otra afición que le daría vergüenza admitir', 'Another hobby they would be embarrassed to admit'), 80, '']],
+  7: [['PERSONALIZADO_1', B('Una afición secreta que le daría vergüenza admitir', 'A secret hobby they would be embarrassed to admit'), 50,
+       B('Ej.: cazar orcos, dormir en la calle…', 'E.g.: hunting orcs, sleeping rough…'), 1],
+      ['PERSONALIZADO_2', B('Otra afición que le daría vergüenza admitir', 'Another hobby they would be embarrassed to admit'), 50, '', 1]],
   8: [['APP_1', B('Escribe el nombre de una aplicación que puede tener en su tablet o smartphone que le dé vergüenza admitir, puede ser real o no: tinder, lácteos4my.',
                                  'Write the name of an app they might have on their tablet or smartphone that they are embarrassed to admit to. It can be real or not: tinder, lácteos4my.'), 60, ''],
       ['APP_2', B('Segunda app que le da vergüenza admitir', 'Second app they are embarrassed to admit to'), 60, ''],
@@ -934,7 +934,7 @@ var LIMITS = {
   "B_INFO": 200, "B_NOTES": 200, "CONCEPTO": 16, "FAMA": 24, "MENSAJE_PERSONALIZADO": 42, "NOMBRE_1": 12,
   "NOMBRE_2": 12, "NOMBRE_3": 12, "NOMBRE_4": 12, "NOMBRE_4.2": 12, "NOMBRE_5": 12, "NOMBRE_6": 12,
   "NOMBRE_7": 12, "NOMBRE_8": 12, "NOMBRE_CUMPLE": 12, "NOMBRE_DEST": 28, "Nombre_Empresa": 20,
-  "NOTA_PERSONALIZADA": 200, "OTRO": 40, "PERSONALIZADO_1": 47, "PERSONALIZADO_2": 47,
+  "NOTA_PERSONALIZADA": 200, "OTRO": 40, "PERSONALIZADO_1": 50, "PERSONALIZADO_2": 50,
   "TEST_LUGAR": 26, "TEST_RESULTADO": 180, "DEBILIDAD_TEXTO": 38, "B_ALIAS": 12,
   "S1_HIDEA": 30, "S1_HIDEB": 30, "S2_HIDEA": 30, "S2_HIDEB": 30, "S2_SECRET_LOVE": 70, "S3_HIDEA": 30,
   "S3_HIDEB": 30, "S4_HIDEA": 30, "S4_HIDEB": 30, "S5_HIDEA": 30, "S5_HIDEB": 30, "S6_HIDEA": 30,
@@ -1114,7 +1114,7 @@ function fieldControl(f) {
     ctl.placeholder = t('writeHere');
   } else if (f.type === 'long') {
     ctl = document.createElement('textarea');
-    if (LIMITS[f.id] && LIMITS[f.id] <= 60) ctl.className = 'short';
+    if (LIMITS[f.id] && LIMITS[f.id] <= 70) ctl.className = 'short';
     if (f.max) ctl.maxLength = f.max;
     ctl.value = answers[f.id] || '';
     ctl._good = ctl.value;
