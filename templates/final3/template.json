@@ -1835,15 +1835,17 @@
       "slots": [
         {
           "field": "NOTA_PERSONALIZADA",
-          "x": 28.0,
-          "y": 39.53,
-          "w": 23.54,
-          "h": 1.97,
+          "x": 25.0,
+          "y": 39.5,
+          "w": 40.0,
+          "h": 22.0,
           "size": 1.68,
           "color": "#725A4C",
           "fontFamily": "SegoeScript-Bold",
           "xscale": null,
-          "angle": 0
+          "angle": 0,
+          "wrap": 1,
+          "vTop": 1
         },
         {
           "field": "NOMBRE_DEST",
@@ -1861,13 +1863,15 @@
           "field": "TEXTO_POSTAL",
           "x": 57.7,
           "y": 74.63,
-          "w": 15.46,
-          "h": 1.97,
+          "w": 28.0,
+          "h": 5.5,
           "size": 1.68,
           "color": "#725A4C",
           "fontFamily": "SegoeScript-Bold",
           "xscale": null,
-          "angle": 0
+          "angle": 0,
+          "wrap": 1,
+          "vTop": 1
         },
         {
           "field": "NOMBRE_6",

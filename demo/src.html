@@ -33,7 +33,7 @@
     transition: width .3s ease;
   }
   #top {
-    display: flex; align-items: center; gap: 10px;
+    display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 30;
     padding: 10px 16px; color: #fff;
     background: linear-gradient(135deg, var(--abyss) 0%, var(--abyss-2) 100%);
     border-bottom: 4px solid var(--teal);
@@ -291,6 +291,7 @@
     border: 2px solid var(--abyss); border-radius: 12px; padding: 12px 14px 12px; min-width: 0;
   }
   .ex-card.locked { opacity: .6; }
+  .stress-note { font-size: 13px; line-height: 1.4; color: #7e3b00; background: #fdf0e6; border: 2px dashed #d35400; border-radius: 8px; padding: 8px 12px; margin: 0 0 12px; }
   .ex-card .n { font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: var(--teal-deep); }
   .ex-card .who { font-size: 18px; font-weight: 900; line-height: 1.2; }
   .ex-card .teaser { font-size: 13px; color: var(--muted); line-height: 1.4; flex: 1; }
@@ -328,7 +329,7 @@
   .mscreen { padding: 16px 16px 6px; border-top: 2px dashed rgba(12,42,47,.2); }
   .mscreen:first-of-type { border-top: 0; }
   .mscreen > h3 { margin: 0 0 10px; font-size: 17px; }
-  @media (max-width: 640px) {
+  @media (max-width: 1008px), (pointer: coarse) and (max-height: 540px) {
     #draftinfo { display: none; }
     #card { padding: 22px 18px 20px; }
     #q { font-size: 22px; }
@@ -489,6 +490,10 @@ var UI = {
   errRequired: B('Este campo es obligatorio.', 'This field is required.'),
   errPhoto: B('Sube una foto (JPG, PNG o WebP, al menos 600 px).', 'Upload a photo (JPG, PNG or WebP, at least 600 px).'),
   errNumber: B('Escribe un número entre %1 y %2.', 'Enter a number between %1 and %2.'),
+  stressNote: B('Ejemplo 3 = prueba: cada texto va hasta el máximo de su hueco, para ver que todo cabe.', 'Example 3 = test: every text goes up to the maximum of its box, to check that it all fits.'),
+  stressTeaser: B('Prueba: todos los textos al máximo', 'Test: every text at its maximum'),
+  ageMax: B('Edad máxima: %1. Se ha puesto %1.', 'Maximum age: %1. Set to %1.'),
+  ageMin: B('Edad mínima: %1. Se ha puesto %1.', 'Minimum age: %1. Set to %1.'),
   errReview: B('Revisa los campos marcados.', 'Check the highlighted fields.'),
   errMissing: B('Te falta: %1', 'Missing: %1'),
   errPerson: B('Completa este personaje para continuar.', 'Complete this character to continue.'),
@@ -639,35 +644,35 @@ var EJEMPLO2 = Object.assign({}, EJEMPLO, {
   APP_1: 'WhatsApp', APP_2: 'Maps', APP_3: 'Fotos', APP_4: 'Recetas'
 });
 var EJEMPLO3 = Object.assign({}, EJEMPLO, {
-  NOMBRE_CUMPLE: 'Bartolomé Ru', NOMBRE_1: 'Bartolomé Ru',
-  APODO_1: 'El Superlati', NOMBRE_2: 'Bartolomé Ru',
-  APODO_2: 'El Superlati', NOMBRE_3: 'Bartolomé Ru',
-  APODO_3: 'El Superlati', NOMBRE_4: 'Bartolomé Ru',
-  APODO_4: 'El Superlati', NOMBRE_5: 'Bartolomé Ru',
-  APODO_5: 'El Superlati', NOMBRE_6: 'Bartolomé Ru',
-  APODO_6: 'El Superlati', NOMBRE_7: 'Bartolomé Ru',
-  APODO_7: 'El Superlati', NOMBRE_8: 'Bartolomé Ru',
-  APODO_8: 'El Superlati', S1_HIDEA: 'Detrás de la estantería grande',
-  S1_HIDEB: 'Detrás de la estantería grande', S2_HIDEA: 'Detrás de la estantería grande',
-  S2_HIDEB: 'Detrás de la estantería grande', S3_HIDEA: 'Detrás de la estantería grande',
-  S3_HIDEB: 'Detrás de la estantería grande', S4_HIDEA: 'Detrás de la estantería grande',
-  S4_HIDEB: 'Detrás de la estantería grande', S5_HIDEA: 'Detrás de la estantería grande',
-  S5_HIDEB: 'Detrás de la estantería grande', S6_HIDEA: 'Detrás de la estantería grande',
-  S6_HIDEB: 'Detrás de la estantería grande', S7_HIDEA: 'Detrás de la estantería grande',
-  S7_HIDEB: 'Detrás de la estantería grande', S8_HIDEA: 'Detrás de la estantería grande',
-  S8_HIDEB: 'Detrás de la estantería grande', RESULTADO_TEST: 'Sospechoso de robo de tart',
-  Nombre_Empresa: 'Bartolomé Ruiz Gómez', CONCEPTO: 'Sospechoso de ro',
-  MENSAJE_PERSONALIZADO: 'Sospechoso de robo de tarta, con mucho cui', 'NOMBRE_4.2': 'Bartolomé Ru',
-  BUSQUEDA_1: 'trucos de magia para', BUSQUEDA_2: 'trucos de magia para',
-  NOTA_PERSONALIZADA: 'Sospechoso de robo de tarta, con mucho cuida', NOMBRE_DEST: 'Bartolomé Ruiz Gómez Pérez B',
-  TEXTO_POSTAL: 'Sospechoso de robo de tarta,', PERSONALIZADO_1: 'Sospechoso de robo de tarta, con mucho cuidado',
-  PERSONALIZADO_2: 'Sospechoso de robo de tarta, con mucho cuidado', APP_1: 'Aplicación',
-  APP_2: 'Aplicación', APP_4: 'Aplicación',
-  APP_3: 'Aplicación', FAMA: 'Sospechoso de robo de ta',
-  TALENTO: 'Sospechoso de r', SOSPECHA: 'Sospechoso de rob',
-  B_INFO: 'Sospechoso de robo de tarta, con mucho cuidado en la cocina sin prisa. Sospechoso de robo de tarta, con mucho cuidado en la cocina sin prisa. Sospechoso de robo de tarta, con mucho cuidado en la cocin', B_NOTES: 'Sospechoso de robo de tarta, con mucho cuidado en la cocina sin prisa. Sospechoso de robo de tarta, con mucho cuidado en la cocina sin prisa. Sospechoso de robo de tarta, con mucho cuidado en la cocin',
-  S2_SECRET_LOVE: 'Bartolomé Ruiz Gómez Pérez Bartolomé Ruiz Gómez Pérez Bartolomé Ruiz G', EDAD: '110',
-  OTRO: 'Sospechoso de robo de tarta, con mucho c', DEBILIDAD: 'Llegar tarde||Robar comida ajena||Otro: Sospechoso de robo de tarta, con mucho c'
+  NOMBRE_CUMPLE: 'Javier Ortiz', NOMBRE_1: 'Isabel María',
+  NOMBRE_2: 'Pedro Alonso', NOMBRE_3: 'Rocío Vargas',
+  NOMBRE_4: 'Lourdes Peña', NOMBRE_5: 'Óscar Medina',
+  NOMBRE_6: 'Raquel Soler', NOMBRE_7: 'Pilar Montes',
+  NOMBRE_8: 'Elena Soler', 'NOMBRE_4.2': 'Pedro Alonso',
+  APODO_1: 'La Presumida', APODO_2: 'La Discreta',
+  APODO_3: 'La Cotilla', APODO_4: 'El Tranquilo',
+  APODO_5: 'El Pianista', APODO_6: 'El Cantarín',
+  APODO_7: 'El Madrugón', APODO_8: 'La Cariñosa',
+  S1_HIDEA: 'Detrás de la estantería grande', S1_HIDEB: 'En el cajón de los cubiertos',
+  S2_HIDEA: 'Debajo de la cama del cuarto', S2_HIDEB: 'Metido en el hueco del sofá',
+  S3_HIDEA: 'Colgado detrás de la puerta', S3_HIDEB: 'Entre los libros de la cocina',
+  S4_HIDEA: 'Encima del armario del pasillo', S4_HIDEB: 'Debajo de la mesa del jardín',
+  S5_HIDEA: 'Justo junto al piano del salón', S5_HIDEB: 'En el bolsillo de la chaqueta',
+  S6_HIDEA: 'Tras el espejo grande del baño', S6_HIDEB: 'En la estantería de la terraza',
+  S7_HIDEA: 'Escondido en la nevera vacía', S7_HIDEB: 'En el maletero del coche azul',
+  S8_HIDEA: 'Bajo la alfombra del vestíbulo', S8_HIDEB: 'Metido tras las cortinas rojas',
+  RESULTADO_TEST: 'Ojo de halcón y humor fino', Nombre_Empresa: 'Fiestas Mágicas S.L.',
+  CONCEPTO: 'Caja sorpresa XL', MENSAJE_PERSONALIZADO: 'Mañana a las nueve en la plaza, no faltes.',
+  BUSQUEDA_1: 'trucos de mago fácil', BUSQUEDA_2: 'regalos para mayores',
+  NOMBRE_DEST: 'Su abuela Carmen de Sevilla', TEXTO_POSTAL: 'Te echo de menos, nos vemos el sábado en el parque',
+  PERSONALIZADO_1: 'Cantar boleros en la ducha cuando nadie oye', PERSONALIZADO_2: 'Coleccionar cromos de fútbol de los años 80',
+  APP_1: 'Calendario', APP_2: 'Mensajería',
+  APP_3: 'Cronómetro', APP_4: 'Ejercicios',
+  FAMA: 'Campeón de mus y el tute', TALENTO: 'Hacer malabares',
+  SOSPECHA: 'Robo de las velas', B_INFO: 'Le encanta cocinar para toda la familia los domingos, pero si le pides una receta siempre cambia algún ingrediente en secreto para que nadie la copie. Dice que es su toque personal. Nunca lo cuenta.',
+  B_NOTES: 'Tiene alergia a los frutos secos y no soporta el ruido de las bolsas de patatas. Pide siempre bizcocho de limón con mucha canela, y se pone nervioso con las sorpresas de última hora. Le gusta avisar.', NOTA_PERSONALIZADA: 'No mirar el altillo del armario: ahí está la lista de sospechosos que preparé el mes pasado. Si pregunta, dile que son ideas para su regalo, y que nadie se entere de la fiesta del sábado.',
+  S2_SECRET_LOVE: 'Marta Lozano Bermúdez de la Peña Villalba Ortega Gómez Ruiz Pérez', OTRO: 'Roncar como un tractor en las siestas!!!',
+  EDAD: '71', DEBILIDAD: 'Llegar tarde||Robar comida ajena||Otro: Roncar como un tractor en las siestas!!!'
 });
 var EJEMPLO_EN = {
   NOMBRE_CUMPLE: 'Ian', FAMA: 'Eating burgers', TALENTO: 'Telling jokes', SOSPECHA: 'Stealing a cake',
@@ -720,35 +725,35 @@ var EJEMPLO2_EN = Object.assign({}, EJEMPLO_EN, {
   APP_1: 'WhatsApp', APP_2: 'Maps', APP_3: 'Photos', APP_4: 'Recipes'
 });
 var EJEMPLO3_EN = Object.assign({}, EJEMPLO_EN, {
-  NOMBRE_CUMPLE: 'Bartholomew', NOMBRE_1: 'Bartholomew',
-  APODO_1: 'The Enormous', NOMBRE_2: 'Bartholomew',
-  APODO_2: 'The Enormous', NOMBRE_3: 'Bartholomew',
-  APODO_3: 'The Enormous', NOMBRE_4: 'Bartholomew',
-  APODO_4: 'The Enormous', NOMBRE_5: 'Bartholomew',
-  APODO_5: 'The Enormous', NOMBRE_6: 'Bartholomew',
-  APODO_6: 'The Enormous', NOMBRE_7: 'Bartholomew',
-  APODO_7: 'The Enormous', NOMBRE_8: 'Bartholomew',
-  APODO_8: 'The Enormous', S1_HIDEA: 'Behind the big bookshelf in th',
-  S1_HIDEB: 'Behind the big bookshelf in th', S2_HIDEA: 'Behind the big bookshelf in th',
-  S2_HIDEB: 'Behind the big bookshelf in th', S3_HIDEA: 'Behind the big bookshelf in th',
-  S3_HIDEB: 'Behind the big bookshelf in th', S4_HIDEA: 'Behind the big bookshelf in th',
-  S4_HIDEB: 'Behind the big bookshelf in th', S5_HIDEA: 'Behind the big bookshelf in th',
-  S5_HIDEB: 'Behind the big bookshelf in th', S6_HIDEA: 'Behind the big bookshelf in th',
-  S6_HIDEB: 'Behind the big bookshelf in th', S7_HIDEA: 'Behind the big bookshelf in th',
-  S7_HIDEB: 'Behind the big bookshelf in th', S8_HIDEA: 'Behind the big bookshelf in th',
-  S8_HIDEB: 'Behind the big bookshelf in th', RESULTADO_TEST: 'Suspected of stealing a ca',
-  Nombre_Empresa: 'Bartholomew Ruiz Gom', CONCEPTO: 'Suspected of ste',
-  MENSAJE_PERSONALIZADO: 'Suspected of stealing a cake, with great c', 'NOMBRE_4.2': 'Bartholomew',
-  BUSQUEDA_1: 'magic tricks for fam', BUSQUEDA_2: 'magic tricks for fam',
-  NOTA_PERSONALIZADA: 'Suspected of stealing a cake, with great care i', NOMBRE_DEST: 'Bartholomew Ruiz Gomez Perez',
-  TEXTO_POSTAL: 'Suspected of stealing a cake', PERSONALIZADO_1: 'Suspected of stealing a cake, with great care i',
-  PERSONALIZADO_2: 'Suspected of stealing a cake, with great care i', APP_1: 'Applicatio',
-  APP_2: 'Applicatio', APP_4: 'Applicatio',
-  APP_3: 'Applicatio', FAMA: 'Suspected of stealing a',
-  TALENTO: 'Suspected of st', SOSPECHA: 'Suspected of stea',
-  B_INFO: 'Suspected of stealing a cake, with great care in the kitchen without rush. Suspected of stealing a cake, with great care in the kitchen without rush. Suspected of stealing a cake, with great care in t', B_NOTES: 'Suspected of stealing a cake, with great care in the kitchen without rush. Suspected of stealing a cake, with great care in the kitchen without rush. Suspected of stealing a cake, with great care in t',
-  S2_SECRET_LOVE: 'Bartholomew Ruiz Gomez Perez Bartholomew Ruiz Gomez Perez Bartholomew', EDAD: '110',
-  OTRO: 'Suspected of stealing a cake, with great', DEBILIDAD: 'Being late||Stealing food from others||Other: Suspected of stealing a cake, with great'
+  NOMBRE_CUMPLE: 'Javier Ortiz', NOMBRE_1: 'Isabel María',
+  NOMBRE_2: 'Pedro Alonso', NOMBRE_3: 'Rocío Vargas',
+  NOMBRE_4: 'Lourdes Peña', NOMBRE_5: 'Óscar Medina',
+  NOMBRE_6: 'Raquel Soler', NOMBRE_7: 'Pilar Montes',
+  NOMBRE_8: 'Elena Soler', 'NOMBRE_4.2': 'Pedro Alonso',
+  APODO_1: 'The Nosy One', APODO_2: 'The Dreamer',
+  APODO_3: 'Miss Nosy', APODO_4: 'The Tranquil',
+  APODO_5: 'The Pianist', APODO_6: 'The Joker',
+  APODO_7: 'Early Riser', APODO_8: 'The Chatty',
+  S1_HIDEA: 'Behind the big bookcase', S1_HIDEB: 'In the cutlery drawer',
+  S2_HIDEA: 'Under the bed, in the attic', S2_HIDEB: 'Tucked in the sofa gap',
+  S3_HIDEA: 'Hanging behind the door', S3_HIDEB: 'Between the cookbooks',
+  S4_HIDEA: 'On top of the hallway wardrobe', S4_HIDEB: 'Under the garden table',
+  S5_HIDEA: 'Right next to the piano', S5_HIDEB: 'In the jacket pocket',
+  S6_HIDEA: 'Behind the big bathroom mirror', S6_HIDEB: 'On the terrace shelf',
+  S7_HIDEA: 'Hidden in the empty fridge', S7_HIDEB: 'In the blue car boot',
+  S8_HIDEA: 'Under the hallway rug', S8_HIDEB: 'Tucked behind red curtains',
+  RESULTADO_TEST: 'Eagle eyes and dry humor', Nombre_Empresa: 'Magic Party Planners',
+  CONCEPTO: 'Surprise box XXL', MENSAJE_PERSONALIZADO: 'Tomorrow at 9 in the square. Be on time.',
+  BUSQUEDA_1: 'cheap magic tricks', BUSQUEDA_2: 'gifts for old people',
+  NOMBRE_DEST: 'Grandma Carmen from Seville', TEXTO_POSTAL: 'I miss you, see you on Saturday at the park',
+  PERSONALIZADO_1: 'Singing boleros in the shower when no one hears', PERSONALIZADO_2: 'Collecting football stickers from the 80s',
+  APP_1: 'Calendar', APP_2: 'Messenger',
+  APP_3: 'Stopwatch', APP_4: 'Workouts',
+  FAMA: 'Wins at cards every week', TALENTO: 'Juggling clubs',
+  SOSPECHA: 'Stealing the cake', B_INFO: 'Loves cooking for the whole family on Sundays, but if you ask for a recipe he always changes one ingredient in secret so nobody can copy it. He says that is his personal touch. Nobody knows how.',
+  B_NOTES: 'Allergic to nuts and cannot stand the noise of crisp packets. Always asks for lemon sponge with plenty of cinnamon, and gets nervous about last-minute surprises. He hates surprise parties too.', NOTA_PERSONALIZADA: 'Do not look in the attic cupboard: that is where the suspect list I made last month is. If he asks, say they are only ideas for his present, and that nobody should find out about Saturday\'s party.',
+  S2_SECRET_LOVE: 'Marta Lozano Bermúdez de la Peña Villalba Ortega Gómez Ruiz Pérez', OTRO: 'Snoring like a tractor at naps!!!',
+  EDAD: '71', DEBILIDAD: 'Being late||Stealing food from others||Other: Snoring like a tractor at naps!!!'
 });
 /* Juego de ejemplo n en el idioma elegido. */
 function exampleSet(n) {
@@ -923,7 +928,7 @@ var LIMITS = {
   "S1_HIDEA": 30, "S1_HIDEB": 30, "S2_HIDEA": 30, "S2_HIDEB": 30, "S2_SECRET_LOVE": 70, "S3_HIDEA": 30,
   "S3_HIDEB": 30, "S4_HIDEA": 30, "S4_HIDEB": 30, "S5_HIDEA": 30, "S5_HIDEB": 30, "S6_HIDEA": 30,
   "S6_HIDEB": 30, "S7_HIDEA": 30, "S7_HIDEB": 30, "S8_HIDEA": 30, "S8_HIDEB": 30, "SOSPECHA": 17,
-  "TALENTO": 15, "TEXTO_POSTAL": 28
+  "TALENTO": 15, "TEXTO_POSTAL": 50
 };
 /* Obligatorios: todo salvo apodos (opcionales). Las fotos se guardan aparte y tienen marcador. */
 function isRequiredField(fid) {
@@ -1033,8 +1038,10 @@ function requiredOf(sec) {
 function missingOf(sec) {
   return requiredOf(sec).filter(function (f) { return !hasValue(f); });
 }
+/* Diseño móvil: ancho de móvil, o móvil girado (pantalla táctil y poco alta). */
+var MOBILE_MQ = '(max-width: 1008px), (pointer: coarse) and (max-height: 540px)';
 function isMobile() {
-  return window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+  return window.matchMedia && window.matchMedia(MOBILE_MQ).matches;
 }
 /* Barra móvil (#back/#next) y botones del sidebar (#dback/#dnext) siempre sincronizados. */
 function setNav(backDisabled, nextLabel, nextDisabled) {
@@ -1266,6 +1273,7 @@ function landingNode() {
   root.appendChild(langCardsNode());
 
   root.appendChild(el('div', 'ex-head', LANG ? t('exHead') : 'Ejemplos · Examples'));
+  root.appendChild(el('div', 'stress-note', tl('stressNote')));
   if (!LANG) root.appendChild(el('div', 'ex-note', tl('exLocked')));
   var exg = el('div', 'ex-grid');
   /* "Empezar en blanco" es la primera tarjeta, con el mismo formato que los ejemplos */
@@ -1284,7 +1292,8 @@ function landingNode() {
     var c = el('div', 'ex-card' + (LANG ? '' : ' locked'));
     c.appendChild(el('span', 'n', fmt(LANG ? t('exNum') : 'Ejemplo %1 · Example %1', n)));
     c.appendChild(el('span', 'who', set.NOMBRE_CUMPLE));
-    if (LANG) c.appendChild(el('span', 'teaser', fmt(t('suspectOf'), set.SOSPECHA)));
+    if (LANG && n === 3) c.appendChild(el('span', 'teaser', t('stressTeaser')));
+    else if (LANG) c.appendChild(el('span', 'teaser', fmt(t('suspectOf'), set.SOSPECHA)));
     else c.appendChild(el('span', 'teaser', ''));
     var b = el('button', null, LANG ? fmt(t('exFill'), n) : tl('exLockedBtn'));
     b.type = 'button';
@@ -1778,6 +1787,24 @@ function stripBad(s, fid) {
 document.addEventListener('keydown', function (e) {
   if (e.target && e.target.type === 'number' && /[eE+\-.,]/.test(e.key)) e.preventDefault();
 }, true);
+/* Números fuera de rango (edad): se ajusta al máximo o al mínimo y se avisa. */
+document.addEventListener('input', function (e) {
+  var tg = e.target;
+  if (tg && tg.type === 'number' && tg.getAttribute('data-fid') && tg.max !== '') {
+    var big = parseInt(tg.value, 10);
+    if (!isNaN(big) && big > Number(tg.max)) { tg.value = tg.max; showToast(fmt(t('ageMax'), tg.max)); }
+  }
+});
+document.addEventListener('change', function (e) {
+  var tg = e.target;
+  if (!tg || tg.type !== 'number' || !tg.getAttribute('data-fid') || tg.min === '' || tg.max === '') return;
+  var n = parseInt(tg.value, 10);
+  if (isNaN(n)) return;
+  if (n < Number(tg.min)) { tg.value = tg.min; showToast(fmt(t('ageMin'), tg.min)); }
+  else if (n > Number(tg.max)) { tg.value = tg.max; showToast(fmt(t('ageMax'), tg.max)); }
+  else return;
+  tg.dispatchEvent(new Event('input', { bubbles: true }));
+});
 /* Filtro en vivo: quita lo que el PDF no puede dibujar (emojis, alfabetos no latinos...). */
 document.addEventListener('input', function (e) {
   var tg = e.target;
@@ -1926,6 +1953,15 @@ function trimStored() {
     if (f.type !== 'text' && f.type !== 'long') return;
     var fid = f.id, raw = answers[fid];
     if (!raw) return;
+    var spec = mkField(fid);
+    if (spec.type === 'number') {
+      var num = parseInt(raw, 10);
+      if (!isNaN(num)) {
+        var fixed = Math.min(spec.max, Math.max(spec.min, num));
+        if (String(fixed) !== String(raw)) { answers[fid] = String(fixed); changed = true; }
+      }
+      return;
+    }
     if (fid === 'DEBILIDAD') {
       var parts = String(raw).split('||'), before = parts.length;
       var isOt = function (x) { return /^(Otro|Other):/.test(x); };
@@ -2166,7 +2202,7 @@ document.addEventListener('input', function (e) {
   if (other) collectMulti(other);
 });
 if (window.matchMedia) {
-  var mq = window.matchMedia('(max-width: 640px)');
+  var mq = window.matchMedia(MOBILE_MQ);
   var lastMobile = mq.matches;
   var onMq = function () {
     if (mq.matches === lastMobile) return;

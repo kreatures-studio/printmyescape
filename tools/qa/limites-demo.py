@@ -67,11 +67,26 @@ def main():
             val = type_into(pg, inp, 'x' * (lim + 15) if fid != 'APP_1' else 'abcdefghijklmnopqrstu')
             rec('%s se corta en %d caracteres' % (fid, lim), len(val) == lim, 'len=%d' % len(val))
 
-        # 2) Notas: el límite es de 200, pero el hueco de la carta manda: se corta antes sin aviso
+        # 2) Nota (200) y postal (50): se escriben enteras, con texto de 200 y 50 caracteres
         inp = mount(pg, 'NOTA_PERSONALIZADA')
-        val = type_into(pg, inp, 'Palabra larga sin fin ' * 12)
-        fits = pg.evaluate("async () => { var f = await formFonts(); return PMECompose.fieldFits(TPL.pages[13].slots.find(s => s.field === 'NOTA_PERSONALIZADA'), '%s', f, 595.276, 841.89); }" % val.replace("'", "\\'"))
-        rec('nota: se corta antes de 200 y lo que queda cabe en el hueco', 0 < len(val) < 200 and fits, 'len=%d cabe=%s' % (len(val), fits))
+        val = type_into(pg, inp, ('Palabra larga sin fin ' * 12)[:200])
+        rec('nota: se admiten 200 caracteres', len(val) == 200, 'len=%d' % len(val))
+        inp = mount(pg, 'TEXTO_POSTAL')
+        val = type_into(pg, inp, ('Te echo de menos, nos vemos el sábado en el parque ' * 2)[:50])
+        rec('postal: se admiten 50 caracteres', len(val) == 50, 'len=%d' % len(val))
+
+        # 2b) Edad: por encima del máximo se pone el máximo; por debajo del mínimo, el mínimo (con aviso)
+        inp = mount(pg, 'EDAD')
+        inp.click(); inp.fill('')
+        inp.press_sequentially('150', delay=0); pg.wait_for_timeout(120)
+        rec('edad 150 -> 110', inp.input_value() == '110', 'valor=%s' % inp.input_value())
+        toast = pg.inner_text('#toast')
+        rec('edad 150: aviso de máximo', '110' in toast and ('máxima' in toast or 'maximum' in toast.lower()), toast)
+        inp.fill('0'); inp.press('Tab'); pg.wait_for_timeout(120)
+        rec('edad 0 -> 1', inp.input_value() == '1', 'valor=%s' % inp.input_value())
+        toast = pg.inner_text('#toast')
+        rec('edad 0: aviso de mínimo', '1' in toast and ('mínima' in toast or 'minimum' in toast.lower()), toast)
+        rec('edad: el valor corregido queda guardado', pg.evaluate("() => answers.EDAD") == '1', pg.evaluate("() => answers.EDAD"))
 
         # 3) Pegar un texto enorme en un hueco corto deja el trozo que cabe
         inp = mount(pg, 'APP_2')
