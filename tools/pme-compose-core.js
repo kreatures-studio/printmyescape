@@ -415,8 +415,9 @@ async function composeGame(deps) {
   const flowPairOk = (segs) => {
     if (segs.length !== 2) return false;
     const ids = segs.map((g) => ((g.ref.field || '').toUpperCase()));
-    const m0 = /^(NOMBRE|APODO)_(\d+)$/.exec(ids[0] || '');
-    const m1 = /^(NOMBRE|APODO)_(\d+)$/.exec(ids[1] || '');
+    /* APODO_N.PREF es el apodo con su coma (mecánica prefix): cuenta como APODO_N */
+    const m0 = /^(NOMBRE|APODO)_(\d+)(\.PREF)?$/.exec(ids[0] || '');
+    const m1 = /^(NOMBRE|APODO)_(\d+)(\.PREF)?$/.exec(ids[1] || '');
     return !!(m0 && m1 && m0[2] === m1[2] && m0[1] !== m1[1]);
   };
   const buildFlowGroups = (tpl, fixed, pi) => {
@@ -629,8 +630,6 @@ async function composeGame(deps) {
     }
     let v = String(values[field] || '').replace(/[ \t]+/g, ' ')
       .split('\n').map((l) => l.trim()).join('\n').trim();
-    /* APODO_N lleva su coma (el fijo "," se pierde al extraer): sin apodo, nada */
-    if (/^APODO_[1-8]$/.exec(field || '')) return v ? ', ' + v : v;
     return v;
   };
   const n = template.pages.length;

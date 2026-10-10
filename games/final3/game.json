@@ -467,6 +467,54 @@
     "type": "text",
     "label": "Nombre cumple ficha",
     "maxLength": 70
+   },
+   {
+    "id": "APODO_1.PREF",
+    "type": "text",
+    "label": "Apodo 1 (con coma)",
+    "maxLength": 70
+   },
+   {
+    "id": "APODO_2.PREF",
+    "type": "text",
+    "label": "Apodo 2 (con coma)",
+    "maxLength": 70
+   },
+   {
+    "id": "APODO_3.PREF",
+    "type": "text",
+    "label": "Apodo 3 (con coma)",
+    "maxLength": 70
+   },
+   {
+    "id": "APODO_4.PREF",
+    "type": "text",
+    "label": "Apodo 4 (con coma)",
+    "maxLength": 70
+   },
+   {
+    "id": "APODO_5.PREF",
+    "type": "text",
+    "label": "Apodo 5 (con coma)",
+    "maxLength": 70
+   },
+   {
+    "id": "APODO_6.PREF",
+    "type": "text",
+    "label": "Apodo 6 (con coma)",
+    "maxLength": 70
+   },
+   {
+    "id": "APODO_7.PREF",
+    "type": "text",
+    "label": "Apodo 7 (con coma)",
+    "maxLength": 70
+   },
+   {
+    "id": "APODO_8.PREF",
+    "type": "text",
+    "label": "Apodo 8 (con coma)",
+    "maxLength": 70
    }
   ],
   "pages": [
@@ -524,7 +572,7 @@
       "angle": 0
      },
      {
-      "field": "APODO_1",
+      "field": "APODO_1.PREF",
       "x": 29.73,
       "y": 28.14,
       "w": 14.22,
@@ -548,7 +596,7 @@
       "angle": 0
      },
      {
-      "field": "APODO_2",
+      "field": "APODO_2.PREF",
       "x": 29.68,
       "y": 31.28,
       "w": 14.22,
@@ -572,7 +620,7 @@
       "angle": 0
      },
      {
-      "field": "APODO_3",
+      "field": "APODO_3.PREF",
       "x": 29.64,
       "y": 34.41,
       "w": 14.22,
@@ -596,7 +644,7 @@
       "angle": 0
      },
      {
-      "field": "APODO_4",
+      "field": "APODO_4.PREF",
       "x": 29.59,
       "y": 37.55,
       "w": 14.22,
@@ -620,7 +668,7 @@
       "angle": 0
      },
      {
-      "field": "APODO_5",
+      "field": "APODO_5.PREF",
       "x": 29.54,
       "y": 40.68,
       "w": 14.22,
@@ -644,7 +692,7 @@
       "angle": 0
      },
      {
-      "field": "APODO_6",
+      "field": "APODO_6.PREF",
       "x": 29.49,
       "y": 43.82,
       "w": 14.22,
@@ -668,7 +716,7 @@
       "angle": 0
      },
      {
-      "field": "APODO_7",
+      "field": "APODO_7.PREF",
       "x": 29.44,
       "y": 46.96,
       "w": 14.22,
@@ -692,7 +740,7 @@
       "angle": 0
      },
      {
-      "field": "APODO_8",
+      "field": "APODO_8.PREF",
       "x": 29.39,
       "y": 50.09,
       "w": 14.22,
@@ -6619,6 +6667,33 @@
     "name": "NOMBRE_CUMPLE",
     "alias": "B_ALIAS",
     "target": "NOMBRE_CUMPLE_FICHA"
+   }
+  },
+  {
+   "type": "prefix",
+   "page": "p1",
+   "derives": [
+    "APODO_1.PREF",
+    "APODO_2.PREF",
+    "APODO_3.PREF",
+    "APODO_4.PREF",
+    "APODO_5.PREF",
+    "APODO_6.PREF",
+    "APODO_7.PREF",
+    "APODO_8.PREF"
+   ],
+   "params": {
+    "prefix": ", ",
+    "map": {
+     "APODO_1": "APODO_1.PREF",
+     "APODO_2": "APODO_2.PREF",
+     "APODO_3": "APODO_3.PREF",
+     "APODO_4": "APODO_4.PREF",
+     "APODO_5": "APODO_5.PREF",
+     "APODO_6": "APODO_6.PREF",
+     "APODO_7": "APODO_7.PREF",
+     "APODO_8": "APODO_8.PREF"
+    }
    }
   },
   {

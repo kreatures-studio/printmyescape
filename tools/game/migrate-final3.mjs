@@ -14,7 +14,8 @@
 //   cap     = LIMITS[campo] || q.max || tope de la plantilla || 70 (solo textos).
 //
 // Lo que la demo calculaba en el motor se declara como mecánica (T2.1 y siguientes):
-// las casillas (ticks), la ficha nombre+alias (join) y el icono de la app (initial).
+// las casillas (ticks), la ficha nombre+alias (join), la coma del apodo (prefix) y el icono de
+// la app (initial).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -60,6 +61,11 @@ function fieldFrom(id, q, tpl) {
 
 function main() {
   const tpl = read(path.join(TPL, 'template.json'));
+  // Mecánica prefix (T2.2c): la coma del apodo es el derivado APODO_N.PREF; el hueco apunta a él.
+  for (const pg of tpl.pages) for (const sl of pg.slots) if (/^APODO_\d+$/.test(sl.field)) sl.field += '.PREF';
+  for (const f of tpl.fields.filter((x) => /^APODO_\d+$/.test(x.id))) {
+    tpl.fields.push({ id: f.id + '.PREF', type: 'text', label: f.label + ' (con coma)', maxLength: f.maxLength });
+  }
   const texts = read(path.join(TPL, 'texts.json'));
   const i18n = { es: read(path.join(TPL, 'i18n-es.json')), en: read(path.join(TPL, 'i18n-en.json')) };
   const dump = read(path.join(GAME_DIR, '_dump.json'));
@@ -101,6 +107,8 @@ function main() {
     mechanics: [
       { type: 'ticks', page: 'p4', params: { field: 'DEBILIDAD', half: TICK_HALF, boxes: TICK_BOX } },
       { type: 'join', page: 'p4', derives: ['NOMBRE_CUMPLE_FICHA'], params: { name: 'NOMBRE_CUMPLE', alias: 'B_ALIAS', target: 'NOMBRE_CUMPLE_FICHA' } },
+      { type: 'prefix', page: 'p1', derives: ['APODO_1.PREF', 'APODO_2.PREF', 'APODO_3.PREF', 'APODO_4.PREF', 'APODO_5.PREF', 'APODO_6.PREF', 'APODO_7.PREF', 'APODO_8.PREF'],
+        params: { prefix: ', ', map: { APODO_1: 'APODO_1.PREF', APODO_2: 'APODO_2.PREF', APODO_3: 'APODO_3.PREF', APODO_4: 'APODO_4.PREF', APODO_5: 'APODO_5.PREF', APODO_6: 'APODO_6.PREF', APODO_7: 'APODO_7.PREF', APODO_8: 'APODO_8.PREF' } } },
       { type: 'initial', page: 'p16', derives: ['S8_ICON_1', 'S8_ICON_2', 'S8_ICON_3', 'S8_ICON_4'],
         params: { map: { APP_1: 'S8_ICON_1', APP_2: 'S8_ICON_2', APP_3: 'S8_ICON_3', APP_4: 'S8_ICON_4' } } },
     ],
