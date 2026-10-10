@@ -1,0 +1,393 @@
+{
+ "schema": "pme-game/1",
+ "id": "tipos",
+ "version": "0.1.0",
+ "status": "borrador",
+ "name": {
+  "es": "Prueba de tipos",
+  "en": "Types test"
+ },
+ "languages": [
+  "es",
+  "en"
+ ],
+ "background": {
+  "kind": "pdf",
+  "file": "../../../../../Final3-Clean.pdf"
+ },
+ "template": {
+  "id": "tipos",
+  "version": 1,
+  "name": "Prueba de tipos",
+  "pageSize": "A4",
+  "fields": [
+   {
+    "id": "NOMBRE",
+    "type": "text",
+    "label": "Nombre",
+    "maxLength": 12
+   },
+   {
+    "id": "TEXTO",
+    "type": "text",
+    "label": "Texto",
+    "maxLength": 30
+   },
+   {
+    "id": "LARGO",
+    "type": "text",
+    "label": "Largo",
+    "maxLength": 80
+   },
+   {
+    "id": "EDAD",
+    "type": "text",
+    "label": "Edad",
+    "maxLength": 3
+   },
+   {
+    "id": "ELECCION",
+    "type": "text",
+    "label": "Elección",
+    "maxLength": 20
+   },
+   {
+    "id": "VARIOS",
+    "type": "text",
+    "label": "Varios",
+    "maxLength": 60
+   },
+   {
+    "id": "OTRO",
+    "type": "text",
+    "label": "Otro",
+    "maxLength": 20
+   },
+   {
+    "id": "FOTO",
+    "type": "image",
+    "label": "Foto"
+   }
+  ],
+  "pages": [
+   {
+    "id": "p1",
+    "title": "Página 1",
+    "background": "fondo-p1.png",
+    "slots": [
+     {
+      "field": "NOMBRE",
+      "x": 10,
+      "y": 10,
+      "w": 60,
+      "h": 3,
+      "size": 3,
+      "color": "#000000",
+      "fontFamily": "OpenSans",
+      "xscale": null,
+      "angle": 0
+     },
+     {
+      "field": "TEXTO",
+      "x": 10,
+      "y": 16,
+      "w": 60,
+      "h": 3,
+      "size": 3,
+      "color": "#000000",
+      "fontFamily": "OpenSans",
+      "xscale": null,
+      "angle": 0
+     },
+     {
+      "field": "LARGO",
+      "x": 10,
+      "y": 22,
+      "w": 80,
+      "h": 6,
+      "size": 3,
+      "color": "#000000",
+      "fontFamily": "OpenSans",
+      "xscale": null,
+      "angle": 0
+     },
+     {
+      "field": "EDAD",
+      "x": 10,
+      "y": 32,
+      "w": 30,
+      "h": 3,
+      "size": 3,
+      "color": "#000000",
+      "fontFamily": "OpenSans",
+      "xscale": null,
+      "angle": 0
+     },
+     {
+      "field": "ELECCION",
+      "x": 10,
+      "y": 38,
+      "w": 60,
+      "h": 3,
+      "size": 3,
+      "color": "#000000",
+      "fontFamily": "OpenSans",
+      "xscale": null,
+      "angle": 0
+     },
+     {
+      "field": "VARIOS",
+      "x": 10,
+      "y": 44,
+      "w": 80,
+      "h": 3,
+      "size": 3,
+      "color": "#000000",
+      "fontFamily": "OpenSans",
+      "xscale": null,
+      "angle": 0
+     },
+     {
+      "field": "OTRO",
+      "x": 10,
+      "y": 50,
+      "w": 60,
+      "h": 3,
+      "size": 3,
+      "color": "#000000",
+      "fontFamily": "OpenSans",
+      "xscale": null,
+      "angle": 0
+     },
+     {
+      "field": "FOTO",
+      "x": 60,
+      "y": 60,
+      "w": 25,
+      "h": 30,
+      "size": 3,
+      "color": "#000000",
+      "fontFamily": "OpenSans",
+      "xscale": null,
+      "angle": 0
+     }
+    ]
+   }
+  ]
+ },
+ "texts": [],
+ "i18n": {
+  "es": {},
+  "en": {}
+ },
+ "fields": {
+  "NOMBRE": {
+   "type": "name",
+   "required": true,
+   "cap": 12,
+   "q": {
+    "es": "Nombre",
+    "en": "Name"
+   }
+  },
+  "TEXTO": {
+   "type": "text",
+   "required": true,
+   "cap": 30,
+   "q": {
+    "es": "Texto corto",
+    "en": "Short text"
+   }
+  },
+  "LARGO": {
+   "type": "long",
+   "required": true,
+   "cap": 80,
+   "q": {
+    "es": "Texto largo",
+    "en": "Long text"
+   },
+   "desc": {
+    "es": "Una frase.",
+    "en": "One sentence."
+   }
+  },
+  "EDAD": {
+   "type": "number",
+   "required": true,
+   "min": 1,
+   "max": 110,
+   "q": {
+    "es": "Edad",
+    "en": "Age"
+   }
+  },
+  "ELECCION": {
+   "type": "choice",
+   "required": true,
+   "options": [
+    {
+     "es": "Opción A",
+     "en": "Option A"
+    },
+    {
+     "es": "Opción B",
+     "en": "Option B"
+    },
+    {
+     "es": "Opción C",
+     "en": "Option C"
+    }
+   ],
+   "q": {
+    "es": "Elige una",
+    "en": "Pick one"
+   }
+  },
+  "VARIOS": {
+   "type": "multi",
+   "required": true,
+   "allowOther": true,
+   "otherField": "OTRO",
+   "options": [
+    {
+     "es": "Opción A",
+     "en": "Option A"
+    },
+    {
+     "es": "Opción B",
+     "en": "Option B"
+    },
+    {
+     "es": "Opción C",
+     "en": "Option C"
+    }
+   ],
+   "q": {
+    "es": "Elige varias",
+    "en": "Pick several"
+   }
+  },
+  "OTRO": {
+   "type": "text",
+   "required": false,
+   "cap": 20,
+   "q": {
+    "es": "Otro",
+    "en": "Other"
+   }
+  },
+  "FOTO": {
+   "type": "photo",
+   "required": true,
+   "q": {
+    "es": "Foto",
+    "en": "Photo"
+   }
+  }
+ },
+ "form": {
+  "sections": [
+   {
+    "id": "s1",
+    "title": {
+     "es": "Todo",
+     "en": "Everything"
+    },
+    "nameField": "NOMBRE",
+    "photoField": "FOTO",
+    "fields": [
+     "NOMBRE",
+     "TEXTO",
+     "LARGO",
+     "EDAD",
+     "ELECCION",
+     "VARIOS",
+     "FOTO"
+    ]
+   }
+  ]
+ },
+ "mechanics": [],
+ "examples": [
+  {
+   "id": "1",
+   "values": {
+    "es": {
+     "NOMBRE": "Ana",
+     "TEXTO": "Hola",
+     "LARGO": "Una frase",
+     "EDAD": "30",
+     "ELECCION": "Opción B",
+     "VARIOS": "Opción A||Otro: Algo raro",
+     "OTRO": "Algo raro"
+    },
+    "en": {
+     "NOMBRE": "Ana",
+     "TEXTO": "Hello",
+     "LARGO": "One sentence",
+     "EDAD": "30",
+     "ELECCION": "Option B",
+     "VARIOS": "Option A||Other: Something odd",
+     "OTRO": "Something odd"
+    }
+   },
+   "photos": {
+    "FOTO": "../../../../../assets/retratos/retrato-1.jpg"
+   }
+  },
+  {
+   "id": "2",
+   "values": {
+    "es": {
+     "NOMBRE": "Beto",
+     "TEXTO": "Hola",
+     "LARGO": "Una frase",
+     "EDAD": "30",
+     "ELECCION": "Opción B",
+     "VARIOS": "Opción A||Otro: Algo raro",
+     "OTRO": "Algo raro"
+    },
+    "en": {
+     "NOMBRE": "Ben",
+     "TEXTO": "Hello",
+     "LARGO": "One sentence",
+     "EDAD": "30",
+     "ELECCION": "Option B",
+     "VARIOS": "Option A||Other: Something odd",
+     "OTRO": "Something odd"
+    }
+   },
+   "photos": {
+    "FOTO": "../../../../../assets/retratos/retrato-1.jpg"
+   }
+  },
+  {
+   "id": "3",
+   "values": {
+    "es": {
+     "NOMBRE": "Clara",
+     "TEXTO": "Hola",
+     "LARGO": "Una frase",
+     "EDAD": "30",
+     "ELECCION": "Opción B",
+     "VARIOS": "Opción A||Otro: Algo raro",
+     "OTRO": "Algo raro"
+    },
+    "en": {
+     "NOMBRE": "Clare",
+     "TEXTO": "Hello",
+     "LARGO": "One sentence",
+     "EDAD": "30",
+     "ELECCION": "Option B",
+     "VARIOS": "Option A||Other: Something odd",
+     "OTRO": "Something odd"
+    }
+   },
+   "photos": {
+    "FOTO": "../../../../../assets/retratos/retrato-1.jpg"
+   }
+  }
+ ],
+ "solutions": []
+}

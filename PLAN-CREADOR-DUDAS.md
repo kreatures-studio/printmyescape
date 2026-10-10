@@ -114,3 +114,23 @@ Pendiente (no bloquea M2):
   ninguno aparece solo en su definición. `fitsOptions` y la rama de `DEBILIDAD` en `checkValue`
   sí se usan (el clic de las píldoras y la comprobación de la revisión), así que no se tocan.
 - Sin cambios de código: las mismas pruebas de T1.1 siguen valiendo porque el build no cambia.
+
+## T1.3 (choice y multi con las opciones del campo; WEAK desaparece)
+
+- `WEAK` ya no existe. Las opciones viven en cada campo `multi`/`choice`; `translateOptions(q, v,
+  to)` traduce cualquiera de los dos al cambiar de idioma. `Q[fid].other` marca el campo donde
+  se guarda el «Otro» (el `otherField` del juego). `checkValue`, `textProblems`, `trimStored` y
+  `collectMulti` dejan de depender del nombre `DEBILIDAD`.
+- Nuevo control `choice` (píldoras de elección única; se guarda el texto de la opción en el idioma
+  activo y pasa por `readControl`). Obligatorio como un texto.
+- Tipo `photo` del juego: la demo lo reconoce aunque la plantilla no lo marque como `image`.
+- `name` se trata igual que `text` (la demo nunca tuvo un control aparte para el nombre). Sin
+  cambio de comportamiento para final3.
+- Prueba: `tools/qa/tipos-demo.py` con `tools/qa/fixtures/games/tipos/` (un campo de cada tipo,
+  3 ejemplos, la misma foto sintética). Recorre el formulario entero, cambia a inglés a mitad,
+  genera el PDF y comprueba el texto. 7/7.
+- Pendiente, no tocado aquí: la tabla `SHORT` de etiquetas de la revisión sigue escrita en la
+  demo. Un campo sin entrada en `SHORT` aparece en la revisión con su identificador. El juego
+  debería traer esa etiqueta (decisión para M2 o M5).
+- Equivalencia con la demo anterior en final3: sin diferencias de valor en `SECDEF`, `LIMITS`,
+  ejemplos, secciones ni descriptores de campo; solo aparecen las opciones y el «Otro» de DEBILIDAD.

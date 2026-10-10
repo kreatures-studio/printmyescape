@@ -594,12 +594,14 @@ var UI = {
 /* Formulario, ejemplos, opciones y límites a partir del juego que mete build-demo.py.
    Devuelve las mismas estructuras que antes se escribían a mano en esta página. */
 function formFromGame(game) {
-  var out = { Q: {}, LIMITS: {}, WEAK: [], SECDEF: [], examples: { es: [], en: [] } };
+  var out = { Q: {}, LIMITS: {}, SECDEF: [], examples: { es: [], en: [] } };
   Object.keys(game.fields).forEach(function (id) {
     var f = game.fields[id], q = { q: f.q };
     if (f.desc) q.desc = f.desc;
     if (f.ej) q.ej = f.ej;
-    if (f.type === 'multi') { q.multi = 1; out.WEAK = f.options; }
+    if (f.type === 'multi') { q.multi = 1; q.options = f.options; if (f.allowOther) q.other = f.otherField; }
+    if (f.type === 'choice') { q.choice = 1; q.options = f.options; }
+    if (f.type === 'photo') q.photo = 1;
     if (f.type === 'number') {
       q.num = 1;
       if (f.min !== undefined) q.min = f.min;
@@ -631,18 +633,19 @@ function exampleSet(n) {
   return en ? EJEMPLO_EN : EJEMPLO;
 }
 
-/* Debilidades: opciones de la lista y su traducción (para cambiar de idioma sin perder la elección). */
-var WEAK = FORM.WEAK;
-function translateWeak(v, to) {
-  return String(v || '').split('||').map(function (p) {
+/* Opciones de un campo multi o choice (las del juego) y su traducción: al cambiar de idioma
+   no se pierde la elección. */
+function translateOptions(q, v, to) {
+  var one = function (p) {
     if (!p) return p;
     var m = /^(?:Otro|Other):\s*(.*)$/.exec(p);
     if (m) return otherTagFor(to) + ': ' + m[1];
-    for (var i = 0; i < WEAK.length; i++) {
-      if (p === WEAK[i].es || p === WEAK[i].en) return WEAK[i][to];
+    for (var i = 0; i < q.options.length; i++) {
+      if (p === q.options[i].es || p === q.options[i].en) return q.options[i][to];
     }
     return p;
-  }).join('||');
+  };
+  return q.choice ? one(String(v || '')) : String(v || '').split('||').map(one).join('||');
 }
 
 /* ---------- estado ---------- */
@@ -720,10 +723,10 @@ function hasValue(f) {
 function mkField(fid) {
   var tf = tplField(fid) || { type: 'text', maxLength: 70 };
   var q = Q[fid] || { q: B(fid, fid) };
-  var type = tf.type === 'image' ? 'photo' : (q.multi ? 'multi' : (q.num ? 'number' : (q.long ? 'long' : 'text')));
+  var type = (tf.type === 'image' || q.photo) ? 'photo' : (q.multi ? 'multi' : (q.choice ? 'choice' : (q.num ? 'number' : (q.long ? 'long' : 'text'))));
   return { id: fid, type: type, q: q.q, required: isRequiredField(fid),
     max: LIMITS[fid] || q.max || tf.maxLength || 70, desc: q.desc || '', ej: q.ej || '',
-    min: q.min };
+    min: q.min, options: q.options, other: q.other };
 }
 /* Pantallas: una portada y luego grupos de campos que caben sin scroll. */
 var INTRO_FIELD = { id: 'intro_ok', type: 'check', q: UI.understand, required: true, desc: '', ej: '' };
@@ -919,7 +922,7 @@ function fieldControl(f) {
     var pills = el('div', 'pills');
     var cur = {};
     (answers[f.id] || '').split('||').forEach(function (v) { if (v) cur[v] = true; });
-    WEAK.forEach(function (w) {
+    (f.options || []).forEach(function (w) {
       var v = pick(w);
       var b = el('button', 'pill' + (cur[v] ? ' on' : ''), v);
       b.type = 'button'; b.setAttribute('data-v', v); b.setAttribute('data-fid', f.id);
@@ -930,23 +933,41 @@ function fieldControl(f) {
       };
       pills.appendChild(b);
     });
-    var bo = el('button', 'pill' + (multiOther[f.id] ? ' on' : ''), t('otherPill'));
-    bo.type = 'button';
-    bo.onclick = function () {
-      var ow = wrap.querySelector('.otherWrap'); ow.classList.add('show');
-      bo.classList.add('on');
-      var oi = wrap.querySelector('.otherInput'); oi.focus(); collectMulti(f.id);
-    };
-    pills.appendChild(bo);
+    if (f.other) {
+      var bo = el('button', 'pill' + (multiOther[f.id] ? ' on' : ''), t('otherPill'));
+      bo.type = 'button';
+      bo.onclick = function () {
+        var ow = wrap.querySelector('.otherWrap'); ow.classList.add('show');
+        bo.classList.add('on');
+        var oi = wrap.querySelector('.otherInput'); oi.focus(); collectMulti(f.id);
+      };
+      pills.appendChild(bo);
+    }
     wrap.appendChild(pills);
-    var ow2 = el('div', 'otherWrap' + (multiOther[f.id] ? ' show' : ''));
-    var oi2 = document.createElement('input'); oi2.type = 'text';
-    oi2.className = 'otherInput'; oi2.setAttribute('data-other', f.id);
-    oi2.placeholder = t('otherPh'); oi2.maxLength = LIMITS.OTRO;
-    oi2.value = multiOther[f.id] || '';
-    oi2.oninput = function () { collectMulti(f.id); };
-    ow2.appendChild(oi2);
-    wrap.appendChild(ow2);
+    if (f.other) {
+      var ow2 = el('div', 'otherWrap' + (multiOther[f.id] ? ' show' : ''));
+      var oi2 = document.createElement('input'); oi2.type = 'text';
+      oi2.className = 'otherInput'; oi2.setAttribute('data-other', f.id);
+      oi2.placeholder = t('otherPh'); oi2.maxLength = LIMITS[f.other];
+      oi2.value = multiOther[f.id] || '';
+      oi2.oninput = function () { collectMulti(f.id); };
+      ow2.appendChild(oi2);
+      wrap.appendChild(ow2);
+    }
+  } else if (f.type === 'choice') {
+    var cpills = el('div', 'pills');
+    (f.options || []).forEach(function (o) {
+      var cv = pick(o);
+      var cb = el('button', 'pill' + (answers[f.id] === cv ? ' on' : ''), cv);
+      cb.type = 'button'; cb.setAttribute('data-v', cv); cb.setAttribute('data-fid', f.id);
+      cb.onclick = function () {
+        cpills.querySelectorAll('.pill').forEach(function (x) { x.classList.remove('on'); });
+        cb.classList.add('on');
+        answers[f.id] = cv; saveDraft();
+      };
+      cpills.appendChild(cb);
+    });
+    wrap.appendChild(cpills);
   }
   wrap.appendChild(el('div', 'ferr'));
   return wrap;
@@ -967,11 +988,19 @@ function collectMulti(fid, scope) {
     multiOther[fid] = oi.value.trim();
   } else { delete multiOther[fid]; }
   answers[fid] = vals.join('||');
-  if (fid === 'DEBILIDAD') answers.OTRO = multiOther[fid] || '';
+  var oth = Q[fid] && Q[fid].other;
+  if (oth) answers[oth] = multiOther[fid] || '';
   saveDraft();
 }
 function readControl(f, scope) {
   scope = scope || document;
+  if (f.type === 'choice') {
+    var box = scope.querySelector('.field[data-field="' + f.id + '"]');
+    if (!box) return;
+    var on = box.querySelector('.pill.on');
+    answers[f.id] = on ? on.getAttribute('data-v') : '';
+    return;
+  }
   var c = scope.querySelector('[data-fid="' + f.id + '"]');
   if (!c) return;
   if (f.type === 'check') { answers[f.id] = c.checked ? '1' : ''; return; }
@@ -985,7 +1014,7 @@ function readAll(scope) {
 }
 function fieldError(f) {
   if (f.type === 'check') return (f.required && answers[f.id] !== '1') ? t('errCheck') : '';
-  if (f.required && (f.type === 'text' || f.type === 'long') && !answers[f.id]) return t('errRequired');
+  if (f.required && (f.type === 'text' || f.type === 'long' || f.type === 'choice') && !answers[f.id]) return t('errRequired');
   if (f.type === 'photo' && f.required && !photos['photo_' + f.id]) return t('errPhoto');
   if (f.type === 'number' && f.required) {
     var n = parseInt(answers[f.id], 10);
@@ -1106,7 +1135,9 @@ function setLang(l) {
   if (l !== 'es' && l !== 'en') return;
   var prev = LANG;
   LANG = l;
-  if (prev && prev !== l && answers.DEBILIDAD) answers.DEBILIDAD = translateWeak(answers.DEBILIDAD, l);
+  if (prev && prev !== l) Object.keys(Q).forEach(function (fid) {
+    if ((Q[fid].multi || Q[fid].choice) && answers[fid]) answers[fid] = translateOptions(Q[fid], answers[fid], l);
+  });
   applyStatic();
   saveDraft();
   if (view === 'done') { finish(); return; }
@@ -1636,7 +1667,7 @@ function formFonts() {
 }
 function checkValue(fid, raw) {
   var v = String(raw || '');
-  if (fid === 'DEBILIDAD' && v.indexOf('||') >= 0) {
+  if (Q[fid] && Q[fid].multi && v.indexOf('||') >= 0) {
     v = v.split('||').filter(function (x) { return x && !/^(Otro|Other):/.test(x); }).join(' / ');
   }
   if (fid === 'S2_SECRET_LOVE') {
@@ -1655,7 +1686,7 @@ function textProblems() {
         if (!fld || fld.type !== 'text') return;
         var v = valueForCheck(s.field);
         if (!v) return;
-        if (s.field !== 'DEBILIDAD' && LIMITS[s.field] && String(answers[s.field] || '').trim().length > LIMITS[s.field]) {
+        if (!(Q[s.field] && Q[s.field].multi) && LIMITS[s.field] && String(answers[s.field] || '').trim().length > LIMITS[s.field]) {
           if (bad.indexOf(s.field) < 0) bad.push(s.field);
           return;
         }
@@ -1745,7 +1776,7 @@ function trimStored() {
       return;
     }
     /* casillas de delitos: opciones fijas, no se recortan */
-    if (fid === 'DEBILIDAD') return;
+    if (Q[fid] && (Q[fid].multi || Q[fid].choice)) return;
     var v = String(raw);
     if (LIMITS[fid] && v.length > LIMITS[fid]) v = v.slice(0, LIMITS[fid]);
     v = longestFit(fid, v, f.type === 'long');
