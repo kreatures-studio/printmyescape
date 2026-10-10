@@ -45,7 +45,7 @@ def choose_lang(pg, lang):
 
 def fill_example(pg, n):
     """Pulsa 'Rellenar ejemplo n' de la portada de demostración. Lleva a la bienvenida."""
-    pg.locator('.ex-card button').nth(n - 1).click()
+    pg.locator('.ex-card:not(.blank-card) button').nth(n - 1).click()
     pg.wait_for_timeout(300)
 
 
@@ -119,19 +119,19 @@ with sync_playwright() as p:
     b, pg, errs = open_demo(p)
     rec('L0 carga sin errores JS', not errs, '; '.join(errs)[:200])
     rec('L1 sin idioma no se puede continuar ni rellenar ejemplos',
-        pg.is_disabled('#dnext') and all(pg.locator('.ex-card button').nth(i).is_disabled() for i in range(3)),
+        pg.is_disabled('#dnext') and all(pg.locator('.ex-card:not(.blank-card) button').nth(i).is_disabled() for i in range(3)),
         'dnext disabled=%s' % pg.is_disabled('#dnext'))
     pg.click('.lang-card >> nth=0')
     pg.wait_for_timeout(150)
     rec('L2 elegir ES en la portada: html lang=es, nav activo, ejemplos activos',
         pg.get_attribute('html', 'lang') == 'es' and not pg.is_disabled('#dnext')
-        and not pg.locator('.ex-card button').nth(0).is_disabled(), 'lang=%s' % pg.get_attribute('html', 'lang'))
+        and not pg.locator('.ex-card:not(.blank-card) button').nth(0).is_disabled(), 'lang=%s' % pg.get_attribute('html', 'lang'))
     rec('L3 interfaz en español tras elegir ES', 'Continuar' in pg.inner_text('#dnext') and 'Secciones' in pg.text_content('#drawer'),
         pg.inner_text('#dnext'))
     choose_lang(pg, 'en')
     rec('L4 selector ES·EN de arriba cambia la interfaz a inglés', pg.get_attribute('html', 'lang') == 'en'
         and 'Continue' in pg.inner_text('#dnext') and 'Sections' in pg.text_content('#drawer'), pg.inner_text('#dnext'))
-    rec('L5 los ejemplos muestran nombres en inglés', pg.inner_text('.ex-card .who >> nth=1') == 'Martha', pg.inner_text('.ex-card .who >> nth=1'))
+    rec('L5 los ejemplos muestran nombres en inglés', pg.inner_text('.ex-card:not(.blank-card) .who >> nth=1') == 'Martha', pg.inner_text('.ex-card:not(.blank-card) .who >> nth=1'))
     b.close()
 
     # ---------- W. bienvenida: aviso con casilla antes de rellenar ----------
