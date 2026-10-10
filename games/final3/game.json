@@ -6764,6 +6764,17 @@
      "APP_3": "Banking",
      "APP_4": "Notes"
     }
+   },
+   "photos": {
+    "FOTO_CUMPLE": "../../assets/retratos/retrato-CUMPLE.jpg",
+    "FOTO_1": "../../assets/retratos/retrato-1.jpg",
+    "FOTO_2": "../../assets/retratos/retrato-2.jpg",
+    "FOTO_3": "../../assets/retratos/retrato-3.jpg",
+    "FOTO_4": "../../assets/retratos/retrato-4.jpg",
+    "FOTO_5": "../../assets/retratos/retrato-5.jpg",
+    "FOTO_6": "../../assets/retratos/retrato-6.jpg",
+    "FOTO_7": "../../assets/retratos/retrato-7.jpg",
+    "FOTO_8": "../../assets/retratos/retrato-8.jpg"
    }
   },
   {
@@ -6895,6 +6906,17 @@
      "APP_3": "Photos",
      "APP_4": "Recipes"
     }
+   },
+   "photos": {
+    "FOTO_CUMPLE": "../../assets/retratos/retrato-CUMPLE.jpg",
+    "FOTO_1": "../../assets/retratos/retrato-1.jpg",
+    "FOTO_2": "../../assets/retratos/retrato-2.jpg",
+    "FOTO_3": "../../assets/retratos/retrato-3.jpg",
+    "FOTO_4": "../../assets/retratos/retrato-4.jpg",
+    "FOTO_5": "../../assets/retratos/retrato-5.jpg",
+    "FOTO_6": "../../assets/retratos/retrato-6.jpg",
+    "FOTO_7": "../../assets/retratos/retrato-7.jpg",
+    "FOTO_8": "../../assets/retratos/retrato-8.jpg"
    }
   },
   {
@@ -7026,6 +7048,17 @@
      "APP_3": "Stopwatch",
      "APP_4": "Workouts"
     }
+   },
+   "photos": {
+    "FOTO_CUMPLE": "../../assets/retratos/retrato-CUMPLE.jpg",
+    "FOTO_1": "../../assets/retratos/retrato-1.jpg",
+    "FOTO_2": "../../assets/retratos/retrato-2.jpg",
+    "FOTO_3": "../../assets/retratos/retrato-3.jpg",
+    "FOTO_4": "../../assets/retratos/retrato-4.jpg",
+    "FOTO_5": "../../assets/retratos/retrato-5.jpg",
+    "FOTO_6": "../../assets/retratos/retrato-6.jpg",
+    "FOTO_7": "../../assets/retratos/retrato-7.jpg",
+    "FOTO_8": "../../assets/retratos/retrato-8.jpg"
    }
   }
  ],

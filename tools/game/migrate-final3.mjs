@@ -106,7 +106,13 @@ function main() {
     examples: [1, 2, 3].map((n) => {
       const es = n === 1 ? dump.EJEMPLO : dump['EJEMPLO' + n];
       const en = n === 1 ? dump.EJEMPLO_EN : dump['EJEMPLO' + n + '_EN'];
-      return { id: String(n), values: { es, en } };
+      // Fotos de ejemplo: mismo criterio que tools/qa/parity.py (retrato-<sufijo>.jpg).
+      // Rutas relativas a la carpeta del juego, como el fondo.
+      const photos = {};
+      for (const fid of ['FOTO_CUMPLE', ...[1, 2, 3, 4, 5, 6, 7, 8].map((i) => 'FOTO_' + i)]) {
+        photos[fid] = '../../assets/retratos/retrato-' + fid.slice('FOTO_'.length) + '.jpg';
+      }
+      return { id: String(n), values: { es, en }, photos };
     }),
     solutions: [
       { id: 'tiras-p9', page: 'p9', dependsOn: ['TEST_LUGAR', 'TEST_RESULTADO'],

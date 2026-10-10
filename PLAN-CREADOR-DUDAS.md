@@ -48,3 +48,17 @@ Registro de decisiones tomadas al implementar `PLAN-CREADOR.md` (lo escribe quie
 - Solución `tiras-p9`: la tira mezclada de la página 9 (`shuffle`) con TEST_LUGAR y
   TEST_RESULTADO. Es la misma que el ejemplo del contrato 3.1; el texto en inglés es nuestra
   traducción y el artista debe revisarlo.
+
+## T0.5 (CLI y prueba dorada)
+
+- Rutas de ficheros dentro de un juego (fondo y fotos de ejemplo): **relativas a la carpeta del
+  juego**. El CLI antiguo (`--tpl`, `--bg`, `--photos-file`) sigue usando la raíz del repositorio.
+- `tools/compose.js` carga `tools/game/load.mjs` con `import()` dinámico (un CJS no puede
+  importar ESM de forma síncrona en todas las versiones).
+- `tools/qa/golden.py`: 96/96 páginas idénticas a 60 ppp. Comprobado también con una copia del
+  juego con un nombre cambiado: 4 páginas dejan de coincidir y el script termina con código 1.
+- `tools/qa/salida-golden/` añadido a `.gitignore`.
+- El `--tpl` antiguo y `--game` dan el mismo texto para el ejemplo 1 (`pdftotext`).
+- Pendiente para M2: el motor todavía tiene dentro los casos de p4, p10 y p16 (ticks, runas,
+  inicial de la app) y los campos NOMBRE_CUMPLE_FICHA / S8_ICON_N. Las mecánicas ya están
+  declaradas en el juego, pero el motor las ignora.
