@@ -6622,7 +6622,7 @@
    }
   },
   {
-   "type": "inicial-app",
+   "type": "initial",
    "page": "p16",
    "derives": [
     "S8_ICON_1",
@@ -6631,7 +6631,12 @@
     "S8_ICON_4"
    ],
    "params": {
-    "prefix": "APP_"
+    "map": {
+     "APP_1": "S8_ICON_1",
+     "APP_2": "S8_ICON_2",
+     "APP_3": "S8_ICON_3",
+     "APP_4": "S8_ICON_4"
+    }
    }
   }
  ],

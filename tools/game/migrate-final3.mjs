@@ -14,7 +14,7 @@
 //   cap     = LIMITS[campo] || q.max || tope de la plantilla || 70 (solo textos).
 //
 // Lo que la demo calculaba en el motor se declara como mecánica (T2.1 y siguientes):
-// las casillas (ticks), la ficha nombre+alias (join) y el icono de la app (inicial-app).
+// las casillas (ticks), la ficha nombre+alias (join) y el icono de la app (initial).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -101,7 +101,8 @@ function main() {
     mechanics: [
       { type: 'ticks', page: 'p4', params: { field: 'DEBILIDAD', half: TICK_HALF, boxes: TICK_BOX } },
       { type: 'join', page: 'p4', derives: ['NOMBRE_CUMPLE_FICHA'], params: { name: 'NOMBRE_CUMPLE', alias: 'B_ALIAS', target: 'NOMBRE_CUMPLE_FICHA' } },
-      { type: 'inicial-app', page: 'p16', derives: ['S8_ICON_1', 'S8_ICON_2', 'S8_ICON_3', 'S8_ICON_4'], params: { prefix: 'APP_' } },
+      { type: 'initial', page: 'p16', derives: ['S8_ICON_1', 'S8_ICON_2', 'S8_ICON_3', 'S8_ICON_4'],
+        params: { map: { APP_1: 'S8_ICON_1', APP_2: 'S8_ICON_2', APP_3: 'S8_ICON_3', APP_4: 'S8_ICON_4' } } },
     ],
     examples: [1, 2, 3].map((n) => {
       const es = n === 1 ? dump.EJEMPLO : dump['EJEMPLO' + n];
