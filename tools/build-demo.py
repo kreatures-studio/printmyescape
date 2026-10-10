@@ -48,6 +48,14 @@ def main():
         fontkit = f.read()
     with open(os.path.join(ROOT, 'tools', 'pme-compose-core.js'), encoding='utf-8') as f:
         compose = f.read()
+    # Mecánicas (mechanics/*.js, salvo el índice de Node) van delante del motor: se registran en PMEMechanics.
+    mech = ''
+    mdir = os.path.join(ROOT, 'mechanics')
+    for name in sorted(os.listdir(mdir)):
+        if name.endswith('.js') and name != 'index.js':
+            with open(os.path.join(mdir, name), encoding='utf-8') as f:
+                mech += f.read() + '\n'
+    compose = mech + compose
     fonts = {
         'runes': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'PigpenRunes.ttf')), 'subset': False},
         'caveatBold': {'b64': b64(os.path.join(ROOT, 'assets', 'fonts', 'Caveat-Bold.ttf')), 'subset': False},

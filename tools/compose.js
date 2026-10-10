@@ -18,6 +18,7 @@ const path = require('path');
 /* El núcleo espera pdf-lib y fontkit como globales (igual que en el navegador). */
 globalThis.PDFLib = require('pdf-lib');
 globalThis.fontkit = require('@pdf-lib/fontkit');
+require('../mechanics/index.js');
 require('./pme-compose-core.js');
 const { composeGame } = globalThis.PMECompose;
 
@@ -71,11 +72,12 @@ async function fromGame(o) {
     photosPaths = ex.photos || {};
   }
   if (o.valuesGiven) values = o.values;
-  if (o.photosGiven) photosPaths = o.photos;
+  /* --photos-file: rutas relativas a la raíz del repo; las del ejemplo, a la carpeta del juego. */
+  if (o.photosGiven) photosPaths = Object.fromEntries(Object.entries(o.photos).map(([k, v]) => [k, path.resolve(ROOT, v)]));
   if (game.background.kind !== 'pdf') throw new Error('este fondo no es un PDF: el CLI aún no sabe componer capas');
   const bgBytes = fs.readFileSync(path.resolve(gameDir, game.background.file));
   return { bgBytes, template: deps.template, fixed: deps.fixed, i18n: deps.i18n, i18nAll: deps.i18nAll,
-    values, photosPaths, resolvePhoto: (p) => path.resolve(gameDir, p) };
+    mechanics: deps.mechanics, fields: deps.fields, values, photosPaths, resolvePhoto: (p) => path.resolve(gameDir, p) };
 }
 
 function fromTemplates(o) {
@@ -115,7 +117,7 @@ async function main() {
   const res = await composeGame({
     bgBytes: src.bgBytes,
     fonts, template: src.template, fixed: src.fixed, i18n: src.i18n, i18nAll: src.i18nAll, lang: o.lang,
-    values: src.values, photos,
+    values: src.values, photos, mechanics: src.mechanics || [], fields: src.fields || {},
   });
   fs.writeFileSync(path.join(ROOT, o.out), res.bytes);
   const nFotos = Object.keys(src.photosPaths).length;

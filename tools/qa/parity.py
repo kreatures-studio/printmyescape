@@ -77,7 +77,7 @@ def cli_pdf(lang, n, values):
         json.dump(photo_map(values.keys()), f)
     out = os.path.join(OUT, 'cli-%s-%d.pdf' % (lang, n))
     subprocess.run(['node', os.path.join(ROOT, 'tools', 'compose.js'),
-                    '--tpl', 'templates/final3', '--bg', 'Final3-Clean.pdf', '--lang', lang,
+                    '--game', 'games/final3', '--lang', lang,
                     '--values-file', vf, '--photos-file', pf, '--out', os.path.relpath(out, ROOT)],
                    cwd=ROOT, check=True, capture_output=True)
     return out

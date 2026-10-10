@@ -1831,6 +1831,7 @@ function generatePDFNow() {
         template: TPL, fixed: PME_DEMO_DATA.texts,
         i18n: PME_DEMO_DATA.i18n[lang], i18nAll: PME_DEMO_DATA.i18n, lang: lang,
         values: vals, photos: ph,
+        mechanics: PME_DEMO_DATA.game.mechanics || [], fields: PME_DEMO_DATA.game.fields || {},
         onProgress: function (pr) { bar.style.width = Math.round(pr * 100) + '%'; }
       }).then(function (res) {
         var blob = new Blob([res.bytes], { type: 'application/pdf' });

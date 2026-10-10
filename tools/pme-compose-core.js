@@ -338,28 +338,6 @@ function cleanValues(values) {
   });
   return out;
 }
-/* Casillas de "Delitos conocidos" (p4), en %, centro de cada casilla; 4 opciones + Otro. */
-const TICK_BOX = [
-  { x: 9.95, y: 55.86 }, { x: 9.95, y: 58.52 }, { x: 9.95, y: 61.25 }, { x: 9.95, y: 63.58 }, { x: 9.95, y: 65.92 }
-];
-const TICK_HALF = 0.6;
-const DELITOS = [
-  ['Llegar tarde', 'Being late'], ['Robar comida ajena', 'Stealing food from others'],
-  ['Contar chistes malos', 'Telling bad jokes'], ['Hacer trampas jugando', 'Cheating at games']
-];
-/* 'a||b||Otro: x' -> índices de las casillas marcadas (4 = Otro) */
-function delitosMarcados(v) {
-  const out = [];
-  String(v || '').split('||').forEach((p) => {
-    const t = p.trim();
-    if (!t) return;
-    if (/^(Otro|Other):/.test(t)) { if (out.indexOf(4) < 0) out.push(4); return; }
-    for (let i = 0; i < DELITOS.length; i++) {
-      if ((t === DELITOS[i][0] || t === DELITOS[i][1]) && out.indexOf(i) < 0) out.push(i);
-    }
-  });
-  return out;
-}
 async function composeGame(deps) {
   const PDFLib = globalThis.PDFLib, fontkit = globalThis.fontkit;
   if (!PDFLib || !fontkit) throw new Error('faltan PDFLib/fontkit');
@@ -413,6 +391,20 @@ async function composeGame(deps) {
     return pickFont(f.fontFamily, f.size);
   };
   const warns = [];
+  /* Mecánicas del juego (contrato 3.2): cada una dibuja en su página y en su capa.
+     Las que aún no tienen implementación en mechanics/ se avisan (no detienen la
+     composición); T2.5 lo convierte en error. */
+  const mecanicas = deps.mechanics || [];
+  const campos = deps.fields || {};
+  const registro = globalThis.PMEMechanics || {};
+  mecanicas.forEach((m) => { if (!registro[m.type]) warns.push(`mecánica sin implementar: ${m.type}`); });
+  function correrMecanicas(pageId, capa, page, PW, PH) {
+    mecanicas.forEach((m) => {
+      const def = registro[m.type];
+      if (!def || m.page !== pageId || (def.layer || 'final') !== capa) return;
+      def.drawPage({ page, PW, PH, rgb, values, lang: deps.lang, fields: campos }, m.params || {});
+    });
+  }
   /* Reflow por línea: igual que en Node (valores dentro de la frase). */
   const FLOW_GAP_MAX = 5;
   const flowPairOk = (segs) => {
@@ -819,17 +811,8 @@ async function composeGame(deps) {
     for (const gr of flowGroups) {
       drawFlowGroup(bg, gr, textOf, (fid) => slotVal(fid), PW, PH);
     }
-    /* Delitos conocidos (p4): marca con una X las casillas elegidas */
-    if (template.pages[pi].id === 'p4') {
-      const picked = delitosMarcados(values.DEBILIDAD);
-      const ink = rgb(0.114, 0.114, 0.106);
-      picked.forEach((i) => {
-        const bx = (TICK_BOX[i].x / 100) * PW, by = PH - (TICK_BOX[i].y / 100) * PH;
-        const d = TICK_HALF * PW / 100;
-        bg.drawLine({ start: { x: bx - d, y: by - d }, end: { x: bx + d, y: by + d }, thickness: 0.9, color: ink });
-        bg.drawLine({ start: { x: bx - d, y: by + d }, end: { x: bx + d, y: by - d }, thickness: 0.9, color: ink });
-      });
-    }
+    /* Marcas de mecánicas sobre la página (capa «over», p. ej. casillas marcadas). */
+    correrMecanicas(template.pages[pi].id, 'over', bg, PW, PH);
     /* Nota cifrada (p10): igual que en Node. */
     tick((pi + 1) / n);
   }

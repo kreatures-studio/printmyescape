@@ -144,3 +144,22 @@ Pendiente (no bloquea M2):
 - Cinco casos a propósito, todos detectados.
 - La redacción en español y en inglés sigue siendo nuestra y la confirma el artista.
 - Las etiquetas cortas de la revisión (`SHORT`) pasan a M2, como acordado.
+
+## T2.1 (las casillas marcadas salen del motor: mecánica «ticks»)
+
+- Mecánicas en `mechanics/`: un fichero por mecánica que se registra en `globalThis.PMEMechanics`.
+  `mechanics/index.js` las carga en Node (CLI y pruebas); `tools/build-demo.py` las pega delante
+  del motor en la demo, así que la misma carpeta sirve a los dos.
+- `mechanics/ticks.js` (capa `over`): dibuja las X de las casillas según las opciones del campo
+  `multi` indicado en `params.field`. `Otro` es la última casilla si el campo admite «Otro».
+  Valida que el número de casillas coincide con las opciones (+1 con «Otro»).
+- Motor: se borran `TICK_BOX`, `TICK_HALF`, `DELITOS` y `delitosMarcados`. Un despachador
+  `correrMecanicas(pagina, capa, ...)` llama a las mecánicas del juego en cada página y capa. Recibe
+  `{page, PW, PH, rgb, values, lang, fields}`.
+- Mecánicas del juego que todavía no tienen implementación (`nombre-alias`, `inicial-app`): el
+  motor avisa y no las ejecuta. Siguen resueltas en el motor hasta T2.2. T2.5 lo convierte en error.
+- El juego llega al motor por `game.mechanics` y `game.fields` (`toEngineDeps`, `compose.js`,
+  `src.html`). `--photos-file` se resuelve desde la raíz del repo (como dice la ayuda de la CLI); las
+  fotos del ejemplo, desde la carpeta del juego.
+- `tools/qa/parity.py` usa `--game games/final3` en lugar de `--tpl`.
+- Verificación: golden 96/96, e2e 30/30, límites 26/26, tipos 7/7; paridad navegador/CLI 96/96.
