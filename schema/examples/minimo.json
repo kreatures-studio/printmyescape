@@ -1,0 +1,43 @@
+{
+ "schema": "pme-game/1",
+ "id": "minimo",
+ "version": "0.1.0",
+ "status": "borrador",
+ "name": { "es": "Juego mínimo", "en": "Minimal game" },
+ "languages": ["es", "en"],
+ "background": { "kind": "pdf", "file": "fondo.pdf" },
+ "template": {
+  "id": "minimo",
+  "version": 1,
+  "name": "Juego mínimo",
+  "pageSize": "A4",
+  "fields": [
+   { "id": "NOMBRE_1", "type": "text", "label": "Nombre", "maxLength": 12 }
+  ],
+  "pages": [
+   {
+    "id": "p1",
+    "title": "Página 1",
+    "background": "fondo-p1.png",
+    "slots": [
+     { "field": "NOMBRE_1", "x": 10, "y": 10, "w": 40, "h": 3, "size": 2, "color": "#000000", "fontFamily": "SegoeScript", "xscale": null, "angle": 0 }
+    ]
+   }
+  ]
+ },
+ "texts": [],
+ "i18n": { "es": {}, "en": {} },
+ "fields": {
+  "NOMBRE_1": { "type": "name", "required": true, "cap": 12, "q": { "es": "Nombre", "en": "Name" } }
+ },
+ "form": {
+  "sections": [
+   { "id": "s1", "title": { "es": "Persona 1", "en": "Person 1" }, "nameField": "NOMBRE_1", "fields": ["NOMBRE_1"] }
+  ]
+ },
+ "mechanics": [],
+ "examples": [
+  { "id": "1", "values": { "es": { "NOMBRE_1": "Isabel" }, "en": { "NOMBRE_1": "Isabel" } } }
+ ],
+ "solutions": []
+}

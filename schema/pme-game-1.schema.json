@@ -1,0 +1,276 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "pme-game/1",
+  "description": "Juego de escape room imprimible. Contrato 3.1 de PLAN-CREADOR.md. Las comprobaciones cruzadas (campos de cada sección, idiomas completos, slots de la plantilla) las hace tools/game/validate.mjs.",
+  "type": "object",
+  "required": ["schema", "id", "version", "status", "name", "languages", "background", "template", "texts", "i18n", "fields", "form"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "pme-game/1" },
+    "id": { "$ref": "#/$defs/slug" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "status": { "enum": ["borrador", "enviado", "en-produccion", "publicado"] },
+    "name": { "$ref": "#/$defs/i18n" },
+    "languages": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/lang" }
+    },
+    "background": { "$ref": "#/$defs/background" },
+    "template": { "$ref": "#/$defs/template" },
+    "texts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/text" }
+    },
+    "i18n": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/lang" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": { "type": "string" }
+      }
+    },
+    "fields": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/fieldId" },
+      "additionalProperties": { "$ref": "#/$defs/field" }
+    },
+    "form": { "$ref": "#/$defs/form" },
+    "mechanics": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/mechanic" }
+    },
+    "examples": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/example" }
+    },
+    "solutions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/solution" }
+    }
+  },
+  "$defs": {
+    "lang": { "type": "string", "pattern": "^[a-z]{2}$" },
+    "slug": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "fieldId": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.]*$" },
+
+    "i18n": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/lang" },
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+
+    "background": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "file"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "pdf" },
+            "file": { "type": "string", "pattern": "\\.pdf$" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "layers"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "layers" },
+            "layers": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["asset"],
+                "properties": { "asset": { "type": "string" } }
+              }
+            }
+          }
+        }
+      ]
+    },
+
+    "template": {
+      "type": "object",
+      "required": ["id", "version", "pageSize", "fields", "pages"],
+      "properties": {
+        "id": { "type": "string" },
+        "version": { "type": "integer", "minimum": 1 },
+        "name": { "type": "string" },
+        "pageSize": { "type": "string" },
+        "shuffle": { "type": "object" },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "type"],
+            "properties": {
+              "id": { "$ref": "#/$defs/fieldId" },
+              "type": { "type": "string" },
+              "label": { "type": "string" },
+              "maxLength": { "type": "integer", "minimum": 1 }
+            }
+          }
+        },
+        "pages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "slots"],
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "background": { "type": "string" },
+              "slots": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["field", "x", "y", "w", "h"],
+                  "properties": {
+                    "field": { "$ref": "#/$defs/fieldId" },
+                    "x": { "type": "number" },
+                    "y": { "type": "number" },
+                    "w": { "type": "number" },
+                    "h": { "type": "number" },
+                    "size": { "type": "number" },
+                    "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+                    "fontFamily": { "type": "string" },
+                    "xscale": { "type": ["number", "null"] },
+                    "angle": { "type": "number" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "text": {
+      "type": "object",
+      "required": ["page", "key", "x", "y", "w", "h"],
+      "properties": {
+        "page": { "type": "integer", "minimum": 1 },
+        "key": { "type": "string", "minLength": 1 },
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "w": { "type": "number" },
+        "h": { "type": "number" }
+      }
+    },
+
+    "field": {
+      "type": "object",
+      "required": ["type", "required", "q"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "enum": ["name", "text", "long", "number", "photo", "choice", "multi"] },
+        "required": { "type": "boolean" },
+        "cap": { "type": "integer", "minimum": 1 },
+        "q": { "$ref": "#/$defs/i18n" },
+        "desc": { "$ref": "#/$defs/i18n" },
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "options": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/i18n" }
+        },
+        "allowOther": { "type": "boolean" },
+        "otherField": { "$ref": "#/$defs/fieldId" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "enum": ["choice", "multi"] } }, "required": ["type"] },
+          "then": { "required": ["options"] }
+        },
+        {
+          "if": { "properties": { "allowOther": { "const": true } }, "required": ["allowOther"] },
+          "then": { "required": ["otherField"] }
+        }
+      ]
+    },
+
+    "form": {
+      "type": "object",
+      "required": ["sections"],
+      "additionalProperties": false,
+      "properties": {
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/section" }
+        }
+      }
+    },
+
+    "section": {
+      "type": "object",
+      "required": ["id", "title", "fields"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "title": { "$ref": "#/$defs/i18n" },
+        "hint": { "$ref": "#/$defs/i18n" },
+        "nameField": { "$ref": "#/$defs/fieldId" },
+        "photoField": { "$ref": "#/$defs/fieldId" },
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/fieldId" }
+        }
+      }
+    },
+
+    "mechanic": {
+      "type": "object",
+      "required": ["type", "page", "params"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "$ref": "#/$defs/slug" },
+        "page": { "type": "string", "pattern": "^p\\d+$" },
+        "params": { "type": "object" }
+      }
+    },
+
+    "example": {
+      "type": "object",
+      "required": ["id", "values"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "values": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/lang" },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        },
+        "photos": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+
+    "solution": {
+      "type": "object",
+      "required": ["id", "how"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "page": { "type": "string", "pattern": "^p\\d+$" },
+        "dependsOn": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/fieldId" }
+        },
+        "how": { "$ref": "#/$defs/i18n" }
+      }
+    }
+  }
+}
