@@ -140,7 +140,9 @@
                     "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
                     "fontFamily": { "type": "string" },
                     "xscale": { "type": ["number", "null"] },
-                    "angle": { "type": "number" }
+                    "angle": { "type": "number" },
+                    "transform": { "enum": ["runes"], "description": "Transformación del valor del hueco (mechanics/runes.js)." },
+                    "params": { "type": "object", "description": "Parámetros de la transformación (p. ej. prefix por idioma en «runes»)." }
                   }
                 }
               }

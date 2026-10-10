@@ -1714,7 +1714,14 @@
       "wrap": 1,
       "angle": 0,
       "tight": 1,
-      "color": "#450f14"
+      "color": "#450f14",
+      "transform": "runes",
+      "params": {
+       "prefix": {
+        "es": "TE QUIERO ",
+        "en": "I LOVE "
+       }
+      }
      }
     ]
    },
@@ -6694,6 +6701,21 @@
      "APODO_7": "APODO_7.PREF",
      "APODO_8": "APODO_8.PREF"
     }
+   }
+  },
+  {
+   "type": "runes-panel",
+   "page": "p10",
+   "params": {
+    "x": 8,
+    "y": 37.5,
+    "w": 82.5,
+    "h": 53,
+    "color": [
+     0.85,
+     0.77,
+     0.64
+    ]
    }
   },
   {

@@ -432,7 +432,7 @@ async function composeGame(deps) {
     }
     for (const s of tpl.pages[pi].slots) {
       const fld = tpl.fields.find((x) => x.id === s.field);
-      if (!fld || fld.type !== 'text' || Math.abs(s.angle || 0) >= 45) continue;
+      if (!fld || fld.type !== 'text' || s.transform || Math.abs(s.angle || 0) >= 45) continue;
       items.push({ kind: 's', ref: s,
         x0: s.x, x1: s.x + s.w, cy: s.y + s.h / 2, h: s.h });
     }
@@ -553,84 +553,22 @@ async function composeGame(deps) {
       pen += w.nat * laid.hs;
     }
   };
-  /* Runas pigpen (p10): igual que en Node. */
-  const RUNE_INK = rgb(0.27, 0.06, 0.08);
-  const RUNE_BG = rgb(0.85, 0.77, 0.64);
-  const PIG_WALLS = { A: 'RB', B: 'LRB', C: 'LB', D: 'TRB', E: 'LRTB', F: 'TLB', G: 'TR', H: 'TLR', I: 'TL' };
-  const PIG_CELLS = { A: [0,0], B: [1,0], C: [2,0], D: [0,1], E: [1,1], F: [2,1], G: [0,2], H: [1,2], I: [2,2] };
-  const PIG_X = { S: [[[0,0],[0.5,0.5]], [[1,0],[0.5,0.5]]], T: [[[0,0],[0.5,0.5]], [[0,1],[0.5,0.5]]],
-    U: [[[1,0],[0.5,0.5]], [[1,1],[0.5,0.5]]], V: [[[0,1],[0.5,0.5]], [[1,1],[0.5,0.5]]] };
-  const normRunes = (s) => (s || '').toUpperCase().replace(/[ÁÀÄÂ]/g, 'A').replace(/[ÉÈËÊ]/g, 'E')
-    .replace(/[ÍÌÏÎ]/g, 'I').replace(/[ÓÒÖÔ]/g, 'O').replace(/[ÚÙÜÛ]/g, 'U').replace(/Ñ/g, 'N')
-    .replace(/[^A-Z ]/g, '').replace(/ +/g, ' ').trim();
-  const runeInfo = (ch) => {
-    if (PIG_WALLS[ch]) return { walls: PIG_WALLS[ch], cell: PIG_CELLS[ch], dot: false };
-    if ('JKLMNOPQR'.indexOf(ch) >= 0) { const b = 'ABCDEFGHI'['JKLMNOPQR'.indexOf(ch)]; return { walls: PIG_WALLS[b], cell: PIG_CELLS[b], dot: true }; }
-    if (PIG_X[ch]) return { xsegs: PIG_X[ch], dot: false };
-    if ('WXYZ'.indexOf(ch) >= 0) return { xsegs: PIG_X['STUV'['WXYZ'.indexOf(ch)]], dot: true };
-    return null;
-  };
-  const runeWrap = (text, max) => {
-    const words = String(text || '').split(' ').filter(Boolean);
-    const out = [];
-    let cur = '';
-    for (const w of words) {
-      if (!cur) cur = w;
-      else if ((cur + ' ' + w).length <= max) cur += ' ' + w;
-      else { out.push(cur); cur = w; }
-    }
-    if (cur) out.push(cur);
-    return out;
-  };
-  const drawRunes = (page, text, cx, cy, cell, maxW) => {
-    const layout = (cs) => {
-      const items = [];
-      let total = 0;
-      for (const ch of text) {
-        if (ch === ' ') { total += cs * 0.7; continue; }
-        if (!runeInfo(ch)) continue;
-        items.push({ ch, adv: total });
-        total += cs * 1.3;
-      }
-      return { items, total };
-    };
-    let lay = layout(cell);
-    if (lay.items.length && lay.total > maxW) {
-      cell *= maxW / lay.total;
-      lay = layout(cell);
-    }
-    const x0 = cx - lay.total / 2;
-    for (const it of lay.items) {
-      const ox = x0 + it.adv, oy = cy - cell / 2;
-      const seg = (ax, ay, bx, by) => page.drawLine({
-        start: { x: ox + ax * cell, y: oy + (1 - ay) * cell },
-        end: { x: ox + bx * cell, y: oy + (1 - by) * cell },
-        thickness: Math.max(0.45, cell * 0.04), color: RUNE_INK });
-      const g = runeInfo(it.ch);
-      if (g.xsegs) {
-        g.xsegs.forEach((s) => seg(s[0][0], s[0][1], s[1][0], s[1][1]));
-        if (g.dot) page.drawCircle({ x: ox + cell / 2, y: oy + cell / 2, size: cell * 0.11, color: RUNE_INK });
-      } else {
-        const c = g.cell[0] / 3, r = g.cell[1] / 3, q = 1 / 3;
-        if (g.walls.indexOf('L') >= 0) seg(c, r, c, r + q);
-        if (g.walls.indexOf('R') >= 0) seg(c + q, r, c + q, r + q);
-        if (g.walls.indexOf('T') >= 0) seg(c, r, c + q, r);
-        if (g.walls.indexOf('B') >= 0) seg(c, r + q, c + q, r + q);
-        if (g.dot) page.drawCircle({ x: ox + (c + q / 2) * cell, y: oy + (1 - r - q / 2) * cell, size: cell * 0.11, color: RUNE_INK });
-      }
-    }
-  };
+  /* Runas: la transformación «runes» de un hueco vive en mechanics/runes.js (globalThis.PMETransforms). */
   /* Alias junto al nombre (la plantilla no trae huecos de alias). */
   /* slot.upper: el valor se muestra en mayúsculas (p. ej. el nombre en "POSIBLES UBICACIONES DE") */
   const caseOf = (s, v) => (s && s.upper ? v.toUpperCase() : v);
   const slotVal = (field) => {
-    if (field === 'S2_SECRET_LOVE') {
-      const nv = normRunes(values.S2_SECRET_LOVE || '');
-      return nv ? (deps.lang === 'en' ? 'I LOVE ' : 'TE QUIERO ') + nv : '';
-    }
     let v = String(values[field] || '').replace(/[ \t]+/g, ' ')
       .split('\n').map((l) => l.trim()).join('\n').trim();
     return v;
+  };
+  /* Valor que se dibuja en un hueco: el campo y, si el hueco tiene transform, su transformación. */
+  const valorHueco = (s) => {
+    const v = slotVal(s.field);
+    if (!s.transform) return v;
+    const tr = (globalThis.PMETransforms || {})[s.transform];
+    if (!tr) throw new Error(`transform desconocido: ${s.transform}`);
+    return tr(v, s.params || {}, deps.lang);
   };
   const n = template.pages.length;
   for (let pi = 0; pi < n; pi++) {
@@ -650,11 +588,8 @@ async function composeGame(deps) {
       bp.lines = ((f && f.lines) || []).map(box);
       return bp;
     };
-    /* fondo de la nota cifrada (p10): tapa el ejemplo del artista */
-    if (template.pages[pi].id === 'p10') {
-      const rx = (v) => (v / 100) * PW, ry = (v) => PH - (v / 100) * PH;
-      bg.drawRectangle({ x: rx(8), y: ry(90.5), width: rx(90.5) - rx(8), height: ry(37.5) - ry(90.5), color: RUNE_BG });
-    }
+    /* Capa «under» (p. ej. el fondo de la nota cifrada en p10): antes del texto. */
+    correrMecanicas(template.pages[pi].id, 'under', bg, PW, PH);
     const pageFixed = fixed.filter((x) => x.page === pi + 1);
     const baseOverride = new Map();
     const textOf = (f) => (i18n[f.key] !== undefined ? i18n[f.key] : f.es);
@@ -689,7 +624,7 @@ async function composeGame(deps) {
         const fld = template.fields.find((x) => x.id === s.field);
         if (!fld || fld.type !== 'text' || s._flow) continue;
         if (!((s.angle || 0) < -45 && (s.angle || 0) > -135)) continue;
-        const val = String(slotVal(s.field) || '').replace(/\s*\n\s*/g, ' ').trim();
+        const val = String(valorHueco(s) || '').replace(/\s*\n\s*/g, ' ').trim();
         if (!val) continue;
         const bb = box(s);
         const sfont = ff[pickFont(s.fontFamily || 'caveat', s.size)];
@@ -741,7 +676,7 @@ async function composeGame(deps) {
         for (const s of template.pages[pi].slots) {
           const fld = template.fields.find((x) => x.id === s.field);
           if (!fld || fld.type !== 'text' || s._flow) continue;
-          const val = caseOf(s, s.wrap ? slotVal(s.field) : slotVal(s.field).replace(/\s*\n\s*/g, ' ').trim());
+          const val = caseOf(s, s.wrap ? valorHueco(s) : valorHueco(s).replace(/\s*\n\s*/g, ' ').trim());
           if (!val || val.indexOf('\n') >= 0) continue;
           if (((s.angle || 0) > 45 || (s.angle || 0) < -45)) continue;
           const sfont = ff[pickFont(s.fontFamily || 'caveat', s.size)];
@@ -777,7 +712,7 @@ async function composeGame(deps) {
       if (!fld) continue;
       if (fld.type === 'text') {
         if (s._flow) continue;
-        const val = caseOf(s, s.wrap ? slotVal(s.field) : slotVal(s.field).replace(/\s*\n\s*/g, ' ').trim());
+        const val = caseOf(s, s.wrap ? valorHueco(s) : valorHueco(s).replace(/\s*\n\s*/g, ' ').trim());
         if (!val) continue;
         const font = ff[pickFont(s.fontFamily || 'caveat', s.size)];
         if (drawFitted(bg, degrees, ops, font, val, box(s), ptSize(s.fontFamily, s.size, PW),

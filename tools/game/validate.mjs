@@ -19,6 +19,7 @@ import { loadGame } from './load.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 // Registro de mecánicas (mechanics/index.js, el mismo que usa el motor en Node).
 const MECANICAS = createRequire(import.meta.url)(path.join(HERE, '..', '..', 'mechanics', 'index.js'));
+const TRANSFORMS = globalThis.PMETransforms || {};
 const SCHEMA = path.join(HERE, '..', '..', 'schema', 'pme-game-1.schema.json');
 const TEXT_TYPES = new Set(['name', 'text', 'long']);
 
@@ -102,6 +103,16 @@ export function crossErrors(game, { submit = false } = {}) {
     for (const sl of p.slots || []) {
       if (!fields[sl.field] && !derived.has(sl.field)) {
         errs.push(`template/pages/${p.id}: el slot «${sl.field}» no es un campo ni un derivado de una mecánica`);
+      }
+      if (sl.transform !== undefined) {
+        if (!TRANSFORMS[sl.transform]) errs.push(`template/pages/${p.id}: la transformación «${sl.transform}» no existe`);
+        if (sl.transform === 'runes') {
+          for (const l of langs) {
+            if (!(sl.params && sl.params.prefix && typeof sl.params.prefix[l] === 'string')) {
+              errs.push(`template/pages/${p.id}: el hueco «${sl.field}» (runes) necesita params.prefix.${l}`);
+            }
+          }
+        }
       }
     }
   }
