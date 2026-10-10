@@ -106,3 +106,11 @@ Pendiente (no bloquea M2):
 - Tamaño de `demo/index.html`: 7,4 → 7,5 MB, porque el juego se incrusta además de la plantilla
   y los textos. Se puede quitar la duplicación en un paso posterior.
 - Pruebas: E2E 30/30, límites 26/26, paridad 96/96, dorada 96/96.
+
+## T1.2 (constantes sin uso)
+
+- `grep -c "SUS_EXTRA = {" demo/src.html` da 0 desde T1.1.
+- Recuento de referencias de todos los nombres de nivel superior de `demo/src.html` (266):
+  ninguno aparece solo en su definición. `fitsOptions` y la rama de `DEBILIDAD` en `checkValue`
+  sí se usan (el clic de las píldoras y la comprobación de la revisión), así que no se tocan.
+- Sin cambios de código: las mismas pruebas de T1.1 siguen valiendo porque el build no cambia.
