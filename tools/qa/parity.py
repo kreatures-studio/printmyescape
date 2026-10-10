@@ -44,7 +44,7 @@ def browser_pdfs(p):
         pg.click('#langSwitch button[data-lang="%s"]' % lang)
         pg.wait_for_timeout(100)
         # Recorrido real: botón "Rellenar ejemplo n" -> bienvenida -> pasos -> revisión -> PDF
-        pg.locator('.ex-card button').nth(n - 1).click()
+        pg.locator('.ex-card:not(.blank-card) button').nth(n - 1).click()
         pg.wait_for_timeout(300)
         for _ in range(80):
             if pg.evaluate('() => view') == 'review':

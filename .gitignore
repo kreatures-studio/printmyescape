@@ -12,3 +12,5 @@ demo2/
 
 # Salida de las pruebas E2E (se regenera en cada ejecución)
 tools/qa/salida-qa/
+tools/qa/salida-paridad/
+salida-paridad/
