@@ -2126,7 +2126,6 @@ function startFromScratch() {
   clearAll();
   view = 'steps';
   saveDraft();
-  if (isMobile()) { render(); var w = document.querySelector('#mwrap .welcome-block'); if (w) w.scrollIntoView({ block: 'start' }); return; }
   idx = welcomeIndex(); render(); window.scrollTo(0, 0);
 }
 /* Idioma: lo eligen las tarjetas de la portada o el selector ES · EN de arriba. */
@@ -2257,6 +2256,9 @@ function goBack() {
   if (isMobile()) {
     if (view === 'steps' && secPos > 0) {
       readAll($('mwrap')); secPos--; saveDraft(); render(); window.scrollTo(0, 0);
+    } else if (view === 'steps' && secPos === 0 && idx > 0) {
+      /* bienvenida -> portada de demostración */
+      readAll($('mwrap')); idx--; saveDraft(); render(); window.scrollTo(0, 0);
     }
     return;
   }
@@ -2284,17 +2286,19 @@ function renderMobile() {
   var box = el('div', 'msec'); box.id = 'msec-' + sec.id;
   var h = el('h2');
   if (sec.id === 'intro') {
-    h.appendChild(el('span', null, LANG ? t('landingKicker') : t('pickKicker')));
+    /* Igual que en escritorio: portada de demostración y bienvenida son pantallas
+       separadas, elegidas por idx (portada = idx 0 con DEMO_CONTROL). */
+    var onCtl = !!(DEMO_CONTROL && SCREENS[idx] && SCREENS[idx].landing);
+    h.appendChild(el('span', null, onCtl ? (LANG ? t('landingKicker') : t('pickKicker')) : t('welcomeKicker')));
     box.appendChild(h);
     var lb = el('div', 'mscreen');
-    if (DEMO_CONTROL) lb.appendChild(landingNode());
-    lb.appendChild(welcomeNode());
+    lb.appendChild(onCtl ? landingNode() : welcomeNode());
     box.appendChild(lb);
     W.appendChild(box);
     $('progress').firstElementChild.style.width = '0%';
     $('stepcount').textContent = (secPos + 1) + '/' + SECTIONS.length;
     $('back').style.display = '';
-    setNav(true, t('next'), !LANG);
+    setNav(idx === 0, t('next'), !LANG);
     buildMenu();
     return;
   }
@@ -2317,6 +2321,11 @@ function renderMobile() {
 }
 function mobileNext() {
   if (SECTIONS[secPos].id === 'intro') {
+    if (SCREENS[idx] && SCREENS[idx].landing) {
+      if (!LANG) { showErr(t('errLangFirst')); return; }
+      idx = welcomeIndex(); saveDraft(); view = 'steps'; render(); window.scrollTo(0, 0);
+      return;
+    }
     readAll($('mwrap'));
     saveDraft();
     if (!LANG) { showErr(t('errLangFirst')); return; }
