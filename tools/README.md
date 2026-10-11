@@ -98,8 +98,7 @@ Un juego es una carpeta con `game.json` (formato `pme-game/1`, ver `schema/`).
   `[CODIGO]` del PDF del artista con los `fields`. `--submit` exige los requisitos de envío.
 - Límites: `node tools/game/limites.mjs games/final3 [--json]`. Mide la capacidad de cada campo
   con el motor (fuentes embebidas) y aplica la regla de 3.1 (`min(cap, floor(capacidad × 0.75))`;
-  en los nombres, `min(cap, capacidad)`) más el tope con la letra W (`capacidadW`, T3.3). Informa de los
-  `cap` que no caben y de los límites que baja la W. El `cap` del juego no cambia.
+  en los nombres, `min(cap, capacidad)`). Informa de los `cap` que no caben.
   `tools/limits.cjs` y `tools/apply-limits.py` están obsoletos.
 - Casos del validador: `node tools/qa/validador-casos.mjs` (15 casos sobre copias de `final3`).
 - Prueba de humo: `python3 tools/qa/game-smoke.py --game games/final3` compone los ejemplos y
