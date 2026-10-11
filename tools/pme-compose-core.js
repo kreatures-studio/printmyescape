@@ -339,6 +339,40 @@ function cleanValues(values, campos) {
   });
   return out;
 }
+/* Tamaños de página de un fondo por capas (template.pageSize). */
+const PAGE_SIZES = { A4: [595.276, 841.89] };
+
+/* Dibuja las capas de arte de una página (T4.2). Cada capa: x, y, w, h en % de la página
+   (x, y = esquina superior izquierda) y angle en grados, alrededor del centro de la pieza.
+   deps.assets: { [id de pieza]: { kind: 'pdf' | 'png', bytes } }. Las piezas PDF se incrustan
+   como página (embedPdf); las PNG, como imagen (embedPng). */
+async function dibujarCapas(out, page, capas, assets, cache, degrees) {
+  const PW = page.getWidth(), PH = page.getHeight();
+  for (const capa of capas || []) {
+    const pieza = (assets || {})[capa.asset];
+    if (!pieza) throw new Error(`falta el fichero de la pieza «${capa.asset}» del kit`);
+    if (!cache[capa.asset]) {
+      cache[capa.asset] = pieza.kind === 'pdf'
+        ? (await out.embedPdf(pieza.bytes))[0]
+        : await out.embedPng(pieza.bytes);
+    }
+    const emb = cache[capa.asset];
+    const w = (capa.w / 100) * PW, h = (capa.h / 100) * PH;
+    const cx = (capa.x / 100) * PW + w / 2, cy = PH - (capa.y / 100) * PH - h / 2;
+    const th = ((capa.angle || 0) * Math.PI) / 180;
+    /* El giro de pdf-lib es alrededor de la esquina inferior izquierda: se calcula esa esquina
+       para que el centro de la pieza quede en (cx, cy) después de girar. */
+    const x0 = cx - (w / 2 * Math.cos(th) - h / 2 * Math.sin(th));
+    const y0 = cy - (w / 2 * Math.sin(th) + h / 2 * Math.cos(th));
+    const rotate = degrees(capa.angle || 0);
+    if (pieza.kind === 'pdf') {
+      page.drawPage(emb, { x: x0, y: y0, xScale: w / emb.width, yScale: h / emb.height, rotate });
+    } else {
+      page.drawImage(emb, { x: x0, y: y0, width: w, height: h, rotate });
+    }
+  }
+}
+
 async function composeGame(deps) {
   const PDFLib = globalThis.PDFLib, fontkit = globalThis.fontkit;
   if (!PDFLib || !fontkit) throw new Error('faltan PDFLib/fontkit');
@@ -361,7 +395,8 @@ async function composeGame(deps) {
   const tick = onProgress || (() => {});
   const out = await PDFDocument.create();
   out.registerFontkit(fontkit);
-  const bgDoc = await PDFDocument.load(bgBytes);
+  const bgDoc = bgBytes ? await PDFDocument.load(bgBytes) : null;
+  const artCache = {};
   const ff = {};
   for (const k of Object.keys(fonts)) {
     ff[k] = await out.embedFont(fonts[k].bytes, { subset: fonts[k].subset !== false });
@@ -570,9 +605,19 @@ async function composeGame(deps) {
   };
   const n = template.pages.length;
   for (let pi = 0; pi < n; pi++) {
-    const pages = await out.copyPages(bgDoc, [pi]);
-    const bg = pages[0];
-    out.addPage(bg);
+    let bg;
+    if (template.pages[pi].layers) {
+      /* Página por capas: hoja en blanco del tamaño de la plantilla, con sus piezas de arte. */
+      const size = PAGE_SIZES[template.pageSize];
+      if (!size) throw new Error(`tamaño de página desconocido: ${template.pageSize}`);
+      bg = out.addPage(size);
+      await dibujarCapas(out, bg, template.pages[pi].layers, deps.assets, artCache, degrees);
+    } else {
+      if (!bgDoc) throw new Error(`la página ${template.pages[pi].id} no tiene fondo (ni PDF ni capas)`);
+      const pages = await out.copyPages(bgDoc, [pi]);
+      bg = pages[0];
+      out.addPage(bg);
+    }
     const PW = bg.getWidth(), PH = bg.getHeight();
     /* slot.xEn: posición horizontal solo en inglés (p. ej. el nombre abre la línea
        en inglés y va tras "A" en español). */

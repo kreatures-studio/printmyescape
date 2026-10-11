@@ -35,6 +35,36 @@ export function schemaErrors(game) {
 }
 
 /** Comprobaciones cruzadas: lo que el esquema no puede expresar. */
+/**
+ * Manifiesto del kit (contrato 3.4): cada pieza tiene id único, tipo, fichero que existe,
+ * licencia CC0-1.0 (fase 1), fuente y autor. Devuelve { errores, piezas: Map id → pieza }.
+ */
+export function erroresKit(manifiesto) {
+  const errores = [];
+  const piezas = new Map();
+  let m;
+  try { m = JSON.parse(fs.readFileSync(manifiesto, 'utf8')); } catch (e) {
+    return { errores: [`kit: el manifiesto no es JSON válido (${e.message})`], piezas };
+  }
+  const dirKit = path.dirname(manifiesto);
+  const TIPOS = new Set(['background', 'frame', 'photo-frame', 'decor', 'icon']);
+  if (!Array.isArray(m.pieces)) return { errores: ['kit: falta la lista «pieces»'], piezas };
+  for (const p of m.pieces) {
+    const id = p.id || '(sin id)';
+    if (!p.id) errores.push('kit: una pieza no tiene id');
+    else if (piezas.has(p.id)) errores.push(`kit: la pieza «${p.id}» está repetida`);
+    else piezas.set(p.id, p);
+    if (!TIPOS.has(p.kind)) errores.push(`kit/${id}: kind debe ser ${[...TIPOS].join(' | ')}`);
+    if (!p.file) errores.push(`kit/${id}: falta file`);
+    else if (!fs.existsSync(path.resolve(dirKit, p.file))) errores.push(`kit/${id}: no existe el fichero «${p.file}»`);
+    if (p.thumb && !fs.existsSync(path.resolve(dirKit, p.thumb))) errores.push(`kit/${id}: no existe la miniatura «${p.thumb}»`);
+    if (!LICENCIAS_KIT.has(p.license)) errores.push(`kit/${id}: licencia no admitida («${p.license}»); en fase 1 solo CC0-1.0`);
+    if (!p.source) errores.push(`kit/${id}: falta source`);
+    if (!p.author) errores.push(`kit/${id}: falta author`);
+  }
+  return { errores, piezas };
+}
+
 export function crossErrors(game, { submit = false, dir = null, codigos = null, kit = null } = {}) {
   const errs = [];
   const langs = Array.isArray(game.languages) ? game.languages : [];
@@ -153,21 +183,36 @@ export function crossErrors(game, { submit = false, dir = null, codigos = null, 
     }
   });
 
-  // Fondo: el PDF tiene que existir; con capas, cada pieza tiene que estar en el kit con licencia admitida.
-  if (game.background && game.background.kind === 'pdf' && dir && !fs.existsSync(path.resolve(dir, game.background.file))) {
+  // Fondo (T4.2): con PDF, el fichero tiene que existir y ninguna página lleva capas. Con «layers»,
+  // cada página declara sus capas y cada capa es una pieza del kit (3.4) con licencia admitida.
+  const kind = game.background && game.background.kind;
+  if (kind === 'pdf' && dir && !fs.existsSync(path.resolve(dir, game.background.file))) {
     errs.push(`background: no existe el PDF «${game.background.file}»`);
   }
-  if (game.background && game.background.kind === 'layers') {
+  if (kind === 'pdf') {
+    for (const p of pages) if (p.layers) errs.push(`template/${p.id}: las capas solo van con background «layers»`);
+  }
+  if (kind === 'layers') {
+    for (const p of pages) if (!Array.isArray(p.layers)) errs.push(`template/${p.id}: falta «layers» (fondo por capas; puede ser [])`);
+  }
+  const conCapas = pages.some((p) => Array.isArray(p.layers) && p.layers.length);
+  if (kind === 'layers' || conCapas || kit) {
     const manifiesto = kit || path.join(ROOT, 'assets', 'kit', 'manifest.json');
     if (!fs.existsSync(manifiesto)) {
-      errs.push('background: no hay manifiesto del kit (assets/kit/manifest.json)');
+      errs.push(`background: no hay manifiesto del kit (${path.relative(ROOT, manifiesto)})`);
     } else {
-      const piezas = new Map((JSON.parse(fs.readFileSync(manifiesto, 'utf8')).pieces || []).map((p) => [p.id, p]));
-      for (const capa of game.background.layers || []) {
-        const p = piezas.get(capa.asset);
-        if (!p) errs.push(`background: la pieza «${capa.asset}» no está en el kit`);
-        else if (!LICENCIAS_KIT.has(p.license)) errs.push(`background: la pieza «${capa.asset}» tiene una licencia no admitida («${p.license}»)`);
-        else if (!p.source || !p.author) errs.push(`background: la pieza «${capa.asset}» necesita source y author`);
+      const { errores, piezas } = erroresKit(manifiesto);
+      errs.push(...errores);
+      for (const p of pages) {
+        for (const capa of p.layers || []) {
+          const pieza = piezas.get(capa.asset);
+          if (!pieza) errs.push(`template/${p.id}: la pieza «${capa.asset}» no está en el kit`);
+          else if (!LICENCIAS_KIT.has(pieza.license)) errs.push(`template/${p.id}: la pieza «${capa.asset}» tiene una licencia no admitida («${pieza.license}»)`);
+          else if (!pieza.source || !pieza.author) errs.push(`template/${p.id}: la pieza «${capa.asset}» necesita source y author`);
+          for (const k of ['x', 'y', 'w', 'h']) {
+            if (typeof capa[k] !== 'number') errs.push(`template/${p.id}: la capa «${capa.asset}» necesita ${k}`);
+          }
+        }
       }
     }
   }
@@ -254,10 +299,12 @@ function main() {
   const submit = args.includes('--submit');
   const iPdf = args.indexOf('--pdf-texto');
   const pdfTexto = iPdf >= 0 ? args[iPdf + 1] : null;
-  const saltar = iPdf >= 0 ? iPdf + 1 : -1;
-  const target = args.find((a, i) => !a.startsWith('--') && i !== saltar);
+  const iKit = args.indexOf('--kit');
+  const kit = iKit >= 0 ? path.resolve(args[iKit + 1]) : null;
+  const saltar = new Set([iPdf, iKit].filter((i) => i >= 0).map((i) => i + 1));
+  const target = args.find((a, i) => !a.startsWith('--') && !saltar.has(i));
   if (!target) {
-    console.error('Uso: node tools/game/validate.mjs <carpeta|game.json> [--submit] [--pdf-texto <texto-del-artista.pdf>]');
+    console.error('Uso: node tools/game/validate.mjs <carpeta|game.json> [--submit] [--pdf-texto <texto-del-artista.pdf>] [--kit <manifest.json>]');
     process.exit(2);
   }
   let game;
@@ -272,7 +319,7 @@ function main() {
   if (pdfTexto) {
     try { codigos = codigosDePdf(pdfTexto); } catch (e) { console.log(`ERROR ${e.message}`); process.exit(1); }
   }
-  const errs = validateGame(game, { submit, dir, codigos });
+  const errs = validateGame(game, { submit, dir, codigos, kit });
   for (const e of errs) console.log('ERROR ' + e);
   const avisos = avisosGame(game, { codigos });
   for (const a of avisos) console.log('AVISO ' + a);

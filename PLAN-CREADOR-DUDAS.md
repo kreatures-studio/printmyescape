@@ -292,3 +292,46 @@ Pendiente (no bloquea M2):
   (2) si se bajan los `cap`, acortar los ejemplos; (3) que la demo aplique el límite (opción c).
 - Equivalencia del aviso: «encogido fuerte» del plan es «valor encogido» en el motor.
 - Los avisos de los ejemplos son informativos y no hacen fallar la prueba.
+
+## T4.1 (kit: manifiesto, licencias y guía)
+
+- `assets/kit/manifest.json` existe con `pieces: []` (el kit inicial llega en T4.3). `LICENCIAS.md`
+  tiene la tabla vacía. `GUIA-KIT.md` está en `assets/kit/`, junto al manifiesto (el plan no fija
+  la carpeta; así el artista lo encuentra donde está el kit).
+- `validate.mjs` comprueba el manifiesto (`erroresKit`): id único, `kind` de los cinco tipos,
+  fichero y miniatura que existen, licencia `CC0-1.0`, `source` y `author`. El validador lo lee con
+  `--kit <manifest.json>` o, por defecto, `assets/kit/manifest.json` cuando el juego lo usa.
+- Caso de prueba: `tools/qa/fixtures/kit/manifest-fichero.json` (fichero que no existe). El fixture
+  `papel-viejo-1` ahora tiene su fichero (`tools/qa/fixtures/kit/papel/papel-viejo-1.png`).
+
+## T4.2 (fondo por capas en el motor)
+
+- Decisión de forma: las capas son de **cada página**, como pide `set_page` (3.3), y no una lista
+  única del juego. El fondo `"kind": "layers"` ya no lleva lista; cada página de
+  `template.pages[]` tiene `layers: [{asset, x, y, w, h, angle?}]` (x, y esquina superior izquierda
+  en %; angle en grados alrededor del centro). Las capas van debajo de los huecos y de las mecánicas
+  `under`. Con `pdf` ninguna página puede llevar capas (error del validador).
+- Motor: `composeGame` acepta `assets` (id → `{kind: 'pdf'|'png', bytes}`) y `bgBytes` nulo. Una
+  página por capas es una hoja en blanco del tamaño de `template.pageSize` (A4). Las piezas PDF se
+  incrustan con `embedPdf` y las PNG con `embedPng`; el giro se hace alrededor del centro de la pieza.
+- CLI: `compose.js --game <juego> [--kit <manifest.json>]` (por defecto `assets/kit/manifest.json`).
+- Prueba: `tools/qa/fixtures/games/capas` (el mínimo con fondo por capas y tres piezas: PNG
+  degradado, PDF rojo, PDF azul girado 30°). Las piezas las genera `tools/qa/fixtures/capas/generar.mjs`
+  (figuras propias, no arte de stock). `tools/qa/capas-test.py` compone, rasteriza a 60 ppp y compara
+  con `tools/qa/fixtures/capas/referencia.png`: 0 píxeles distintos. La referencia se hizo con
+  esta misma composición y se revisó a la vista (posiciones, tamaños y giro).
+- Aceptación: dorada 96/96 (sin cambios, el juego final3 sigue con PDF), capas 0 píxeles distintos,
+  validador 18/18 (tres casos nuevos de capas y uno de kit), demo 30/30, tipos 7/7, límites 26/26.
+  `demo/index.html` se reconstruye con el motor nuevo (cambio de 49 líneas).
+- Pendiente: el editor (M5) dibuja las capas; el validador no comprueba que las piezas se solapen con
+  los huecos.
+
+## T4.3 (kit inicial) — BLOQUEADO
+
+- Las fuentes del kit (polyhaven.com y kenney.nl) no están en la lista de salida del entorno: desde
+  la shell dan error de conexión (código 000), aunque GitHub sí responde. No se pueden descargar las
+  unas 20 piezas ni generar miniaturas con datos reales.
+- Lo que sí está hecho: la comprobación del manifiesto y de las licencias (T4.1). Falta
+  `tools/kit/thumbs.mjs` (miniaturas de 300 px, aún sin escribir) y bajar las piezas.
+- Para cerrar T4.3: o se permite el acceso a esos dos sitios, o las piezas se descargan a mano y se
+  pasan al repositorio con su fila en `LICENCIAS.md` (la URL exacta de cada descarga).

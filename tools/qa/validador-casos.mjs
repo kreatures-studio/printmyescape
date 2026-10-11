@@ -12,6 +12,11 @@ const FIX = path.join(ROOT, 'tools', 'qa', 'fixtures');
 const BASE = JSON.parse(fs.readFileSync(path.join(ROOT, 'games', 'final3', 'game.json'), 'utf8'));
 const DIR = path.join(ROOT, 'games', 'final3');
 const clon = () => structuredClone(BASE);
+/* Fondo por capas: la primera página lleva estas capas y las demás, ninguna. */
+const capas = (g, lista) => {
+  g.background = { kind: 'layers' };
+  g.template.pages.forEach((pg, i) => { pg.layers = i === 0 ? lista : []; });
+};
 const bloque = (g, mec) => g.mechanics.find((m) => m.type === mec);
 
 /* tipo: 'error' (espera un error que contiene «espera»), 'aviso' (un aviso), 'ok' (sin errores). */
@@ -38,14 +43,21 @@ const CASOS = [
   { nombre: 'foto de ejemplo inexistente', tipo: 'error', espera: 'no existe la foto',
     g: () => { const g = clon(); g.examples[0].photos.FOTO_1 = 'assets/no-existe.jpg'; return g; }, opts: { dir: DIR } },
   { nombre: 'fondo por capas: pieza que no está en el kit', tipo: 'error', espera: 'no está en el kit',
-    g: () => { const g = clon(); g.background = { kind: 'layers', layers: [{ asset: 'fantasma' }] }; return g; },
+    g: () => { const g = clon(); capas(g, [{ asset: 'fantasma', x: 0, y: 0, w: 10, h: 10 }]); return g; },
     opts: { kit: path.join(FIX, 'kit', 'manifest-ok.json') } },
   { nombre: 'fondo por capas: licencia distinta de CC0', tipo: 'error', espera: 'licencia no admitida',
-    g: () => { const g = clon(); g.background = { kind: 'layers', layers: [{ asset: 'papel-viejo-1' }] }; return g; },
+    g: () => { const g = clon(); capas(g, [{ asset: 'papel-viejo-1', x: 0, y: 0, w: 10, h: 10 }]); return g; },
     opts: { kit: path.join(FIX, 'kit', 'manifest-licencia.json') } },
   { nombre: 'fondo por capas: pieza CC0 con autor y fuente', tipo: 'ok',
-    g: () => { const g = clon(); g.background = { kind: 'layers', layers: [{ asset: 'papel-viejo-1' }] }; return g; },
+    g: () => { const g = clon(); capas(g, [{ asset: 'papel-viejo-1', x: 0, y: 0, w: 10, h: 10 }]); return g; },
     opts: { kit: path.join(FIX, 'kit', 'manifest-ok.json') } },
+  { nombre: 'capas en una página con fondo PDF', tipo: 'error', espera: 'solo van con background «layers»',
+    g: () => { const g = clon(); g.template.pages[0].layers = []; return g; }, opts: { dir: DIR } },
+  { nombre: 'fondo por capas: una página sin lista de capas', tipo: 'error', espera: 'falta «layers»',
+    g: () => { const g = clon(); g.background = { kind: 'layers' }; return g; },
+    opts: { kit: path.join(FIX, 'kit', 'manifest-ok.json') } },
+  { nombre: 'kit: fichero de una pieza inexistente', tipo: 'error', espera: 'no existe el fichero',
+    g: () => { const g = clon(); return g; }, opts: { kit: path.join(FIX, 'kit', 'manifest-fichero.json') } },
   { nombre: 'corta sin el idioma inglés', tipo: 'error', espera: 'fields/NOMBRE_1/corta: falta el texto en «en»',
     g: () => { const g = clon(); delete g.fields.NOMBRE_1.corta.en; return g; }, opts: { dir: DIR } },
 ];

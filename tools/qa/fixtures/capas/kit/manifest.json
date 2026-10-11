@@ -1,0 +1,43 @@
+{
+ "pieces": [
+  {
+   "id": "prueba-rojo",
+   "file": "piezas/rojo.pdf",
+   "kind": "decor",
+   "widthMm": 120,
+   "heightMm": 80,
+   "tags": [
+    "prueba"
+   ],
+   "license": "CC0-1.0",
+   "source": "fixture del repositorio (tools/qa/fixtures/capas/generar.mjs)",
+   "author": "PME (fixture)"
+  },
+  {
+   "id": "prueba-degradado",
+   "file": "piezas/degradado.png",
+   "kind": "background",
+   "widthMm": 210,
+   "heightMm": 140,
+   "tags": [
+    "prueba"
+   ],
+   "license": "CC0-1.0",
+   "source": "fixture del repositorio (tools/qa/fixtures/capas/generar.mjs)",
+   "author": "PME (fixture)"
+  },
+  {
+   "id": "prueba-azul",
+   "file": "piezas/azul.pdf",
+   "kind": "icon",
+   "widthMm": 80,
+   "heightMm": 80,
+   "tags": [
+    "prueba"
+   ],
+   "license": "CC0-1.0",
+   "source": "fixture del repositorio (tools/qa/fixtures/capas/generar.mjs)",
+   "author": "PME (fixture)"
+  }
+ ]
+}

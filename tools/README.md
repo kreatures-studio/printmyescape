@@ -104,6 +104,12 @@ Un juego es una carpeta con `game.json` (formato `pme-game/1`, ver `schema/`).
 - Casos del validador: `node tools/qa/validador-casos.mjs` (15 casos sobre copias de `final3`).
 - Prueba de humo: `python3 tools/qa/game-smoke.py --game games/final3` compone los ejemplos y
   valores generados («una letra» y «límite W»). Las salidas van a `salidas/smoke/` (no se versionan).
+- Kit de arte: `assets/kit/manifest.json` (contrato 3.4), `assets/kit/LICENCIAS.md` y
+  `assets/kit/GUIA-KIT.md` para los artistas. El validador comprueba el manifiesto con
+  `--kit <manifest.json>`.
+- Fondo por capas (T4.2): un juego con `"background": { "kind": "layers" }` pone sus piezas en
+  `template.pages[].layers`. Se compone con `node tools/compose.js --game <juego> [--kit <manifest.json>]`.
+  Prueba: `python3 tools/qa/capas-test.py` (compara con su PNG de referencia).
 
 ## Punto 5 — Si el artista estrena tipografía
 
