@@ -52,7 +52,7 @@
   .propiedades label { display: block; margin: 10px 0 3px; color: var(--suave); font-size: 13px; }
   .propiedades input { width: 100%; padding: 6px 8px; border: 1px solid var(--linea); border-radius: 6px; background: var(--fondo); color: inherit; font: inherit; }
   #estado { min-height: 1em; }
-  #vistas { display: flex; gap: 4px; margin-bottom: 10px; }
+  #vistas { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
   #vistas button { flex: 1; padding: 6px 4px; border: 1px solid var(--linea); border-radius: 6px; background: none; color: inherit; font: inherit; font-size: 13px; cursor: pointer; }
   #vistas button[aria-pressed="true"] { background: var(--activo); border-color: var(--acento); color: var(--acento); }
   #vistas button:disabled { opacity: .4; cursor: default; }
@@ -64,6 +64,16 @@
   .errores-mecanica { list-style: none; padding: 0; margin: 10px 0 0; }
   .propiedades.campo input[type="checkbox"] { width: auto; }
   .barra button:disabled { opacity: .4; cursor: default; }
+  .aviso-novedades { width: 100%; margin: 0; color: var(--acento); }
+  .aviso-novedades button { padding: 2px 8px; border: 1px solid var(--acento); border-radius: 6px; background: none; color: var(--acento); font: inherit; cursor: pointer; }
+  .lista-problemas { list-style: disc; padding-left: 20px; margin: 6px 0 14px; }
+  .lista-problemas li { margin: 4px 0; }
+  .lista-problemas button { padding: 0; border: 0; background: none; color: var(--acento); font: inherit; text-align: left; text-decoration: underline; cursor: pointer; }
+  .previa select { width: 100%; padding: 6px 8px; border: 1px solid var(--linea); border-radius: 6px; background: var(--fondo); color: inherit; font: inherit; }
+  .previa label { display: block; margin: 10px 0 3px; color: var(--suave); font-size: 13px; }
+  .previa button { margin-top: 12px; padding: 6px 12px; border: 1px solid var(--acento); border-radius: 6px; background: none; color: var(--acento); font: inherit; cursor: pointer; }
+  .previa button:disabled { opacity: .4; cursor: default; }
+  .previa-marco { display: block; width: 100%; max-width: 560px; height: 70vh; margin-top: 12px; border: 1px solid var(--linea); background: #fff; }
   .editor { min-width: 0; }
   @media (max-width: 760px) { .editor { grid-template-columns: 1fr; } }
   @media (max-width: 760px) {
@@ -95,6 +105,8 @@
       <button type="button" data-vista="paginas" aria-pressed="true" disabled>Páginas</button>
       <button type="button" data-vista="formulario" aria-pressed="false" disabled>Formulario</button>
       <button type="button" data-vista="mecanicas" aria-pressed="false" disabled>Mecánicas</button>
+      <button type="button" data-vista="validar" aria-pressed="false" disabled>Validar</button>
+      <button type="button" data-vista="vista" aria-pressed="false" disabled>Vista previa</button>
     </nav>
     <ul id="paginas"><li class="vacio">Elige un juego.</li></ul>
   </section>
@@ -111,6 +123,10 @@
 <script src="../mechanics/runes-panel.js"></script>
 <script src="../mechanics/strips.js"></script>
 <script src="../mechanics/ticks.js"></script>
+<!-- Vista previa (T5.6): el motor único y pdf-lib (los mismos ficheros que la demo). -->
+<script src="./vendor/pdf-lib-1.17.1.min.js"></script>
+<script src="./vendor/fontkit-1.1.1.umd.min.js"></script>
+<script src="../tools/pme-compose-core.js"></script>
 <script type="module" src="./app.js"></script>
 </body>
 </html>

@@ -1,15 +1,21 @@
 // Panel del kit (T5.4): piezas del manifiesto (contrato 3.4), filtro por etiqueta y arrastre a la página.
 // El manifiesto se lee desde su URL; las rutas de los ficheros son relativas a esa URL.
 
+import { erroresKitDatos } from '../tools/game/reglas.mjs';
+
 export const TIPO_ARRASTRE = 'application/x-pme-pieza';
 
-/** Lee el manifiesto. Devuelve { piezas: [...], porId: Map, base: URL del manifiesto }. */
+/**
+ * Lee el manifiesto. Devuelve { piezas, porId: Map, base: URL del manifiesto, errores }; errores son
+ * las reglas del kit (3.4) sin comprobar ficheros (en el navegador no se pueden mirar).
+ */
 export async function cargarKit(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`no se pudo leer el kit (${res.status})`);
   const m = await res.json();
+  const { errores, piezas: porId } = erroresKitDatos(m, null);
   const piezas = Array.isArray(m.pieces) ? m.pieces : [];
-  return { piezas, porId: new Map(piezas.map((p) => [p.id, p])), base: new URL(url, location.href) };
+  return { piezas, porId, base: new URL(url, location.href), errores };
 }
 
 /** Etiquetas de todas las piezas, sin repetir y ordenadas. */

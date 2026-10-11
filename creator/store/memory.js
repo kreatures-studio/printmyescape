@@ -29,7 +29,7 @@ export function crearAlmacenMemoria(fuentes) {
       if (!res.ok) throw new Error(`no se pudo cargar ${ruta} (${res.status})`);
       const game = await res.json();
       contador += 1;
-      juegos.set(game.id, { game, rev: `m${contador}`, historial: [] });
+      juegos.set(game.id, { game, rev: `m${contador}`, historial: [], base: new URL(ruta, location.href) });
     }
     cargado = true;
     return cargado;
@@ -72,6 +72,15 @@ export function crearAlmacenMemoria(fuentes) {
     async history(id) {
       await cargar();
       return structuredClone(entrada(id).historial);
+    },
+
+    /** Bytes de un fichero de la carpeta del juego (relativo a su game.json). */
+    async leerFichero(id, ruta) {
+      await cargar();
+      const e = entrada(id);
+      const res = await fetch(new URL(ruta, e.base));
+      if (!res.ok) throw error('not-found', `no se pudo leer ${ruta} (${res.status})`);
+      return new Uint8Array(await res.arrayBuffer());
     },
 
     async submit(id) {

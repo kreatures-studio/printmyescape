@@ -17,6 +17,17 @@ function error(code, message, status = 0) {
   return e;
 }
 
+/** Quita «.» y «..» de una ruta con «/» (sin salir de la raíz del repositorio). */
+export function normalizar(ruta) {
+  const partes = [];
+  for (const p of ruta.split('/')) {
+    if (!p || p === '.') continue;
+    if (p === '..') partes.pop();
+    else partes.push(p);
+  }
+  return partes.join('/');
+}
+
 /** Base64 de texto UTF-8 y al revés (la API de contenidos usa base64). */
 export function textoAb64(texto) {
   const bytes = new TextEncoder().encode(texto);
@@ -98,6 +109,22 @@ export function crearAlmacenGitHub({ owner, repo, token, fetchFn, api = 'https:/
         author: (c.author && c.author.login) || c.commit.author.name,
         message: c.commit.message.split('\n')[0],
       }));
+    },
+
+    /**
+     * Bytes de un fichero de la carpeta del juego (games/<id>/...). `ruta` es relativa a esa carpeta
+     * (p. ej. el fondo "../../fondo.pdf"); se normaliza antes de pedirlo. Usa el tipo «raw», que
+     * sirve ficheros de hasta 100 MB (la API de contenidos en JSON solo llega a 1 MB).
+     */
+    async leerFichero(id, ruta) {
+      const repoRuta = normalizar(`games/${id}/${ruta}`);
+      const res = await f(`${api}${base}/contents/${repoRuta.split('/').map(encodeURIComponent).join('/')}?ref=${encodeURIComponent(rama(id))}`, {
+        headers: { Accept: 'application/vnd.github.raw', 'X-GitHub-Api-Version': '2022-11-28', Authorization: `Bearer ${token}` },
+      });
+      if (res.status === 404) throw error('not-found', `no existe ${repoRuta}`, 404);
+      if (res.status === 401) throw error('auth', 'el token no es válido o no tiene permisos', 401);
+      if (!res.ok) throw error('http', `HTTP ${res.status} al leer ${repoRuta}`, res.status);
+      return new Uint8Array(await res.arrayBuffer());
     },
 
     /** Abre el pull request de la rama del juego hacia main. Si ya hay uno abierto, devuelve ese. */

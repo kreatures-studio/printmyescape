@@ -143,11 +143,16 @@ Advertencia conocida: el subsetter de pdf-lib rompe glifos de Caveat
 (ver `FONTS` en `tools/compose.js`); Caveat se incrusta completa. Si otra
 fuente sale con huecos en blanco, probar `subset: false` para ella.
 
-## Editor (M5, en curso)
+## Editor (M5)
 
 - Servidor local: `node creator/serve.mjs --port 8080` → `http://localhost:8080/creator/index.html`.
 - Pruebas (Playwright; levantan el servidor solo):
   `python3 tools/qa/creator-esqueleto.py` (lista de juegos y páginas),
   `python3 tools/qa/creator-github.py` (entrada con token y almacén de GitHub con la API simulada),
-  `python3 tools/qa/creator-lienzo.py` (lienzo: mover, redimensionar, deshacer, guardar).
+  `python3 tools/qa/creator-lienzo.py` (lienzo: mover, redimensionar, deshacer, guardar),
+  `python3 tools/qa/creator-kit.py` (panel del kit), `python3 tools/qa/creator-campos.py` (formulario y mecánicas),
+  `python3 tools/qa/creator-entrega.py` (validación con enlaces, vista previa, envío y sondeo de versiones).
 - Sin GitHub: `creator/index.html?almacen=memoria` usa el almacén en memoria.
+- Vista previa: compone en el navegador con el motor único (`tools/pme-compose-core.js`) y pdf-lib
+  (`creator/vendor/`); el PDF lleva la marca «VISTA PREVIA». El kit de la vista previa es el de
+  `assets/kit/manifest.json`; con `?kit=` se cambia (pruebas).

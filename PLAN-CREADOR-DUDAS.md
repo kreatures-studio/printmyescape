@@ -413,3 +413,25 @@ Pendiente (no bloquea M2):
 - Prueba: `tools/qa/creator-campos.py` (13/13): aceptación del formulario (al guardar solo cambian el
   tope y la pregunta, comparado con el fichero original), deshacer, parámetros por clave, JSON no válido,
   obligatoria que falta y validación de la mecánica.
+
+## T5.6 (vista previa, validación y entrega)
+
+- Validación («Validar»): las mismas reglas que el validador (`tools/game/reglas.mjs`, compartido con
+  `validate.mjs`), en modo «para enviar». Cada error o aviso con su ruta es un enlace que abre el
+  formulario, la página o la mecánica afectada. «Enviar al estudio» queda desactivado mientras haya errores.
+- Límite: en el navegador no se comprueban ficheros (fotos de ejemplo, PDF de fondo, kit: solo sus
+  reglas, no sus ficheros), ni el esquema JSON (ajv), ni los códigos `[CODIGO]` del PDF del artista.
+  Eso lo hace `node tools/game/validate.mjs --submit --pdf-texto …` antes de enviar. Pendiente decidir
+  si el editor debe exigirlo también (haría falta llevar ajv al navegador).
+- Vista previa («Vista previa»): compone un ejemplo (idioma y ejemplo elegidos) con el motor único y
+  pdf-lib (`creator/vendor/`, licencias incluidas). Pone la marca «VISTA PREVIA» en cada página. Usa los
+  cambios sin guardar. Las fuentes salen de `creator/fuentes.js` (las mismas que `build-demo.py`).
+- Envío: solo desde estado «borrador» o «enviado». Guarda el juego como «enviado» y abre la petición
+  (pull request a main; reutiliza la abierta). Si el guardado falla, el estado vuelve a «borrador».
+- Sondeo: cada 15 s compara `latestRev` con la versión cargada; si cambió, aparece «Hay cambios nuevos
+  en el juego: recargar» (recargar descarta los cambios sin guardar, y lo dice). `?sondeo=ms` lo cambia.
+- Corrección durante la prueba: un «change» repetido (el navegador lo dispara al quitar el control
+  enfocado) repintaba dentro de otro repintado y lanzaba una excepción. Ahora un cambio sin efecto
+  no se registra.
+- Prueba: `tools/qa/creator-entrega.py` (18/18): validar, enlaces, envío bloqueado y permitido, vista
+  previa de final3 y del juego por capas (texto «VISTA PREVIA» en el PDF), sondeo y recarga.
