@@ -235,3 +235,56 @@ Pendiente (no bloquea M2):
 - Pendiente, anotado y no tocado: `OTRO` no está en ninguna sección, así que su etiqueta es
   «? · Otro» (igual que antes).
 - El validador comprueba que `corta` tiene todos los idiomas.
+
+## T3.1 (límites en Node: tools/game/limites.mjs)
+
+- `limites.mjs` mide la capacidad de cada campo con `PMECompose.fieldFits` (el mismo motor que el
+  PDF) y las fuentes embebidas de `tools/game/fuentes.cjs`, que ahora comparten `compose.js` y el
+  medidor. Búsqueda binaria hasta 400 caracteres; el límite de un hueco es el mínimo de sus cajas y
+  de sus idiomas.
+- Los campos derivados (`join`, `initial`, `prefix`) se miden ejecutando su `derive` con el resto de
+  entradas al `cap` (nombres de muestra de esa longitud), porque su longitud depende de otros campos.
+- Regla 3.1: `min(cap, floor(capacidad × 0.75))`; en los campos `name` el margen no se aplica
+  (`min(cap, capacidad)`).
+- Resultado en `final3`: ningún límite supera su `cap`. Seis `cap` no caben y el informe los lista:
+  `NOMBRE_DEST` (28 → 27), `PERSONALIZADO_1` (50 → 48), `PERSONALIZADO_2` (50 → 47),
+  `DEBILIDAD_TEXTO`, `B_NOTES` y `TEST_RESULTADO`. El artista decide si baja el `cap` o si se
+  queda así; no se cambia el juego en este commit.
+- La demo sigue aplicando el `cap` como límite y no el límite calculado. Cambiarlo altera los
+  límites visibles de `final3`, así que se deja para decidirlo con el resto de límites.
+- `tools/limits.cjs` y `tools/apply-limits.py` llevan la marca OBSOLETO. No se borran hasta M5.
+
+## T3.2 (validación cruzada)
+
+- `validate.mjs` comprueba: códigos `[CODIGO]` del PDF contra `fields` (`--pdf-texto`); campos que
+  no salen en ninguna página (aviso); ejemplos dentro de su `cap` (error si se pasa), que sus campos
+  existan y que tengan foto/texto en cada idioma; `params` de cada mecánica contra su esquema; licencias del kit (3.4); requisitos
+  de `submit` (3.6: ejemplos, `en`, fondo, foto, pieza del kit).
+- Los avisos de los ejemplos son informativos, no bloquean: el artista puede dejar huecos justos.
+- Un caso por regla en `tools/qa/fixtures/` (`texto-artista.pdf`, `kit/manifest-ok.json`,
+  `kit/manifest-licencia.json`). `tools/qa/validador-casos.mjs` muta copias de `final3` y comprueba
+  15 casos: 15/15.
+- Corrección durante el trabajo: con `--pdf-texto` en el índice 0 el validador saltaba el primer
+  argumento cuando no había `--pdf-texto` (`iPdf + 1 = 0`). Ahora el índice se trata aparte.
+- Los `schema/examples/*.json` apuntan ahora a `../../Final3-Clean.pdf` (antes `fondo.pdf`, que no
+  existe), para que el validador pueda abrir el fondo.
+- Pendiente: el validador no comprueba que los `[CODIGO]` existan en `final3`, porque el repo no
+  tiene el PDF de texto del artista (solo el fixture).
+
+## T3.3 (prueba de humo: tools/qa/game-smoke.py) — ABIERTO
+
+- La herramienta está hecha: compone cada ejemplo en cada idioma (falla con excepción) y dos juegos
+  de valores generados: «una letra» y «límite W» (cada campo de texto con W hasta su límite de
+  `limites.mjs`). Falla si un hueco se encoge («valor encogido», el aviso del motor).
+- «una letra» y los ejemplos pasan en `final3`. «límite W» **no pasa**: unos 25 campos en cada idioma
+  se encogen (NOMBRE_CUMPLE_FICHA, FAMA, DEBILIDAD_TEXTO, B_NOTES, TEXTO_POSTAL, NOMBRE_DEST…).
+- Causa: el 0.75 de la regla 3.1 se calibró con texto normal. Con W repetida la capacidad real es
+  mucho menor (B_NOTES 9, TEXTO_POSTAL 16). Con mayúsculas lorem la capacidad baja poco (FAMA 18,
+  B_NOTES 121, CONCEPTO 13) y W sigue desbordando.
+- Hay que decidir una de estas opciones antes de cerrar T3.3 (la aceptación es «pasa con final3»):
+  (a) mantener la prueba y bajar límites o `cap` de esos campos; (b) cambiar la prueba a una mezcla
+  realista de letras anchas documentada; (c) aplicar `min(cap, límite)` en la demo, lo que cambia los
+  límites visibles de `final3`. Mientras tanto la herramienta queda en el commit y la prueba falla a
+  propósito.
+- Equivalencia del aviso: «encogido fuerte» del plan es «valor encogido» en el motor.
+- Los avisos de los ejemplos son informativos y no hacen fallar la prueba.
