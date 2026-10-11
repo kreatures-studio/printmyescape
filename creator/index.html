@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editor de juegos</title>
+<style>
+  :root { --fondo: #f6f4ef; --tinta: #1d1b18; --suave: #6b665c; --linea: #d8d3c6; --acento: #7a3e1d; --activo: #efe6d6; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --fondo: #1b1a17; --tinta: #efeadf; --suave: #a39d8f; --linea: #3a372f; --acento: #e2a06b; --activo: #2c2922; }
+  }
+  :root[data-theme="dark"] { --fondo: #1b1a17; --tinta: #efeadf; --suave: #a39d8f; --linea: #3a372f; --acento: #e2a06b; --activo: #2c2922; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--tinta); font: 15px/1.4 system-ui, sans-serif; }
+  header { padding: 14px 16px; border-bottom: 1px solid var(--linea); }
+  header h1 { margin: 0; font-size: 18px; }
+  main { display: grid; grid-template-columns: minmax(180px, 240px) minmax(200px, 1fr) minmax(220px, 1fr); min-height: calc(100vh - 52px); }
+  section { padding: 12px 16px; border-right: 1px solid var(--linea); min-width: 0; }
+  section:last-child { border-right: 0; }
+  h2 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--suave); }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li button { width: 100%; text-align: left; padding: 8px 10px; margin-bottom: 4px; border: 1px solid transparent; border-radius: 6px; background: none; color: inherit; font: inherit; cursor: pointer; }
+  li button:hover { border-color: var(--linea); }
+  li button[aria-current="true"] { background: var(--activo); border-color: var(--acento); }
+  li small { display: block; color: var(--suave); }
+  .vacio, .error { color: var(--suave); padding: 6px 0; }
+  .error { color: #b3261e; }
+  dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0 0 14px; }
+  dt { color: var(--suave); }
+  dd { margin: 0; }
+  code { font-size: 13px; }
+  @media (max-width: 760px) {
+    main { grid-template-columns: 1fr; }
+    section { border-right: 0; border-bottom: 1px solid var(--linea); }
+  }
+</style>
+</head>
+<body>
+<header><h1>Editor de juegos</h1></header>
+<main>
+  <section aria-labelledby="h-juegos">
+    <h2 id="h-juegos">Juegos</h2>
+    <ul id="juegos"></ul>
+  </section>
+  <section aria-labelledby="h-paginas">
+    <h2 id="h-paginas">Páginas</h2>
+    <ul id="paginas"><li class="vacio">Elige un juego.</li></ul>
+  </section>
+  <section aria-labelledby="h-detalle">
+    <h2 id="h-detalle">Página</h2>
+    <div id="detalle"><p class="vacio">Elige una página.</p></div>
+  </section>
+</main>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

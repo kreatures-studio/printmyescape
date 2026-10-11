@@ -331,3 +331,18 @@ Pendiente (no bloquea M2):
   `tools/kit/thumbs.mjs` (miniaturas de 300 px, aún sin escribir) y bajar las piezas.
 - Para cerrar T4.3: o se permite el acceso a esos dos sitios, o las piezas se descargan a mano y se
   pasan al repositorio con su fila en `LICENCIAS.md` (la URL exacta de cada descarga).
+
+## T5.1 (esqueleto del editor)
+
+- `creator/serve.mjs` sirve la raíz del repo en local (`node creator/serve.mjs --port 8080`). No
+  sirve `.git` ni `node_modules`, y no deja salir de la raíz. Es solo para desarrollo; el despliegue
+  en GitHub Pages es T5.7.
+- `creator/index.html` + `creator/app.js`: lista de juegos, páginas de un juego (huecos y capas) y el
+  detalle de la página con sus capas. Todo el texto de los juegos va con `textContent`.
+- `creator/store/memory.js`: almacén en memoria con la interfaz de 3.5 (`list`, `load`). Carga los
+  juegos de rutas dadas. `save`, `history`, `submit` y `latestRev` llegan con T5.2 y T5.6.
+- Prueba: `tools/qa/creator-esqueleto.py` (11 comprobaciones: lista, páginas, capas, sin errores de
+  consola, sin scroll en móvil, rutas fuera del repo rechazadas).
+- Nota: el editor carga los juegos desde la raíz del repo; el juego de prueba `capas` se lee de
+  `tools/qa/fixtures/`. En T5.7 cambiará la fuente.
+- M4 sigue abierta (T4.3 bloqueada); esta rama sale de `creador-m4`.

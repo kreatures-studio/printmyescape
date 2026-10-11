@@ -142,3 +142,8 @@ python3 tools/build-demo.py --game games/final3 --final  # versión final
 Advertencia conocida: el subsetter de pdf-lib rompe glifos de Caveat
 (ver `FONTS` en `tools/compose.js`); Caveat se incrusta completa. Si otra
 fuente sale con huecos en blanco, probar `subset: false` para ella.
+
+## Editor (M5, en curso)
+
+- Servidor local: `node creator/serve.mjs --port 8080` → `http://localhost:8080/creator/index.html`.
+- Pruebas: `python3 tools/qa/creator-esqueleto.py` (Playwright; levanta el servidor solo).
