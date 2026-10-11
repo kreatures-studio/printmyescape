@@ -101,7 +101,6 @@
         "version": { "type": "integer", "minimum": 1 },
         "name": { "type": "string" },
         "pageSize": { "type": "string" },
-        "shuffle": { "type": "object" },
         "fields": {
           "type": "array",
           "items": {

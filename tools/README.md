@@ -67,7 +67,7 @@ que las corrija y reexporte.
 ## Paso 4 — Componer los PDF por idioma
 
 ```bash
-node tools/compose.js --tpl templates/final3 --bg Final3-Clean.pdf \
+node tools/compose.js --game games/final3 \
   --lang es --out salidas/final3-ES.pdf \
   --values-file valores.json --photos-file fotos.json
 ```

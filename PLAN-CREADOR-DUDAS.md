@@ -163,3 +163,41 @@ Pendiente (no bloquea M2):
   fotos del ejemplo, desde la carpeta del juego.
 - `tools/qa/parity.py` usa `--game games/final3` en lugar de `--tpl`.
 - Verificación: golden 96/96, e2e 30/30, límites 26/26, tipos 7/7; paridad navegador/CLI 96/96.
+
+## T2.2 (join, initial, prefix: tres commits)
+
+- Nombres de las mecánicas, como en el plan: `join`, `initial`, `prefix`. La migración y `game.json`
+  usan esos nombres (antes `nombre-alias` e `inicial-app`).
+- Cada mecánica con valores derivados define `derive(valores, params)`; el motor lo llama antes de
+  dibujar y mezcla el resultado en `values`. Los campos derivados no están en `fields`; sí en
+  `template.fields` (igual que antes) y en `derives` de la mecánica.
+- `join`: `NOMBRE_CUMPLE_FICHA` = «Nombre "Alias"». Se borra la rama `S<n>_ALIAS` de `NOMBRE_<n>`:
+  ningún ejemplo ni campo del juego tiene `S<n>_ALIAS` (solo `B_ALIAS`), así que era código muerto.
+- `initial`: `params.map` (APP_n → S8_ICON_n). Misma regla: primer carácter alfanumérico en mayúscula.
+- `prefix`: la coma del apodo pasa a los derivados `APODO_n.PREF`; los huecos de p1 apuntan a ellos.
+  El reflow reconoce `APODO_n.PREF` como `APODO_n` (la pareja NOMBRE_n/APODO_n no cambia).
+- La demo no comprueba los derivados en `textProblems` (igual que antes con la ficha y el icono).
+  Es una pérdida pequeña: el ajuste del PDF sigue encogiendo el texto.
+- `tools/game/validate.mjs` llama a `validate` de cada mecánica con su registro.
+- Verificación al cerrar T2.2: golden 96/96, paridad 96/96, e2e 30/30, límites 26/26, tipos 7/7.
+
+## T2.3 (runas: transformación del hueco y fondo de la nota)
+
+- Transformación `runes` (`mechanics/runes.js`, registro `PMETransforms`): un hueco con
+  `"transform": "runes"` y `"params": { "prefix": { "es", "en" } }`. Schema y validador lo comprueban.
+  El texto de la nota se transforma en `valorHueco(s)`, que es el único punto donde se mira `transform`.
+- Mecánica `runes-panel` (capa `under`, p10): `params` x, y, w, h en % y `color` como [r, g, b] en 0–1.
+  El color va en flotante (no en hexadecimal) para que el píxel sea idéntico: `#D9C4A3` daría 217/255.
+- Se borran `drawRunes`, `runeWrap`, `runeInfo` y las constantes de runas: no tenían llamadas. Quedan
+  `pigpen|runes` como nombre de fuente, que es cosa del motor.
+- Los huecos con `transform` no entran en grupos de reflow.
+
+## T2.4 (hoja de tiras: template.shuffle pasa a la mecánica strips)
+
+- `mechanics/strips.js`: capa `final`. El motor copia la página ya compuesta, la sustituye y la
+  mecánica dibuja encima. Solo se copian las páginas con mecánicas `final`.
+- `template.shuffle` desaparece del juego y del esquema. El validador avisa si aparece, y las
+  comprobaciones de perm y de geometría (la solución `tiras-p9` dentro de la zona) usan los params
+  de la mecánica.
+- La CLI pierde el modo `--tpl`/`--bg` (era el único que no conocía las mecánicas: habría dado
+  PDF sin casillas, sin tiras y sin runas). `--game` es obligatorio. `tools/README.md` actualizado.

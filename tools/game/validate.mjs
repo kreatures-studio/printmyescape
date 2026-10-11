@@ -139,14 +139,11 @@ export function crossErrors(game, { submit = false } = {}) {
   });
 
   // Soluciones: la página y los campos citados existen.
-  // Hoja de tiras (template.shuffle): página existente, perm es una permutación de 0..strips-1.
-  const sh = game.template && game.template.shuffle;
-  if (sh) {
-    if (!pageIds.has(sh.page)) errs.push(`template/shuffle: la página «${sh.page}» no existe`);
-    const perm = Array.isArray(sh.perm) ? sh.perm.slice().sort((a, b) => a - b) : [];
-    const esPermutacion = Number.isInteger(sh.strips) && perm.length === sh.strips && perm.every((v, i) => v === i);
-    if (!esPermutacion) errs.push(`template/shuffle: perm no es una permutación de 0..${sh.strips - 1}`);
+  // La hoja de tiras es la mecánica «strips» (su validate comprueba perm); template.shuffle ya no existe.
+  if (game.template && game.template.shuffle !== undefined) {
+    errs.push('template/shuffle: ya no existe; la hoja de tiras es una mecánica «strips»');
   }
+  const tiras = mechanics.filter((m) => m.type === 'strips');
   (game.solutions || []).forEach((s) => {
     if (s.page && !pageIds.has(s.page)) errs.push(`solutions/${s.id}: la página «${s.page}» no existe`);
     const page = pages.find((p) => p.id === s.page);
@@ -156,7 +153,8 @@ export function crossErrors(game, { submit = false } = {}) {
       const hueco = (page.slots || []).find((sl) => sl.field === id);
       if (!hueco) { errs.push(`solutions/${s.id}: no hay hueco de «${id}» en la página ${s.page}`); continue; }
       // Si la solución es la hoja de tiras de esa página, el hueco tiene que estar dentro de ella.
-      if (sh && sh.page === s.page) {
+      for (const t of tiras.filter((m) => m.page === s.page)) {
+        const sh = t.params || {};
         const dentro = hueco.x >= sh.x0 && hueco.x + hueco.w <= sh.x1 && hueco.y >= sh.y0 && hueco.y + hueco.h <= sh.y1;
         if (!dentro) errs.push(`solutions/${s.id}: el hueco de «${id}» está fuera de la hoja de tiras`);
       }

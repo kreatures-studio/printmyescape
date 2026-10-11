@@ -3,15 +3,14 @@
    demo del navegador. El motor está en tools/pme-compose-core.js; este fichero
    solo lee los ficheros, carga pdf-lib y fontkit y escribe el PDF.
 
-   Uso: node tools/compose.js --tpl templates/final3 --bg Final3-Clean.pdf --lang es|en
-        --out salidas/X.pdf [--values-file v.json] [--photos-file f.json] [--no-subset]
+   Uso: node tools/compose.js --game games/final3 --example 3 --lang es|en --out salidas/X.pdf
+        [--values-file v.json] [--photos-file f.json]
 
-        node tools/compose.js --game games/final3 --example 3 --lang es|en --out salidas/X.pdf
-        (T0.5: el juego sale de game.json; --example toma valores y fotos del ejemplo)
-
+   --game         carpeta del juego (o su game.json): plantilla, textos, mecánicas y fondo.
+   --example      toma los valores y las fotos del ejemplo indicado.
    --values-file  { "NOMBRE_CUMPLE": "...", "FAMA": "...", ... }
-   --photos-file  { "FOTO_1": "ruta/a/foto.jpg", ... }  (JPG o PNG)
-   --tpl, --bg, --out y las rutas de --photos-file son relativas a la raíz del repo. */
+   --photos-file  { "FOTO_1": "assets/retratos/retrato-1.jpg", ... } (JPG o PNG)
+   --out y las rutas de --photos-file son relativas a la raíz del repo. */
 const fs = require('fs');
 const path = require('path');
 
@@ -38,8 +37,8 @@ const FONTS = {
 };
 
 function args() {
-  const o = { lang: 'es', out: null, values: {}, photos: {}, tpl: 'templates/final3', bg: 'Final3-Clean.pdf', noSubset: false,
-    game: null, example: null, valuesGiven: false, photosGiven: false, tplGiven: false, bgGiven: false };
+  const o = { lang: 'es', out: null, values: {}, photos: {}, noSubset: false,
+    game: null, example: null, valuesGiven: false, photosGiven: false };
   const a = process.argv.slice(2);
   for (let i = 0; i < a.length; i++) {
     if (a[i] === '--game') o.game = a[++i];
@@ -49,14 +48,12 @@ function args() {
     else if (a[i] === '--values') { o.values = JSON.parse(a[++i]); o.valuesGiven = true; }
     else if (a[i] === '--values-file') { o.values = JSON.parse(fs.readFileSync(a[++i], 'utf8')); o.valuesGiven = true; }
     else if (a[i] === '--photos-file') { o.photos = JSON.parse(fs.readFileSync(a[++i], 'utf8')); o.photosGiven = true; }
-    else if (a[i] === '--tpl') { o.tpl = a[++i]; o.tplGiven = true; }
-    else if (a[i] === '--bg') { o.bg = a[++i]; o.bgGiven = true; }
     else if (a[i] === '--no-subset') o.noSubset = true;
   }
   return o;
 }
 
-/* Fuentes del juego: game.json (--game) o templates/ + valores sueltos (--tpl, modo antiguo). */
+/* Fuentes del juego: game.json (--game). */
 async function fromGame(o) {
   const { loadGame, toEngineDeps } = await import('./game/load.mjs');
   const file = path.resolve(ROOT, o.game);
@@ -80,26 +77,11 @@ async function fromGame(o) {
     mechanics: deps.mechanics, fields: deps.fields, values, photosPaths, resolvePhoto: (p) => path.resolve(gameDir, p) };
 }
 
-function fromTemplates(o) {
-  const tplDir = path.join(ROOT, o.tpl);
-  const tpl = JSON.parse(fs.readFileSync(path.join(tplDir, 'template.json'), 'utf8'));
-  const fixed = JSON.parse(fs.readFileSync(path.join(tplDir, 'texts.json'), 'utf8'));
-  const i18n = JSON.parse(fs.readFileSync(path.join(tplDir, `i18n-${o.lang}.json`), 'utf8'));
-  /* Todos los idiomas: el tamaño se bloquea por caja al mínimo común, para que
-     la misma línea mida lo mismo en todos los idiomas (igual que en la demo). */
-  const i18nAll = {};
-  fs.readdirSync(tplDir)
-    .filter((f) => /^i18n-.*\.json$/.test(f))
-    .forEach((f) => { i18nAll[f.slice(5, -5)] = JSON.parse(fs.readFileSync(path.join(tplDir, f), 'utf8')); });
-  return { bgBytes: fs.readFileSync(path.join(ROOT, o.bg)), template: tpl, fixed, i18n, i18nAll,
-    values: o.values, photosPaths: o.photos, resolvePhoto: (p) => path.join(ROOT, p) };
-}
-
 async function main() {
   const o = args();
   if (!o.out) { console.error('falta --out'); process.exit(1); }
-  if (o.game && o.tplGiven) { console.error('usa --game o --tpl, no los dos'); process.exit(1); }
-  const src = o.game ? await fromGame(o) : fromTemplates(o);
+  if (!o.game) { console.error('falta --game'); process.exit(1); }
+  const src = await fromGame(o);
 
   const fonts = {};
   for (const k of Object.keys(FONTS)) {

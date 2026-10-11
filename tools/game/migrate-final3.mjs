@@ -61,6 +61,9 @@ function fieldFrom(id, q, tpl) {
 
 function main() {
   const tpl = read(path.join(TPL, 'template.json'));
+  // Hoja de tiras (T2.4): template.shuffle pasa a la mecánica strips.
+  const STRIPS = tpl.shuffle;
+  delete tpl.shuffle;
   // Mecánica prefix (T2.2c): la coma del apodo es el derivado APODO_N.PREF; el hueco apunta a él.
   for (const pg of tpl.pages) for (const sl of pg.slots) if (/^APODO_\d+$/.test(sl.field)) sl.field += '.PREF';
   // Runas (T2.3): la nota cifrada es un hueco con transform «runes» y el prefijo por idioma.
@@ -113,6 +116,7 @@ function main() {
       { type: 'join', page: 'p4', derives: ['NOMBRE_CUMPLE_FICHA'], params: { name: 'NOMBRE_CUMPLE', alias: 'B_ALIAS', target: 'NOMBRE_CUMPLE_FICHA' } },
       { type: 'prefix', page: 'p1', derives: ['APODO_1.PREF', 'APODO_2.PREF', 'APODO_3.PREF', 'APODO_4.PREF', 'APODO_5.PREF', 'APODO_6.PREF', 'APODO_7.PREF', 'APODO_8.PREF'],
         params: { prefix: ', ', map: { APODO_1: 'APODO_1.PREF', APODO_2: 'APODO_2.PREF', APODO_3: 'APODO_3.PREF', APODO_4: 'APODO_4.PREF', APODO_5: 'APODO_5.PREF', APODO_6: 'APODO_6.PREF', APODO_7: 'APODO_7.PREF', APODO_8: 'APODO_8.PREF' } } },
+      { type: 'strips', page: STRIPS.page, params: { x0: STRIPS.x0, x1: STRIPS.x1, y0: STRIPS.y0, y1: STRIPS.y1, strips: STRIPS.strips, perm: STRIPS.perm } },
       { type: 'runes-panel', page: 'p10', params: { x: 8, y: 37.5, w: 82.5, h: 53, color: [0.85, 0.77, 0.64] } },
       { type: 'initial', page: 'p16', derives: ['S8_ICON_1', 'S8_ICON_2', 'S8_ICON_3', 'S8_ICON_4'],
         params: { map: { APP_1: 'S8_ICON_1', APP_2: 'S8_ICON_2', APP_3: 'S8_ICON_3', APP_4: 'S8_ICON_4' } } },
