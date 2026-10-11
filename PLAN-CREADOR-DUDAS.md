@@ -391,3 +391,25 @@ Pendiente (no bloquea M2):
   nada (el validador rechazaría capas ahí).
 - Los miniaturas (`thumb`) no se muestran todavía: el kit real está vacío (T4.3).
 - Prueba: `tools/qa/creator-kit.py` (10/10) con el manifiesto de prueba de `tools/qa/fixtures/capas/`.
+
+## T5.5 (formulario y mecánicas)
+
+- Vistas del juego (botones «Páginas», «Formulario», «Mecánicas» sobre la lista): la columna central
+  lista según la vista y la derecha muestra lo abierto. Deshacer y guardar sirven para las tres.
+- Formulario: lista las secciones (`form.sections`) y los campos de cada una. Se editan el tipo,
+  obligatorio, el tope (`cap`, solo en campos de texto) y la pregunta y etiqueta corta en cada idioma
+  del juego. Cada control va con su etiqueta (`htmlFor`).
+- Mecánicas: lista `mechanics` con su tipo y su página. Los parámetros salen por clave: las obligatorias
+  de la mecánica (`params.required`) y las que ya tiene el juego. Las cadenas se muestran tal cual; el
+  resto como JSON. Al aplicar, un JSON no válido o una obligatoria que falta no se aplica y se avisa.
+  Debajo aparece la validación de la propia mecánica (`validate`), la misma que usa el validador.
+- Límite: las mecánicas solo declaran los nombres de sus parámetros obligatorios, no sus tipos. Por eso
+  el formulario es genérico (texto o JSON por clave). Declarar tipos en cada mecánica le daría a la
+  edición controles propios (lista, número, casillas); queda como siguiente paso.
+- Límite: el editor edita secciones y campos que ya existen. Crear o borrar campos y secciones no está
+  en T5.5.
+- Las mecánicas se cargan en la página con etiquetas `<script>` (las mismas de `mechanics/`); una mecánica
+  nueva hay que añadirla a `creator/index.html` (en T5.7 la lista saldrá de `tools/build-creator.py`).
+- Prueba: `tools/qa/creator-campos.py` (13/13): aceptación del formulario (al guardar solo cambian el
+  tope y la pregunta, comparado con el fichero original), deshacer, parámetros por clave, JSON no válido,
+  obligatoria que falta y validación de la mecánica.
