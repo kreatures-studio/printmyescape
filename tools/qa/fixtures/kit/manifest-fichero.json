@@ -1,0 +1,18 @@
+{
+ "pieces": [
+  {
+   "id": "papel-sin-fichero",
+   "file": "papel/no-existe.png",
+   "kind": "background",
+   "widthMm": 210,
+   "heightMm": 297,
+   "tags": [
+    "papel",
+    "fondo"
+   ],
+   "license": "CC0-1.0",
+   "source": "https://polyhaven.com/",
+   "author": "Poly Haven"
+  }
+ ]
+}
