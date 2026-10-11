@@ -5,7 +5,7 @@
  "status": "borrador",
  "name": { "es": "Juego roto", "en": "Broken game" },
  "languages": ["es", "en"],
- "background": { "kind": "pdf", "file": "fondo.pdf" },
+ "background": { "kind": "pdf", "file": "../../Final3-Clean.pdf" },
  "template": {
   "id": "roto",
   "version": 1,

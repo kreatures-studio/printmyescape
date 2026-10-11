@@ -5,7 +5,7 @@
  "status": "borrador",
  "name": { "es": "Juego mínimo", "en": "Minimal game" },
  "languages": ["es", "en"],
- "background": { "kind": "pdf", "file": "fondo.pdf" },
+ "background": { "kind": "pdf", "file": "../../Final3-Clean.pdf" },
  "template": {
   "id": "minimo",
   "version": 1,

@@ -14,12 +14,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { createRequire } from 'node:module';
+import { spawnSync } from 'node:child_process';
 import { loadGame } from './load.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 // Registro de mecánicas (mechanics/index.js, el mismo que usa el motor en Node).
 const MECANICAS = createRequire(import.meta.url)(path.join(HERE, '..', '..', 'mechanics', 'index.js'));
 const TRANSFORMS = globalThis.PMETransforms || {};
+const ROOT = path.join(HERE, '..', '..');
+const LICENCIAS_KIT = new Set(['CC0-1.0']); // contrato 3.4: en fase 1 solo CC0
 const SCHEMA = path.join(HERE, '..', '..', 'schema', 'pme-game-1.schema.json');
 const TEXT_TYPES = new Set(['name', 'text', 'long']);
 
@@ -32,7 +35,7 @@ export function schemaErrors(game) {
 }
 
 /** Comprobaciones cruzadas: lo que el esquema no puede expresar. */
-export function crossErrors(game, { submit = false } = {}) {
+export function crossErrors(game, { submit = false, dir = null, codigos = null, kit = null } = {}) {
   const errs = [];
   const langs = Array.isArray(game.languages) ? game.languages : [];
   const fields = game.fields && typeof game.fields === 'object' ? game.fields : {};
@@ -88,6 +91,10 @@ export function crossErrors(game, { submit = false } = {}) {
   mechanics.forEach((m, i) => {
     if (!pageIds.has(m.page)) errs.push(`mechanics/${i} (${m.type}): la página «${m.page}» no existe en template.pages`);
     const def = MECANICAS[m.type];
+    if (!def) errs.push(`mechanics/${i} (${m.type}): mecánica desconocida`);
+    for (const k of (def && def.params && def.params.required) || []) {
+      if (!(m.params && k in m.params)) errs.push(`mechanics/${i} (${m.type}): falta el parámetro «${k}»`);
+    }
     if (def && def.validate) {
       for (const e of def.validate(game, m)) errs.push(`mechanics/${i} (${m.type}) ${e.path}: ${e.message}`);
     }
@@ -136,8 +143,39 @@ export function crossErrors(game, { submit = false } = {}) {
     }
     for (const id of Object.keys(ex.photos || {})) {
       if (!fields[id] || fields[id].type !== 'photo') errs.push(`examples/${ex.id}: la foto de «${id}» no es un campo photo`);
+      else if (dir && !fs.existsSync(path.resolve(dir, ex.photos[id]))) errs.push(`examples/${ex.id}: no existe la foto «${ex.photos[id]}» de «${id}»`);
+    }
+    for (const l of Object.keys(ex.values || {})) {
+      for (const [id, v] of Object.entries(ex.values[l] || {})) {
+        const cap = fields[id] && fields[id].cap;
+        if (cap && String(v).length > cap) errs.push(`examples/${ex.id} (${l}): «${id}» tiene ${String(v).length} caracteres y el tope es ${cap}`);
+      }
     }
   });
+
+  // Fondo: el PDF tiene que existir; con capas, cada pieza tiene que estar en el kit con licencia admitida.
+  if (game.background && game.background.kind === 'pdf' && dir && !fs.existsSync(path.resolve(dir, game.background.file))) {
+    errs.push(`background: no existe el PDF «${game.background.file}»`);
+  }
+  if (game.background && game.background.kind === 'layers') {
+    const manifiesto = kit || path.join(ROOT, 'assets', 'kit', 'manifest.json');
+    if (!fs.existsSync(manifiesto)) {
+      errs.push('background: no hay manifiesto del kit (assets/kit/manifest.json)');
+    } else {
+      const piezas = new Map((JSON.parse(fs.readFileSync(manifiesto, 'utf8')).pieces || []).map((p) => [p.id, p]));
+      for (const capa of game.background.layers || []) {
+        const p = piezas.get(capa.asset);
+        if (!p) errs.push(`background: la pieza «${capa.asset}» no está en el kit`);
+        else if (!LICENCIAS_KIT.has(p.license)) errs.push(`background: la pieza «${capa.asset}» tiene una licencia no admitida («${p.license}»)`);
+        else if (!p.source || !p.author) errs.push(`background: la pieza «${capa.asset}» necesita source y author`);
+      }
+    }
+  }
+
+  // Códigos [CODIGO] del PDF del artista (opción codigos): cada uno tiene que ser un campo.
+  for (const c of codigos || []) {
+    if (!fields[c] && !derived.has(c)) errs.push(`PDF del artista: el código [${c}] no es un campo del juego`);
+  }
 
   // Soluciones: la página y los campos citados existen.
   // La hoja de tiras es la mecánica «strips» (su validate comprueba perm); template.shuffle ya no existe.
@@ -162,8 +200,46 @@ export function crossErrors(game, { submit = false } = {}) {
     }
   });
   if (submit && !(game.solutions || []).length) errs.push('falta al menos una solución (obligatoria para enviar)');
+  if (submit) {
+    // Contrato 3.6: tres ejemplos (corto, normal, largo) con texto en cada idioma.
+    if ((game.examples || []).length < 3) errs.push('faltan ejemplos: hacen falta tres (corto, normal y largo) para enviar');
+    for (const ex of game.examples || []) {
+      for (const l of langs) if (!(ex.values && ex.values[l])) errs.push(`examples/${ex.id}: falta el ejemplo en «${l}» (obligatorio para enviar)`);
+    }
+  }
 
   return errs;
+}
+
+/** Avisos: no bloquean, pero conviene revisarlos (contrato 3.1 y T3.2). */
+export function avisosGame(game, { codigos = null } = {}) {
+  const avisos = [];
+  const fields = game.fields || {};
+  const enPagina = new Set();
+  for (const p of (game.template && game.template.pages) || []) for (const s of p.slots || []) enPagina.add(s.field);
+  const derivados = new Set();
+  // Un campo también sale si una mecánica lo dibuja o lo usa para calcular un derivado.
+  for (const m of game.mechanics || []) {
+    for (const f of m.derives || []) derivados.add(f);
+    const pr = m.params || {};
+    for (const k of [pr.field, pr.name, pr.alias, ...Object.keys(pr.map || {})]) if (k) derivados.add(k);
+  }
+  for (const id of Object.keys(fields)) {
+    if (!enPagina.has(id) && !derivados.has(id)) avisos.push(`el campo «${id}» no sale en ninguna página`);
+  }
+  if (codigos) {
+    for (const id of Object.keys(fields)) if (!codigos.includes(id)) avisos.push(`el campo «${id}» no tiene código [${id}] en el PDF del artista`);
+  }
+  return avisos;
+}
+
+/** Códigos [CODIGO] de un PDF del artista (texto con pdftotext). */
+export function codigosDePdf(pdf) {
+  const r = spawnSync('pdftotext', ['-layout', pdf, '-'], { encoding: 'utf8' });
+  if (r.status !== 0) throw new Error(`pdftotext no pudo leer ${pdf}: ${r.stderr || r.error}`);
+  const codigos = new Set();
+  for (const m of r.stdout.matchAll(/\[([A-Za-z][A-Za-z0-9_.]*)\]/g)) codigos.add(m[1]);
+  return [...codigos];
 }
 
 export function validateGame(game, opts = {}) {
@@ -176,9 +252,12 @@ export function validateGame(game, opts = {}) {
 function main() {
   const args = process.argv.slice(2);
   const submit = args.includes('--submit');
-  const target = args.find((a) => !a.startsWith('--'));
+  const iPdf = args.indexOf('--pdf-texto');
+  const pdfTexto = iPdf >= 0 ? args[iPdf + 1] : null;
+  const saltar = iPdf >= 0 ? iPdf + 1 : -1;
+  const target = args.find((a, i) => !a.startsWith('--') && i !== saltar);
   if (!target) {
-    console.error('Uso: node tools/game/validate.mjs <carpeta|game.json> [--submit]');
+    console.error('Uso: node tools/game/validate.mjs <carpeta|game.json> [--submit] [--pdf-texto <texto-del-artista.pdf>]');
     process.exit(2);
   }
   let game;
@@ -188,9 +267,16 @@ function main() {
     console.log(`ERROR no se puede leer ${target}: ${e.message}`);
     process.exit(1);
   }
-  const errs = validateGame(game, { submit });
+  const dir = fs.statSync(path.resolve(target)).isDirectory() ? path.resolve(target) : path.dirname(path.resolve(target));
+  let codigos = null;
+  if (pdfTexto) {
+    try { codigos = codigosDePdf(pdfTexto); } catch (e) { console.log(`ERROR ${e.message}`); process.exit(1); }
+  }
+  const errs = validateGame(game, { submit, dir, codigos });
   for (const e of errs) console.log('ERROR ' + e);
-  console.log(errs.length ? `${errs.length} error(es) en ${target}` : `OK ${target}${submit ? ' (listo para enviar)' : ''}`);
+  const avisos = avisosGame(game, { codigos });
+  for (const a of avisos) console.log('AVISO ' + a);
+  console.log(errs.length ? `${errs.length} error(es) en ${target}` : `OK ${target}${submit ? ' (listo para enviar)' : ''}${avisos.length ? ` · ${avisos.length} aviso(s)` : ''}`);
   process.exit(errs.length ? 1 : 0);
 }
 

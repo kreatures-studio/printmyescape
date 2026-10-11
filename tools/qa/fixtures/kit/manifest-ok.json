@@ -1,0 +1,4 @@
+{ "pieces": [
+  { "id": "papel-viejo-1", "file": "papel/papel-viejo-1.png", "kind": "background", "widthMm": 210, "heightMm": 297,
+    "tags": ["papel", "fondo"], "license": "CC0-1.0", "source": "https://polyhaven.com/", "author": "Poly Haven" }
+] }
