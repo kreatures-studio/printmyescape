@@ -41,7 +41,7 @@ function fieldFrom(id, q, tpl) {
     : q.multi ? 'multi'
     : q.num ? 'number'
     : q.long ? 'long'
-    : /^NOMBRE_/.test(id) ? 'name'
+    : /^(NOMBRE|APODO)_|_ALIAS$/.test(id) ? 'name'
     : 'text';
   const f = { type, required: isRequired(id), q: q.q };
   if (type === 'multi') {
@@ -66,6 +66,20 @@ function main() {
   delete tpl.shuffle;
   // Mecánica prefix (T2.2c): la coma del apodo es el derivado APODO_N.PREF; el hueco apunta a él.
   for (const pg of tpl.pages) for (const sl of pg.slots) if (/^APODO_\d+$/.test(sl.field)) sl.field += '.PREF';
+  // Reflow (T2.5): NOMBRE_n y APODO_n de la misma página forman pareja (flow = n) en la línea.
+  for (const pg of tpl.pages) {
+    const nombres = new Map(), apodos = new Map();
+    for (const sl of pg.slots) {
+      const m = /^(NOMBRE|APODO)_(\d+)(\.PREF)?$/.exec(sl.field);
+      if (!m) continue;
+      const mapa = m[1] === 'NOMBRE' ? nombres : apodos;
+      mapa.set(m[2], (mapa.get(m[2]) || []).concat([sl]));
+    }
+    for (const [n, sls] of nombres) {
+      if (!apodos.has(n)) continue;
+      for (const sl of sls.concat(apodos.get(n))) sl.flow = n;
+    }
+  }
   // Runas (T2.3): la nota cifrada es un hueco con transform «runes» y el prefijo por idioma.
   for (const pg of tpl.pages) for (const sl of pg.slots) {
     if (sl.field === 'S2_SECRET_LOVE') sl.transform = 'runes', sl.params = { prefix: { es: 'TE QUIERO ', en: 'I LOVE ' } };

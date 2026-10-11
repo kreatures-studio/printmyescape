@@ -302,39 +302,40 @@ function drawPhoto(page, ops, im, iw, ih, b, angle, degrees) {
 /* Saneado de entradas (servidor y navegador): lo que el PDF puede dibujar y lo
    que tiene sentido en cada campo. Mismas reglas que demo/src.html. */
 const CLEAN_MAX = 400;
-const NAME_RE = /^NOMBRE_|^APODO_|_ALIAS$|^S2_SECRET_LOVE$/;
 const NAME_BAD = /[^A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u017F '\u2019\-.]/g;
 const TEXT_BAD = /[^A-Za-z0-9\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u017F .,;:!?\u00A1\u00BF'"\u2019\u2018\u201C\u201D\-\u2013\u2014()\/%\u20AC\u2026\n\t]/g;
-const MULTI_KEYS = { MENSAJE_PERSONALIZADO: 1 };
-function kindOf(k) {
-  if (k === 'EDAD') return 'num';
-  /* Campos con saltos de línea propios (chat, cajas de texto libre): se conservan los \n */
-  if (MULTI_KEYS[k]) return 'multi';
-  if (k === 'B_NOTES' || k === 'B_INFO') return 'multi';
-  if (NAME_RE.test(k)) return 'name';
+/* Tipo de limpieza de un campo, según su tipo en el juego (fields): number → num, name → name,
+   long → long (las cajas de texto libre conservan sus saltos de línea), el resto → text. */
+function kindOf(campo) {
+  const t = campo && campo.type;
+  if (t === 'number') return 'num';
+  if (t === 'name') return 'name';
+  if (t === 'long') return 'long';
   return 'text';
 }
 function cleanOne(s, kind) {
   let t = String(s == null ? '' : s).normalize('NFC').replace(/\r/g, '');
   if (kind === 'num') return t.replace(/[^0-9]/g, '').slice(0, 3);
   t = t.replace(kind === 'name' ? NAME_BAD : TEXT_BAD, '');
-  if (kind === 'multi') {
+  if (kind === 'long') {
     t = t.split('\n').map((l) => l.replace(/[ \t]+/g, ' ').trim()).join('\n').replace(/\n{3,}/g, '\n\n').trim();
   } else {
     t = t.replace(/\s+/g, ' ').trim();
   }
   return t.slice(0, CLEAN_MAX);
 }
-function cleanValues(values) {
+function cleanValues(values, campos) {
   const out = {};
   Object.keys(values || {}).forEach((k) => {
     const v = values[k];
     if (typeof v !== 'string') { out[k] = v; return; }
-    if (k === 'DEBILIDAD') {
+    const campo = (campos || {})[k];
+    /* campo de opciones (multi): cada opción se limpia por separado; «||» las separa */
+    if (campo && campo.type === 'multi') {
       out[k] = v.split('||').map((x) => cleanOne(x, 'text')).filter(Boolean).join('||');
       return;
     }
-    out[k] = cleanOne(v, kindOf(k));
+    out[k] = cleanOne(v, kindOf(campo));
   });
   return out;
 }
@@ -356,7 +357,7 @@ async function composeGame(deps) {
   /* texto.en: ajustes propios del inglés (caja, escala, tamaño...) que sustituyen
      a los del texto en esa versión; el español no cambia. */
   const fixed = (deps.fixed || []).map((t) => (deps.lang === 'en' && t.en ? Object.assign({}, t, t.en) : t));
-  const values = cleanValues(deps.values);
+  const values = cleanValues(deps.values, deps.fields);
   const tick = onProgress || (() => {});
   const out = await PDFDocument.create();
   out.registerFontkit(fontkit);
@@ -397,7 +398,7 @@ async function composeGame(deps) {
   const mecanicas = deps.mechanics || [];
   const campos = deps.fields || {};
   const registro = globalThis.PMEMechanics || {};
-  mecanicas.forEach((m) => { if (!registro[m.type]) warns.push(`mecánica sin implementar: ${m.type}`); });
+  mecanicas.forEach((m) => { if (!registro[m.type]) throw new Error(`mecánica desconocida: ${m.type}`); });
   /* Campos derivados (contrato 3.2): cada mecánica calcula sus valores antes de dibujar. */
   mecanicas.forEach((m) => {
     const def = registro[m.type];
@@ -412,13 +413,10 @@ async function composeGame(deps) {
   }
   /* Reflow por línea: igual que en Node (valores dentro de la frase). */
   const FLOW_GAP_MAX = 5;
+  /* Pareja: dos huecos de la misma línea con el mismo «flow» (campo de la plantilla). */
   const flowPairOk = (segs) => {
     if (segs.length !== 2) return false;
-    const ids = segs.map((g) => ((g.ref.field || '').toUpperCase()));
-    /* APODO_N.PREF es el apodo con su coma (mecánica prefix): cuenta como APODO_N */
-    const m0 = /^(NOMBRE|APODO)_(\d+)(\.PREF)?$/.exec(ids[0] || '');
-    const m1 = /^(NOMBRE|APODO)_(\d+)(\.PREF)?$/.exec(ids[1] || '');
-    return !!(m0 && m1 && m0[2] === m1[2] && m0[1] !== m1[1]);
+    return !!(segs[0].ref.flow && segs[0].ref.flow === segs[1].ref.flow);
   };
   const buildFlowGroups = (tpl, fixed, pi) => {
     const items = [];

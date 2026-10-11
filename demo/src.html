@@ -608,6 +608,8 @@ function formFromGame(game) {
       if (f.max !== undefined) q.max = f.max;
     }
     if (f.type === 'long') q.long = 1;
+    /* tipo de limpieza al escribir (igual que el motor: kindOf en tools/pme-compose-core.js) */
+    q.kind = f.type === 'number' ? 'num' : f.type === 'name' ? 'name' : f.type === 'long' ? 'multi' : 'text';
     if (f.cap !== undefined) { out.LIMITS[id] = f.cap; q.max = f.cap; }
     out.Q[id] = q;
   });
@@ -1585,10 +1587,7 @@ function dataURLToBytes(du) {
 var CL_NAME_BAD = /[^A-Za-zÀ-ÖØ-öø-ſ '’\-.]/g;
 var CL_TEXT_BAD = /[^A-Za-z0-9À-ÖØ-öø-ſ .,;:!?¡¿'"’‘“”\-–—()\/%€…\n\t]/g;
 function kindOfField(fid) {
-  if (fid === 'EDAD') return 'num';
-  if (fid === 'B_NOTES' || fid === 'B_INFO') return 'multi';
-  if (/^NOMBRE_|^APODO_|_ALIAS$|^S2_SECRET_LOVE$/.test(fid)) return 'name';
-  return 'text';
+  return (Q[fid] && Q[fid].kind) || 'text';
 }
 function stripBad(s, fid) {
   var k = kindOfField(fid);

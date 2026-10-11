@@ -550,7 +550,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "1"
      },
      {
       "field": "APODO_1.PREF",
@@ -562,7 +563,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "1"
      },
      {
       "field": "NOMBRE_2",
@@ -574,7 +576,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "2"
      },
      {
       "field": "APODO_2.PREF",
@@ -586,7 +589,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "2"
      },
      {
       "field": "NOMBRE_3",
@@ -598,7 +602,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "3"
      },
      {
       "field": "APODO_3.PREF",
@@ -610,7 +615,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "3"
      },
      {
       "field": "NOMBRE_4",
@@ -622,7 +628,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "4"
      },
      {
       "field": "APODO_4.PREF",
@@ -634,7 +641,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "4"
      },
      {
       "field": "NOMBRE_5",
@@ -646,7 +654,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "5"
      },
      {
       "field": "APODO_5.PREF",
@@ -658,7 +667,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "5"
      },
      {
       "field": "NOMBRE_6",
@@ -670,7 +680,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "6"
      },
      {
       "field": "APODO_6.PREF",
@@ -682,7 +693,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "6"
      },
      {
       "field": "NOMBRE_7",
@@ -694,7 +706,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "7"
      },
      {
       "field": "APODO_7.PREF",
@@ -706,7 +719,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "7"
      },
      {
       "field": "NOMBRE_8",
@@ -718,7 +732,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "8"
      },
      {
       "field": "APODO_8.PREF",
@@ -730,7 +745,8 @@
       "color": "#725A4C",
       "fontFamily": "SegoeScript",
       "xscale": null,
-      "angle": 0
+      "angle": 0,
+      "flow": "8"
      }
     ]
    },
@@ -5784,7 +5800,7 @@
    }
   },
   "B_ALIAS": {
-   "type": "text",
+   "type": "name",
    "required": false,
    "q": {
     "es": "Alias (opcional)",
@@ -5856,7 +5872,7 @@
    "cap": 12
   },
   "APODO_1": {
-   "type": "text",
+   "type": "name",
    "required": false,
    "q": {
     "es": "Alias (opcional)",
@@ -5900,7 +5916,7 @@
    "cap": 12
   },
   "APODO_2": {
-   "type": "text",
+   "type": "name",
    "required": false,
    "q": {
     "es": "Alias (opcional)",
@@ -5944,7 +5960,7 @@
    "cap": 12
   },
   "APODO_3": {
-   "type": "text",
+   "type": "name",
    "required": false,
    "q": {
     "es": "Alias (opcional)",
@@ -5988,7 +6004,7 @@
    "cap": 12
   },
   "APODO_4": {
-   "type": "text",
+   "type": "name",
    "required": false,
    "q": {
     "es": "Alias (opcional)",
@@ -6032,7 +6048,7 @@
    "cap": 12
   },
   "APODO_5": {
-   "type": "text",
+   "type": "name",
    "required": false,
    "q": {
     "es": "Alias (opcional)",
@@ -6076,7 +6092,7 @@
    "cap": 12
   },
   "APODO_6": {
-   "type": "text",
+   "type": "name",
    "required": false,
    "q": {
     "es": "Alias (opcional)",
@@ -6120,7 +6136,7 @@
    "cap": 12
   },
   "APODO_7": {
-   "type": "text",
+   "type": "name",
    "required": false,
    "q": {
     "es": "Alias (opcional)",
@@ -6164,7 +6180,7 @@
    "cap": 12
   },
   "APODO_8": {
-   "type": "text",
+   "type": "name",
    "required": false,
    "q": {
     "es": "Alias (opcional)",

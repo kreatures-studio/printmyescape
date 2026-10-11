@@ -201,3 +201,25 @@ Pendiente (no bloquea M2):
   de la mecánica.
 - La CLI pierde el modo `--tpl`/`--bg` (era el único que no conocía las mecánicas: habría dado
   PDF sin casillas, sin tiras y sin runas). `--game` es obligatorio. `tools/README.md` actualizado.
+
+## T2.5 (motor limpio: los tipos salen de fields)
+
+- `kindOf(campo)` mira el tipo del campo en el juego (`fields`): `number` → num, `name` → name,
+  `long` → long (conserva los saltos de línea), el resto → text. Un campo `multi` (DEBILIDAD) limpia
+  cada opción por separado. Se borran `EDAD`, `NAME_RE`, `MULTI_KEYS`, `B_NOTES`/`B_INFO` y el caso
+  `DEBILIDAD`. El plan hablaba de `deps.fieldTypes`; el motor ya recibe `deps.fields` (lo necesitan
+  las mecánicas) y deriva los tipos de ahí, sin un segundo mapa.
+- Para que los tipos digan lo mismo que antes: `APODO_*` y `B_ALIAS` pasan a tipo `name` (son
+  nombres; en la demo `name` se escribe como `text`, así que no cambia la pantalla).
+- Cambio deliberado de salida: los seis campos `long` que no eran de saltos de línea
+  (`TEXTO_POSTAL`, `NOTA_PERSONALIZADA`, `PERSONALIZADO_1/2`, `TEST_RESULTADO`, `S2_SECRET_LOVE`) ahora
+  conservan los saltos que escribe la persona. En los huecos de una sola línea se siguen uniendo; en
+  los de varias líneas aparecen tal cual. Los tres ejemplos no tienen saltos en esos campos, y la
+  dorada no cambia. `S2_SECRET_LOVE` da el mismo texto cifrado (la transformación `runes` quita los
+  saltos). La demo también conserva el salto al escribir en esos campos, igual que el motor.
+- Reflow: el motor ya no mira nombres de campo. Un hueco tiene `"flow"` (el número de la pareja) y
+  dos huecos de la misma línea con el mismo `flow` se reflujan juntos. La migración asigna `flow` a
+  NOMBRE_n y APODO_n de la misma página (solo en p1). Cambio sin efecto en final3.
+- Mecánica desconocida: error (era aviso desde T2.1).
+- Aceptación: dorada 96/96 y `grep -nE "'p[0-9]+'|NOMBRE_|APODO_|S2_|S8_|DEBILIDAD|EDAD"
+  tools/pme-compose-core.js` no imprime nada.
