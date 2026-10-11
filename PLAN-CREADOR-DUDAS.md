@@ -379,3 +379,15 @@ Pendiente (no bloquea M2):
 - Pendiente: el lienzo no dibuja el fondo PDF de final3 (solo huecos y capas); el kit (T5.4) pondrá
   las piezas en las capas.
 - T5.2 y T5.3 van en el mismo commit porque comparten `creator/app.js` e `index.html`.
+
+## T5.4 (panel del kit)
+
+- `creator/kit.js`: lee el manifiesto (3.4) desde su URL (por defecto `../assets/kit/manifest.json`;
+  con `?kit=` se cambia, para las pruebas). Lista las piezas con su tipo y sus milímetros, con filtro
+  por etiqueta. Cada pieza se arrastra (HTML5) a la página.
+- Soltar una pieza en la página añade una capa con su `asset`, centrada en el punto soltado, con
+  `w` y `h` según sus milímetros sobre A4 (210 × 297). La capa queda dentro de la página.
+- Solo en juegos con `background.kind = "layers"`. En juegos con PDF de fondo se avisa y no se añade
+  nada (el validador rechazaría capas ahí).
+- Los miniaturas (`thumb`) no se muestran todavía: el kit real está vacío (T4.3).
+- Prueba: `tools/qa/creator-kit.py` (10/10) con el manifiesto de prueba de `tools/qa/fixtures/capas/`.

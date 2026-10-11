@@ -4,12 +4,16 @@
 import { crearAlmacenMemoria } from './store/memory.js';
 import { crearAlmacenGitHub } from './store/github.js';
 import { pintarPagina, pintarPropiedades } from './lienzo.js';
+import { cargarKit, pintarKit } from './kit.js';
 
 // Juegos del almacén en memoria (rutas relativas a esta página, en creator/).
 const FUENTES_MEMORIA = ['../games/final3/game.json', '../tools/qa/fixtures/games/capas/game.json'];
 const CLAVE_TOKEN = 'pme-token';
 const CLAVE_REPO = 'pme-repo';
 const MAX_DESHACER = 200;
+// Manifiesto del kit: en la web, el de este repositorio; con ?kit= se cambia (pruebas).
+const KIT_POR_DEFECTO = '../assets/kit/manifest.json';
+let kit = null;           // { piezas, porId, base } del manifiesto del kit
 
 let almacen = null;
 let juegoActual = null;   // juego en edición (copia; se guarda con el almacén)
@@ -42,6 +46,10 @@ function mostrarPrincipal() {
   $('principal').hidden = false;
   $('salir').hidden = false;
   mostrarJuegos();
+  const url = new URLSearchParams(location.search).get('kit') || KIT_POR_DEFECTO;
+  cargarKit(new URL(url, location.href).href)
+    .then((k) => { kit = k; if (juegoActual) pintarEditor(); })
+    .catch((e) => { kit = null; marcar(`Kit: ${e.message}`); });
 }
 
 $('entrada').addEventListener('submit', (ev) => {
@@ -130,6 +138,20 @@ function cambiar(fn) {
   pintarEditor();
 }
 
+/** Añade una capa con la pieza del kit, centrada en el punto soltado (solo en juegos de fondo por capas). */
+function soltarPieza(id, xPct, yPct) {
+  if (juegoActual.background?.kind !== 'layers') {
+    return marcar('Este juego usa un PDF de fondo: pásalo a fondo por capas para añadir piezas.');
+  }
+  const pieza = kit && kit.porId.get(id);
+  if (!pieza) return marcar(`No está en el kit: ${id}`);
+  const w = Math.min(100, Math.round((pieza.widthMm / 210) * 10000) / 100);
+  const h = Math.min(100, Math.round((pieza.heightMm / 297) * 10000) / 100);
+  const x = Math.round(Math.min(Math.max(xPct - w / 2, 0), 100 - w) * 100) / 100;
+  const y = Math.round(Math.min(Math.max(yPct - h / 2, 0), 100 - h) * 100) / 100;
+  cambiar((p) => { p.layers = [...(p.layers || []), { asset: id, x, y, w, h }]; });
+}
+
 function deshacer() {
   if (!pila.length) return;
   juegoActual.template.pages = pila.pop();
@@ -161,6 +183,7 @@ function pintarEditor() {
     alSeleccionar(k) { seleccion = k; pintarEditor(); },
     alMover(k, cambios) { cambiar((p) => Object.assign(p.slots[k], cambios)); },
     alRedimensionar(k, cambios) { cambiar((p) => Object.assign(p.slots[k], cambios)); },
+    alSoltarPieza(id, xPct, yPct) { soltarPieza(id, xPct, yPct); },
   };
   pintarPagina(zona, pagina, operaciones);
   if (seleccion !== null && pagina.slots[seleccion]) {
@@ -172,6 +195,11 @@ function pintarEditor() {
   }
   const layout = document.createElement('div');
   layout.className = 'editor';
+  if (kit) {
+    const panelKit = document.createElement('div');
+    pintarKit(panelKit, kit);
+    propiedades.append(panelKit);
+  }
   layout.append(zona, propiedades);
   cont.replaceChildren(barra, layout);
   marcar(sucio ? 'Cambios sin guardar' : '');

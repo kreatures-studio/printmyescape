@@ -6,6 +6,8 @@ const PASO_GRANDE = 5;  // % con Mayús + flecha
 const MIN_TAMANO = 1;   // % mínimo de un hueco
 const MOVIMIENTO_MIN = 3; // px: menos es un clic, no un arrastre
 
+import { TIPO_ARRASTRE } from './kit.js';
+
 const redondear = (v) => Math.round(v * 100) / 100;
 const acotar = (v, min, max) => Math.min(Math.max(v, min), max);
 
@@ -48,6 +50,19 @@ export function pintarPagina(contenedor, pagina, op) {
   });
 
   lienzo.addEventListener('pointerdown', (ev) => iniciarArrastre(ev, lienzo, pagina, op));
+  // Piezas del kit soltadas sobre la página: op.alSoltarPieza(id, x%, y%) (centro de la pieza).
+  lienzo.addEventListener('dragover', (ev) => {
+    if (!ev.dataTransfer.types.includes(TIPO_ARRASTRE)) return;
+    ev.preventDefault();
+    ev.dataTransfer.dropEffect = 'copy';
+  });
+  lienzo.addEventListener('drop', (ev) => {
+    const id = ev.dataTransfer.getData(TIPO_ARRASTRE);
+    if (!id) return;
+    ev.preventDefault();
+    const r = lienzo.getBoundingClientRect();
+    if (op.alSoltarPieza) op.alSoltarPieza(id, ((ev.clientX - r.left) / r.width) * 100, ((ev.clientY - r.top) / r.height) * 100);
+  });
   lienzo.addEventListener('keydown', (ev) => teclado(ev, pagina, op));
   contenedor.append(lienzo);
   return lienzo;
