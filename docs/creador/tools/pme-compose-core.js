@@ -1,0 +1,818 @@
+/* MOTOR ÚNICO de composición (fase 2). Lo usan dos sitios:
+   - la demo del navegador: tools/build-demo.py lo inserta en demo/index.html;
+   - la línea de comandos: tools/compose.js (Node) carga pdf-lib y fontkit
+     como globales y llama a PMECompose.composeGame.
+   Sin require ni fs: todo entra por parámetros (bytes de fuentes, fondo,
+   fotos, plantilla y textos). Usa los globales PDFLib y fontkit.
+   Incluye rotación de textos (tilts y verticales), fotos JPG/PNG, runas
+   pigpen, grupos de reflow y fuentes según la familia extraída.
+   Expone: globalThis.PMECompose = { composeGame, fit, wrap, drawFitted,
+   drawLine, drawPhoto, fieldFits }. */
+(function () {
+'use strict';
+
+/* NOTA DE IMPRESIÓN (2026-10-01): pdf-lib NO aplica `horizontalScaling`
+   en drawText (la opción no existe y se ignora en silencio): la
+   condensación se aplica con la matriz de transformación (CTM) alrededor
+   del origen de cada línea, y la rotación pivota sobre el centro de la
+   caja para que el bloque no se desplace al imprimir. */
+const HS_MIN = 0.7, SIZE_MIN = 0.55, HS_MAX = 1.05, HS_ABS_MIN = 0.3;
+
+function hex(h, rgb) {
+  const n = parseInt(h.slice(1), 16);
+  return rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
+}
+function clampTarget(t, vertical) {
+  let x = Number(t);
+  if (!(x > 0)) x = 1;
+  /* xscale de extracción para textos verticales con valores extremos
+     (<0.3 o >2) es ruido de la extracción: se ignora (sin condensar). */
+  if (vertical && (x < 0.3 || x > 2)) x = 1;
+  if (x > HS_MAX) x = HS_MAX;
+  return x;
+}
+function wrap(font, text, size, maxW) {
+  const lines = [];
+  for (const para of String(text).split('\n')) {
+    const words = para.split(/\s+/).filter(Boolean);
+    if (!words.length) { lines.push(''); continue; }
+    let cur = '';
+    for (const w of words) {
+      const t = cur ? cur + ' ' + w : w;
+      if (font.widthOfTextAtSize(t, size) <= maxW || !cur) cur = t;
+      else { lines.push(cur); cur = w; }
+    }
+    lines.push(cur);
+  }
+  return lines;
+}
+function fit(font, text, boxPt, size0, opt) {
+  opt = opt || {};
+  const single = !!opt.single;
+  const vertical = Math.abs(opt.angle || 0) > 45;
+  const targetHs = clampTarget(opt.targetHs, vertical);
+  /* El artista puede haber condensado por debajo del 70% (p. ej. 0.63):
+     el suelo de condensación respeta su valor en vez de forzar encogidos. */
+  const floor = single ? Math.min(0.6, targetHs) : Math.min(HS_MIN, targetHs);
+  /* Los valores de una línea pueden crecer a la derecha de su caja solo
+     si esta es estrecha (códigos): en cajas anchas (títulos) el texto
+     blanco se saldría de su pastilla y se volvería invisible. */
+  const grow = single ? (opt.grow || 1) : 1;
+  const fitW = (boxPt.w * grow) || 1;
+  let size = opt.lockSize || size0;
+  const min = size0 * (single ? 0.5 : SIZE_MIN);
+  let lines = [text], hs = [1];
+  const budgetFor = (sz) => {
+    void sz;
+    return (vertical ? boxPt.h : fitW) / floor;
+  };
+  const once = (sz) => {
+    /* Presupuesto de línea con la condensación efectiva: lo que quepa
+       condensado no se parte; luego hs respeta el aspecto de referencia.
+       Los valores de una línea pueden traer \n (p. ej. el chat): se
+       apilan como líneas propias (pdf-lib partiría el texto por su
+       cuenta y lo descentraría). */
+    const budget = budgetFor(sz);
+    const nat = single ? String(text).split('\n') : wrap(font, text, sz, budget);
+    const ref = vertical ? boxPt.h : fitW;
+    const h = nat.map((ln) => {
+      const nw = font.widthOfTextAtSize(ln, sz) || 1;
+      let v = Math.min(targetHs, ref / nw);
+      if (v > HS_MAX) v = HS_MAX;
+      if (v < HS_ABS_MIN) v = HS_ABS_MIN;
+      return v;
+    });
+    return { lines: nat, hs: h };
+  };
+  if (opt.lockSize) {
+    const r = once(size);
+    return { lines: r.lines, hs: r.hs, size, warn: size < size0 * 0.85 };
+  }
+  for (;;) {
+    const r = once(size);
+    lines = r.lines; hs = r.hs;
+    const lh = opt.leading || size * 1.25;
+    const tooNarrow = Math.min.apply(null, hs.concat([1])) < floor;
+    const multi = !single || lines.length > 1;
+    const tooTall = vertical
+      ? lines.length * size > boxPt.w + size * 0.5
+      : (multi && lines.length * lh > boxPt.h + lh * 0.5);
+    if ((!tooNarrow && !tooTall) || size <= min) break;
+    size *= 0.94;
+  }
+  return { lines, hs, size, warn: size < size0 * 0.85 };
+}
+
+/* Dibuja una línea aplicando condensación horizontal hs a lo largo de la
+   dirección del texto mediante la CTM (pdf-lib no tiene horizontalScaling).
+   Si no hay operadores disponibles, dibuja sin condensar. */
+function drawLine(page, degrees, ops, ln, x, y, size, font, color, hs, angle) {
+  if (!ops || !(hs < 0.999)) {
+    page.drawText(ln, { x, y, size, font, color, rotate: degrees(angle) });
+    return;
+  }
+  const rad = (angle * Math.PI) / 180;
+  page.pushOperators(
+    ops.pushGraphicsState(), ops.translate(x, y),
+    ops.rotateRadians(rad), ops.scale(hs, 1), ops.rotateRadians(-rad),
+    ops.translate(-x, -y),
+  );
+  try {
+    page.drawText(ln, { x, y, size, font, color, rotate: degrees(angle) });
+  } finally {
+    page.pushOperators(ops.popGraphicsState());
+  }
+}
+
+function drawFitted(page, degrees, ops, font, text, boxPt, size0, color, align, opt) {
+  opt = opt || {};
+  const angle = opt.angle || 0;
+  const vertical = Math.abs(angle) > 45;
+  const r = fit(font, text, boxPt, size0, {
+    single: opt.single, targetHs: opt.targetHs, angle, lockSize: opt.lockSize,
+    grow: opt.grow, leading: opt.leading,
+  });
+  const { lines, hs, size } = r;
+  const rad = (angle * Math.PI) / 180;
+  const c = Math.cos(rad), s = Math.sin(rad);
+  const cx = boxPt.x + boxPt.w / 2, cy = boxPt.yTop - boxPt.h / 2;
+  /* Rota un punto del layout (calculado sin rotar) alrededor del centro
+     de la caja: el bloque queda centrado aunque esté inclinado. */
+  const pivot = (x0, y0) => ({
+    x: cx + (x0 - cx) * c - (y0 - cy) * s,
+    y: cy + (x0 - cx) * s + (y0 - cy) * c,
+  });
+  /* Líneas posicionales: si la caja trae sus líneas originales y el texto
+     cabe en ellas, cada línea se dibuja en su sitio exacto (sin reflujo).
+     Si sobran palabras o alguna no cabe, se usa el apilado clásico. */
+  const lbs = (!vertical && !opt.single && boxPt.lines && boxPt.lines.length > 1) ? boxPt.lines : null;
+  if (lbs) {
+    const words = String(text).split(/\s+/).filter(Boolean);
+    const placed = [];
+    let wi = 0;
+    for (const lb of lbs) {
+      const cur = [];
+      while (wi < words.length) {
+        const t = cur.concat([words[wi]]).join(' ');
+        const nw = font.widthOfTextAtSize(t, size) || 1;
+        if (nw <= lb.w / HS_MIN || cur.length === 0) { cur.push(words[wi++]); }
+        else break;
+      }
+      placed.push({ text: cur.join(' '), box: lb });
+    }
+    if (wi >= words.length) {
+      let bad = false;
+      const drawn = placed.map((pl) => {
+        const nw = font.widthOfTextAtSize(pl.text, size) || 1;
+        const h = Math.min(opt.targetHs || 1, pl.box.w / nw);
+        if (pl.text && h < 0.6) bad = true;
+        return { text: pl.text, box: pl.box, hs: h };
+      });
+      if (!bad) {
+        drawn.forEach((ln) => {
+          if (!ln.text) return;
+          const lb = ln.box;
+          const lcx = lb.x + lb.w / 2, lcy = lb.yTop - lb.h / 2;
+          const base = lcy + (size * 1.25) / 2 - size * 0.95;
+          const w = font.widthOfTextAtSize(ln.text, size) * ln.hs;
+          let x = lb.x;
+          if (align === 'center') x = lcx - w / 2;
+          else if (align === 'right') x = lb.x + lb.w - w;
+          const p = pivot(x, base);
+          drawLine(page, degrees, ops, ln.text, p.x, p.y, size, font, color, ln.hs, angle);
+        });
+        return r.warn;
+      }
+    }
+  }
+  if (!vertical) {
+    const lh = opt.leading || size * 1.25;
+    /* Líneas justificadas en la altura de la caja (primera arriba, última
+       abajo): en cajas normales equivale al apilado clásico centrado, y en
+       cajas altas de fijos (unión de varias líneas de origen, con valores
+       intercalados en sus propias cajas) cada línea vuelve a su zona en
+       vez de chocar con los valores. Si la caja es baja, bloque centrado. */
+    const topBase = boxPt.yTop - size * 0.8;
+    const botBase = boxPt.yTop - boxPt.h + size * 0.3;
+    const spread = lines.length > 1 ? (topBase - botBase) / (lines.length - 1) : 0;
+    let useSpread = lines.length > 1 && spread >= lh * 0.9 && !opt.tight && !opt.vTop;
+    /* No dispersar si alguna línea caería dentro de la caja de otro fijo
+       (cajas de extracción solapadas, como la carta de la p15): en ese
+       caso, bloque centrado clásico. */
+    if (useSpread && opt.siblings) {
+      const m = size * 0.3;
+      for (let i = 0; i < lines.length; i++) {
+        const yb = topBase - i * spread;
+        for (const sb of opt.siblings) {
+          if (sb.h >= size * 1.8 && yb < sb.top + m && yb > sb.bot - m) {
+            useSpread = false;
+            break;
+          }
+        }
+        if (!useSpread) break;
+      }
+    }
+    const totalH = (lines.length - 1) * lh + size;
+    const firstBase = (opt.baseY !== undefined && lines.length === 1)
+      ? opt.baseY : opt.vTop ? topBase : cy + totalH / 2 - size * 0.95;
+    /* Continuación inline: si un valor de la misma página comparte línea
+       con este fijo y lo pisa (p. ej. "A [NOMBRE] le daba..."), el fijo
+       continúa tras el valor en vez de sobreescribirlo. */
+    const runs = (opt.inline || []).filter((g) => Math.abs(angle) <= 45 && Math.abs(g.angle || 0) <= 45);
+    lines.forEach((ln, i) => {
+      const nw = font.widthOfTextAtSize(ln, size) || 1;
+      let hsi = hs[i];
+      let x0 = boxPt.x;
+      if (align === 'center') x0 = cx - nw * hsi / 2;
+      else if (align === 'right') x0 = boxPt.x + boxPt.w - nw * hsi;
+      const y0 = useSpread ? topBase - i * spread : firstBase - i * lh;
+      for (const g of runs) {
+        const dyb = Math.abs(y0 - g.base);
+        if (dyb < Math.max(size, g.size) * 0.8 && g.x0 >= boxPt.x - 1 && g.x0 < boxPt.x + boxPt.w &&
+            (g.bestDy === undefined || dyb < g.bestDy)) { g.bestDy = dyb; g.matchedY = y0; }
+        if (Math.abs(y0 - g.base) < Math.max(size, g.size) * 0.4 &&
+            g.x0 < x0 + nw * hsi && g.x1 > x0 && g.x0 >= boxPt.x - 1) {
+          x0 = Math.max(x0, g.x1 + size * 0.25);
+          const room = boxPt.x + boxPt.w - x0;
+          if (room < nw * hsi && room > 0) hsi = Math.max(HS_ABS_MIN, Math.min(hsi, room / nw));
+        }
+      }
+      const p = pivot(x0, y0);
+      drawLine(page, degrees, ops, ln, p.x, p.y, size, font, color, hsi, angle);
+    });
+  } else {
+    /* Texto vertical: cada línea recorre el alto de la caja y se centra
+       en él; las columnas se centran en el ancho. Ángulo -90: se lee
+       de arriba abajo; +90 al revés. */
+    const down = angle < 0;
+    const step = size;
+    const total = (lines.length - 1) * step;
+    lines.forEach((ln, i) => {
+      const len = font.widthOfTextAtSize(ln, size) * hs[i];
+      const span = Math.min(len, boxPt.h);
+      const colC = down
+        ? cx + total / 2 - i * step
+        : cx - total / 2 + i * step;
+      /* La columna del glifo queda a la DERECHA del origen para -90
+         (ver probe): se compensa a la izquierda para centrar la tinta.
+         Para +90, al revés. */
+      const x0 = down ? colC - size * 0.35 : colC + size * 0.35;
+      const y0 = down
+        ? (opt.vStart ? boxPt.yTop : boxPt.yTop - (boxPt.h - span) / 2)
+        : boxPt.yTop - boxPt.h + (boxPt.h - span) / 2;
+      /* SIN pivot: (x0, y0) ya está en el marco rotado (el pivot lo
+         rotaría dos veces y amontona las columnas). */
+      drawLine(page, degrees, ops, ln, x0, y0, size, font, color, hs[i], angle);
+    });
+  }
+  return r.warn;
+}
+
+/* Foto con ajuste "cover" (sin deformar) recortada al marco rotado. */
+function drawPhoto(page, ops, im, iw, ih, b, angle, degrees) {
+    const fw = b.w, fh = b.h;
+  const cx = b.x + b.w / 2, cy = b.yTop - b.h / 2;
+  const th = ((angle || 0) * Math.PI) / 180;
+  const c = Math.cos(th), si = Math.sin(th);
+  const sc = Math.max(fw / iw, fh / ih);
+  const dw = iw * sc, dh = ih * sc;
+  /* Origen de la imagen (rotada sobre su esquina) para que su centro
+     coincida con el del marco. */
+  const x0 = cx - (dw * c - dh * si) / 2, y0 = cy - (dw * si + dh * c) / 2;
+  const fx = cx - fw / 2, fy = cy - fh / 2;
+  /* esquinas del marco girado alrededor de SU CENTRO (no de la esquina inferior) */
+  const corner = (u, v) => ({ x: cx + (u - fw / 2) * c - (v - fh / 2) * si,
+    y: cy + (u - fw / 2) * si + (v - fh / 2) * c });
+  const p1 = corner(0, 0), p2 = corner(fw, 0), p3 = corner(fw, fh), p4 = corner(0, fh);
+  if (ops) {
+    page.pushOperators(
+      ops.pushGraphicsState(),
+      ops.moveTo(p1.x, p1.y), ops.lineTo(p2.x, p2.y),
+      ops.lineTo(p3.x, p3.y), ops.lineTo(p4.x, p4.y),
+      ops.closePath(), ops.clip(), ops.endPath(),
+    );
+  }
+  try {
+    page.drawImage(im, { x: x0, y: y0, width: dw, height: dh, rotate: degrees(angle || 0) });
+  } finally {
+    if (ops) page.pushOperators(ops.popGraphicsState());
+  }
+}
+
+/* Saneado de entradas (servidor y navegador): lo que el PDF puede dibujar y lo
+   que tiene sentido en cada campo. Mismas reglas que demo/src.html. */
+const CLEAN_MAX = 400;
+const NAME_BAD = /[^A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u017F '\u2019\-.]/g;
+const TEXT_BAD = /[^A-Za-z0-9\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u017F .,;:!?\u00A1\u00BF'"\u2019\u2018\u201C\u201D\-\u2013\u2014()\/%\u20AC\u2026\n\t]/g;
+/* Tipo de limpieza de un campo, según su tipo en el juego (fields): number → num, name → name,
+   long → long (las cajas de texto libre conservan sus saltos de línea), el resto → text. */
+function kindOf(campo) {
+  const t = campo && campo.type;
+  if (t === 'number') return 'num';
+  if (t === 'name') return 'name';
+  if (t === 'long') return 'long';
+  return 'text';
+}
+function cleanOne(s, kind) {
+  let t = String(s == null ? '' : s).normalize('NFC').replace(/\r/g, '');
+  if (kind === 'num') return t.replace(/[^0-9]/g, '').slice(0, 3);
+  t = t.replace(kind === 'name' ? NAME_BAD : TEXT_BAD, '');
+  if (kind === 'long') {
+    t = t.split('\n').map((l) => l.replace(/[ \t]+/g, ' ').trim()).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  } else {
+    t = t.replace(/\s+/g, ' ').trim();
+  }
+  return t.slice(0, CLEAN_MAX);
+}
+function cleanValues(values, campos) {
+  const out = {};
+  Object.keys(values || {}).forEach((k) => {
+    const v = values[k];
+    if (typeof v !== 'string') { out[k] = v; return; }
+    const campo = (campos || {})[k];
+    /* campo de opciones (multi): cada opción se limpia por separado; «||» las separa */
+    if (campo && campo.type === 'multi') {
+      out[k] = v.split('||').map((x) => cleanOne(x, 'text')).filter(Boolean).join('||');
+      return;
+    }
+    out[k] = cleanOne(v, kindOf(campo));
+  });
+  return out;
+}
+/* Tamaños de página de un fondo por capas (template.pageSize). */
+const PAGE_SIZES = { A4: [595.276, 841.89] };
+
+/* Dibuja las capas de arte de una página (T4.2). Cada capa: x, y, w, h en % de la página
+   (x, y = esquina superior izquierda) y angle en grados, alrededor del centro de la pieza.
+   deps.assets: { [id de pieza]: { kind: 'pdf' | 'png', bytes } }. Las piezas PDF se incrustan
+   como página (embedPdf); las PNG, como imagen (embedPng). */
+async function dibujarCapas(out, page, capas, assets, cache, degrees) {
+  const PW = page.getWidth(), PH = page.getHeight();
+  for (const capa of capas || []) {
+    const pieza = (assets || {})[capa.asset];
+    if (!pieza) throw new Error(`falta el fichero de la pieza «${capa.asset}» del kit`);
+    if (!cache[capa.asset]) {
+      cache[capa.asset] = pieza.kind === 'pdf'
+        ? (await out.embedPdf(pieza.bytes))[0]
+        : await out.embedPng(pieza.bytes);
+    }
+    const emb = cache[capa.asset];
+    const w = (capa.w / 100) * PW, h = (capa.h / 100) * PH;
+    const cx = (capa.x / 100) * PW + w / 2, cy = PH - (capa.y / 100) * PH - h / 2;
+    const th = ((capa.angle || 0) * Math.PI) / 180;
+    /* El giro de pdf-lib es alrededor de la esquina inferior izquierda: se calcula esa esquina
+       para que el centro de la pieza quede en (cx, cy) después de girar. */
+    const x0 = cx - (w / 2 * Math.cos(th) - h / 2 * Math.sin(th));
+    const y0 = cy - (w / 2 * Math.sin(th) + h / 2 * Math.cos(th));
+    const rotate = degrees(capa.angle || 0);
+    if (pieza.kind === 'pdf') {
+      page.drawPage(emb, { x: x0, y: y0, xScale: w / emb.width, yScale: h / emb.height, rotate });
+    } else {
+      page.drawImage(emb, { x: x0, y: y0, width: w, height: h, rotate });
+    }
+  }
+}
+
+async function composeGame(deps) {
+  const PDFLib = globalThis.PDFLib, fontkit = globalThis.fontkit;
+  if (!PDFLib || !fontkit) throw new Error('faltan PDFLib/fontkit');
+  const { PDFDocument, degrees, rgb } = PDFLib;
+  const hasOps = PDFLib.pushGraphicsState && PDFLib.popGraphicsState &&
+    PDFLib.translate && PDFLib.scale && PDFLib.rotateRadians &&
+    PDFLib.moveTo && PDFLib.lineTo && PDFLib.closePath &&
+    PDFLib.clip && PDFLib.endPath;
+  const ops = hasOps ? {
+    pushGraphicsState: PDFLib.pushGraphicsState, popGraphicsState: PDFLib.popGraphicsState,
+    translate: PDFLib.translate, scale: PDFLib.scale, rotateRadians: PDFLib.rotateRadians,
+    moveTo: PDFLib.moveTo, lineTo: PDFLib.lineTo, closePath: PDFLib.closePath,
+    clip: PDFLib.clip, endPath: PDFLib.endPath,
+  } : null;
+  const { bgBytes, fonts, template, i18n, photos, onProgress } = deps;
+  /* texto.en: ajustes propios del inglés (caja, escala, tamaño...) que sustituyen
+     a los del texto en esa versión; el español no cambia. */
+  const fixed = (deps.fixed || []).map((t) => (deps.lang === 'en' && t.en ? Object.assign({}, t, t.en) : t));
+  const values = cleanValues(deps.values, deps.fields);
+  const tick = onProgress || (() => {});
+  const out = await PDFDocument.create();
+  out.registerFontkit(fontkit);
+  const bgDoc = bgBytes ? await PDFDocument.load(bgBytes) : null;
+  const artCache = {};
+  const ff = {};
+  for (const k of Object.keys(fonts)) {
+    ff[k] = await out.embedFont(fonts[k].bytes, { subset: fonts[k].subset !== false });
+  }
+  /* La familia extraída manda: manuscritas a Caveat (Bold solo si el
+     artista la marcó Bold), titulares a Anton Regular y las Bold del
+     artista a OpenSans-Bold. OpenSans/Myriad Regular van en regular. */
+  /* Textos manuscritos: Caveat ~1,65x mas estrecha que Segoe Script. */
+  const SCRIPT_K = 1.65;
+  const isScriptFam = (family) => !family || /caveat|script|hand|myriad/i.test(family);
+  const ptSize = (family, pct, PW) => (pct / 100) * PW * (isScriptFam(family) ? SCRIPT_K : 1);
+  const pickFont = (family, size) => {
+    void size;
+    const f = family || '';
+    if (/pigpen|runes/i.test(f)) return 'runes';
+    if (/myriad/i.test(f)) return 'caveatBold';
+    if (/caveat|script|hand/i.test(f)) return /bold|black/i.test(f) ? 'caveatBold' : 'caveat';
+    if (/anton|display/i.test(f)) return 'anton';
+    if (/bold|black/i.test(f)) return 'opensansBold';
+    return 'opensans';
+  };
+  /* Factura: typewriter monoespaciada (cifras y columnas legibles). */
+  const MONO = { factura: 1, concepto: 1, cant: 1, 'precio-unit': 1, importe: 1, cliente: 1 };
+  const MONO_R = /vibrador|1-000|no-2025|^1-9$/;
+  const pickFontFor = (f) => {
+    if (MONO[f.key]) return 'courierBold';
+    if (MONO_R.test(f.key)) return 'courier';
+    return pickFont(f.fontFamily, f.size);
+  };
+  const warns = [];
+  /* Mecánicas del juego (contrato 3.2): cada una dibuja en su página y en su capa.
+     Las que aún no tienen implementación en mechanics/ se avisan (no detienen la
+     composición); T2.5 lo convierte en error. */
+  const mecanicas = deps.mechanics || [];
+  const campos = deps.fields || {};
+  const registro = globalThis.PMEMechanics || {};
+  mecanicas.forEach((m) => { if (!registro[m.type]) throw new Error(`mecánica desconocida: ${m.type}`); });
+  /* Campos derivados (contrato 3.2): cada mecánica calcula sus valores antes de dibujar. */
+  mecanicas.forEach((m) => {
+    const def = registro[m.type];
+    if (def && def.derive) Object.assign(values, def.derive(values, m.params || {}, campos));
+  });
+  function correrMecanicas(pageId, capa, page, PW, PH) {
+    mecanicas.forEach((m) => {
+      const def = registro[m.type];
+      if (!def || !def.drawPage || m.page !== pageId || (def.layer || 'final') !== capa) return;
+      def.drawPage({ page, PW, PH, rgb, values, lang: deps.lang, fields: campos }, m.params || {});
+    });
+  }
+  /* Reflow por línea: igual que en Node (valores dentro de la frase). */
+  const FLOW_GAP_MAX = 5;
+  /* Pareja: dos huecos de la misma línea con el mismo «flow» (campo de la plantilla). */
+  const flowPairOk = (segs) => {
+    if (segs.length !== 2) return false;
+    return !!(segs[0].ref.flow && segs[0].ref.flow === segs[1].ref.flow);
+  };
+  const buildFlowGroups = (tpl, fixed, pi) => {
+    const items = [];
+    for (const f of fixed) {
+      if (f.page !== pi + 1 || Math.abs(f.angle || 0) >= 45) continue;
+    /* numeros de pildora (chips): no entran en el reflow, se quedan en su sitio */
+    if (/^\d+$/.test(String(f.es || '').trim())) continue;
+      const multi = /\n/.test(f.es || '');
+      items.push({ kind: multi ? 'm' : 'f', ref: f,
+        x0: f.x, x1: f.x + f.w, cy: multi ? f.y : f.y + f.h / 2, h: f.h });
+    }
+    for (const s of tpl.pages[pi].slots) {
+      const fld = tpl.fields.find((x) => x.id === s.field);
+      if (!fld || fld.type !== 'text' || s.transform || Math.abs(s.angle || 0) >= 45) continue;
+      items.push({ kind: 's', ref: s,
+        x0: s.x, x1: s.x + s.w, cy: s.y + s.h / 2, h: s.h });
+    }
+    items.sort((a, b) => a.cy - b.cy || a.x0 - b.x0);
+    const lines = [];
+    for (const it of items) {
+      let ln = null;
+      for (const l of lines) {
+        if (Math.abs(l.cy - it.cy) <= 0.45 * Math.min(l.minH, it.h)) { ln = l; break; }
+      }
+      if (!ln) lines.push({ cy: it.cy, minH: it.h, items: [it] });
+      else { ln.items.push(it); ln.minH = Math.min(ln.minH, it.h); }
+    }
+    const groups = [];
+    const multiBands = items.filter((it) => it.kind === 'm')
+      .map((it) => ({ x0: it.x0, x1: it.x1, top: it.ref.y, bot: it.ref.y + it.ref.h }));
+    for (const ln of lines) {
+      /* Orden de lectura por centro (caja ancha puede empezar a la
+         izquierda pero leerse después) */
+      ln.items.sort((a, b) => ((a.x0 + a.x1) - (b.x0 + b.x1)));
+      if (ln.items.some((it) => it.kind === 'm')) continue;
+      const angs = ln.items.map((it) => it.ref.angle || 0);
+      if (Math.max(...angs) - Math.min(...angs) > 12) continue;
+      const gx0 = Math.min(...ln.items.map((it) => it.x0));
+      const gx1 = Math.max(...ln.items.map((it) => it.x1));
+      const gy0 = Math.min(...ln.items.map((it) => it.ref.y));
+      const gy1 = Math.max(...ln.items.map((it) => it.ref.y + it.ref.h));
+      const clash = multiBands.some((mb) => gx0 < mb.x1 && gx1 > mb.x0 &&
+        gy0 < mb.bot - 0.3 && gy1 > mb.top + 0.3);
+      if (clash) continue;
+      let cur = [ln.items[0]];
+      const flush = () => {
+        const hasS = cur.some((it) => it.kind === 's');
+        const hasF = cur.some((it) => it.kind === 'f');
+        if (cur.length >= 2 && hasS && (hasF || flowPairOk(cur))) {
+          cur.forEach((it) => { it.ref._flow = true; });
+          groups.push(cur);
+        }
+      };
+      for (let i = 1; i < ln.items.length; i++) {
+        if (ln.items[i].x0 - cur[cur.length - 1].x1 < FLOW_GAP_MAX) cur.push(ln.items[i]);
+        else { flush(); cur = [ln.items[i]]; }
+      }
+      flush();
+    }
+    return groups;
+  };
+  const cleanFlowText = (s) => String(s || '').replace(/\s+/g, ' ')
+    .replace(/\s+([,.;:!?%)\]}])/g, '$1').replace(/([(\[{])\s+/g, '$1').trim();
+  const drawFlowGroup = (bpg, gr, textOf, valOf, PW2, PH2) => {
+    const runs = [];
+    for (const g of gr) {
+      if (g.kind === 'f') {
+        const t = cleanFlowText(textOf(g.ref));
+        if (!t) continue;
+        runs.push({ text: t, fam: g.ref.fontFamily, size: g.ref.size,
+          color: g.ref.color, hsMax: g.ref.xscale || 1, align: g.ref.align || 'left' });
+      } else {
+        const t = cleanFlowText(caseOf(g.ref, String(valOf(g.ref.field) || '')).replace(/\n/g, ' '));
+        if (!t) continue;
+        runs.push({ text: t, fam: g.ref.fontFamily, size: g.ref.size,
+          color: g.ref.color || '#000000', hsMax: g.ref.xscale || 1, align: g.ref.align || 'left' });
+      }
+    }
+    if (!runs.length) return;
+    const x0 = Math.min(...gr.map((g) => g.x0)) / 100 * PW2;
+    const x1 = Math.max(...gr.map((g) => g.x1)) / 100 * PW2;
+    const yT = Math.min(...gr.map((g) => g.ref.y)) / 100;
+    const yB = Math.max(...gr.map((g) => g.ref.y + g.ref.h)) / 100;
+    const yTop = PH2 - yT * PH2, boxH = (yB - yT) * PH2, maxW = x1 - x0;
+    const fonts = runs.map((r) => ff[pickFont(r.fam, r.size)]);
+    const floorHs = Math.min(0.6, ...runs.map((r) => (r.hsMax > 0 ? r.hsMax : 1)));
+    let scale = 1, laid = null;
+    for (;;) {
+      const words = [];
+      runs.forEach((r, ri) => {
+        const sz = ptSize(r.fam, r.size, PW2) * scale;
+        const f = fonts[ri];
+        r.text.split(' ').filter(Boolean).forEach((w) => {
+          words.push({ w, f, sz, color: r.color, glue: /^[.,;:!?%)\]}]/.test(w) });
+        });
+      });
+      let total = 0;
+      words.forEach((w, i) => {
+        w.nat = w.f.widthOfTextAtSize(w.w, w.sz) || 1;
+        const sp = (i && !w.glue) ? (w.f.widthOfTextAtSize(' ', w.sz) || 0) : 0;
+        w.gap = sp;
+        total += w.nat + sp;
+      });
+      const hs = Math.min(...runs.map((r) => (r.hsMax > 0 ? r.hsMax : 1)), maxW / Math.max(total, 1));
+      const maxSz = Math.max(...words.map((w) => w.sz));
+      if ((hs >= floorHs && maxSz * 1.25 <= boxH + maxSz * 0.5) || scale <= 0.5) {
+        laid = { words, hs: Math.max(hs, 0.1), maxSz, total };
+        if (scale < 0.85) {
+          const lbl = (gr.find((g) => g.kind === 'f') || {}).ref;
+          warns.push(((lbl && lbl.key) || (gr[0].ref.field || 'flujo')) + ': encogido');
+        }
+        break;
+      }
+      scale *= 0.94;
+    }
+    const align = runs[0].align;
+    const ink = Math.min(laid.total, maxW) * laid.hs;
+    let xx = x0;
+    if (align === 'center') xx = (x0 + x1) / 2 - ink / 2;
+    else if (align === 'right') xx = x1 - ink;
+    const cy = yTop - boxH / 2;
+    const base = cy - laid.maxSz * 0.45;
+    const angle = (gr[0].ref.angle || 0);
+    const rad = (angle * Math.PI) / 180, c = Math.cos(rad), s = Math.sin(rad);
+    const ccx = (x0 + x1) / 2, ccy = yTop - boxH / 2;
+    let pen = xx;
+    for (const w of laid.words) {
+      pen += (w.gap || 0) * laid.hs;
+      const px = ccx + (pen - ccx) * c - (base - ccy) * s;
+      const py = ccy + (pen - ccx) * s + (base - ccy) * c;
+      drawLine(bpg, degrees, ops, w.w, px, py, w.sz, w.f, hex(w.color, rgb), laid.hs, angle);
+      pen += w.nat * laid.hs;
+    }
+  };
+  /* Runas: la transformación «runes» de un hueco vive en mechanics/runes.js (globalThis.PMETransforms). */
+  /* Alias junto al nombre (la plantilla no trae huecos de alias). */
+  /* slot.upper: el valor se muestra en mayúsculas (p. ej. el nombre en "POSIBLES UBICACIONES DE") */
+  const caseOf = (s, v) => (s && s.upper ? v.toUpperCase() : v);
+  const slotVal = (field) => {
+    let v = String(values[field] || '').replace(/[ \t]+/g, ' ')
+      .split('\n').map((l) => l.trim()).join('\n').trim();
+    return v;
+  };
+  /* Valor que se dibuja en un hueco: el campo y, si el hueco tiene transform, su transformación. */
+  const valorHueco = (s) => {
+    const v = slotVal(s.field);
+    if (!s.transform) return v;
+    const tr = (globalThis.PMETransforms || {})[s.transform];
+    if (!tr) throw new Error(`transform desconocido: ${s.transform}`);
+    return tr(v, s.params || {}, deps.lang);
+  };
+  const n = template.pages.length;
+  for (let pi = 0; pi < n; pi++) {
+    let bg;
+    if (template.pages[pi].layers) {
+      /* Página por capas: hoja en blanco del tamaño de la plantilla, con sus piezas de arte. */
+      const size = PAGE_SIZES[template.pageSize];
+      if (!size) throw new Error(`tamaño de página desconocido: ${template.pageSize}`);
+      bg = out.addPage(size);
+      await dibujarCapas(out, bg, template.pages[pi].layers, deps.assets, artCache, degrees);
+    } else {
+      if (!bgDoc) throw new Error(`la página ${template.pages[pi].id} no tiene fondo (ni PDF ni capas)`);
+      const pages = await out.copyPages(bgDoc, [pi]);
+      bg = pages[0];
+      out.addPage(bg);
+    }
+    const PW = bg.getWidth(), PH = bg.getHeight();
+    /* slot.xEn: posición horizontal solo en inglés (p. ej. el nombre abre la línea
+       en inglés y va tras "A" en español). */
+    const box = (b) => ({
+      x: ((deps.lang === 'en' && b.xEn !== undefined ? b.xEn : b.x) / 100) * PW, w: (b.w / 100) * PW,
+      yTop: PH - (b.y / 100) * PH, h: (b.h / 100) * PH,
+    });
+    /* Caja + sus líneas originales en puntos (dibujo posicional). */
+    const withLines = (f) => {
+      const bp = box(f);
+      bp.lines = ((f && f.lines) || []).map(box);
+      return bp;
+    };
+    /* Capa «under» (p. ej. el fondo de la nota cifrada en p10): antes del texto. */
+    correrMecanicas(template.pages[pi].id, 'under', bg, PW, PH);
+    const pageFixed = fixed.filter((x) => x.page === pi + 1);
+    const baseOverride = new Map();
+    const textOf = (f) => (i18n[f.key] !== undefined ? i18n[f.key] : f.es);
+    const flowGroups = buildFlowGroups(template, fixed, pi);
+    const sibBoxes = pageFixed.filter((x) => !x._flow).map((x) => {
+      const bb = box(x);
+      return { ref: x, top: bb.yTop, bot: bb.yTop - bb.h, h: bb.h };
+    });
+    /* Fotos primero (debajo de textos). Bleed 2.5pt para tapar el marco rosa. */
+    for (const s of template.pages[pi].slots) {
+      const fld = template.fields.find((x) => x.id === s.field);
+      if (!fld || fld.type !== 'image') continue;
+      const b0 = box(s);
+      const b = { x: b0.x - 2.5, w: b0.w + 5, yTop: b0.yTop + 2.5, h: b0.h + 5 };
+      const ph = photos[s.field];
+      if (!ph) {
+        bg.drawRectangle({ x: b.x, y: b.yTop - b.h, width: b.w, height: b.h, color: rgb(0.85, 0.85, 0.85) });
+        continue;
+      }
+      const im = ph.format === 'png' ? await out.embedPng(ph.bytes) : await out.embedJpg(ph.bytes);
+      const iw = im.width || 100, ih = im.height || 100;
+      drawPhoto(bg, ops, im, iw, ih, b, s.angle || 0, degrees);
+    }
+    /* Columnas giradas (angulo entre -135 y -45, se leen de arriba abajo): un
+       valor seguido de un fijo en la misma columna ("Sabemos que [NOMBRE], estaba").
+       El valor empieza pegado a su caja y el fijo que sigue se desplaza justo tras el valor. */
+    const colShift = new Map();
+    const colLeft = new Set();
+    {
+      const cols = [];
+      for (const s of template.pages[pi].slots) {
+        const fld = template.fields.find((x) => x.id === s.field);
+        if (!fld || fld.type !== 'text' || s._flow) continue;
+        if (!((s.angle || 0) < -45 && (s.angle || 0) > -135)) continue;
+        const val = String(valorHueco(s) || '').replace(/\s*\n\s*/g, ' ').trim();
+        if (!val) continue;
+        const bb = box(s);
+        const sfont = ff[pickFont(s.fontFamily || 'caveat', s.size)];
+        const ssize0 = ptSize(s.fontFamily, s.size, PW);
+        const sr = fit(sfont, val, bb, ssize0,
+          { single: true, targetHs: s.xscale || 1, angle: s.angle || 0, grow: (s.w || 0) < 10 ? 2.5 : 1 });
+        const len = (sfont.widthOfTextAtSize(val, sr.size) || 0) * (sr.hs[0] || 1);
+        cols.push({ s, bb, len, size: sr.size });
+      }
+      for (const c of cols) {
+        for (const f of pageFixed) {
+          if (f._flow || !((f.angle || 0) < -45 && (f.angle || 0) > -135)) continue;
+          if (c.s.size > 3 || Math.abs((f.size || 0) - (c.s.size || 0)) > 0.2) continue;
+          const fb = box(f);
+          const ov = Math.min(c.bb.x + c.bb.w, fb.x + fb.w) - Math.max(c.bb.x, fb.x);
+          if (ov < 0.8 * Math.min(c.bb.w, fb.w)) continue;
+          if (!(fb.yTop < c.bb.yTop - 0.5 && fb.yTop > c.bb.yTop - c.bb.h - c.size * 0.8)) continue;
+          const newTop = c.bb.yTop - c.len - c.size * 0.3;
+          if (newTop <= fb.yTop) continue;
+          const nh = newTop - (fb.yTop - fb.h);
+          if (nh < fb.h * 0.6) continue;
+          colShift.set(f, { yTop: newTop, h: nh });
+          colLeft.add(c.s);
+        }
+      }
+    }
+    const fixedBox = (f) => {
+      const bp = withLines(f);
+      const o = colShift.get(f);
+      if (o) { bp.yTop = o.yTop; bp.h = o.h; }
+      return bp;
+    };
+    for (const f of pageFixed) {
+      if (f._flow) continue;
+      const str = textOf(f);
+      const font = ff[pickFontFor(f)];
+      const size0 = ptSize(f.fontFamily, f.size, PW);
+      let use = size0;
+      for (const lang of Object.keys(deps.i18nAll || { [deps.lang]: i18n })) {
+        const t = (deps.i18nAll[lang] || {})[f.key] !== undefined ? deps.i18nAll[lang][f.key] : f.es;
+        const rr = fit(font, t, box(f), size0, { targetHs: f.xscale, angle: f.angle || 0 });
+        if (rr.size < use) use = rr.size;
+      }
+      /* Carreras de valores de esta página para continuaciones inline
+         (fijo y valor en la misma línea: el fijo continúa tras el valor).
+         Solo valores de una línea; la x1 es el final de la tinta. */
+      const inline = [];
+      if (!((f.angle || 0) > 45 || (f.angle || 0) < -45)) {
+        for (const s of template.pages[pi].slots) {
+          const fld = template.fields.find((x) => x.id === s.field);
+          if (!fld || fld.type !== 'text' || s._flow) continue;
+          const val = caseOf(s, s.wrap ? valorHueco(s) : valorHueco(s).replace(/\s*\n\s*/g, ' ').trim());
+          if (!val || val.indexOf('\n') >= 0) continue;
+          if (((s.angle || 0) > 45 || (s.angle || 0) < -45)) continue;
+          const sfont = ff[pickFont(s.fontFamily || 'caveat', s.size)];
+          const ssize0 = ptSize(s.fontFamily, s.size, PW);
+          const bb = box(s);
+          const sr = fit(sfont, val, bb, ssize0,
+            { single: true, targetHs: s.xscale || 1, angle: s.angle || 0,
+              grow: (s.w || 0) < 10 ? 2.5 : 1 });
+          const ink = (sfont.widthOfTextAtSize(val, sr.size) || 0) * (sr.hs[0] || 1);
+          const cy2 = bb.yTop - bb.h / 2;
+          const cx2 = bb.x + bb.w / 2;
+          let vx0 = bb.x;
+          if ((s.align || 'left') === 'center') vx0 = cx2 - ink / 2;
+          else if ((s.align || 'left') === 'right') vx0 = bb.x + bb.w - ink;
+          inline.push({
+            x0: vx0, x1: vx0 + ink, base: cy2 - sr.size * 0.45, ref: s,
+            size: sr.size, angle: s.angle || 0,
+          });
+        }
+      }
+      if (drawFitted(bg, degrees, ops, font, str, fixedBox(f), size0, hex(f.color, rgb), f.align || 'left',
+          { targetHs: (deps.lang === 'en' && f.xscaleEn !== undefined) ? f.xscaleEn : f.xscale,
+            angle: f.angle || 0, lockSize: use, inline, vStart: colShift.has(f) || !!f.vStart,
+            tight: !!f.tight,
+            siblings: sibBoxes.filter((s) => s.ref !== f) })) {
+        warns.push(`${f.key}: encogido fuerte`);
+      }
+      /* el nombre intercalado toma la línea base de la frase donde va */
+      for (const g of inline) if (g.matchedY !== undefined) baseOverride.set(g.ref, g.matchedY);
+    }
+    for (const s of template.pages[pi].slots) {
+      const fld = template.fields.find((x) => x.id === s.field);
+      if (!fld) continue;
+      if (fld.type === 'text') {
+        if (s._flow) continue;
+        const val = caseOf(s, s.wrap ? valorHueco(s) : valorHueco(s).replace(/\s*\n\s*/g, ' ').trim());
+        if (!val) continue;
+        const font = ff[pickFont(s.fontFamily || 'caveat', s.size)];
+        if (drawFitted(bg, degrees, ops, font, val, box(s), ptSize(s.fontFamily, s.size, PW),
+            hex(s.color || '#000000', rgb), s.align || 'left',
+            { single: !s.wrap, targetHs: s.xscale || 1, angle: s.angle || 0,
+              grow: (s.w || 0) < 10 ? 2.5 : 1, baseY: baseOverride.get(s), vStart: colLeft.has(s), vTop: !!s.vTop, tight: !!s.tight,
+              leading: s.leading ? (s.leading / 100) * PW : 0 })) {
+          warns.push(`${s.field}: valor encogido`);
+        }
+      }
+    }
+    /* Reflow por línea: igual que en Node. */
+    for (const gr of flowGroups) {
+      drawFlowGroup(bg, gr, textOf, (fid) => slotVal(fid), PW, PH);
+    }
+    /* Marcas de mecánicas sobre la página (capa «over», p. ej. casillas marcadas). */
+    correrMecanicas(template.pages[pi].id, 'over', bg, PW, PH);
+    /* Nota cifrada (p10): igual que en Node. */
+    tick((pi + 1) / n);
+  }
+  /* Capa «final» (p. ej. la hoja de tiras): la página ya compuesta se copia y las mecánicas
+     dibujan encima de la copia. Solo se copian las páginas que tienen mecánicas finales. */
+  for (let pi = 0; pi < n; pi++) {
+    const finales = mecanicas.filter((m) => m.page === template.pages[pi].id && registro[m.type] &&
+      registro[m.type].drawPage && (registro[m.type].layer || 'final') === 'final');
+    if (!finales.length) continue;
+    const src = out.getPage(pi);
+    const PW2 = src.getWidth(), PH2 = src.getHeight();
+    const emb = await out.embedPage(src);
+    out.removePage(pi);
+    const np = out.insertPage(pi, [PW2, PH2]);
+    np.drawPage(emb, { x: 0, y: 0, width: PW2, height: PH2 });
+    finales.forEach((m) => registro[m.type].drawPage(
+      { page: np, source: emb, PW: PW2, PH: PH2, ops, rgb, values, lang: deps.lang, fields: campos }, m.params || {}));
+  }
+  return { bytes: await out.save(), warns };
+}
+
+  /* ¿Cabe el texto en su hueco sin encogerse más del 15 %? Mismo ajuste que el PDF. */
+  function fieldFits(slot, text, fontMap, PW, PH) {
+    /* mismas reglas que pickFont / ptSize de composeGame (ámbitos distintos) */
+    const fam = slot.fontFamily || 'caveat';
+    let key = 'opensans';
+    if (/pigpen|runes/i.test(fam)) key = 'runes';
+    else if (/myriad/i.test(fam)) key = 'caveatBold';
+    else if (/caveat|script|hand/i.test(fam)) key = /bold|black/i.test(fam) ? 'caveatBold' : 'caveat';
+    else if (/anton|display/i.test(fam)) key = 'anton';
+    else if (/bold|black/i.test(fam)) key = 'opensansBold';
+    const font = fontMap[key];
+    if (!font) return true;
+    const bb = { x: (slot.x / 100) * PW, w: (slot.w / 100) * PW,
+      yTop: PH - (slot.y / 100) * PH, h: (slot.h / 100) * PH };
+    const scale = /caveat|script|hand|myriad/i.test(fam) ? 1.65 : 1;
+    const r = fit(font, text, bb, (slot.size / 100) * PW * scale,
+      { single: !slot.wrap, targetHs: slot.xscale || 1, angle: slot.angle || 0,
+        grow: (slot.w || 0) < 10 ? 2.5 : 1 });
+    return !r.warn;
+  }
+globalThis.PMECompose = { composeGame, fit, wrap, drawFitted, drawLine, drawPhoto, fieldFits };
+})();

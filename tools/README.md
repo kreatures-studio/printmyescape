@@ -153,6 +153,10 @@ fuente sale con huecos en blanco, probar `subset: false` para ella.
   `python3 tools/qa/creator-kit.py` (panel del kit), `python3 tools/qa/creator-campos.py` (formulario y mecánicas),
   `python3 tools/qa/creator-entrega.py` (validación con enlaces, vista previa, envío y sondeo de versiones).
 - Sin GitHub: `creator/index.html?almacen=memoria` usa el almacén en memoria.
+- Publicar: `python3 tools/build-creator.py` regenera `docs/creador/` (editor, motor, mecánicas, kit,
+  fuentes y los dos juegos de muestra del almacén en memoria; sin el PDF del artista ni las fotos). Las rutas
+  `../` de los ficheros copiados pasan a `./`, así `docs/creador/index.html` funciona servido desde `docs/`.
+  Prueba: `python3 tools/qa/creator-publicado.py` (8/8; sirve `docs/` con `creator/serve.mjs --raiz docs`).
 - Vista previa: compone en el navegador con el motor único (`tools/pme-compose-core.js`) y pdf-lib
   (`creator/vendor/`); el PDF lleva la marca «VISTA PREVIA». El kit de la vista previa es el de
   `assets/kit/manifest.json`; con `?kit=` se cambia (pruebas).

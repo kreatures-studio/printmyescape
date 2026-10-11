@@ -435,3 +435,21 @@ Pendiente (no bloquea M2):
   no se registra.
 - Prueba: `tools/qa/creator-entrega.py` (18/18): validar, enlaces, envío bloqueado y permitido, vista
   previa de final3 y del juego por capas (texto «VISTA PREVIA» en el PDF), sondeo y recarga.
+
+## T5.7 (publicación: docs/creador/)
+
+- `python3 tools/build-creator.py` copia el editor a `docs/creador/` con la misma forma que el repo. Se
+  copia lo que el editor referencia (se resuelven sus rutas literales) más `assets/kit/` completo. La
+  reescritura `../` → `./` se hace solo en ficheros de código; los JSON se copian tal cual.
+- Decisión: NO se publica el PDF del artista (`Final3-Clean.pdf`) ni las fotos de cliente. Consecuencia:
+  en `?almacen=memoria` de la copia publicada, la vista previa de final3 avisa de que falta el PDF. Con
+  GitHub (el uso normal) no afecta. Si se quiere la vista previa completa en la copia, habría que decidir
+  qué fondo de muestra se publica (licencia del artista).
+- La lista de mecánicas se mantiene a mano en `creator/index.html`; el build comprueba que coincide con
+  `mechanics/*.js` y falla si no (así no hace falta generarla).
+- Publicar en GitHub Pages: el editor es público si el repositorio o Pages lo son. No guarda datos del
+  estudio: el token se pide en cada sesión y los juegos viven en el repositorio de juegos. La decisión
+  de dónde publicarlo queda para la revisión humana.
+- Prueba: `tools/qa/creator-publicado.py` (8/8): construye, sirve `docs/` y comprueba lista, kit,
+  mecánicas, validación y vista previa (aviso del PDF que falta).
+- `creator/serve.mjs` acepta `--raiz <carpeta>` para servir otra raíz (la copia publicada).

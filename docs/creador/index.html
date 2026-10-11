@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editor de juegos</title>
+<style>
+  :root { --fondo: #f6f4ef; --tinta: #1d1b18; --suave: #6b665c; --linea: #d8d3c6; --acento: #7a3e1d; --activo: #efe6d6; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --fondo: #1b1a17; --tinta: #efeadf; --suave: #a39d8f; --linea: #3a372f; --acento: #e2a06b; --activo: #2c2922; }
+  }
+  :root[data-theme="dark"] { --fondo: #1b1a17; --tinta: #efeadf; --suave: #a39d8f; --linea: #3a372f; --acento: #e2a06b; --activo: #2c2922; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--tinta); font: 15px/1.4 system-ui, sans-serif; }
+  header { padding: 14px 16px; border-bottom: 1px solid var(--linea); }
+  header h1 { margin: 0; font-size: 18px; }
+  main { display: grid; grid-template-columns: minmax(180px, 240px) minmax(200px, 1fr) minmax(220px, 1fr); min-height: calc(100vh - 52px); }
+  section { padding: 12px 16px; border-right: 1px solid var(--linea); min-width: 0; }
+  section:last-child { border-right: 0; }
+  h2 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--suave); }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li button { width: 100%; text-align: left; padding: 8px 10px; margin-bottom: 4px; border: 1px solid transparent; border-radius: 6px; background: none; color: inherit; font: inherit; cursor: pointer; }
+  li button:hover { border-color: var(--linea); }
+  li button[aria-current="true"] { background: var(--activo); border-color: var(--acento); }
+  li small { display: block; color: var(--suave); }
+  .vacio, .error { color: var(--suave); padding: 6px 0; }
+  .error { color: #b3261e; }
+  dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0 0 14px; }
+  dt { color: var(--suave); }
+  dd { margin: 0; }
+  code { font-size: 13px; }
+  #entrada { max-width: 420px; margin: 40px auto; padding: 0 16px; }
+  #entrada label { display: block; margin: 12px 0 4px; color: var(--suave); font-size: 13px; }
+  #entrada input { width: 100%; padding: 8px 10px; border: 1px solid var(--linea); border-radius: 6px; background: var(--fondo); color: inherit; font: inherit; }
+  #entrada button, header button { margin-top: 16px; padding: 8px 14px; border: 1px solid var(--acento); border-radius: 6px; background: var(--acento); color: var(--fondo); font: inherit; cursor: pointer; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  header button { margin-top: 0; background: none; color: var(--acento); }
+  .nota { color: var(--suave); font-size: 13px; }
+  [hidden] { display: none !important; }
+  main { grid-template-columns: minmax(170px, 220px) minmax(170px, 220px) minmax(0, 1fr); }
+  .barra { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .barra button { padding: 6px 12px; border: 1px solid var(--acento); border-radius: 6px; background: none; color: var(--acento); font: inherit; cursor: pointer; }
+  .barra button:disabled { opacity: .4; cursor: default; }
+  .editor { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 240px); gap: 16px; align-items: start; }
+  .lienzo { position: relative; width: 100%; max-width: 460px; aspect-ratio: 210 / 297; background: #fff; color: #1d1b18; border: 1px solid var(--linea); overflow: hidden; touch-action: none; user-select: none; }
+  .capa { position: absolute; border: 1px dashed #9a9385; background: rgba(120, 110, 90, .12); font-size: 11px; color: #6b665c; padding: 2px; overflow: hidden; box-sizing: border-box; pointer-events: none; }
+  .hueco { position: absolute; border: 1px solid #2d6cdf; background: rgba(45, 108, 223, .08); cursor: move; font-size: 10px; color: #1d3f85; overflow: visible; box-sizing: border-box; }
+  .hueco span { display: block; padding: 1px 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hueco.sel { border-width: 2px; background: rgba(45, 108, 223, .18); }
+  .hueco:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
+  .asa { position: absolute; right: -6px; bottom: -6px; width: 12px; height: 12px; background: #2d6cdf; border: 1px solid #fff; cursor: nwse-resize; }
+  .propiedades label { display: block; margin: 10px 0 3px; color: var(--suave); font-size: 13px; }
+  .propiedades input { width: 100%; padding: 6px 8px; border: 1px solid var(--linea); border-radius: 6px; background: var(--fondo); color: inherit; font: inherit; }
+  #estado { min-height: 1em; }
+  #vistas { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+  #vistas button { flex: 1; padding: 6px 4px; border: 1px solid var(--linea); border-radius: 6px; background: none; color: inherit; font: inherit; font-size: 13px; cursor: pointer; }
+  #vistas button[aria-pressed="true"] { background: var(--activo); border-color: var(--acento); color: var(--acento); }
+  #vistas button:disabled { opacity: .4; cursor: default; }
+  .campos-seccion button { width: 100%; text-align: left; padding: 6px 8px; margin: 2px 0; border: 1px solid transparent; border-radius: 6px; background: none; color: inherit; font: inherit; cursor: pointer; }
+  .campos-seccion button[aria-current="true"] { background: var(--activo); border-color: var(--acento); }
+  .propiedades textarea { width: 100%; padding: 6px 8px; border: 1px solid var(--linea); border-radius: 6px; background: var(--fondo); color: inherit; font: 13px/1.3 ui-monospace, monospace; }
+  .propiedades.mecanica button, .propiedades.campo select { margin-top: 12px; }
+  .propiedades select { width: 100%; padding: 6px 8px; border: 1px solid var(--linea); border-radius: 6px; background: var(--fondo); color: inherit; font: inherit; }
+  .errores-mecanica { list-style: none; padding: 0; margin: 10px 0 0; }
+  .propiedades.campo input[type="checkbox"] { width: auto; }
+  .barra button:disabled { opacity: .4; cursor: default; }
+  .aviso-novedades { width: 100%; margin: 0; color: var(--acento); }
+  .aviso-novedades button { padding: 2px 8px; border: 1px solid var(--acento); border-radius: 6px; background: none; color: var(--acento); font: inherit; cursor: pointer; }
+  .lista-problemas { list-style: disc; padding-left: 20px; margin: 6px 0 14px; }
+  .lista-problemas li { margin: 4px 0; }
+  .lista-problemas button { padding: 0; border: 0; background: none; color: var(--acento); font: inherit; text-align: left; text-decoration: underline; cursor: pointer; }
+  .previa select { width: 100%; padding: 6px 8px; border: 1px solid var(--linea); border-radius: 6px; background: var(--fondo); color: inherit; font: inherit; }
+  .previa label { display: block; margin: 10px 0 3px; color: var(--suave); font-size: 13px; }
+  .previa button { margin-top: 12px; padding: 6px 12px; border: 1px solid var(--acento); border-radius: 6px; background: none; color: var(--acento); font: inherit; cursor: pointer; }
+  .previa button:disabled { opacity: .4; cursor: default; }
+  .previa-marco { display: block; width: 100%; max-width: 560px; height: 70vh; margin-top: 12px; border: 1px solid var(--linea); background: #fff; }
+  .editor { min-width: 0; }
+  @media (max-width: 760px) { .editor { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) {
+    main { grid-template-columns: 1fr; }
+    section { border-right: 0; border-bottom: 1px solid var(--linea); }
+  }
+</style>
+</head>
+<body>
+<header><h1>Editor de juegos</h1><button id="salir" type="button" hidden>Salir</button></header>
+<form id="entrada" hidden>
+  <h2>Entrar</h2>
+  <label for="repo">Repositorio de juegos (dueño/nombre)</label>
+  <input id="repo" name="repo" autocomplete="off" required>
+  <label for="token">Token de GitHub</label>
+  <input id="token" name="token" type="password" autocomplete="off" required>
+  <p class="nota">El token se guarda solo en esta pestaña (sessionStorage) y se borra al salir.</p>
+  <button type="submit">Entrar</button>
+  <p id="entrada-error" class="error" hidden></p>
+</form>
+<main hidden id="principal">
+  <section aria-labelledby="h-juegos">
+    <h2 id="h-juegos">Juegos</h2>
+    <ul id="juegos"></ul>
+  </section>
+  <section aria-labelledby="h-paginas">
+    <h2 id="h-paginas">Juego</h2>
+    <nav id="vistas" aria-label="Vistas del juego">
+      <button type="button" data-vista="paginas" aria-pressed="true" disabled>Páginas</button>
+      <button type="button" data-vista="formulario" aria-pressed="false" disabled>Formulario</button>
+      <button type="button" data-vista="mecanicas" aria-pressed="false" disabled>Mecánicas</button>
+      <button type="button" data-vista="validar" aria-pressed="false" disabled>Validar</button>
+      <button type="button" data-vista="vista" aria-pressed="false" disabled>Vista previa</button>
+    </nav>
+    <ul id="paginas"><li class="vacio">Elige un juego.</li></ul>
+  </section>
+  <section aria-labelledby="h-detalle">
+    <h2 id="h-detalle">Página</h2>
+    <div id="detalle"><p class="vacio">Elige una página.</p></div>
+  </section>
+</main>
+<!-- Mecánicas del motor (mismas que tools/build-demo.py incrusta), para leer sus parámetros. -->
+<script src="./mechanics/initial.js"></script>
+<script src="./mechanics/join.js"></script>
+<script src="./mechanics/prefix.js"></script>
+<script src="./mechanics/runes.js"></script>
+<script src="./mechanics/runes-panel.js"></script>
+<script src="./mechanics/strips.js"></script>
+<script src="./mechanics/ticks.js"></script>
+<!-- Vista previa (T5.6): el motor único y pdf-lib (los mismos ficheros que la demo). -->
+<script src="./vendor/pdf-lib-1.17.1.min.js"></script>
+<script src="./vendor/fontkit-1.1.1.umd.min.js"></script>
+<script src="./tools/pme-compose-core.js"></script>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
