@@ -5,8 +5,11 @@
 // Uso: node tools/game/limites.mjs <carpeta|game.json> [--json]
 //   capacidad = caracteres que caben en el hueco (en todos sus huecos y en todos los idiomas,
 //               se toma el mínimo), medidos con fieldFits del motor: el mismo ajuste que el PDF.
-//   límite    = min(cap, capacidad × 0,75). Los nombres: min(cap, capacidad).
+//   capacidadW = lo mismo con la letra W (la más ancha): el peor caso de la prueba de humo.
+//   límite    = min(cap, capacidad × 0,75, capacidadW). Los nombres: min(cap, capacidad, capacidadW).
 //   Un cap que no cabe (cap > límite sin el margen) se avisa en el informe.
+//   Decisión a (T3.3): la W entra en el límite; los campos que la W limita bajan su cap en
+//   tools/game/migrate-final3.mjs (CAP_W) para que la demo no acepte más de lo que cabe.
 // No escribe el juego: el build y las pruebas leen el informe.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -58,17 +61,52 @@ function entradasDe(m, game) {
 }
 
 /** Muestra de un campo que ocupa su tope (sus caracteres como mucho). */
-function muestraDe(k, game) {
+function muestraDe(k, game, conW) {
   const campo = game.fields[k];
+  const n = campo.cap || 400;
+  if (conW) return 'W'.repeat(n);
   const base = ((campo.type === 'name' ? MUESTRA.name : MUESTRA.text) + ' ').repeat(10).trim();
-  return campo.cap ? base.slice(0, campo.cap) : base;
+  return base.slice(0, n);
+}
+
+/** Caracteres que caben en los huecos de un campo, con texto(n) como contenido del campo. */
+function capacidadCon(id, campo, slots, game, map, texto, conW) {
+  const { fieldFits } = cargarMotor();
+  const transforms = globalThis.PMETransforms || {};
+  let capacidad = Infinity;
+  for (const lang of game.languages) {
+    const cabe = (n) => {
+      const t0 = texto(n);
+      return slots.every(({ s, mech }) => {
+        let t = t0;
+        if (mech) {
+          const vals = {};
+          for (const k of entradasDe(mech, game)) if (k !== id) vals[k] = muestraDe(k, game, conW);
+          vals[id] = t0;
+          t = globalThis.PMEMechanics[mech.type].derive(vals, mech.params || {})[s.field];
+        }
+        if (s.transform) t = transforms[s.transform](t, s.params || {}, lang);
+        return fieldFits(s, t, map, PW, PH);
+      });
+    };
+    let c = 0;
+    if (cabe(1)) {
+      let lo = 1, hi = MAX;
+      while (lo < hi) {
+        const mid = Math.ceil((lo + hi + 1) / 2);
+        if (cabe(mid)) lo = mid; else hi = mid - 1;
+      }
+      c = lo;
+    }
+    capacidad = Math.min(capacidad, c);
+  }
+  return capacidad;
 }
 
 /** Capacidad y límite de cada campo de texto del juego. Devuelve { [campo]: {...} }. */
 export async function medirLimites(game) {
-  const { fieldFits } = cargarMotor();
+  cargarMotor();
   const map = await fuentesIncrustadas();
-  const transforms = globalThis.PMETransforms || {};
   const out = {};
   for (const [id, campo] of Object.entries(game.fields || {})) {
     if (!['name', 'text', 'long'].includes(campo.type)) continue;
@@ -91,38 +129,15 @@ export async function medirLimites(game) {
       continue;
     }
     const base = ((campo.type === 'name' ? MUESTRA.name : MUESTRA.text) + ' ').repeat(10);
-    let capacidad = Infinity;
-    for (const lang of game.languages) {
-      const cabe = (n) => {
-        const texto = base.slice(0, n).trim();
-        return slots.every(({ s, mech }) => {
-          let t = texto;
-          if (mech) {
-            const vals = {};
-            for (const k of entradasDe(mech, game)) if (k !== id) vals[k] = muestraDe(k, game);
-            vals[id] = texto;
-            t = globalThis.PMEMechanics[mech.type].derive(vals, mech.params || {})[s.field];
-          }
-          if (s.transform) t = transforms[s.transform](t, s.params || {}, lang);
-          return fieldFits(s, t, map, PW, PH);
-        });
-      };
-      let c = 0;
-      if (cabe(1)) {
-        let lo = 1, hi = MAX;
-        while (lo < hi) {
-          const mid = Math.ceil((lo + hi + 1) / 2);
-          if (cabe(mid)) lo = mid; else hi = mid - 1;
-        }
-        c = lo;
-      }
-      capacidad = Math.min(capacidad, c);
-    }
+    const capacidad = capacidadCon(id, campo, slots, game, map, (n) => base.slice(0, n).trim(), false);
+    const capacidadW = capacidadCon(id, campo, slots, game, map, (n) => 'W'.repeat(n), true);
     const tope = campo.type === 'name' ? capacidad : Math.floor(capacidad * 0.75);
     const cap = campo.cap;
-    const limite = cap === undefined ? tope : Math.min(cap, tope);
-    const nota = cap !== undefined && cap > tope ? `el cap (${cap}) no cabe: el límite real es ${tope}` : '';
-    out[id] = { capacidad, cap: cap ?? null, limite, nota };
+    const limite = Math.min(cap === undefined ? Infinity : cap, tope, capacidadW);
+    const notas = [];
+    if (cap !== undefined && cap > tope) notas.push(`el cap (${cap}) no cabe: el límite real es ${tope}`);
+    if (cap !== undefined && capacidadW < Math.min(cap, tope)) notas.push(`con W caben ${capacidadW}: el cap baja a ${capacidadW}`);
+    out[id] = { capacidad, capacidadW, cap: cap ?? null, limite, nota: notas.join('; ') };
   }
   return out;
 }

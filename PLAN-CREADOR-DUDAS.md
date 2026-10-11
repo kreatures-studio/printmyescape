@@ -245,7 +245,7 @@ Pendiente (no bloquea M2):
 - Los campos derivados (`join`, `initial`, `prefix`) se miden ejecutando su `derive` con el resto de
   entradas al `cap` (nombres de muestra de esa longitud), porque su longitud depende de otros campos.
 - Regla 3.1: `min(cap, floor(capacidad × 0.75))`; en los campos `name` el margen no se aplica
-  (`min(cap, capacidad)`).
+  (`min(cap, capacidad)`). Desde T3.3 se añade `capacidadW` (la W): `min(…, capacidadW)`.
 - Resultado en `final3`: ningún límite supera su `cap`. Seis `cap` no caben y el informe los lista:
   `NOMBRE_DEST` (28 → 27), `PERSONALIZADO_1` (50 → 48), `PERSONALIZADO_2` (50 → 47),
   `DEBILIDAD_TEXTO`, `B_NOTES` y `TEST_RESULTADO`. El artista decide si baja el `cap` o si se
@@ -271,20 +271,24 @@ Pendiente (no bloquea M2):
 - Pendiente: el validador no comprueba que los `[CODIGO]` existan en `final3`, porque el repo no
   tiene el PDF de texto del artista (solo el fixture).
 
-## T3.3 (prueba de humo: tools/qa/game-smoke.py) — ABIERTO
+## T3.3 (prueba de humo: tools/qa/game-smoke.py) — CERRADO con la opción (a)
 
-- La herramienta está hecha: compone cada ejemplo en cada idioma (falla con excepción) y dos juegos
-  de valores generados: «una letra» y «límite W» (cada campo de texto con W hasta su límite de
-  `limites.mjs`). Falla si un hueco se encoge («valor encogido», el aviso del motor).
-- «una letra» y los ejemplos pasan en `final3`. «límite W» **no pasa**: unos 25 campos en cada idioma
-  se encogen (NOMBRE_CUMPLE_FICHA, FAMA, DEBILIDAD_TEXTO, B_NOTES, TEXTO_POSTAL, NOMBRE_DEST…).
-- Causa: el 0.75 de la regla 3.1 se calibró con texto normal. Con W repetida la capacidad real es
-  mucho menor (B_NOTES 9, TEXTO_POSTAL 16). Con mayúsculas lorem la capacidad baja poco (FAMA 18,
-  B_NOTES 121, CONCEPTO 13) y W sigue desbordando.
-- Hay que decidir una de estas opciones antes de cerrar T3.3 (la aceptación es «pasa con final3»):
-  (a) mantener la prueba y bajar límites o `cap` de esos campos; (b) cambiar la prueba a una mezcla
-  realista de letras anchas documentada; (c) aplicar `min(cap, límite)` en la demo, lo que cambia los
-  límites visibles de `final3`. Mientras tanto la herramienta queda en el commit y la prueba falla a
-  propósito.
+- La herramienta compone cada ejemplo en cada idioma (falla con excepción) y dos juegos de valores
+  generados: «una letra» y «límite W» (cada campo de texto con W hasta su límite de `limites.mjs`).
+  Falla si un hueco se encoge («valor encogido», el aviso del motor).
+- Decisión (a): se mantiene la prueba y se baja el límite de los campos que la W limita. Ahora el
+  límite es `min(cap, capacidad × 0,75, capacidadW)`; `capacidadW` mide el hueco con W, y los demás
+  campos de su mecánica en W hasta su propia `capacidadW` (punto fijo: así sirve cuando la prueba
+  escribe W en todos los campos a la vez). En `final3` bajan 44 límites; por ejemplo `NOMBRE_CUMPLE`
+  pasa de 12 a 4 (la ficha nombre + alias comparte un hueco de 25 % del ancho), `B_NOTES` de 200 a 12.
+- Resultado: `game-smoke.py --game games/final3` pasa (ejemplos, «una letra» y «límite W», ambos
+  idiomas). `validate.mjs` sigue en OK y la dorada 96/96.
+- **No se bajan los `cap` del juego.** Hacerlo rompe los ejemplos del artista: 111 errores (el
+  ejemplo «largo» usa textos de 190–200 caracteres en campos que pasarían a 12–32). El validador
+  comprueba los ejemplos contra `cap`, no contra el límite. La demo también aplica `cap`, no el
+  límite (ver T3.1), así que una persona puede escribir más de lo que cabe con W en la demo.
+- Pendiente (decisión del artista o del equipo, no de este commit): (1) agrandar los huecos de
+  `NOMBRE_CUMPLE`, `B_ALIAS`, `B_NOTES`, `TEXTO_POSTAL`, `NOTA_PERSONALIZADA` o aceptar esos caps;
+  (2) si se bajan los `cap`, acortar los ejemplos; (3) que la demo aplique el límite (opción c).
 - Equivalencia del aviso: «encogido fuerte» del plan es «valor encogido» en el motor.
 - Los avisos de los ejemplos son informativos y no hacen fallar la prueba.
