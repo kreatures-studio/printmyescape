@@ -5743,7 +5743,11 @@
     "es": "¿Cómo se llama la persona homenajeada?",
     "en": "What is the name of the birthday person?"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "El cumpleañero · Nombre",
+    "en": "The birthday person · Name"
+   }
   },
   "FAMA": {
    "type": "text",
@@ -5756,6 +5760,10 @@
    "ej": {
     "es": "Por comer hamburguesas, por pillarse un pedo monumental cada vez que sale de fiesta…",
     "en": "For eating burgers, for getting wasted every time they go out…"
+   },
+   "corta": {
+    "es": "El cumpleañero · Fama",
+    "en": "The birthday person · Known for"
    }
   },
   "DEBILIDAD_TEXTO": {
@@ -5765,7 +5773,11 @@
     "es": "Su mayor debilidad es",
     "en": "Their biggest weakness is"
    },
-   "cap": 38
+   "cap": 38,
+   "corta": {
+    "es": "El cumpleañero · DEBILIDAD_TEXTO",
+    "en": "The birthday person · DEBILIDAD_TEXTO"
+   }
   },
   "DEBILIDAD": {
    "type": "multi",
@@ -5797,6 +5809,10 @@
    "desc": {
     "es": "Puedes seleccionar varias opciones e incluso escribir otra.",
     "en": "You can select several options or even write another one."
+   },
+   "corta": {
+    "es": "El cumpleañero · Debilidad",
+    "en": "The birthday person · Weakness"
    }
   },
   "B_ALIAS": {
@@ -5806,7 +5822,11 @@
     "es": "Alias (opcional)",
     "en": "Alias (optional)"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "El cumpleañero · B_ALIAS",
+    "en": "The birthday person · B_ALIAS"
+   }
   },
   "TALENTO": {
    "type": "text",
@@ -5815,7 +5835,11 @@
     "es": "Su mayor talento es",
     "en": "Their greatest talent is"
    },
-   "cap": 15
+   "cap": 15,
+   "corta": {
+    "es": "El cumpleañero · Talento",
+    "en": "The birthday person · Talent"
+   }
   },
   "SOSPECHA": {
    "type": "text",
@@ -5824,7 +5848,11 @@
     "es": "Si fuera sospechoso de algo, ¿de qué sería?",
     "en": "If they were a suspect, what would they be suspected of?"
    },
-   "cap": 17
+   "cap": 17,
+   "corta": {
+    "es": "El cumpleañero · Sospecha",
+    "en": "The birthday person · Suspicion"
+   }
   },
   "FOTO_CUMPLE": {
    "type": "photo",
@@ -5832,6 +5860,10 @@
    "q": {
     "es": "Sube su foto",
     "en": "Upload their photo"
+   },
+   "corta": {
+    "es": "El cumpleañero · Foto",
+    "en": "The birthday person · Photo"
    }
   },
   "EDAD": {
@@ -5842,7 +5874,11 @@
     "en": "How old are they turning?"
    },
    "min": 1,
-   "max": 110
+   "max": 110,
+   "corta": {
+    "es": "El cumpleañero · Años",
+    "en": "The birthday person · Age"
+   }
   },
   "B_INFO": {
    "type": "long",
@@ -5851,7 +5887,11 @@
     "es": "Información que sus amigos y familiares consideran importante sobre esta persona",
     "en": "Information that their friends and family consider important about this person"
    },
-   "cap": 200
+   "cap": 200,
+   "corta": {
+    "es": "El cumpleañero · Info",
+    "en": "The birthday person · Info"
+   }
   },
   "B_NOTES": {
    "type": "long",
@@ -5860,7 +5900,11 @@
     "es": "Notas y observaciones",
     "en": "Notes and observations"
    },
-   "cap": 200
+   "cap": 200,
+   "corta": {
+    "es": "El cumpleañero · Notas",
+    "en": "The birthday person · Notes"
+   }
   },
   "NOMBRE_1": {
    "type": "name",
@@ -5869,7 +5913,11 @@
     "es": "Nombre",
     "en": "Name"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S1 · Nombre",
+    "en": "S1 · Name"
+   }
   },
   "APODO_1": {
    "type": "name",
@@ -5878,7 +5926,11 @@
     "es": "Alias (opcional)",
     "en": "Alias (optional)"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S1 · Alias",
+    "en": "S1 · Alias"
+   }
   },
   "S1_HIDEA": {
    "type": "text",
@@ -5887,7 +5939,11 @@
     "es": "Escribe un lugar donde se escondería esta persona si robase algo",
     "en": "Write a place where this person would hide if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S1 · Escondite 1",
+    "en": "S1 · Hiding spot 1"
+   }
   },
   "S1_HIDEB": {
    "type": "text",
@@ -5896,7 +5952,11 @@
     "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
     "en": "Now write another possible hiding place for this person if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S1 · Escondite 2",
+    "en": "S1 · Hiding spot 2"
+   }
   },
   "FOTO_1": {
    "type": "photo",
@@ -5904,6 +5964,10 @@
    "q": {
     "es": "Sube su foto",
     "en": "Upload their photo"
+   },
+   "corta": {
+    "es": "S1 · Foto",
+    "en": "S1 · Photo"
    }
   },
   "NOMBRE_2": {
@@ -5913,7 +5977,11 @@
     "es": "Nombre",
     "en": "Name"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S2 · Nombre",
+    "en": "S2 · Name"
+   }
   },
   "APODO_2": {
    "type": "name",
@@ -5922,7 +5990,11 @@
     "es": "Alias (opcional)",
     "en": "Alias (optional)"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S2 · Alias",
+    "en": "S2 · Alias"
+   }
   },
   "S2_HIDEA": {
    "type": "text",
@@ -5931,7 +6003,11 @@
     "es": "Escribe un lugar donde se escondería esta persona si robase algo",
     "en": "Write a place where this person would hide if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S2 · Escondite 1",
+    "en": "S2 · Hiding spot 1"
+   }
   },
   "S2_HIDEB": {
    "type": "text",
@@ -5940,7 +6016,11 @@
     "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
     "en": "Now write another possible hiding place for this person if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S2 · Escondite 2",
+    "en": "S2 · Hiding spot 2"
+   }
   },
   "FOTO_2": {
    "type": "photo",
@@ -5948,6 +6028,10 @@
    "q": {
     "es": "Sube su foto",
     "en": "Upload their photo"
+   },
+   "corta": {
+    "es": "S2 · Foto",
+    "en": "S2 · Photo"
    }
   },
   "NOMBRE_3": {
@@ -5957,7 +6041,11 @@
     "es": "Nombre",
     "en": "Name"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S3 · Nombre",
+    "en": "S3 · Name"
+   }
   },
   "APODO_3": {
    "type": "name",
@@ -5966,7 +6054,11 @@
     "es": "Alias (opcional)",
     "en": "Alias (optional)"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S3 · Alias",
+    "en": "S3 · Alias"
+   }
   },
   "S3_HIDEA": {
    "type": "text",
@@ -5975,7 +6067,11 @@
     "es": "Escribe un lugar donde se escondería esta persona si robase algo",
     "en": "Write a place where this person would hide if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S3 · Escondite 1",
+    "en": "S3 · Hiding spot 1"
+   }
   },
   "S3_HIDEB": {
    "type": "text",
@@ -5984,7 +6080,11 @@
     "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
     "en": "Now write another possible hiding place for this person if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S3 · Escondite 2",
+    "en": "S3 · Hiding spot 2"
+   }
   },
   "FOTO_3": {
    "type": "photo",
@@ -5992,6 +6092,10 @@
    "q": {
     "es": "Sube su foto",
     "en": "Upload their photo"
+   },
+   "corta": {
+    "es": "S3 · Foto",
+    "en": "S3 · Photo"
    }
   },
   "NOMBRE_4": {
@@ -6001,7 +6105,11 @@
     "es": "Nombre",
     "en": "Name"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S4 · Nombre",
+    "en": "S4 · Name"
+   }
   },
   "APODO_4": {
    "type": "name",
@@ -6010,7 +6118,11 @@
     "es": "Alias (opcional)",
     "en": "Alias (optional)"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S4 · Alias",
+    "en": "S4 · Alias"
+   }
   },
   "S4_HIDEA": {
    "type": "text",
@@ -6019,7 +6131,11 @@
     "es": "Escribe un lugar donde se escondería esta persona si robase algo",
     "en": "Write a place where this person would hide if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S4 · Escondite 1",
+    "en": "S4 · Hiding spot 1"
+   }
   },
   "S4_HIDEB": {
    "type": "text",
@@ -6028,7 +6144,11 @@
     "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
     "en": "Now write another possible hiding place for this person if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S4 · Escondite 2",
+    "en": "S4 · Hiding spot 2"
+   }
   },
   "FOTO_4": {
    "type": "photo",
@@ -6036,6 +6156,10 @@
    "q": {
     "es": "Sube su foto",
     "en": "Upload their photo"
+   },
+   "corta": {
+    "es": "S4 · Foto",
+    "en": "S4 · Photo"
    }
   },
   "NOMBRE_5": {
@@ -6045,7 +6169,11 @@
     "es": "Nombre",
     "en": "Name"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S5 · Nombre",
+    "en": "S5 · Name"
+   }
   },
   "APODO_5": {
    "type": "name",
@@ -6054,7 +6182,11 @@
     "es": "Alias (opcional)",
     "en": "Alias (optional)"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S5 · Alias",
+    "en": "S5 · Alias"
+   }
   },
   "S5_HIDEA": {
    "type": "text",
@@ -6063,7 +6195,11 @@
     "es": "Escribe un lugar donde se escondería esta persona si robase algo",
     "en": "Write a place where this person would hide if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S5 · Escondite 1",
+    "en": "S5 · Hiding spot 1"
+   }
   },
   "S5_HIDEB": {
    "type": "text",
@@ -6072,7 +6208,11 @@
     "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
     "en": "Now write another possible hiding place for this person if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S5 · Escondite 2",
+    "en": "S5 · Hiding spot 2"
+   }
   },
   "FOTO_5": {
    "type": "photo",
@@ -6080,6 +6220,10 @@
    "q": {
     "es": "Sube su foto",
     "en": "Upload their photo"
+   },
+   "corta": {
+    "es": "S5 · Foto",
+    "en": "S5 · Photo"
    }
   },
   "NOMBRE_6": {
@@ -6089,7 +6233,11 @@
     "es": "Nombre",
     "en": "Name"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S6 · Nombre",
+    "en": "S6 · Name"
+   }
   },
   "APODO_6": {
    "type": "name",
@@ -6098,7 +6246,11 @@
     "es": "Alias (opcional)",
     "en": "Alias (optional)"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S6 · Alias",
+    "en": "S6 · Alias"
+   }
   },
   "S6_HIDEA": {
    "type": "text",
@@ -6107,7 +6259,11 @@
     "es": "Escribe un lugar donde se escondería esta persona si robase algo",
     "en": "Write a place where this person would hide if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S6 · Escondite 1",
+    "en": "S6 · Hiding spot 1"
+   }
   },
   "S6_HIDEB": {
    "type": "text",
@@ -6116,7 +6272,11 @@
     "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
     "en": "Now write another possible hiding place for this person if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S6 · Escondite 2",
+    "en": "S6 · Hiding spot 2"
+   }
   },
   "FOTO_6": {
    "type": "photo",
@@ -6124,6 +6284,10 @@
    "q": {
     "es": "Sube su foto",
     "en": "Upload their photo"
+   },
+   "corta": {
+    "es": "S6 · Foto",
+    "en": "S6 · Photo"
    }
   },
   "NOMBRE_7": {
@@ -6133,7 +6297,11 @@
     "es": "Nombre",
     "en": "Name"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S7 · Nombre",
+    "en": "S7 · Name"
+   }
   },
   "APODO_7": {
    "type": "name",
@@ -6142,7 +6310,11 @@
     "es": "Alias (opcional)",
     "en": "Alias (optional)"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S7 · Alias",
+    "en": "S7 · Alias"
+   }
   },
   "S7_HIDEA": {
    "type": "text",
@@ -6151,7 +6323,11 @@
     "es": "Escribe un lugar donde se escondería esta persona si robase algo",
     "en": "Write a place where this person would hide if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S7 · Escondite 1",
+    "en": "S7 · Hiding spot 1"
+   }
   },
   "S7_HIDEB": {
    "type": "text",
@@ -6160,7 +6336,11 @@
     "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
     "en": "Now write another possible hiding place for this person if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S7 · Escondite 2",
+    "en": "S7 · Hiding spot 2"
+   }
   },
   "FOTO_7": {
    "type": "photo",
@@ -6168,6 +6348,10 @@
    "q": {
     "es": "Sube su foto",
     "en": "Upload their photo"
+   },
+   "corta": {
+    "es": "S7 · Foto",
+    "en": "S7 · Photo"
    }
   },
   "NOMBRE_8": {
@@ -6177,7 +6361,11 @@
     "es": "Nombre",
     "en": "Name"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S8 · Nombre",
+    "en": "S8 · Name"
+   }
   },
   "APODO_8": {
    "type": "name",
@@ -6186,7 +6374,11 @@
     "es": "Alias (opcional)",
     "en": "Alias (optional)"
    },
-   "cap": 12
+   "cap": 12,
+   "corta": {
+    "es": "S8 · Alias",
+    "en": "S8 · Alias"
+   }
   },
   "S8_HIDEA": {
    "type": "text",
@@ -6195,7 +6387,11 @@
     "es": "Escribe un lugar donde se escondería esta persona si robase algo",
     "en": "Write a place where this person would hide if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S8 · Escondite 1",
+    "en": "S8 · Hiding spot 1"
+   }
   },
   "S8_HIDEB": {
    "type": "text",
@@ -6204,7 +6400,11 @@
     "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
     "en": "Now write another possible hiding place for this person if they stole something"
    },
-   "cap": 30
+   "cap": 30,
+   "corta": {
+    "es": "S8 · Escondite 2",
+    "en": "S8 · Hiding spot 2"
+   }
   },
   "FOTO_8": {
    "type": "photo",
@@ -6212,6 +6412,10 @@
    "q": {
     "es": "Sube su foto",
     "en": "Upload their photo"
+   },
+   "corta": {
+    "es": "S8 · Foto",
+    "en": "S8 · Photo"
    }
   },
   "TEST_LUGAR": {
@@ -6225,6 +6429,10 @@
    "desc": {
     "es": "Ej.: Club de colección de monedas, la Tuna, granjero busca esposa.",
     "en": "E.g.: Coin collectors club, the folk group, farmer seeks wife."
+   },
+   "corta": {
+    "es": "Sospechoso 1 · Lugar del test",
+    "en": "Suspect 1 · Test place"
    }
   },
   "TEST_RESULTADO": {
@@ -6238,6 +6446,10 @@
    "desc": {
     "es": "Ejemplo: \"Su colección de monedas de Pokémon no se acepta en este club; consideramos que su uso del triángulo es de nivel muy básico, creemos que su capacidad granjera es nefasta para el programa\".",
     "en": "Example: \"Their Pokémon coin collection is not accepted in this club; we consider their use of the triangle very basic, and we believe their farming skills are dreadful for the programme.\""
+   },
+   "corta": {
+    "es": "Sospechoso 1 · Resultado del test",
+    "en": "Suspect 1 · Test result"
    }
   },
   "S2_SECRET_LOVE": {
@@ -6251,6 +6463,10 @@
    "desc": {
     "es": "Se codifica en runas en su nota.",
     "en": "It is encoded in runes in their note."
+   },
+   "corta": {
+    "es": "Sospechoso 2 · Amor prohibido",
+    "en": "Suspect 2 · Forbidden love"
    }
   },
   "Nombre_Empresa": {
@@ -6264,6 +6480,10 @@
    "desc": {
     "es": "Ejemplo: Vibradores SL, Dulces gordos shop, batamanta 3000.",
     "en": "Example: Vibradores SL, Dulces gordos shop, batamanta 3000."
+   },
+   "corta": {
+    "es": "Sospechoso 3 · Empresa",
+    "en": "Suspect 3 · Company"
    }
   },
   "CONCEPTO": {
@@ -6277,6 +6497,10 @@
    "desc": {
     "es": "Ejemplo: black vibrator, gocholón, batamanta 2400",
     "en": "Example: black vibrator, gocholón, batamanta 2400"
+   },
+   "corta": {
+    "es": "Sospechoso 3 · Concepto",
+    "en": "Suspect 3 · Item"
    }
   },
   "NOMBRE_4.2": {
@@ -6290,6 +6514,10 @@
    "desc": {
     "es": "Puede ser real, inventado, un actor o actriz.",
     "en": "It can be real, made up, an actor or actress."
+   },
+   "corta": {
+    "es": "Sospechoso 4 · Contacto",
+    "en": "Suspect 4 · Contact"
    }
   },
   "MENSAJE_PERSONALIZADO": {
@@ -6299,7 +6527,11 @@
     "es": "Escribe un mensaje que le confesaría este sospechoso a esa persona",
     "en": "Write a message this suspect would confess to that person"
    },
-   "cap": 42
+   "cap": 42,
+   "corta": {
+    "es": "Sospechoso 4 · Mensaje",
+    "en": "Suspect 4 · Message"
+   }
   },
   "BUSQUEDA_1": {
    "type": "text",
@@ -6312,6 +6544,10 @@
    "desc": {
     "es": "Ej.: pornhub, tarotistas.com, kebabs4ever.",
     "en": "E.g.: pornhub, tarotistas.com, kebabs4ever."
+   },
+   "corta": {
+    "es": "Sospechoso 5 · Búsqueda 1",
+    "en": "Suspect 5 · Search 1"
    }
   },
   "BUSQUEDA_2": {
@@ -6321,7 +6557,11 @@
     "es": "Escribe otro sitio web donde le daría vergüenza que le pillasen mirando",
     "en": "Write another website where they would be embarrassed to be caught looking at"
    },
-   "cap": 20
+   "cap": 20,
+   "corta": {
+    "es": "Sospechoso 5 · Búsqueda 2",
+    "en": "Suspect 5 · Search 2"
+   }
   },
   "NOMBRE_DEST": {
    "type": "name",
@@ -6334,6 +6574,10 @@
    "desc": {
     "es": "Real, dibujo animado, actor…",
     "en": "Real, cartoon, actor…"
+   },
+   "corta": {
+    "es": "Sospechoso 6 · Postal para",
+    "en": "Suspect 6 · Postcard to"
    }
   },
   "TEXTO_POSTAL": {
@@ -6343,7 +6587,11 @@
     "es": "Lo que le escribiría en esa postal",
     "en": "What they would write on that postcard"
    },
-   "cap": 50
+   "cap": 50,
+   "corta": {
+    "es": "Sospechoso 6 · Texto postal",
+    "en": "Suspect 6 · Postcard text"
+   }
   },
   "NOTA_PERSONALIZADA": {
    "type": "long",
@@ -6352,7 +6600,11 @@
     "es": "Una nota que no quiere que vea nadie",
     "en": "A note they do not want anyone to see"
    },
-   "cap": 200
+   "cap": 200,
+   "corta": {
+    "es": "Sospechoso 6 · Nota",
+    "en": "Suspect 6 · Note"
+   }
   },
   "PERSONALIZADO_1": {
    "type": "long",
@@ -6365,6 +6617,10 @@
    "desc": {
     "es": "Ej.: cazar orcos, dormir en la calle…",
     "en": "E.g.: hunting orcs, sleeping rough…"
+   },
+   "corta": {
+    "es": "Sospechoso 7 · Afición 1",
+    "en": "Suspect 7 · Hobby 1"
    }
   },
   "PERSONALIZADO_2": {
@@ -6374,7 +6630,11 @@
     "es": "Otra afición que le daría vergüenza admitir",
     "en": "Another hobby they would be embarrassed to admit"
    },
-   "cap": 50
+   "cap": 50,
+   "corta": {
+    "es": "Sospechoso 7 · Afición 2",
+    "en": "Suspect 7 · Hobby 2"
+   }
   },
   "APP_1": {
    "type": "text",
@@ -6383,7 +6643,11 @@
     "es": "Escribe el nombre de una aplicación que puede tener en su tablet o smartphone que le dé vergüenza admitir, puede ser real o no: tinder, lácteos4my.",
     "en": "Write the name of an app they might have on their tablet or smartphone that they are embarrassed to admit to. It can be real or not: tinder, lácteos4my."
    },
-   "cap": 10
+   "cap": 10,
+   "corta": {
+    "es": "Sospechoso 8 · App 1",
+    "en": "Suspect 8 · App 1"
+   }
   },
   "APP_2": {
    "type": "text",
@@ -6392,7 +6656,11 @@
     "es": "Segunda app que le da vergüenza admitir",
     "en": "Second app they are embarrassed to admit to"
    },
-   "cap": 10
+   "cap": 10,
+   "corta": {
+    "es": "Sospechoso 8 · App 2",
+    "en": "Suspect 8 · App 2"
+   }
   },
   "APP_3": {
    "type": "text",
@@ -6401,7 +6669,11 @@
     "es": "Tercera app que le da vergüenza admitir",
     "en": "Third app they are embarrassed to admit to"
    },
-   "cap": 10
+   "cap": 10,
+   "corta": {
+    "es": "Sospechoso 8 · App 3",
+    "en": "Suspect 8 · App 3"
+   }
   },
   "APP_4": {
    "type": "text",
@@ -6410,7 +6682,11 @@
     "es": "Cuarta app que le da vergüenza admitir",
     "en": "Fourth app they are embarrassed to admit to"
    },
-   "cap": 10
+   "cap": 10,
+   "corta": {
+    "es": "Sospechoso 8 · App 4",
+    "en": "Suspect 8 · App 4"
+   }
   },
   "OTRO": {
    "type": "text",
@@ -6419,6 +6695,10 @@
    "q": {
     "es": "Otro",
     "en": "Other"
+   },
+   "corta": {
+    "es": "? · Otro",
+    "en": "? · Other"
    }
   }
  },

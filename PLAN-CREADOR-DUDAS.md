@@ -223,3 +223,15 @@ Pendiente (no bloquea M2):
 - Mecánica desconocida: error (era aviso desde T2.1).
 - Aceptación: dorada 96/96 y `grep -nE "'p[0-9]+'|NOMBRE_|APODO_|S2_|S8_|DEBILIDAD|EDAD"
   tools/pme-compose-core.js` no imprime nada.
+
+## T2.6 (etiquetas cortas de la revisión: van en el juego)
+
+- Cada campo lleva `corta` (i18n): «Sección · etiqueta», o «S<n> · Nombre/Alias/Foto/Escondite n» en
+  los campos de cada persona. La revisión lee `corta` de `Q`; la tabla `SHORT` de la demo desaparece.
+- La migración genera `corta` desde la tabla que antes estaba en la demo (`ETIQUETA` en
+  `tools/game/migrate-final3.mjs`). Comprobado: las 70 etiquetas coinciden con la regla antigua en
+  español e inglés.
+- `intro_ok` no es un campo del juego: su etiqueta («Sección de introducción · Aviso») sigue en la demo.
+- Pendiente, anotado y no tocado: `OTRO` no está en ninguna sección, así que su etiqueta es
+  «? · Otro» (igual que antes).
+- El validador comprueba que `corta` tiene todos los idiomas.

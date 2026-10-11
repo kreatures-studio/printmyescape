@@ -53,6 +53,7 @@ export function crossErrors(game, { submit = false } = {}) {
   for (const [id, f] of Object.entries(fields)) {
     needLangs(f.q, `fields/${id}/q`);
     if (f.desc) needLangs(f.desc, `fields/${id}/desc`);
+    if (f.corta) needLangs(f.corta, `fields/${id}/corta`);
     (f.options || []).forEach((o, i) => needLangs(o, `fields/${id}/options/${i}`));
     if (submit && TEXT_TYPES.has(f.type) && !f.cap) errs.push(`fields/${id}: falta cap (obligatorio para enviar)`);
   }

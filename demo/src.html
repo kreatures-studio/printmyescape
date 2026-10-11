@@ -608,6 +608,7 @@ function formFromGame(game) {
       if (f.max !== undefined) q.max = f.max;
     }
     if (f.type === 'long') q.long = 1;
+    if (f.corta) q.corta = f.corta;
     /* tipo de limpieza al escribir (igual que el motor: kindOf en tools/pme-compose-core.js) */
     q.kind = f.type === 'number' ? 'num' : f.type === 'name' ? 'name' : f.type === 'long' ? 'multi' : 'text';
     if (f.cap !== undefined) { out.LIMITS[id] = f.cap; q.max = f.cap; }
@@ -1384,35 +1385,13 @@ function mobileProgress() {
 }
 
 /* ---------- revisión y final (ambos modos) ---------- */
-/* Etiquetas cortas de la revisión, bilingües. */
-var SHORT = {
-  NOMBRE_CUMPLE: B('Nombre', 'Name'), EDAD: B('Años', 'Age'), FAMA: B('Fama', 'Known for'),
-  DEBILIDAD: B('Debilidad', 'Weakness'), B_INFO: B('Info', 'Info'), B_NOTES: B('Notas', 'Notes'),
-  TALENTO: B('Talento', 'Talent'), SOSPECHA: B('Sospecha', 'Suspicion'), OTRO: B('Otro', 'Other'),
-  FOTO_CUMPLE: B('Foto', 'Photo'), TEST_LUGAR: B('Lugar del test', 'Test place'), TEST_RESULTADO: B('Resultado del test', 'Test result'), 'NOMBRE_4.2': B('Contacto', 'Contact'),
-  MENSAJE_PERSONALIZADO: B('Mensaje', 'Message'), BUSQUEDA_1: B('Búsqueda 1', 'Search 1'), BUSQUEDA_2: B('Búsqueda 2', 'Search 2'),
-  S2_SECRET_LOVE: B('Amor prohibido', 'Forbidden love'), Nombre_Empresa: B('Empresa', 'Company'), CONCEPTO: B('Concepto', 'Item'),
-  NOMBRE_DEST: B('Postal para', 'Postcard to'), TEXTO_POSTAL: B('Texto postal', 'Postcard text'), NOTA_PERSONALIZADA: B('Nota', 'Note'),
-  PERSONALIZADO_1: B('Afición 1', 'Hobby 1'), PERSONALIZADO_2: B('Afición 2', 'Hobby 2'),
-  APP_1: B('App 1', 'App 1'), APP_2: B('App 2', 'App 2'), APP_3: B('App 3', 'App 3'), APP_4: B('App 4', 'App 4'),
-  intro_ok: B('Aviso', 'Notice')
-};
+/* Etiqueta corta de la revisión: viene del juego (campo «corta»). El aviso de la introducción no es
+   un campo del juego, así que su etiqueta va aquí. */
+var INTRO_SHORT = B('Aviso', 'Notice');
 function shortLabel(fid) {
-  var sec = null;
-  SCREENS.forEach(function (sc) {
-    if (sec) return;
-    sc.fields.forEach(function (f) { if (f.id === fid && !sec) { sec = sc.sec; } });
-  });
-  var head = sec ? secTitle(sec) : '?';
-  var m = fid.match(/^NOMBRE_(\d+)$/);
-  if (m) return 'S' + m[1] + ' · ' + pick(B('Nombre', 'Name'));
-  m = fid.match(/^APODO_(\d+)$/);
-  if (m) return 'S' + m[1] + ' · ' + pick(B('Alias', 'Alias'));
-  m = fid.match(/^S(\d+)_HIDE([AB])$/);
-  if (m) return 'S' + m[1] + ' · ' + pick(B('Escondite', 'Hiding spot')) + ' ' + (m[2] === 'A' ? '1' : '2');
-  m = fid.match(/^FOTO_(\d+)$/);
-  if (m) return 'S' + m[1] + ' · ' + pick(B('Foto', 'Photo'));
-  return head + ' · ' + (SHORT[fid] ? pick(SHORT[fid]) : fid);
+  if (fid === 'intro_ok') return secTitle('intro') + ' · ' + pick(INTRO_SHORT);
+  var q = Q[fid];
+  return q && q.corta ? pick(q.corta) : fid;
 }
 function dupNames() {
   var seen = {}, dups = [];

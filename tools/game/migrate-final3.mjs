@@ -36,6 +36,38 @@ const OTRO_LABEL = { es: 'Otro', en: 'Other' };
 
 const isRequired = (id) => !(/^APODO_/.test(id) || /_ALIAS$/.test(id) || id === 'OTRO');
 
+// Etiquetas cortas de la revisión (T2.6): antes eran la tabla SHORT de demo/src.html. Cada campo
+// las lleva ahora en «corta»: «Sección · etiqueta», o «S<n> · …» en los campos de cada persona.
+const ETIQUETA = {
+  NOMBRE_CUMPLE: ['Nombre', 'Name'], EDAD: ['Años', 'Age'], FAMA: ['Fama', 'Known for'],
+  DEBILIDAD: ['Debilidad', 'Weakness'], B_INFO: ['Info', 'Info'], B_NOTES: ['Notas', 'Notes'],
+  TALENTO: ['Talento', 'Talent'], SOSPECHA: ['Sospecha', 'Suspicion'], OTRO: ['Otro', 'Other'],
+  FOTO_CUMPLE: ['Foto', 'Photo'], TEST_LUGAR: ['Lugar del test', 'Test place'],
+  TEST_RESULTADO: ['Resultado del test', 'Test result'], 'NOMBRE_4.2': ['Contacto', 'Contact'],
+  MENSAJE_PERSONALIZADO: ['Mensaje', 'Message'], BUSQUEDA_1: ['Búsqueda 1', 'Search 1'],
+  BUSQUEDA_2: ['Búsqueda 2', 'Search 2'], S2_SECRET_LOVE: ['Amor prohibido', 'Forbidden love'],
+  Nombre_Empresa: ['Empresa', 'Company'], CONCEPTO: ['Concepto', 'Item'],
+  NOMBRE_DEST: ['Postal para', 'Postcard to'], TEXTO_POSTAL: ['Texto postal', 'Postcard text'],
+  NOTA_PERSONALIZADA: ['Nota', 'Note'], PERSONALIZADO_1: ['Afición 1', 'Hobby 1'],
+  PERSONALIZADO_2: ['Afición 2', 'Hobby 2'], APP_1: ['App 1', 'App 1'], APP_2: ['App 2', 'App 2'],
+  APP_3: ['App 3', 'App 3'], APP_4: ['App 4', 'App 4'],
+};
+function etiquetaCorta(id, sec) {
+  let m = /^NOMBRE_(\d+)$/.exec(id);
+  if (m) return { es: `S${m[1]} · Nombre`, en: `S${m[1]} · Name` };
+  m = /^APODO_(\d+)$/.exec(id);
+  if (m) return { es: `S${m[1]} · Alias`, en: `S${m[1]} · Alias` };
+  m = /^S(\d+)_HIDE([AB])$/.exec(id);
+  if (m) {
+    const k = m[2] === 'A' ? '1' : '2';
+    return { es: `S${m[1]} · Escondite ${k}`, en: `S${m[1]} · Hiding spot ${k}` };
+  }
+  m = /^FOTO_(\d+)$/.exec(id);
+  if (m) return { es: `S${m[1]} · Foto`, en: `S${m[1]} · Photo` };
+  const t = ETIQUETA[id] || [id, id];
+  return { es: `${sec ? sec.title.es : '?'} · ${t[0]}`, en: `${sec ? sec.title.en : '?'} · ${t[1]}` };
+}
+
 function fieldFrom(id, q, tpl) {
   const type = tpl && tpl.type === 'image' ? 'photo'
     : q.multi ? 'multi'
@@ -102,6 +134,10 @@ function main() {
     fields[id] = fieldFrom(id, q, tplById.get(id));
   }
   fields.OTRO = { type: 'text', required: false, cap: LIMITS.OTRO, q: OTRO_LABEL };
+  for (const id of Object.keys(fields)) {
+    const sec = SECDEF.find((s) => s.fields.includes(id));
+    fields[id].corta = etiquetaCorta(id, sec ? { title: sec.title } : null);
+  }
   const title = (s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
   const game = {
     schema: 'pme-game/1',
