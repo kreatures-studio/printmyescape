@@ -25,16 +25,7 @@ const ROOT = path.join(__dirname, '..');
 
 /* Mismas fuentes que embebe build-demo.py. subset: false = embed completo
    (Caveat y pigpen: el subsetter rompe glifos). */
-const FONTS = {
-  runes: { file: '../assets/fonts/PigpenRunes.ttf', subset: false },
-  caveatBold: { file: '../assets/fonts/Caveat-Bold.ttf', subset: false },
-  caveat: { file: '../assets/fonts/Caveat-Regular.ttf', subset: false },
-  anton: { file: '../assets/fonts/Anton-Regular.ttf', subset: true },
-  opensans: { file: '../assets/fonts/OpenSans-Regular.ttf', subset: true },
-  opensansBold: { file: '../assets/fonts/OpenSans-Bold.ttf', subset: true },
-  courier: { file: '../assets/fonts/CourierPrime-Regular.ttf', subset: true },
-  courierBold: { file: '../assets/fonts/CourierPrime-Bold.ttf', subset: true },
-};
+const { FUENTES: FONTS } = require('./game/fuentes.cjs');
 
 function args() {
   const o = { lang: 'es', out: null, values: {}, photos: {}, noSubset: false,
@@ -86,7 +77,7 @@ async function main() {
   const fonts = {};
   for (const k of Object.keys(FONTS)) {
     fonts[k] = {
-      bytes: fs.readFileSync(path.join(__dirname, FONTS[k].file)),
+      bytes: fs.readFileSync(FONTS[k].file),
       subset: o.noSubset ? false : FONTS[k].subset,
     };
   }

@@ -1,3 +1,5 @@
+# OBSOLETO (M3, T3.1 de PLAN-CREADOR.md): los límites salen de tools/game/limites.mjs (el juego
+# los lleva en «cap»). Este script no se ejecuta en el flujo; se conserva como referencia.
 """Aplica los límites de tools/limits.json al formulario (demo/src.html).
 
 Política:

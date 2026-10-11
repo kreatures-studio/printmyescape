@@ -1,3 +1,5 @@
+/* OBSOLETO (M3, T3.1 de PLAN-CREADOR.md): usa tools/game/limites.mjs, que mide con el motor en Node.
+   Este fichero ya no se ejecuta en el flujo; se conserva como referencia. */
 /* Calcula cuántos caracteres caben en cada campo de texto de la plantilla.
  * Usa el MISMO motor de ajuste que el PDF (PMECompose.fieldFits en la demo):
  * búsqueda binaria por caja; el límite de un campo es el mínimo de sus cajas.
