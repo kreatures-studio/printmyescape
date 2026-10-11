@@ -346,3 +346,36 @@ Pendiente (no bloquea M2):
 - Nota: el editor carga los juegos desde la raíz del repo; el juego de prueba `capas` se lee de
   `tools/qa/fixtures/`. En T5.7 cambiará la fuente.
 - M4 sigue abierta (T4.3 bloqueada); esta rama sale de `creador-m4`.
+
+## T5.2 (almacén de GitHub y entrada con token)
+
+- `creator/store/github.js` (3.5): `list` lee las ramas `juego/<id>`; `load` lee `games/<id>/game.json`
+  de esa rama y rev = sha del fichero; `save` comprueba la rev con `latestRev` y además la API
+  devuelve 409 si el sha ya no coincide (dos comprobaciones: la segunda cubre la carrera entre ambas);
+  `history` lista los commits del fichero (aquí rev es el commit, no el sha del fichero: cargar una
+  versión antigua no está en esta tarea); `submit` abre el pull request hacia `main` y, si ya hay uno
+  abierto (422), devuelve ese.
+- Entrada: pide el repositorio (dueño/nombre) y el token. El token va a `sessionStorage` y solo en la
+  cabecera `Authorization`; nunca en una URL ni en `localStorage`. «Salir» lo borra. Con un 401 se
+  vuelve a la entrada con el aviso. La plantilla no fija el nombre del repositorio de juegos (el plan
+  dice «el repositorio de juegos»): se escribe en la entrada.
+- Prueba: `tools/qa/creator-github.py` (19/19) con la API simulada en Playwright: carga, guardado,
+  conflicto por rev vieja (sin PUT), conflicto del servidor (409), historial, pull request nuevo y
+  existente, 401, token en sessionStorage y no en la URL, Salir.
+- `?almacen=memoria` sigue disponible para las pruebas de la interfaz (sin red ni token).
+
+## T5.3 (lienzo: huecos y capas)
+
+- `creator/lienzo.js`: la página en % (A4 con la relación de la plantilla). Cada hueco se puede
+  seleccionar, arrastrar, redimensionar con el asa y mover con flechas (Mayús: paso de 5 %). Un clic
+  sin movimiento solo selecciona. Los cambios se acotan a la página (0–100 %) y el arrastre solo
+  guarda `x` o `y` si han cambiado.
+- Propiedades del hueco seleccionado: x, y, ancho, alto, tamaño de letra y giro (solo los que tenga).
+- Deshacer (botón y Ctrl+Z): hasta 200 pasos, guardados como copias de las páginas.
+- `creator/store/memory.js` implementa la interfaz completa (load, save con rev, history, submit,
+  latestRev) para las pruebas.
+- Aceptación (`tools/qa/creator-lienzo.py`, 14/14): arrastrar un hueco y guardar cambia solo su `x`,
+  comparado campo a campo con `games/final3/game.json`.
+- Pendiente: el lienzo no dibuja el fondo PDF de final3 (solo huecos y capas); el kit (T5.4) pondrá
+  las piezas en las capas.
+- T5.2 y T5.3 van en el mismo commit porque comparten `creator/app.js` e `index.html`.

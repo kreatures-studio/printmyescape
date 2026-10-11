@@ -29,6 +29,30 @@
   dt { color: var(--suave); }
   dd { margin: 0; }
   code { font-size: 13px; }
+  #entrada { max-width: 420px; margin: 40px auto; padding: 0 16px; }
+  #entrada label { display: block; margin: 12px 0 4px; color: var(--suave); font-size: 13px; }
+  #entrada input { width: 100%; padding: 8px 10px; border: 1px solid var(--linea); border-radius: 6px; background: var(--fondo); color: inherit; font: inherit; }
+  #entrada button, header button { margin-top: 16px; padding: 8px 14px; border: 1px solid var(--acento); border-radius: 6px; background: var(--acento); color: var(--fondo); font: inherit; cursor: pointer; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  header button { margin-top: 0; background: none; color: var(--acento); }
+  .nota { color: var(--suave); font-size: 13px; }
+  [hidden] { display: none !important; }
+  main { grid-template-columns: minmax(170px, 220px) minmax(170px, 220px) minmax(0, 1fr); }
+  .barra { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .barra button { padding: 6px 12px; border: 1px solid var(--acento); border-radius: 6px; background: none; color: var(--acento); font: inherit; cursor: pointer; }
+  .barra button:disabled { opacity: .4; cursor: default; }
+  .editor { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 240px); gap: 16px; align-items: start; }
+  .lienzo { position: relative; width: 100%; max-width: 460px; aspect-ratio: 210 / 297; background: #fff; color: #1d1b18; border: 1px solid var(--linea); overflow: hidden; touch-action: none; user-select: none; }
+  .capa { position: absolute; border: 1px dashed #9a9385; background: rgba(120, 110, 90, .12); font-size: 11px; color: #6b665c; padding: 2px; overflow: hidden; box-sizing: border-box; pointer-events: none; }
+  .hueco { position: absolute; border: 1px solid #2d6cdf; background: rgba(45, 108, 223, .08); cursor: move; font-size: 10px; color: #1d3f85; overflow: visible; box-sizing: border-box; }
+  .hueco span { display: block; padding: 1px 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hueco.sel { border-width: 2px; background: rgba(45, 108, 223, .18); }
+  .hueco:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
+  .asa { position: absolute; right: -6px; bottom: -6px; width: 12px; height: 12px; background: #2d6cdf; border: 1px solid #fff; cursor: nwse-resize; }
+  .propiedades label { display: block; margin: 10px 0 3px; color: var(--suave); font-size: 13px; }
+  .propiedades input { width: 100%; padding: 6px 8px; border: 1px solid var(--linea); border-radius: 6px; background: var(--fondo); color: inherit; font: inherit; }
+  #estado { min-height: 1em; }
+  @media (max-width: 760px) { .editor { grid-template-columns: 1fr; } }
   @media (max-width: 760px) {
     main { grid-template-columns: 1fr; }
     section { border-right: 0; border-bottom: 1px solid var(--linea); }
@@ -36,8 +60,18 @@
 </style>
 </head>
 <body>
-<header><h1>Editor de juegos</h1></header>
-<main>
+<header><h1>Editor de juegos</h1><button id="salir" type="button" hidden>Salir</button></header>
+<form id="entrada" hidden>
+  <h2>Entrar</h2>
+  <label for="repo">Repositorio de juegos (dueño/nombre)</label>
+  <input id="repo" name="repo" autocomplete="off" required>
+  <label for="token">Token de GitHub</label>
+  <input id="token" name="token" type="password" autocomplete="off" required>
+  <p class="nota">El token se guarda solo en esta pestaña (sessionStorage) y se borra al salir.</p>
+  <button type="submit">Entrar</button>
+  <p id="entrada-error" class="error" hidden></p>
+</form>
+<main hidden id="principal">
   <section aria-labelledby="h-juegos">
     <h2 id="h-juegos">Juegos</h2>
     <ul id="juegos"></ul>

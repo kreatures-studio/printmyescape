@@ -1,36 +1,83 @@
-// Almacén en memoria del editor (T5.1). Tiene la misma interfaz que el almacén de GitHub
-// (T5.2, creator/store/github.js, contrato 3.5); las pruebas de Playwright lo usan en lugar de GitHub.
+// Almacén en memoria del editor (T5.1; save/history/submit en T5.3). Tiene la misma interfaz que el
+// almacén de GitHub (creator/store/github.js, contrato 3.5). Las pruebas de Playwright lo usan en
+// lugar de GitHub. Los datos viven en la pestaña: se pierden al recargar.
 //
 // Interfaz (las funciones devuelven promesas):
-//   list()            → [{ id, name }]            juegos disponibles
-//   load(id)          → game (pme-game/1)          juego completo
-//
-// En esta fase los juegos llegan de una lista de rutas (`fuentes`) y se guardan en memoria.
-// save/submit/history llegan con T5.2 y T5.6.
+//   list()                       → [{ id, name, version, status }]
+//   load(id)                     → { game, rev }
+//   save(id, game, rev, mensaje) → { rev }  o error { code: 'conflict' } si rev no es la última
+//   history(id)                  → [{ rev, date, author, message }]
+//   submit(id, nota)             → { url }
+//   latestRev(id)                → rev actual
 
-/** Crea un almacén con juegos cargados de sus rutas (relativas a la raíz del repo). */
+function error(code, message) {
+  const e = new Error(message);
+  e.code = code;
+  return e;
+}
+
+/** Crea un almacén con juegos cargados de sus rutas (relativas a la página del editor). */
 export function crearAlmacenMemoria(fuentes) {
-  const juegos = new Map();
-  let lista = null;
+  const juegos = new Map(); // id → { game, rev, historial }
+  let cargado = null;
+  let contador = 0;
 
   async function cargar() {
-    if (lista) return lista;
+    if (cargado) return cargado;
     for (const ruta of fuentes) {
       const res = await fetch(ruta);
       if (!res.ok) throw new Error(`no se pudo cargar ${ruta} (${res.status})`);
       const game = await res.json();
-      juegos.set(game.id, game);
+      contador += 1;
+      juegos.set(game.id, { game, rev: `m${contador}`, historial: [] });
     }
-    lista = [...juegos.values()].map((g) => ({ id: g.id, name: g.name }));
-    return lista;
+    cargado = true;
+    return cargado;
+  }
+
+  function entrada(id) {
+    const e = juegos.get(id);
+    if (!e) throw error('not-found', `no hay un juego «${id}»`);
+    return e;
   }
 
   return {
-    async list() { return cargar(); },
+    async list() {
+      await cargar();
+      return [...juegos.values()].map(({ game }) => ({ id: game.id, name: game.name, version: game.version, status: game.status }));
+    },
+
     async load(id) {
       await cargar();
-      if (!juegos.has(id)) throw new Error(`no hay un juego «${id}»`);
-      return structuredClone(juegos.get(id));
+      const e = entrada(id);
+      return { game: structuredClone(e.game), rev: e.rev };
+    },
+
+    async latestRev(id) {
+      await cargar();
+      return entrada(id).rev;
+    },
+
+    async save(id, game, rev, mensaje) {
+      await cargar();
+      const e = entrada(id);
+      if (rev !== e.rev) throw error('conflict', 'la versión guardada es más nueva: recarga el juego');
+      contador += 1;
+      e.game = structuredClone(game);
+      e.rev = `m${contador}`;
+      e.historial.unshift({ rev: e.rev, date: new Date().toISOString(), author: 'memoria', message: mensaje || `Actualizar ${id}` });
+      return { rev: e.rev };
+    },
+
+    async history(id) {
+      await cargar();
+      return structuredClone(entrada(id).historial);
+    },
+
+    async submit(id) {
+      await cargar();
+      entrada(id);
+      return { url: `memoria://enviados/${id}` };
     },
   };
 }

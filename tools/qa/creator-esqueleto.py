@@ -63,7 +63,7 @@ def main():
             page = b.new_page(viewport={'width': 1200, 'height': 800})
             page.on('pageerror', lambda e: errores.append(str(e)))
             page.on('console', lambda m: errores.append(m.text) if m.type == 'error' else None)
-            page.goto(base + '/creator/index.html')
+            page.goto(base + '/creator/index.html?almacen=memoria')
             page.wait_for_selector('#juegos button')
 
             nombres = page.locator('#juegos button').all_inner_texts()
@@ -79,11 +79,12 @@ def main():
             page.get_by_role('button', name='Prueba de capas').click()
             page.wait_for_selector('#paginas button')
             page.locator('#paginas button').first.click()
-            page.wait_for_selector('#detalle dl')
-            detalle = page.locator('#detalle').inner_text()
-            rec('capas: la página de prueba lista sus tres capas',
-                all(x in detalle for x in ['prueba-degradado', 'prueba-rojo', 'prueba-azul']) and '30°' in detalle,
-                detalle.replace('\n', ' · ')[:160])
+            page.wait_for_selector('.lienzo')
+            nombres_capas = page.locator('.capa').all_inner_texts()
+            rot = page.locator('.capa[data-asset="prueba-azul"]').get_attribute('style') or ''
+            rec('capas: la página de prueba dibuja sus tres capas, con su giro',
+                all(x in nombres_capas for x in ['prueba-degradado', 'prueba-rojo', 'prueba-azul']) and 'rotate(30deg)' in rot,
+                ' · '.join(nombres_capas))
             rec('marca activa en el juego y la página',
                 page.get_by_role('button', name='Prueba de capas').get_attribute('aria-current') == 'true')
 

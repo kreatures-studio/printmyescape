@@ -146,4 +146,8 @@ fuente sale con huecos en blanco, probar `subset: false` para ella.
 ## Editor (M5, en curso)
 
 - Servidor local: `node creator/serve.mjs --port 8080` → `http://localhost:8080/creator/index.html`.
-- Pruebas: `python3 tools/qa/creator-esqueleto.py` (Playwright; levanta el servidor solo).
+- Pruebas (Playwright; levantan el servidor solo):
+  `python3 tools/qa/creator-esqueleto.py` (lista de juegos y páginas),
+  `python3 tools/qa/creator-github.py` (entrada con token y almacén de GitHub con la API simulada),
+  `python3 tools/qa/creator-lienzo.py` (lienzo: mover, redimensionar, deshacer, guardar).
+- Sin GitHub: `creator/index.html?almacen=memoria` usa el almacén en memoria.
