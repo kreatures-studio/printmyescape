@@ -115,8 +115,11 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   (`tools/game/v2.mjs`, `aV1`). *Aceptación:* golden 96/96 y `tools/qa/capas-v2-test.py` (píxeles conocidos y
   referencias en PNG). *Límites:* el orden entre arte y texto solo se conserva en dos bandas (baja y alta); un
   puzzle de `datos` sin elementos propios no se dibuja todavía y falla con un mensaje claro (queda para el catálogo de puzzles, F2.6).
-- **F1.4 Registro de fuentes** `assets/fonts/registro.json`; el motor elige por familia y peso, no por expresiones.
-  *Aceptación:* golden 96/96; el validador rechaza una fuente que no está en el registro.
+- **F1.4 Registro de fuentes (hecho).** `assets/fonts/registro.json`: los 8 ficheros (Google Fonts con licencia libre)
+  y la traducción de cada nombre que aparece en un juego (`fontFamily`, p. ej. SegoeScript → Caveat). El motor resuelve
+  el nombre en el registro cuando se le pasa `fuentes` (CLI y servidor MCP); la demo del navegador conserva las reglas
+  antiguas hasta F4. *Aceptación:* golden 96/96; el validador rechaza un nombre que no está en el registro (2 casos
+  nuevos). *Pendiente:* la licencia de Pigpen (runas) es «por confirmar»: el validador lo avisa.
 - **F1.5 Validador y límites v2.** *Aceptación:* los 18 casos actuales, adaptados, y nuevos de elementos.
 - **F1.6 Formulario del comprador y CLI** leen v2. *Aceptación:* e2e de la demo 30/30 con final3 en v2.
 

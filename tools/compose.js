@@ -25,7 +25,7 @@ const ROOT = path.join(__dirname, '..');
 
 /* Mismas fuentes que embebe build-demo.py. subset: false = embed completo
    (Caveat y pigpen: el subsetter rompe glifos). */
-const { FUENTES: FONTS } = require('./game/fuentes.cjs');
+const { FUENTES: FONTS, resolverFuentes } = require('./game/fuentes.cjs');
 
 function args() {
   const o = { lang: 'es', out: null, values: {}, photos: {}, noSubset: false,
@@ -110,7 +110,7 @@ async function main() {
   }
 
   const res = await composeGame({
-    bgBytes: src.bgBytes, bgFiles: src.bgFiles, assets: src.assets,
+    bgBytes: src.bgBytes, bgFiles: src.bgFiles, assets: src.assets, fuentes: resolverFuentes(),
     fonts, template: src.template, fixed: src.fixed, i18n: src.i18n, i18nAll: src.i18nAll, lang: o.lang,
     values: src.values, photos, mechanics: src.mechanics || [], fields: src.fields || {},
   });

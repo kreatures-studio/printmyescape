@@ -22,7 +22,36 @@ export { erroresKitDatos };
 
 /** Avisos (no bloquean). Un juego v2 se mira en su forma v1 equivalente. */
 export function avisosGame(game, opts = {}) {
-  return avisosV1(game.schema === 'pme-game/2' ? aV1(game) : game, opts);
+  return [...avisosV1(game.schema === 'pme-game/2' ? aV1(game) : game, opts), ...avisosDeFuentes(game)];
+}
+
+// Fuentes (F1.4): cada nombre fontFamily del juego, en cualquier forma (v1 o v2), debe estar en assets/fonts/registro.json.
+const { nombreRegistrado, REGISTRO } = createRequire(import.meta.url)('./fuentes.cjs');
+function fuentesDelJuego(game) {
+  const usados = new Map(); // nombre → ruta de su primera aparición
+  const walk = (o, ruta) => {
+    if (Array.isArray(o)) o.forEach((v, i) => walk(v, `${ruta}[${i}]`));
+    else if (o && typeof o === 'object') {
+      for (const [k, v] of Object.entries(o)) {
+        if (k === 'fontFamily') {
+          const n = v == null ? '' : String(v);
+          if (!usados.has(n)) usados.set(n, ruta || 'juego');
+        } else walk(v, ruta ? `${ruta}.${k}` : k);
+      }
+    }
+  };
+  walk(game, '');
+  return usados;
+}
+export function erroresDeFuentes(game) {
+  return [...fuentesDelJuego(game)].filter(([n]) => !nombreRegistrado(n))
+    .map(([n, ruta]) => `${ruta}: la fuente «${n}» no está en assets/fonts/registro.json (solo fuentes de Google Fonts registradas)`);
+}
+export function avisosDeFuentes(game) {
+  return [...fuentesDelJuego(game)].filter(([n]) => nombreRegistrado(n)).flatMap(([n]) => {
+    const f = REGISTRO.fuentes.find((x) => x.key === REGISTRO.nombres[n].key);
+    return f && f.licencia === 'por confirmar' ? [`la fuente «${n}» (${f.familia}) tiene la licencia por confirmar`] : [];
+  });
 }
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -75,6 +104,7 @@ export function validateGame(game, opts = {}) {
   const errs = schemaErrors(game);
   // Las comprobaciones cruzadas solo tienen sentido si la forma básica es correcta.
   if (errs.length) return errs;
+  errs.push(...erroresDeFuentes(game));
   if (game.schema === 'pme-game/2') {
     errs.push(...reglasV2(game));
     let v1;

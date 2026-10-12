@@ -417,10 +417,14 @@ async function composeGame(deps) {
      artista a OpenSans-Bold. OpenSans/Myriad Regular van en regular. */
   /* Textos manuscritos: Caveat ~1,65x mas estrecha que Segoe Script. */
   const SCRIPT_K = 1.65;
-  const isScriptFam = (family) => !family || /caveat|script|hand|myriad/i.test(family);
+  /* F1.4: con deps.fuentes (registro de assets/fonts/registro.json) el nombre se resuelve en el registro.
+     Sin él (demo del navegador), se usan las reglas de siempre. */
+  const isScriptFam = (family) => (deps.fuentes ? deps.fuentes.manuscrita(family)
+    : (!family || /caveat|script|hand|myriad/i.test(family)));
   const ptSize = (family, pct, PW) => (pct / 100) * PW * (isScriptFam(family) ? SCRIPT_K : 1);
   const pickFont = (family, size) => {
     void size;
+    if (deps.fuentes) return deps.fuentes.key(family);
     const f = family || '';
     if (/pigpen|runes/i.test(f)) return 'runes';
     if (/myriad/i.test(f)) return 'caveatBold';
@@ -824,11 +828,12 @@ async function composeGame(deps) {
 }
 
   /* ¿Cabe el texto en su hueco sin encogerse más del 15 %? Mismo ajuste que el PDF. */
-  function fieldFits(slot, text, fontMap, PW, PH) {
-    /* mismas reglas que pickFont / ptSize de composeGame (ámbitos distintos) */
+  function fieldFits(slot, text, fontMap, PW, PH, fuentes) {
+    /* mismas reglas que pickFont / ptSize de composeGame (ámbitos distintos); con fuentes, el registro */
     const fam = slot.fontFamily || 'caveat';
     let key = 'opensans';
-    if (/pigpen|runes/i.test(fam)) key = 'runes';
+    if (fuentes) key = fuentes.key(fam);
+    else if (/pigpen|runes/i.test(fam)) key = 'runes';
     else if (/myriad/i.test(fam)) key = 'caveatBold';
     else if (/caveat|script|hand/i.test(fam)) key = /bold|black/i.test(fam) ? 'caveatBold' : 'caveat';
     else if (/anton|display/i.test(fam)) key = 'anton';
@@ -837,7 +842,7 @@ async function composeGame(deps) {
     if (!font) return true;
     const bb = { x: (slot.x / 100) * PW, w: (slot.w / 100) * PW,
       yTop: PH - (slot.y / 100) * PH, h: (slot.h / 100) * PH };
-    const scale = /caveat|script|hand|myriad/i.test(fam) ? 1.65 : 1;
+    const scale = (fuentes ? fuentes.manuscrita(fam) : /caveat|script|hand|myriad/i.test(fam)) ? 1.65 : 1;
     const r = fit(font, text, bb, (slot.size / 100) * PW * scale,
       { single: !slot.wrap, targetHs: slot.xscale || 1, angle: slot.angle || 0,
         grow: (slot.w || 0) < 10 ? 2.5 : 1 });

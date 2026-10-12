@@ -1,0 +1,178 @@
+{
+  "schema": "pme-fuentes/1",
+  "nota": "Fuentes que puede usar un juego. «fuentes» son los ficheros que embebe el motor (solo Google Fonts, con licencia libre). «nombres» traduce el nombre que aparece en un juego (fontFamily) a una fuente del registro; un nombre que no está aquí no se acepta.",
+  "fuentes": [
+    {
+      "key": "caveat",
+      "familia": "Caveat",
+      "peso": 400,
+      "estilo": "normal",
+      "fichero": "Caveat-Regular.ttf",
+      "embeberCompleta": true,
+      "licencia": "OFL-1.1",
+      "origen": "https://fonts.google.com/specimen/Caveat"
+    },
+    {
+      "key": "caveatBold",
+      "familia": "Caveat",
+      "peso": 700,
+      "estilo": "normal",
+      "fichero": "Caveat-Bold.ttf",
+      "embeberCompleta": true,
+      "licencia": "OFL-1.1",
+      "origen": "https://fonts.google.com/specimen/Caveat"
+    },
+    {
+      "key": "anton",
+      "familia": "Anton",
+      "peso": 400,
+      "estilo": "normal",
+      "fichero": "Anton-Regular.ttf",
+      "embeberCompleta": false,
+      "licencia": "OFL-1.1",
+      "origen": "https://fonts.google.com/specimen/Anton"
+    },
+    {
+      "key": "opensans",
+      "familia": "Open Sans",
+      "peso": 400,
+      "estilo": "normal",
+      "fichero": "OpenSans-Regular.ttf",
+      "embeberCompleta": false,
+      "licencia": "Apache-2.0",
+      "origen": "https://fonts.google.com/specimen/Open+Sans"
+    },
+    {
+      "key": "opensansBold",
+      "familia": "Open Sans",
+      "peso": 700,
+      "estilo": "normal",
+      "fichero": "OpenSans-Bold.ttf",
+      "embeberCompleta": false,
+      "licencia": "Apache-2.0",
+      "origen": "https://fonts.google.com/specimen/Open+Sans"
+    },
+    {
+      "key": "courier",
+      "familia": "Courier Prime",
+      "peso": 400,
+      "estilo": "normal",
+      "fichero": "CourierPrime-Regular.ttf",
+      "embeberCompleta": false,
+      "licencia": "OFL-1.1",
+      "origen": "https://fonts.google.com/specimen/Courier+Prime"
+    },
+    {
+      "key": "courierBold",
+      "familia": "Courier Prime",
+      "peso": 700,
+      "estilo": "normal",
+      "fichero": "CourierPrime-Bold.ttf",
+      "embeberCompleta": false,
+      "licencia": "OFL-1.1",
+      "origen": "https://fonts.google.com/specimen/Courier+Prime"
+    },
+    {
+      "key": "runes",
+      "familia": "Pigpen",
+      "peso": 400,
+      "estilo": "normal",
+      "fichero": "PigpenRunes.ttf",
+      "embeberCompleta": true,
+      "licencia": "por confirmar",
+      "origen": "por confirmar"
+    }
+  ],
+  "nombres": {
+    "": {
+      "key": "opensans",
+      "manuscrita": true,
+      "nota": "Sin fuente indicada: se dibuja como antes (Open Sans con escala manuscrita)."
+    },
+    "SegoeScript": {
+      "key": "caveat",
+      "manuscrita": true,
+      "nota": "Letra del artista (manuscrita) → Caveat Regular."
+    },
+    "SegoeScript-Bold": {
+      "key": "caveatBold",
+      "manuscrita": true,
+      "nota": "Letra del artista (manuscrita, negrita) → Caveat Bold."
+    },
+    "Caveat": {
+      "key": "caveat",
+      "manuscrita": true
+    },
+    "Caveat-Bold": {
+      "key": "caveatBold",
+      "manuscrita": true
+    },
+    "Myriad": {
+      "key": "caveatBold",
+      "manuscrita": true,
+      "nota": "Letra de la extracción (manuscrita) → Caveat Bold."
+    },
+    "caveat": {
+      "key": "caveat",
+      "manuscrita": true
+    },
+    "Anton": {
+      "key": "anton",
+      "manuscrita": false
+    },
+    "Anton-Regular": {
+      "key": "anton",
+      "manuscrita": false
+    },
+    "Display": {
+      "key": "anton",
+      "manuscrita": false
+    },
+    "OpenSans": {
+      "key": "opensans",
+      "manuscrita": false
+    },
+    "OpenSans-Regular": {
+      "key": "opensans",
+      "manuscrita": false
+    },
+    "Open Sans": {
+      "key": "opensans",
+      "manuscrita": false
+    },
+    "OpenSans-Bold": {
+      "key": "opensansBold",
+      "manuscrita": false
+    },
+    "OpenSans-SemiBold": {
+      "key": "opensansBold",
+      "manuscrita": false,
+      "nota": "Sin seminegrita en el registro: Open Sans Bold, como antes."
+    },
+    "OpenSans-LightItalic": {
+      "key": "opensans",
+      "manuscrita": false,
+      "nota": "Sin cursiva en el registro: Open Sans Regular, como antes."
+    },
+    "ArialMT": {
+      "key": "opensans",
+      "manuscrita": false,
+      "nota": "Letra del artista (sans) → Open Sans Regular."
+    },
+    "Arial-BoldMT": {
+      "key": "opensansBold",
+      "manuscrita": false,
+      "nota": "Letra del artista (sans, negrita) → Open Sans Bold."
+    },
+    "Georgia-Bold": {
+      "key": "opensansBold",
+      "manuscrita": false,
+      "nota": "Letra del artista (serif, negrita) → Open Sans Bold."
+    },
+    "Pigpen": {
+      "key": "runes",
+      "manuscrita": false,
+      "nota": "Fuente de runas de la mecánica «runes». Licencia por confirmar."
+    }
+  }
+}

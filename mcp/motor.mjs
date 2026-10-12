@@ -52,7 +52,7 @@ function piezasDelKit(game) {
 export async function componerJuego(game, { dir, lang, example = null, watermark = null }) {
   const PC = cargarMotor();
   const { toEngineDeps } = await import(path.join(ROOT, 'tools', 'game', 'load.mjs'));
-  const { FUENTES } = require(path.join(ROOT, 'tools', 'game', 'fuentes.cjs'));
+  const { FUENTES, resolverFuentes } = require(path.join(ROOT, 'tools', 'game', 'fuentes.cjs'));
   const deps = toEngineDeps(game, lang);
   let values = {};
   let photosPaths = {};
@@ -78,7 +78,7 @@ export async function componerJuego(game, { dir, lang, example = null, watermark
     photos[campo] = { bytes: fs.readFileSync(path.resolve(dir, ruta)), format: /\.png$/i.test(ruta) ? 'png' : 'jpg' };
   }
   return PC.composeGame({
-    bgBytes, bgFiles, assets, fonts, template: deps.template, fixed: deps.fixed, i18n: deps.i18n, i18nAll: deps.i18nAll,
+    bgBytes, bgFiles, assets, fuentes: resolverFuentes(), fonts, template: deps.template, fixed: deps.fixed, i18n: deps.i18n, i18nAll: deps.i18nAll,
     lang, values, photos, mechanics: deps.mechanics, fields: deps.fields, watermark,
   });
 }
