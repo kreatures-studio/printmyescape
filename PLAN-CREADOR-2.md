@@ -125,7 +125,11 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   y que cada PDF de página exista. El esquema del puzzle admite ahora `name`, `page` y los metadatos del §2.3.
   *Aceptación:* 20 casos anteriores (v1) y 7 nuevos de v2 en `tools/qa/validador-casos.mjs` (27/27); final3 migrado
   pasa sin errores; límites 26/26.
-- **F1.6 Formulario del comprador y CLI** leen v2. *Aceptación:* e2e de la demo 30/30 con final3 en v2.
+- **F1.6 Formulario del comprador y CLI leen v2 (hecho).** La demo se monta desde un juego v2 (`build-demo.py`
+  convierte con `tools/game/a-v1.mjs`), la CLI y la composición del MCP leen la forma v1 equivalente, y las herramientas
+  de edición del MCP rechazan v2 con un mensaje claro (`v2-no-editable`) hasta F3. *Aceptación:* e2e de la demo 30/30
+  con final3 en v2 (`PME_DEMO=salidas/demo-v2/index.html`); golden 96/96 también desde v2.
+  *Pendiente:* `tools/qa/game-smoke.py` lee el JSON crudo; las pruebas del MCP cubren solo juegos v1.
 
 ### F2 · Bibliotecas
 

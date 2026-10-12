@@ -40,6 +40,14 @@ def main():
     gdir = os.path.join(ROOT, args.game)
     with open(os.path.join(gdir, 'game.json'), encoding='utf-8') as f:
         game = json.load(f)
+    if game.get('schema') == 'pme-game/2':
+        # F1.6: la demo se monta con la forma v1 equivalente (tools/game/a-v1.mjs), que es la que lee el motor.
+        import subprocess
+        r = subprocess.run(['node', os.path.join(ROOT, 'tools', 'game', 'a-v1.mjs'), gdir],
+                           capture_output=True, text=True, cwd=ROOT)
+        if r.returncode != 0:
+            raise SystemExit(f'no se pudo convertir el juego v2: {r.stderr.strip()}')
+        game = json.loads(r.stdout)
     with open(os.path.join(ROOT, 'demo', 'src.html'), encoding='utf-8') as f:
         html = f.read()
     with open(os.path.join(ROOT, 'tools', 'node_modules', 'pdf-lib', 'dist', 'pdf-lib.min.js'), encoding='utf-8') as f:

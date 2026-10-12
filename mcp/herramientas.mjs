@@ -9,6 +9,10 @@ import { validateGame, avisosGame } from '../tools/game/validate.mjs';
 import { medirLimites } from '../tools/game/limites.mjs';
 import { crearAlmacenFs } from './store-fs.mjs';
 import { cargarMotor, componerJuego, manifiestoDelKit } from './motor.mjs';
+import { aV1 } from '../tools/game/v2.mjs';
+
+/* F1.6: un juego pme-game/2 se lee y se compone en su forma v1 equivalente; la edición aún no (F3). */
+const vistaV1 = (g) => (g.schema === 'pme-game/2' ? aV1(g) : g);
 
 export class ErrorHerramienta extends Error {
   constructor(code, message, detalles = null) {
@@ -76,6 +80,9 @@ export function crearHerramientas({ raiz }) {
   /** Carga el juego, aplica `cambiar` sobre una copia, valida y guarda. */
   async function mutar(id, mensaje, cambiar) {
     const { game, rev } = await almacen.load(id);
+    if (game.schema === 'pme-game/2') {
+      throw new ErrorHerramienta('v2-no-editable', `«${id}» está en pme-game/2: las herramientas de edición llegan en la fase F3; de momento se puede leer, validar y componer`);
+    }
     if (game.status !== 'borrador') {
       throw new ErrorHerramienta('no-borrador', `«${id}» está en «${game.status}»: solo se edita en borrador`);
     }
@@ -97,7 +104,7 @@ export function crearHerramientas({ raiz }) {
     paginas: g.template.pages.length, campos: Object.keys(g.fields || {}).length,
     mecanicas: (g.mechanics || []).length, ejemplos: (g.examples || []).length, soluciones: (g.solutions || []).length,
   });
-  const cargar = async (id) => (await almacen.load(id)).game;
+  const cargar = async (id) => vistaV1((await almacen.load(id)).game);
 
   /** Sincroniza la rama juego/<id> del juego con origin (pull o push). */
   function sincronizar(id, direccion, mensaje) {
