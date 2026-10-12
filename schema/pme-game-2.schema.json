@@ -1,0 +1,919 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Juego PrintMyEscape (pme-game/2)",
+  "description": "Formato v2 (PLAN-CREADOR-2.md §2.1): páginas compuestas por elementos. Campos, formulario, idiomas, ejemplos y soluciones como en v1.",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "version",
+    "status",
+    "name",
+    "languages",
+    "pageSize",
+    "pages",
+    "i18n",
+    "fields",
+    "form"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "pme-game/2"
+    },
+    "id": {
+      "$ref": "#/$defs/slug"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "status": {
+      "enum": [
+        "borrador",
+        "enviado",
+        "en-produccion",
+        "publicado"
+      ]
+    },
+    "name": {
+      "$ref": "#/$defs/i18n"
+    },
+    "languages": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/lang"
+      }
+    },
+    "i18n": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/lang"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      }
+    },
+    "fields": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/fieldId"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/field"
+      }
+    },
+    "form": {
+      "$ref": "#/$defs/form"
+    },
+    "mechanics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/mechanic"
+      }
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/example"
+      }
+    },
+    "solutions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/solution"
+      }
+    },
+    "pageSize": {
+      "enum": [
+        "A4",
+        "Letter"
+      ]
+    },
+    "pages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/page"
+      }
+    },
+    "puzzles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/puzzle"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "description": "Notas del cliente para Claude (pantalla de revisión).",
+      "items": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "page": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "done": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "compat": {
+      "type": "object",
+      "description": "Solo en juegos migrados de v1: lo que el motor actual necesita para dar el mismo PDF."
+    }
+  },
+  "$defs": {
+    "lang": {
+      "type": "string",
+      "pattern": "^[a-z]{2}$"
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "fieldId": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.]*$"
+    },
+    "i18n": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "#/$defs/lang"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "field": {
+      "type": "object",
+      "required": [
+        "type",
+        "required",
+        "q"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": [
+            "name",
+            "text",
+            "long",
+            "number",
+            "photo",
+            "choice",
+            "multi"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "cap": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "q": {
+          "$ref": "#/$defs/i18n"
+        },
+        "desc": {
+          "$ref": "#/$defs/i18n"
+        },
+        "ej": {
+          "$ref": "#/$defs/i18n",
+          "description": "Ejemplo de respuesta, se muestra aparte de desc (en cursiva)."
+        },
+        "corta": {
+          "$ref": "#/$defs/i18n",
+          "description": "Etiqueta de la revisión (con la sección o con la S de la persona)."
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/i18n"
+          }
+        },
+        "allowOther": {
+          "type": "boolean"
+        },
+        "otherField": {
+          "$ref": "#/$defs/fieldId"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "choice",
+                  "multi"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "options"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "allowOther": {
+                "const": true
+              }
+            },
+            "required": [
+              "allowOther"
+            ]
+          },
+          "then": {
+            "required": [
+              "otherField"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "not": {
+                  "enum": [
+                    "choice",
+                    "multi"
+                  ]
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "options"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "multi"
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "allowOther"
+                  ]
+                },
+                {
+                  "required": [
+                    "otherField"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "number"
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "min"
+                  ]
+                },
+                {
+                  "required": [
+                    "max"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "photo"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "cap"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "form": {
+      "type": "object",
+      "required": [
+        "sections"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/section"
+          }
+        }
+      }
+    },
+    "section": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "fields"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "title": {
+          "$ref": "#/$defs/i18n"
+        },
+        "hint": {
+          "$ref": "#/$defs/i18n"
+        },
+        "nameField": {
+          "$ref": "#/$defs/fieldId"
+        },
+        "photoField": {
+          "$ref": "#/$defs/fieldId"
+        },
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/fieldId"
+          }
+        }
+      }
+    },
+    "mechanic": {
+      "type": "object",
+      "required": [
+        "type",
+        "page",
+        "params"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "$ref": "#/$defs/slug"
+        },
+        "page": {
+          "type": "string",
+          "pattern": "^p\\d+$"
+        },
+        "params": {
+          "type": "object"
+        },
+        "derives": {
+          "type": "array",
+          "description": "Campos que esta mecánica calcula y que no están en fields (por ejemplo, un nombre con su alias).",
+          "items": {
+            "$ref": "#/$defs/fieldId"
+          }
+        }
+      }
+    },
+    "example": {
+      "type": "object",
+      "required": [
+        "id",
+        "values"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "values": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/lang"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "photos": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "solution": {
+      "type": "object",
+      "required": [
+        "id",
+        "how"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "page": {
+          "type": "string",
+          "pattern": "^p\\d+$"
+        },
+        "dependsOn": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fieldId"
+          }
+        },
+        "how": {
+          "$ref": "#/$defs/i18n"
+        }
+      }
+    },
+    "element": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "kind",
+            "x",
+            "y",
+            "w",
+            "h",
+            "ref"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "art"
+            },
+            "x": {
+              "type": "number",
+              "description": "% de la página"
+            },
+            "y": {
+              "type": "number"
+            },
+            "w": {
+              "type": "number",
+              "minimum": 0
+            },
+            "h": {
+              "type": "number",
+              "minimum": 0
+            },
+            "angle": {
+              "type": "number"
+            },
+            "ref": {
+              "type": "string",
+              "description": "id de una pieza del kit o de la biblioteca (id@versión)."
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "kind",
+            "x",
+            "y",
+            "w",
+            "h",
+            "key"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "text"
+            },
+            "x": {
+              "type": "number",
+              "description": "% de la página"
+            },
+            "y": {
+              "type": "number"
+            },
+            "w": {
+              "type": "number",
+              "minimum": 0
+            },
+            "h": {
+              "type": "number",
+              "minimum": 0
+            },
+            "angle": {
+              "type": "number"
+            },
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Clave de i18n: el texto nunca va dentro."
+            },
+            "size": {
+              "type": "number"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$"
+            },
+            "fontFamily": {
+              "type": "string"
+            },
+            "xscale": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "kind",
+            "x",
+            "y",
+            "w",
+            "h",
+            "field"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "field"
+            },
+            "x": {
+              "type": "number",
+              "description": "% de la página"
+            },
+            "y": {
+              "type": "number"
+            },
+            "w": {
+              "type": "number",
+              "minimum": 0
+            },
+            "h": {
+              "type": "number",
+              "minimum": 0
+            },
+            "angle": {
+              "type": "number"
+            },
+            "field": {
+              "$ref": "#/$defs/fieldId"
+            },
+            "size": {
+              "type": "number"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$"
+            },
+            "fontFamily": {
+              "type": "string"
+            },
+            "xscale": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "flow": {
+              "type": "string",
+              "description": "Pareja de reflow: dos huecos de la misma línea con el mismo flow se reflujan juntos."
+            },
+            "transform": {
+              "enum": [
+                "runes"
+              ],
+              "description": "Transformación del valor del hueco (mechanics/runes.js)."
+            },
+            "params": {
+              "type": "object",
+              "description": "Parámetros de la transformación (p. ej. prefix por idioma en «runes»)."
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "kind",
+            "x",
+            "y",
+            "w",
+            "h",
+            "field"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "photo"
+            },
+            "x": {
+              "type": "number",
+              "description": "% de la página"
+            },
+            "y": {
+              "type": "number"
+            },
+            "w": {
+              "type": "number",
+              "minimum": 0
+            },
+            "h": {
+              "type": "number",
+              "minimum": 0
+            },
+            "angle": {
+              "type": "number"
+            },
+            "field": {
+              "$ref": "#/$defs/fieldId"
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "kind",
+            "x",
+            "y",
+            "w",
+            "h",
+            "puzzle"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "puzzle"
+            },
+            "x": {
+              "type": "number",
+              "description": "% de la página"
+            },
+            "y": {
+              "type": "number"
+            },
+            "w": {
+              "type": "number",
+              "minimum": 0
+            },
+            "h": {
+              "type": "number",
+              "minimum": 0
+            },
+            "angle": {
+              "type": "number"
+            },
+            "puzzle": {
+              "type": "string",
+              "description": "id de un puzzle de «puzzles»."
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "pageBackground": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "file",
+            "page"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "pdf"
+            },
+            "file": {
+              "type": "string"
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "ref"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "art"
+            },
+            "ref": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "color"
+            },
+            "value": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "none"
+            }
+          }
+        }
+      ]
+    },
+    "page": {
+      "type": "object",
+      "required": [
+        "id",
+        "background",
+        "elements"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^p\\d+$"
+        },
+        "title": {
+          "type": "string"
+        },
+        "background": {
+          "$ref": "#/$defs/pageBackground"
+        },
+        "elements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/element"
+          }
+        },
+        "preview": {
+          "type": "string",
+          "description": "Imagen de referencia de la página (extract.py)."
+        },
+        "emptyLayers": {
+          "type": "boolean",
+          "description": "compat: la página v1 tenía layers vacío."
+        }
+      }
+    },
+    "puzzle": {
+      "type": "object",
+      "required": [
+        "id",
+        "solution"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "from": {
+          "type": "string",
+          "description": "Origen en la biblioteca (id@versión)."
+        },
+        "kind": {
+          "enum": [
+            "contenido",
+            "datos"
+          ]
+        },
+        "mechanic": {
+          "$ref": "#/$defs/slug"
+        },
+        "params": {
+          "type": "object"
+        },
+        "solution": {
+          "$ref": "#/$defs/i18n"
+        },
+        "hints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/i18n"
+          }
+        }
+      }
+    }
+  }
+}
