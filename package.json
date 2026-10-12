@@ -1,0 +1,9 @@
+{
+  "name": "printmyescape",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Servidor MCP del creador de juegos (mcp/). El motor y las herramientas de tools/ tienen sus propias dependencias.",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1"
+  }
+}

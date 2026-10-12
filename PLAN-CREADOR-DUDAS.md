@@ -465,3 +465,29 @@ Pendiente (no bloquea M2):
 - `composeGame` acepta `watermark` (texto): lo dibuja en cada página, diagonal y translúcido (mismo
   estilo que «VISTA PREVIA»). Sin la opción el PDF no cambia (golden 96/96, e2e demo 30/30).
 - El editor usa la opción en `creator/vista-previa.js` en vez de su propio código.
+
+## T6.1 (servidor MCP local: mcp/server.mjs, store-fs, herramientas)
+
+- Herramientas: las 21 de 3.3 (cada par upsert/remove cuenta como dos). Todas trabajan a través de
+  `mcp/store-fs.mjs` (rev = SHA-256 del archivo). Un cambio: carga el juego, aplica el cambio sobre una
+  copia, valida y guarda con la rev leída; si la validación falla, no se guarda nada.
+- Dependencia: `@modelcontextprotocol/sdk` 1.32.1 está en el `package.json` de la RAÍZ, no en `tools/`,
+  porque `mcp/` está en la raíz y Node resuelve los paquetes desde su propia carpeta. `npm install` en la
+  raíz antes de usar el servidor. `tools/` no lo necesita.
+- Borrador: las listas vacías (sin secciones ni campos todavía) se admiten mientras se edita. Para
+  enviar (`submit`) cuentan como error, como en el validador.
+- Motor: el motor busca el tipo de cada hueco en `template.fields` (heredado: text | image), pero el
+  juego guarda los tipos en `fields`. Hallazgo de la prueba: un campo nuevo no se dibujaba. Arreglo:
+  `plantillaParaMotor(game)` (tools/game/reglas.mjs) alinea ambas listas; lo usan la CLI, el MCP y la
+  vista previa del editor. Para final3 no cambia nada (golden 96/96).
+- `submit_to_studio`: exige `gh` (si falta, no cambia nada). Pasa a «enviado», sube la rama y abre el
+  pull request; si la subida falla, el juego queda «enviado» y basta repetir la llamada (se reutiliza el
+  PR abierto). Es la única excepción a 3.6: se permite repetir desde «enviado».
+- `sync`: trabaja con la rama juego/<id>. Pull se niega si hay cambios sin enviar en games/<id>; si hay
+  conflicto, aborta el rebase y lo explica. Push confirma solo games/<id>.
+- `render_preview`: PDF con marca «BORRADOR» (opción watermark del motor). Los PNG necesitan pdftoppm
+  (poppler); si no está, devuelve el PDF y un aviso. Ruta de salida: salidas/mcp/ (no se versiona).
+- `upsert_mechanic` y `remove_mechanic` identifican la mecánica por tipo y página. `set_page` usa el id
+  de la página (p1, p2…). `create_game` acepta el nombre como texto (igual en todos los idiomas) o como
+  objeto por idioma.
+- Pruebas: `mcp/test-client.mjs` (T6.5, ver abajo).

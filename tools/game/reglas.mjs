@@ -252,3 +252,22 @@ export function avisosGame(game, { codigos = null } = {}) {
   return avisos;
 }
 
+
+/**
+ * Plantilla lista para el motor (T6.1). El motor busca el tipo de cada hueco en `template.fields`, con
+ * los tipos heredados «text» e «image» (las fotos). Esta función lo alinea con `game.fields`: las
+ * fotos pasan a «image», el resto a «text», y los campos que no están en la lista se añaden. No cambia
+ * el juego: devuelve una copia de `template`. Para final3 la lista ya coincide (golden 96/96).
+ */
+export function plantillaParaMotor(game) {
+  const tpl = game.template;
+  const campos = game.fields || {};
+  const tipoMotor = (t) => (t === 'photo' ? 'image' : 'text');
+  const lista = (tpl.fields || []).map((f) => (campos[f.id] ? { ...f, type: tipoMotor(campos[f.id].type) } : f));
+  const conocidos = new Set(lista.map((f) => f.id));
+  for (const [id, c] of Object.entries(campos)) {
+    if (conocidos.has(id)) continue;
+    lista.push(c.cap ? { id, type: tipoMotor(c.type), maxLength: c.cap } : { id, type: tipoMotor(c.type) });
+  }
+  return { ...tpl, fields: lista };
+}

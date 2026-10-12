@@ -1,6 +1,7 @@
 // Vista previa (T5.6): compone un ejemplo del juego en el navegador con el mismo motor que el CLI
 // (tools/pme-compose-core.js) y le pone una marca de agua «VISTA PREVIA» con pdf-lib.
 import { FUENTES } from './fuentes.js';
+import { plantillaParaMotor } from '../tools/game/reglas.mjs';
 
 async function bytesDe(url) {
   const res = await fetch(url);
@@ -50,7 +51,7 @@ export async function componerVistaPrevia({ juego, lang, ejemplo, almacen, kit }
 
   // La marca de agua la pone el motor (opción watermark, T6.2): el mismo PDF que el CLI con marca.
   const res = await PC.composeGame({
-    bgBytes, assets, fonts, template: juego.template, fixed: juego.texts, i18n, i18nAll: juego.i18n,
+    bgBytes, assets, fonts, template: plantillaParaMotor(juego), fixed: juego.texts, i18n, i18nAll: juego.i18n,
     lang, values, photos, mechanics: juego.mechanics || [], fields: juego.fields || {}, watermark: 'VISTA PREVIA',
   });
   const bytes = res.bytes;

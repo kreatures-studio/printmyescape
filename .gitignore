@@ -16,3 +16,6 @@ tools/qa/salida-paridad/
 salida-paridad/
 tools/qa/salida-golden/
 tools/qa/salida-tipos/
+
+# Dependencias del servidor MCP (raíz)
+node_modules/

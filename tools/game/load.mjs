@@ -2,6 +2,7 @@
 // Un juego es una carpeta con game.json (o el propio fichero game.json).
 import fs from 'node:fs';
 import path from 'node:path';
+import { plantillaParaMotor } from './reglas.mjs';
 
 /** Lee el juego. Acepta la carpeta del juego o la ruta del game.json. */
 export function loadGame(p) {
@@ -17,6 +18,6 @@ export function loadGame(p) {
 export function toEngineDeps(game, lang) {
   const i18n = game.i18n && game.i18n[lang];
   if (!i18n) throw new Error(`el juego «${game.id}» no tiene textos para el idioma «${lang}»`);
-  return { template: game.template, fixed: game.texts, i18n, i18nAll: game.i18n,
+  return { template: plantillaParaMotor(game), fixed: game.texts, i18n, i18nAll: game.i18n,
            mechanics: game.mechanics || [], fields: game.fields || {} };
 }
