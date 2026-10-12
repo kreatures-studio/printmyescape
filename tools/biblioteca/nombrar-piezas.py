@@ -66,7 +66,7 @@ def main():
     ap.add_argument('candidatas')
     ap.add_argument('nombres')
     ap.add_argument('destino')
-    ap.add_argument('--autor', default='Artista de El regalo robado (por confirmar)')
+    ap.add_argument('--autor', default='Kreatures')
     a = ap.parse_args()
     cand = {c['id']: c for c in json.load(open(os.path.join(a.candidatas, 'candidatas.json'), encoding='utf-8'))}
     filas = list(csv.DictReader(open(a.nombres, encoding='utf-8')))
