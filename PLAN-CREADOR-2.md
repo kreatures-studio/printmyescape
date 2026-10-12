@@ -144,9 +144,15 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   se rechaza), PNG (zonas de un fichero JSON). Crea PDF, miniatura y entrada del manifiesto, y valida la colección;
   si no valida, deshace todo. *Aceptación:* `tools/qa/biblioteca-importar-test.py` 18/18 (tres formatos entran;
   rechazos sin dejar nada).
-- **F2.3 Piezas de El regalo robado:** las 28 listas (`biblioteca/arte/el-regalo-robado/`) y las 12 reexportadas.
+- **F2.3 Piezas de El regalo robado (parcial).** Las 28 listas están en `biblioteca/arte/el-regalo-robado/` (autor
+  Kreatures). Las 12 por reexportar esperan al artista; cuando lleguen se importan con `importar-arte.py` (nueva versión).
 - **F2.4 Fuentes de Google Fonts** elegidas por el estudio, con licencia.
-- **F2.5 Páginas y secciones** guardadas desde un juego, con origen.
+- **F2.5 Páginas y secciones guardadas desde un juego, con origen (hecho).** `tools/biblioteca/desde-juego.mjs
+  <juego> <spec.json>` guarda páginas (`biblioteca/paginas/<colección>/`, con el fondo PDF de la página en
+  `fondos/`) y secciones (`biblioteca/secciones/<colección>/`, con sus campos, definiciones y ejemplos). Cada entrada
+  lleva su origen (juego, versión, página o sección). El esquema admite los tipos `pagina` y `seccion`. *Aceptación:*
+  páginas y secciones de final3 exportadas y válidas; `tools/qa/biblioteca-paginas-test.mjs` (los errores se detectan
+  y una exportación fallida no deja nada escrito).
 - **F2.6 Catálogo de puzzles:** las 6 mecánicas actuales como puzzles de `datos` y 3 puzzles de `contenido` de ejemplo.
 - *Aceptación de la fase:* el validador rechaza piezas sin licencia o sin autor; un juego v2 de prueba usa arte,
   fuente, página, sección y puzzle de la biblioteca.

@@ -1,0 +1,317 @@
+{
+  "schema": "pme-biblioteca/1",
+  "tipo": "seccion",
+  "pieces": [
+    {
+      "id": "cumpleanero",
+      "version": 1,
+      "name": "El cumpleañero",
+      "tags": [
+        "formulario",
+        "nombre",
+        "foto"
+      ],
+      "origin": {
+        "game": "final3",
+        "version": "1.0.0",
+        "section": "victima"
+      },
+      "section": {
+        "id": "victima",
+        "title": {
+          "es": "El cumpleañero",
+          "en": "The birthday person"
+        },
+        "hint": {
+          "es": "Aquí personalizamos la ficha de la persona que cumple años.",
+          "en": "Here we personalise the file of the person celebrating."
+        },
+        "nameField": "NOMBRE_CUMPLE",
+        "photoField": "FOTO_CUMPLE",
+        "fields": [
+          "NOMBRE_CUMPLE",
+          "B_ALIAS",
+          "FOTO_CUMPLE",
+          "EDAD",
+          "FAMA",
+          "DEBILIDAD_TEXTO",
+          "TALENTO",
+          "SOSPECHA",
+          "DEBILIDAD",
+          "B_INFO",
+          "B_NOTES"
+        ]
+      },
+      "fieldDefs": {
+        "NOMBRE_CUMPLE": {
+          "type": "name",
+          "required": true,
+          "q": {
+            "es": "¿Cómo se llama la persona homenajeada?",
+            "en": "What is the name of the birthday person?"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "El cumpleañero · Nombre",
+            "en": "The birthday person · Name"
+          }
+        },
+        "B_ALIAS": {
+          "type": "name",
+          "required": false,
+          "q": {
+            "es": "Alias (opcional)",
+            "en": "Alias (optional)"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "El cumpleañero · B_ALIAS",
+            "en": "The birthday person · B_ALIAS"
+          }
+        },
+        "FOTO_CUMPLE": {
+          "type": "photo",
+          "required": true,
+          "q": {
+            "es": "Sube su foto",
+            "en": "Upload their photo"
+          },
+          "corta": {
+            "es": "El cumpleañero · Foto",
+            "en": "The birthday person · Photo"
+          }
+        },
+        "EDAD": {
+          "type": "number",
+          "required": true,
+          "q": {
+            "es": "¿Cuántos años cumple?",
+            "en": "How old are they turning?"
+          },
+          "min": 1,
+          "max": 110,
+          "corta": {
+            "es": "El cumpleañero · Años",
+            "en": "The birthday person · Age"
+          }
+        },
+        "FAMA": {
+          "type": "text",
+          "required": true,
+          "q": {
+            "es": "¿Por qué se le conoce?",
+            "en": "What are they known for?"
+          },
+          "cap": 24,
+          "ej": {
+            "es": "Por comer hamburguesas, por pillarse un pedo monumental cada vez que sale de fiesta…",
+            "en": "For eating burgers, for getting wasted every time they go out…"
+          },
+          "corta": {
+            "es": "El cumpleañero · Fama",
+            "en": "The birthday person · Known for"
+          }
+        },
+        "DEBILIDAD_TEXTO": {
+          "type": "text",
+          "required": true,
+          "q": {
+            "es": "Su mayor debilidad es",
+            "en": "Their biggest weakness is"
+          },
+          "cap": 38,
+          "corta": {
+            "es": "El cumpleañero · DEBILIDAD_TEXTO",
+            "en": "The birthday person · DEBILIDAD_TEXTO"
+          }
+        },
+        "TALENTO": {
+          "type": "text",
+          "required": true,
+          "q": {
+            "es": "Su mayor talento es",
+            "en": "Their greatest talent is"
+          },
+          "cap": 15,
+          "corta": {
+            "es": "El cumpleañero · Talento",
+            "en": "The birthday person · Talent"
+          }
+        },
+        "SOSPECHA": {
+          "type": "text",
+          "required": true,
+          "q": {
+            "es": "Si fuera sospechoso de algo, ¿de qué sería?",
+            "en": "If they were a suspect, what would they be suspected of?"
+          },
+          "cap": 17,
+          "corta": {
+            "es": "El cumpleañero · Sospecha",
+            "en": "The birthday person · Suspicion"
+          }
+        },
+        "DEBILIDAD": {
+          "type": "multi",
+          "required": true,
+          "q": {
+            "es": "Delitos conocidos",
+            "en": "Known offences"
+          },
+          "allowOther": true,
+          "otherField": "OTRO",
+          "options": [
+            {
+              "es": "Llegar tarde",
+              "en": "Being late"
+            },
+            {
+              "es": "Robar comida ajena",
+              "en": "Stealing food from others"
+            },
+            {
+              "es": "Contar chistes malos",
+              "en": "Telling bad jokes"
+            },
+            {
+              "es": "Hacer trampas jugando",
+              "en": "Cheating at games"
+            }
+          ],
+          "desc": {
+            "es": "Puedes seleccionar varias opciones e incluso escribir otra.",
+            "en": "You can select several options or even write another one."
+          },
+          "corta": {
+            "es": "El cumpleañero · Debilidad",
+            "en": "The birthday person · Weakness"
+          }
+        },
+        "B_INFO": {
+          "type": "long",
+          "required": true,
+          "q": {
+            "es": "Información que sus amigos y familiares consideran importante sobre esta persona",
+            "en": "Information that their friends and family consider important about this person"
+          },
+          "cap": 200,
+          "corta": {
+            "es": "El cumpleañero · Info",
+            "en": "The birthday person · Info"
+          }
+        },
+        "B_NOTES": {
+          "type": "long",
+          "required": true,
+          "q": {
+            "es": "Notas y observaciones",
+            "en": "Notes and observations"
+          },
+          "cap": 200,
+          "corta": {
+            "es": "El cumpleañero · Notas",
+            "en": "The birthday person · Notes"
+          }
+        }
+      },
+      "examples": [
+        {
+          "id": "1",
+          "values": {
+            "es": {
+              "NOMBRE_CUMPLE": "Ian",
+              "B_ALIAS": "El Pelota",
+              "DEBILIDAD_TEXTO": "Llegar tarde a todo",
+              "FAMA": "Comer hamburguesas",
+              "TALENTO": "Contar chistes",
+              "SOSPECHA": "Robo de tarta",
+              "EDAD": "30",
+              "DEBILIDAD": "Llegar tarde||Robar comida ajena||Otro: Roncar",
+              "B_INFO": "Le encantan las sorpresas",
+              "B_NOTES": "Alergia a los frutos secos"
+            },
+            "en": {
+              "NOMBRE_CUMPLE": "Ian",
+              "B_ALIAS": "The Smooth",
+              "DEBILIDAD_TEXTO": "Being late to everything",
+              "FAMA": "Eating burgers",
+              "TALENTO": "Telling jokes",
+              "SOSPECHA": "Stealing a cake",
+              "EDAD": "30",
+              "DEBILIDAD": "Being late||Stealing food from others||Other: Snoring",
+              "B_INFO": "Loves surprises",
+              "B_NOTES": "Allergic to nuts"
+            }
+          },
+          "photos": {
+            "FOTO_CUMPLE": "../../assets/retratos/retrato-CUMPLE.jpg"
+          }
+        },
+        {
+          "id": "2",
+          "values": {
+            "es": {
+              "NOMBRE_CUMPLE": "Marta",
+              "B_ALIAS": "La Reina",
+              "DEBILIDAD_TEXTO": "Dormir siestas eternas",
+              "FAMA": "Cocina para el barrio",
+              "TALENTO": "Imitar acentos",
+              "SOSPECHA": "Robo de joyas",
+              "EDAD": "45",
+              "DEBILIDAD": "Hacer trampas jugando||Otro: Dormir la siesta",
+              "B_INFO": "Cuidado con sus pastas caseras",
+              "B_NOTES": "Odia madrugar. Le encanta el chocolate negro."
+            },
+            "en": {
+              "NOMBRE_CUMPLE": "Martha",
+              "B_ALIAS": "The Queen",
+              "DEBILIDAD_TEXTO": "Endless naps",
+              "FAMA": "Cooks for the street",
+              "TALENTO": "Doing accents",
+              "SOSPECHA": "Stealing jewels",
+              "EDAD": "45",
+              "DEBILIDAD": "Cheating at games||Other: Napping",
+              "B_INFO": "Watch out for her homemade pasta",
+              "B_NOTES": "Hates early mornings. Loves dark chocolate."
+            }
+          },
+          "photos": {
+            "FOTO_CUMPLE": "../../assets/retratos/retrato-CUMPLE.jpg"
+          }
+        },
+        {
+          "id": "3",
+          "values": {
+            "es": {
+              "NOMBRE_CUMPLE": "Javier Ortiz",
+              "B_ALIAS": "El Pianista",
+              "DEBILIDAD_TEXTO": "Llegar siempre el último a todo",
+              "FAMA": "Campeón de mus y el tute",
+              "TALENTO": "Hacer malabares",
+              "SOSPECHA": "Robo de las velas",
+              "EDAD": "71",
+              "DEBILIDAD": "Llegar tarde||Robar comida ajena||Otro: Roncar como un tractor en las siestas!!!",
+              "B_INFO": "Le encanta cocinar para toda la familia los domingos, pero si le pides una receta siempre cambia algún ingrediente en secreto para que nadie la copie. Dice que es su toque personal. Nunca lo cuenta.",
+              "B_NOTES": "Tiene alergia a los frutos secos y no soporta el ruido de las bolsas de patatas. Pide siempre bizcocho de limón con mucha canela, y se pone nervioso con las sorpresas de última hora. Le gusta avisar."
+            },
+            "en": {
+              "NOMBRE_CUMPLE": "Javier Ortiz",
+              "B_ALIAS": "The Pianist",
+              "DEBILIDAD_TEXTO": "Always the last to arrive",
+              "FAMA": "Wins at cards every week",
+              "TALENTO": "Juggling clubs",
+              "SOSPECHA": "Stealing the cake",
+              "EDAD": "71",
+              "DEBILIDAD": "Being late||Stealing food from others||Other: Snoring like a tractor at naps!!!",
+              "B_INFO": "Loves cooking for the whole family on Sundays, but if you ask for a recipe he always changes one ingredient in secret so nobody can copy it. He says that is his personal touch. Nobody knows how.",
+              "B_NOTES": "Allergic to nuts and cannot stand the noise of crisp packets. Always asks for lemon sponge with plenty of cinnamon, and gets nervous about last-minute surprises. He hates surprise parties too."
+            }
+          },
+          "photos": {
+            "FOTO_CUMPLE": "../../assets/retratos/retrato-CUMPLE.jpg"
+          }
+        }
+      ]
+    }
+  ]
+}

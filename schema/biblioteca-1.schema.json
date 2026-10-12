@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "pme-biblioteca/1",
   "title": "Manifiesto de una colección de la biblioteca (pme-biblioteca/1)",
-  "description": "F2.1 de PLAN-CREADOR-2.md. Hoy: colecciones de arte (tipo «arte»). Las reglas que el esquema no puede expresar (ficheros, cajas dentro de la pieza, autor real, licencias permitidas) están en tools/biblioteca/reglas.mjs.",
+  "description": "F2.1/F2.5 de PLAN-CREADOR-2.md. Tipos: «arte» (piezas), «pagina» (páginas v2 sin datos del comprador, con su fondo) y «seccion» (sección del formulario con sus campos y ejemplos). Las reglas que el esquema no puede expresar están en tools/biblioteca/reglas.mjs y en validar.mjs (la página se valida contra pme-game-2).",
   "type": "object",
   "required": [
     "schema",
@@ -15,13 +15,14 @@
       "const": "pme-biblioteca/1"
     },
     "tipo": {
-      "const": "arte"
+      "enum": [
+        "arte",
+        "pagina",
+        "seccion"
+      ]
     },
     "pieces": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/pieza"
-      }
+      "type": "array"
     }
   },
   "$defs": {
@@ -154,6 +155,294 @@
           "type": "string"
         }
       }
+    },
+    "pagina": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "name",
+        "tags",
+        "origin",
+        "languages",
+        "page",
+        "i18n",
+        "fields"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tags": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-záéíóúñü0-9-]+$"
+          }
+        },
+        "origin": {
+          "type": "object",
+          "required": [
+            "game",
+            "page"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "game": {
+              "type": "string"
+            },
+            "version": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "Versión del juego de origen (como en game.json)."
+            },
+            "page": {
+              "type": "string"
+            }
+          }
+        },
+        "languages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "page": {
+          "type": "object"
+        },
+        "i18n": {
+          "type": "object"
+        },
+        "fields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "reexportar"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "description": "La página (pme-game/2, con su fondo dentro) va en «page»; el tamaño, en el juego de origen."
+    },
+    "seccion": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "name",
+        "tags",
+        "origin",
+        "section",
+        "fieldDefs",
+        "examples"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tags": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-záéíóúñü0-9-]+$"
+          }
+        },
+        "origin": {
+          "type": "object",
+          "required": [
+            "game",
+            "section"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "game": {
+              "type": "string"
+            },
+            "version": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "Versión del juego de origen (como en game.json)."
+            },
+            "section": {
+              "type": "string"
+            }
+          }
+        },
+        "section": {
+          "type": "object",
+          "required": [
+            "id",
+            "title",
+            "fields"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "title": {
+              "type": "object"
+            },
+            "hint": {
+              "type": "object"
+            },
+            "nameField": {
+              "type": "string"
+            },
+            "photoField": {
+              "type": "string"
+            },
+            "fields": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "fieldDefs": {
+          "type": "object"
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "values"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "values": {
+                "type": "object"
+              },
+              "photos": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "reexportar"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "tipo": {
+            "const": "arte"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pieces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/pieza"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipo": {
+            "const": "pagina"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pieces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/pagina"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipo": {
+            "const": "seccion"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pieces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/seccion"
+            }
+          }
+        }
+      }
+    }
+  ]
 }

@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import Ajv2020 from 'ajv/dist/2020.js';
-import { reglasArte } from './reglas.mjs';
+import { reglasArte, reglasPagina, reglasSeccion } from './reglas.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const SCHEMA = JSON.parse(fs.readFileSync(path.join(ROOT, 'schema', 'biblioteca-1.schema.json'), 'utf8'));
@@ -23,8 +23,33 @@ export function validarColeccion(carpeta) {
     for (const e of validar.errors) errores.push(`esquema ${e.instancePath || '/'}: ${e.message}`);
     return { errores, avisos };
   }
-  const r = reglasArte(coleccion, { existe: (rel) => fs.existsSync(path.resolve(carpeta, rel)) });
-  return { errores: [...errores, ...r.errores], avisos: [...avisos, ...r.avisos] };
+  const existe = (rel) => fs.existsSync(path.resolve(carpeta, rel));
+  if (coleccion.tipo === 'arte') {
+    const r = reglasArte(coleccion, { existe });
+    return { errores: [...errores, ...r.errores], avisos: [...avisos, ...r.avisos] };
+  }
+  if (coleccion.tipo === 'pagina') {
+    // La página se valida contra el mismo formato que un juego (pme-game/2, definición «page»).
+    const g2 = JSON.parse(fs.readFileSync(path.join(ROOT, 'schema', 'pme-game-2.schema.json'), 'utf8'));
+    const validarPagina = ajv.compile({ $defs: g2.$defs, $ref: '#/$defs/page' });
+    for (const p of coleccion.pieces) {
+      if (!validarPagina(p.page)) for (const e of validarPagina.errors) errores.push(`esquema paginas/${p.id} page${e.instancePath}: ${e.message}`);
+    }
+    const r = reglasPagina(coleccion, { existe });
+    return { errores: [...errores, ...r.errores], avisos: [...avisos, ...r.avisos] };
+  }
+  if (coleccion.tipo === 'seccion') {
+    const g2 = JSON.parse(fs.readFileSync(path.join(ROOT, 'schema', 'pme-game-2.schema.json'), 'utf8'));
+    const validarCampo = ajv.compile({ $defs: g2.$defs, $ref: '#/$defs/field' });
+    for (const s of coleccion.pieces) {
+      for (const [campo, def] of Object.entries(s.fieldDefs)) {
+        if (!validarCampo(def)) for (const e of validarCampo.errors) errores.push(`esquema secciones/${s.id} campo ${campo}${e.instancePath}: ${e.message}`);
+      }
+    }
+    const r = reglasSeccion(coleccion);
+    return { errores: [...errores, ...r.errores], avisos: [...avisos, ...r.avisos] };
+  }
+  return { errores: [...errores, `tipo «${coleccion.tipo}» sin reglas`], avisos };
 }
 
 function main() {
