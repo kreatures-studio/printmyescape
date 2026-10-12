@@ -23,6 +23,9 @@ ok('colección de puzzles de El regalo robado valida', v.errores.length === 0, v
 const base = JSON.parse(fs.readFileSync(path.join(COL, 'manifest.json'), 'utf8'));
 ok('son 6 puzzles, uno por mecánica del juego', base.pieces.length === 6, `hay ${base.pieces.length}`);
 ok('todos son de datos (no hay contenido inventado)', base.pieces.every((p) => p.kind === 'datos'));
+const tiras = base.pieces.find((p) => p.id === 'puzzle-strips');
+ok('las tiras llevan la solución del juego en los dos idiomas', !!(tiras && tiras.solution && tiras.solution.es && tiras.solution.en));
+ok('needs en formato §2.3 (campo y tipo)', base.pieces.every((p) => p.needs.every((n) => n.field && n.type)));
 
 // 2. Variantes incorrectas
 let n = 0;
@@ -39,7 +42,10 @@ variante('mecánica que no existe en mechanics/', (m) => { m.pieces[0].mechanic 
 variante('falta un parámetro requerido de la mecánica', (m) => { delete m.pieces[0].params.field; }, 'faltan los parámetros de «ticks»');
 variante('el origen no coincide con la mecánica', (m) => { m.pieces[1].origin.mechanic = 'prefix'; }, 'el origen dice');
 variante('el id no corresponde a la mecánica', (m) => { m.pieces[2].id = 'puzzle-otra'; }, 'el id debe ser');
-variante('campo derivado listado como necesario', (m) => { m.pieces[1].needs.push('NOMBRE_CUMPLE_FICHA'); }, 'calcula');
+variante('campo derivado listado como necesario', (m) => { m.pieces[1].needs.push({ field: 'NOMBRE_CUMPLE_FICHA' }); }, 'calcula');
+variante('campo repetido en needs', (m) => { m.pieces[0].needs.push(structuredClone(m.pieces[0].needs[0])); }, 'dos veces');
+variante('necesidad sin campo (esquema §2.3)', (m) => { m.pieces[0].needs[0] = { type: 'multi' }; }, 'field');
+variante('solución que no es texto por idioma (esquema)', (m) => { m.pieces[3].solution = { id: 'x', how: {} }; }, 'esquema');
 variante('puzzle de contenido (aún no admitido)', (m) => { m.pieces[0].kind = 'contenido'; }, 'esquema');
 variante('puzzle de datos sin mecánica (esquema)', (m) => { delete m.pieces[0].mechanic; }, 'mechanic');
 variante('versión repetida', (m) => { m.pieces.push(structuredClone(m.pieces[0])); }, 'repetida');

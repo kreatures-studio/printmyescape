@@ -10,7 +10,9 @@
 //   - fondo de página «pdf» de varios ficheros → bgFile/bgPage por página;
 //   - fondo «color» → bgColor; fondo «art» → una pieza de arte a página completa;
 //   - elementos «art» antes del primer texto/campo/foto → capa baja (layers); después → capa alta (topLayers);
-//   - elementos «puzzle» con elementos propios → se aplanan dentro de su caja (la escala del texto sigue el ancho).
+//   - elementos «puzzle» con elementos propios → se aplanan dentro de su caja (la escala del texto sigue el ancho);
+//   - puzzles de datos (con mecánica) → una mecánica v1 en esa página (y su solución, si la tienen). Sus parámetros
+//     están en % de la página de origen, así que el bloque ocupa la página entera (lo exige el validador).
 // Limitación: el orden entre piezas de arte y textos se conserva solo en dos bandas (baja y alta).
 //
 // Sin importaciones de Node: lo usan también el creador web y la vista previa del navegador.
@@ -71,8 +73,9 @@ function enPagina(e, caja) {
   return { x: caja.x + (e.x * caja.w) / 100, y: caja.y + (e.y * caja.h) / 100, w: (e.w * caja.w) / 100, h: (e.h * caja.h) / 100 };
 }
 
-/** Aplana los elementos (y los de los puzzles que contengan) a elementos de página, con sus cajas absolutas. */
-function aplanar(elementos, puzzles, caja, visitados) {
+/** Aplana los elementos (y los de los puzzles que contengan) a elementos de página, con sus cajas absolutas.
+ *  Los puzzles de datos encontrados se añaden a «datos» (se convierten en mecánicas de la página). */
+function aplanar(elementos, puzzles, caja, visitados, datos) {
   const salida = [];
   for (const e of elementos || []) {
     if (e.kind !== 'puzzle') {
@@ -90,11 +93,16 @@ function aplanar(elementos, puzzles, caja, visitados) {
     if (visitados.has(e.puzzle)) throw new Error(`puzzle «${e.puzzle}» contenido en sí mismo`);
     const pz = puzzles.get(e.puzzle);
     if (!pz) throw new Error(`no existe el puzzle «${e.puzzle}»`);
-    if (!pz.page || !(pz.page.elements || []).length) {
-      throw new Error(`el puzzle «${e.puzzle}» (${pz.mechanic || 'sin mecánica'}) aún no tiene elementos que dibujar`);
+    const propios = (pz.page && pz.page.elements) || [];
+    if (pz.mechanic) {
+      if (caja) throw new Error(`el puzzle de datos «${e.puzzle}» debe ir directamente en una página, no dentro de otro puzzle`);
+      datos.push(pz);
+      if (!propios.length) continue;
+    } else if (!propios.length) {
+      throw new Error(`el puzzle «${e.puzzle}» (sin mecánica) aún no tiene elementos que dibujar`);
     }
     const abs = enPagina(e, caja);
-    salida.push(...aplanar(pz.page.elements, puzzles, abs, new Set([...visitados, e.puzzle])));
+    salida.push(...aplanar(propios, puzzles, abs, new Set([...visitados, e.puzzle]), datos));
   }
   return salida;
 }
@@ -109,13 +117,27 @@ export function aV1(g) {
   const i18nEs = (g.i18n && (g.i18n.es || g.i18n[lang0])) || {};
   const puzzles = new Map((g.puzzles || []).map((p) => [p.id, p]));
   const pdfs = [...new Set(g.pages.filter((p) => p.background && p.background.kind === 'pdf').map((p) => p.background.file))];
+  const kind = compat.backgroundKind || (pdfs.length ? 'pdf' : 'layers');
   const textos = [];
+  const mecanicasPuzzles = [];
+  const solucionesPuzzles = [];
   const pages = g.pages.map((p, i) => {
     const slots = [];
     const layers = [];
     const topLayers = [];
     let hayContenido = false;
-    for (const e of aplanar(p.elements, puzzles, null, new Set())) {
+    const datos = [];
+    const planos = aplanar(p.elements, puzzles, null, new Set(), datos);
+    for (const pz of datos) {
+      const m = { type: pz.mechanic, page: p.id, params: structuredClone(pz.params || {}) };
+      if ((pz.derives || []).length) m.derives = [...pz.derives];
+      mecanicasPuzzles.push(m);
+      if (pz.solution) {
+        solucionesPuzzles.push({ id: pz.id, page: p.id, dependsOn: (pz.needs || []).map((n) => n.field).filter(Boolean),
+          how: structuredClone(pz.solution) });
+      }
+    }
+    for (const e of planos) {
       const { kind, ...resto } = e;
       if (kind === 'art') {
         const { ref, ...pos } = resto;
@@ -142,7 +164,8 @@ export function aV1(g) {
       const pdfPorDefecto = bg.file === pdfs[0] && bg.page === i + 1;
       if (!pdfPorDefecto) { pagina.bgFile = bg.file; pagina.bgPage = bg.page - 1; }
       if (conCapas) pagina.bgKind = 'pdf';
-    } else if (!conCapas) {
+    } else if (!conCapas || kind === 'pdf') {
+      // Hoja sin PDF; en un juego con PDF se dice siempre (con capas, el motor y el validador lo necesitan).
       pagina.bgKind = 'blank';
     }
     if (bg.kind === 'color') pagina.bgColor = bg.value;
@@ -160,7 +183,6 @@ export function aV1(g) {
     if (textosV1.some((t) => !t)) textosV1 = textos; // la lista cambió: orden por página
   }
   const { schema, pages: _p, pageSize, puzzles: _z, compat: _c, ...resto } = g;
-  const kind = compat.backgroundKind || (pdfs.length ? 'pdf' : 'layers');
   const background = kind === 'pdf' ? { kind: 'pdf', file: pdfs[0] } : { kind };
   const v1 = {
     schema: 'pme-game/1',
@@ -171,5 +193,8 @@ export function aV1(g) {
     texts: textosV1,
   };
   for (const [k, v] of Object.entries(resto)) if (!(k in v1)) v1[k] = v;
+  // Solo se tocan mecánicas y soluciones si hay puzzles de datos: así un juego migrado vuelve idéntico.
+  if (mecanicasPuzzles.length) v1.mechanics = [...(v1.mechanics || []), ...mecanicasPuzzles];
+  if (solucionesPuzzles.length) v1.solutions = [...(v1.solutions || []), ...solucionesPuzzles];
   return v1;
 }

@@ -91,7 +91,12 @@ export function reglasPuzzle(coleccion, { mecanicas = {} } = {}) {
       if (!(req in z.params)) errores.push(`${r}: faltan los parámetros de «${z.mechanic}»: «${req}»`);
     }
     const derivados = new Set(z.derives || []);
-    for (const c of z.needs) if (derivados.has(c)) errores.push(`${r}: «${c}» es un campo que el propio puzzle calcula, no uno que necesite`);
+    const leidos = new Set();
+    for (const { field: c } of z.needs) {
+      if (leidos.has(c)) errores.push(`${r}: el campo «${c}» está dos veces en needs`);
+      leidos.add(c);
+      if (derivados.has(c)) errores.push(`${r}: «${c}» es un campo que el propio puzzle calcula, no uno que necesite`);
+    }
     if (z.status === 'reexportar') avisos.push(`${r}: pendiente de revisar (no usar en juegos)`);
   }
   return { errores, avisos };

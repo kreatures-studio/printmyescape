@@ -157,13 +157,24 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   y una exportación fallida no deja nada escrito).
 - **F2.6 Catálogo de puzzles (hecho).** Las 6 mecánicas de El regalo robado (`ticks`, `join`, `prefix`, `strips`,
   `runes-panel`, `initial`) como puzzles de `datos` en `biblioteca/puzzles/el-regalo-robado/` (`tools/biblioteca/desde-juego.mjs`
-  con `spec.puzzles`). Cada uno lleva sus parámetros, los campos que lee (`needs`), los que calcula (`derives`) y la solución
-  del juego si la hay (la de las tiras de la página 9). No se inventan puzzles de contenido: quedan para F3.
-  *Aceptación:* `tools/qa/biblioteca-puzzles-test.mjs` (colección real válida, 8 casos negativos y 3 exportaciones
-  rechazadas sin dejar nada escrito). *Límite:* una página de la biblioteca aún no puede llevar un puzzle de datos;
-  el motor no lo dibuja sin elementos propios (`aV1` lo rechaza con mensaje claro).
-- *Aceptación de la fase:* el validador rechaza piezas sin licencia o sin autor; un juego v2 de prueba usa arte,
-  fuente, página, sección y puzzle de la biblioteca.
+  con `spec.puzzles`), en el formato del §2.3: parámetros, campos que leen (`needs`: campo, tipo y máximo), campos que
+  calculan (`derives`) y la solución por idioma si el juego la tiene (la de las tiras de la página 9). No se inventan
+  puzzles de contenido: quedan para F3. *Aceptación:* `tools/qa/biblioteca-puzzles-test.mjs` (colección real válida,
+  11 casos negativos y 3 exportaciones rechazadas sin dejar nada escrito).
+- **Colocar puzzles de datos y arte de la biblioteca en un juego (hecho, cierra F2).** Un bloque `puzzle` que apunta a
+  un puzzle de datos se convierte en una mecánica v1 de esa página (y su solución) en `aV1`. Como sus coordenadas son las
+  de la página de origen, el bloque ocupa la página entera, va directamente en una página y una sola vez (lo comprueba
+  el validador). El esquema del juego admite `derives` y `needs` (§2.3) en los puzzles, la solución es obligatoria solo
+  en los de contenido, y páginas y secciones guardan `from`. El arte de la biblioteca se usa como kit
+  (`--kit biblioteca/arte/<colección>/manifest.json` o `PME_KIT`), con `ref` «id@versión» o «id»; una pieza «por
+  reexportar» se rechaza. Arreglos encontrados por el camino: el validador rechazaba arte sobre una página con PDF o con
+  color en un juego v2 (el motor sí lo dibujaba), y el motor no dibujaba los campos calculados por una mecánica si el
+  juego no traía la plantilla antigua (`compat`). *Aceptación:* `tools/qa/biblioteca-juego-test.mjs`: final3 con sus 6
+  mecánicas sacadas de la biblioteca da el mismo PDF píxel a píxel (16 páginas), y un juego nuevo con arte, fuente,
+  página, sección y puzzle de la biblioteca valida y se compone (apodos con su prefijo, marco dibujado);
+  `tools/qa/validador-casos.mjs` 36/36.
+- *Aceptación de la fase (cumplida):* el validador rechaza piezas sin licencia o sin autor; un juego v2 de prueba usa
+  arte, fuente, página, sección y puzzle de la biblioteca. Queda del lado del artista F2.3 (12 piezas por reexportar).
 
 ### F3 · Claude compone desde cero
 

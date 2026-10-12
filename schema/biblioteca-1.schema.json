@@ -467,22 +467,53 @@
         },
         "needs": {
           "type": "array",
-          "uniqueItems": true,
+          "description": "Campos de la ficha que lee el puzzle (PLAN-CREADOR-2.md §2.3).",
           "items": {
-            "type": "string",
-            "minLength": 1
+            "type": "object",
+            "required": [
+              "field"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "field": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_.]*$"
+              },
+              "type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "min": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "max": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
           }
         },
         "derives": {
           "type": "array",
           "uniqueItems": true,
+          "description": "Campos que calcula la mecánica (no se piden al comprador).",
           "items": {
             "type": "string",
-            "minLength": 1
+            "pattern": "^[A-Za-z][A-Za-z0-9_.]*$"
           }
         },
         "solution": {
-          "type": "object"
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "pattern": "^[a-z]{2}$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Cómo se resuelve, por idioma; {{CAMPO}} cuando depende del comprador."
         },
         "status": {
           "enum": [
@@ -492,6 +523,33 @@
         },
         "notes": {
           "type": "string"
+        },
+        "hints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "minProperties": 1,
+            "propertyNames": {
+              "pattern": "^[a-z]{2}$"
+            },
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "difficulty": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "minAge": {
+          "type": "integer",
+          "minimum": 3
+        },
+        "minutes": {
+          "type": "integer",
+          "minimum": 1
         }
       }
     }

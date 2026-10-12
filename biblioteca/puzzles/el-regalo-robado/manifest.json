@@ -46,7 +46,10 @@
         ]
       },
       "needs": [
-        "DEBILIDAD"
+        {
+          "field": "DEBILIDAD",
+          "type": "multi"
+        }
       ]
     },
     {
@@ -72,8 +75,16 @@
         "target": "NOMBRE_CUMPLE_FICHA"
       },
       "needs": [
-        "NOMBRE_CUMPLE",
-        "B_ALIAS"
+        {
+          "field": "NOMBRE_CUMPLE",
+          "type": "name",
+          "max": 12
+        },
+        {
+          "field": "B_ALIAS",
+          "type": "name",
+          "max": 12
+        }
       ],
       "derives": [
         "NOMBRE_CUMPLE_FICHA"
@@ -110,14 +121,46 @@
         }
       },
       "needs": [
-        "APODO_1",
-        "APODO_2",
-        "APODO_3",
-        "APODO_4",
-        "APODO_5",
-        "APODO_6",
-        "APODO_7",
-        "APODO_8"
+        {
+          "field": "APODO_1",
+          "type": "name",
+          "max": 12
+        },
+        {
+          "field": "APODO_2",
+          "type": "name",
+          "max": 12
+        },
+        {
+          "field": "APODO_3",
+          "type": "name",
+          "max": 12
+        },
+        {
+          "field": "APODO_4",
+          "type": "name",
+          "max": 12
+        },
+        {
+          "field": "APODO_5",
+          "type": "name",
+          "max": 12
+        },
+        {
+          "field": "APODO_6",
+          "type": "name",
+          "max": 12
+        },
+        {
+          "field": "APODO_7",
+          "type": "name",
+          "max": 12
+        },
+        {
+          "field": "APODO_8",
+          "type": "name",
+          "max": 12
+        }
       ],
       "derives": [
         "APODO_1.PREF",
@@ -166,20 +209,20 @@
         ]
       },
       "needs": [
-        "TEST_LUGAR",
-        "TEST_RESULTADO"
+        {
+          "field": "TEST_LUGAR",
+          "type": "text",
+          "max": 26
+        },
+        {
+          "field": "TEST_RESULTADO",
+          "type": "long",
+          "max": 180
+        }
       ],
       "solution": {
-        "id": "tiras-p9",
-        "page": "p9",
-        "dependsOn": [
-          "TEST_LUGAR",
-          "TEST_RESULTADO"
-        ],
-        "how": {
-          "es": "Ordenar las tiras para leer el resultado del test",
-          "en": "Put the strips in order to read the test result"
-        }
+        "es": "Ordenar las tiras para leer el resultado del test",
+        "en": "Put the strips in order to read the test result"
       }
     },
     {
@@ -238,10 +281,26 @@
         }
       },
       "needs": [
-        "APP_1",
-        "APP_2",
-        "APP_3",
-        "APP_4"
+        {
+          "field": "APP_1",
+          "type": "text",
+          "max": 10
+        },
+        {
+          "field": "APP_2",
+          "type": "text",
+          "max": 10
+        },
+        {
+          "field": "APP_3",
+          "type": "text",
+          "max": 10
+        },
+        {
+          "field": "APP_4",
+          "type": "text",
+          "max": 10
+        }
       ],
       "derives": [
         "S8_ICON_1",

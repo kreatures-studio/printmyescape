@@ -45,11 +45,13 @@ function args() {
   return o;
 }
 
-/* Piezas de arte de las capas (T4.2): id → { kind, bytes }, leídas del manifiesto del kit (3.4). */
+/* Piezas de arte de las capas (T4.2): id → { kind, bytes }, leídas del manifiesto del kit (3.4) o de una
+   colección de arte de la biblioteca (F2: «id@versión»; ver tools/game/kit.cjs). */
+const { indicePiezas } = require('./game/kit.cjs');
 function cargarKit(manifiesto, game) {
   if (!game.template.pages.some((p) => (p.layers || []).length || (p.topLayers || []).length)) return {};
   const file = path.resolve(ROOT, manifiesto || 'assets/kit/manifest.json');
-  const piezas = new Map((JSON.parse(fs.readFileSync(file, 'utf8')).pieces || []).map((p) => [p.id, p]));
+  const piezas = indicePiezas(JSON.parse(fs.readFileSync(file, 'utf8')));
   const assets = {};
   for (const p of game.template.pages) {
     for (const capa of [...(p.layers || []), ...(p.topLayers || [])]) {

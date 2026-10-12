@@ -34,7 +34,8 @@ function piezasDelKit(game) {
   const assets = {};
   if (!usadas.size) return assets;
   const file = manifiestoDelKit();
-  const piezas = new Map((JSON.parse(fs.readFileSync(file, 'utf8')).pieces || []).map((p) => [p.id, p]));
+  const { indicePiezas } = require(path.join(ROOT, 'tools', 'game', 'kit.cjs'));
+  const piezas = indicePiezas(JSON.parse(fs.readFileSync(file, 'utf8')));
   for (const id of usadas) {
     const p = piezas.get(id);
     if (!p) throw new Error(`la pieza «${id}» no está en ${file}`);

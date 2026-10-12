@@ -15,7 +15,8 @@
 // no se escribe nada.
 //
 // Puzzles: «de» es el tipo de una mecánica del juego (game.mechanics[].type), y debe aparecer una sola vez. Se guarda
-// como puzzle de datos: sus parámetros, los campos que lee (needs) y la solución del juego si la hay en la misma página.
+// como puzzle de datos (formato §2.3): sus parámetros, los campos que lee (needs: campo, tipo y máximo), los que calcula
+// (derives) y, si el juego tiene una solución en la misma página, cómo se resuelve (solution, por idioma).
 // Una página con puzzles (elementos «puzzle») se rechaza: aún no se pueden colocar en una página de la biblioteca.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -129,14 +130,20 @@ function exportarPuzzles({ g }, specs) {
     const solucion = (g.solutions || []).find((x) => x.page === m.page);
     const derives = m.derives || [];
     const necesita = [...new Set([...camposQueLee(m), ...((solucion && solucion.dependsOn) || [])])].filter((c) => !derives.includes(c));
-    for (const c of necesita) if (!g.fields[c]) throw new Error(`el puzzle «${s.id}» lee el campo «${c}», que no existe en fields`);
+    const needs = necesita.map((c) => {
+      const def = g.fields[c];
+      if (!def) throw new Error(`el puzzle «${s.id}» lee el campo «${c}», que no existe en fields`);
+      const n = { field: c, type: def.type };
+      if (Number.isInteger(def.cap)) n.max = def.cap;
+      return n;
+    });
     const entrada = {
       id: s.id, version: 1, name: s.nombre, tags: s.etiquetas,
       origin: { game: g.id, version: g.version, mechanic: m.type, page: m.page },
-      kind: 'datos', mechanic: m.type, params: structuredClone(m.params), needs: necesita,
+      kind: 'datos', mechanic: m.type, params: structuredClone(m.params), needs,
     };
     if (derives.length) entrada.derives = [...derives];
-    if (solucion) entrada.solution = structuredClone(solucion);
+    if (solucion) entrada.solution = structuredClone(solucion.how);
     return entrada;
   });
 }

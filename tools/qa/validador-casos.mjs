@@ -23,6 +23,24 @@ const capas = (g, lista) => {
   g.template.pages.forEach((pg, i) => { pg.layers = i === 0 ? lista : []; });
 };
 const bloque = (g, mec) => g.mechanics.find((m) => m.type === mec);
+/* F2.6: un puzzle de datos de la biblioteca, copiado al juego (con «from»), en lugar de su mecánica. */
+const PUZZLES_BIB = JSON.parse(fs.readFileSync(path.join(ROOT, 'biblioteca', 'puzzles', 'el-regalo-robado', 'manifest.json'), 'utf8')).pieces;
+const PAGINA_ENTERA = { x: 0, y: 0, w: 100, h: 100 };
+/* F2: arte de la biblioteca usado como kit (pme-biblioteca/1). */
+const ARTE_BIB = path.join(ROOT, 'biblioteca', 'arte', 'el-regalo-robado', 'manifest.json');
+const PIEZAS_BIB = JSON.parse(fs.readFileSync(ARTE_BIB, 'utf8')).pieces;
+const ARTE_OK = PIEZAS_BIB.find((p) => p.status !== 'reexportar');
+const ARTE_REEXPORTAR = PIEZAS_BIB.find((p) => p.status === 'reexportar');
+function conPuzzleDeDatos(mec, idJuego = 'pz-' + mec) {
+  const g = clonV2();
+  const b = PUZZLES_BIB.find((z) => z.mechanic === mec);
+  const m = g.mechanics.find((x) => x.type === mec);
+  g.mechanics = g.mechanics.filter((x) => x !== m);
+  const { id, version, tags, origin, ...resto } = structuredClone(b);
+  g.puzzles = [{ id: idJuego, from: `${id}@${version}`, ...resto }];
+  g.pages.find((p) => p.id === m.page).elements.push({ id: 'bloque-' + idJuego, kind: 'puzzle', puzzle: idJuego, ...PAGINA_ENTERA });
+  return g;
+}
 
 /* tipo: 'error' (espera un error que contiene «espera»), 'aviso' (un aviso), 'ok' (sin errores). */
 const CASOS = [
@@ -55,6 +73,32 @@ const CASOS = [
   { nombre: 'v2: puzzle sin elementos que dibujar', tipo: 'error', espera: 'aún no tiene elementos que dibujar',
     g: () => { const g = clonV2(); g.puzzles = [{ id: 'vacio', name: 'Vacío', kind: 'contenido', solution: { es: 'x' }, page: { elements: [] } }]; g.pages[0].elements.push({ id: 'pz-vacio', kind: 'puzzle', puzzle: 'vacio', x: 0, y: 0, w: 10, h: 10 }); return g; },
     opts: { dir: DIR } },
+  { nombre: 'v2: puzzle de datos de la biblioteca (prefix) en lugar de la mecánica', tipo: 'ok',
+    g: () => conPuzzleDeDatos('prefix'), opts: { dir: DIR, submit: true } },
+  { nombre: 'v2: puzzle de datos con solución (tiras) en lugar de la mecánica', tipo: 'ok',
+    g: () => conPuzzleDeDatos('strips'), opts: { dir: DIR, submit: true } },
+  { nombre: 'v2: puzzle de datos que no ocupa la página entera', tipo: 'error', espera: 'ocupa la página entera',
+    g: () => { const g = conPuzzleDeDatos('prefix'); g.pages[0].elements.at(-1).w = 50; return g; }, opts: { dir: DIR } },
+  { nombre: 'v2: puzzle de datos colocado dos veces', tipo: 'error', espera: 'va una sola vez',
+    g: () => { const g = conPuzzleDeDatos('prefix'); g.pages[1].elements.push({ ...g.pages[0].elements.at(-1), id: 'otra-vez' }); return g; }, opts: { dir: DIR } },
+  { nombre: 'v2: puzzle de datos dentro de otro puzzle', tipo: 'error', espera: 'no dentro de otro puzzle',
+    g: () => {
+      const g = conPuzzleDeDatos('prefix');
+      const bloquePz = g.pages[0].elements.pop();
+      g.puzzles.push({ id: 'caja', name: 'Caja', kind: 'contenido', solution: { es: 'x', en: 'x' }, page: { elements: [{ ...bloquePz, id: 'dentro' }] } });
+      g.pages[0].elements.push({ id: 'bloque-caja', kind: 'puzzle', puzzle: 'caja', ...PAGINA_ENTERA });
+      return g;
+    }, opts: { dir: DIR } },
+  { nombre: 'v2: puzzle de datos sin mecánica (esquema)', tipo: 'error', espera: 'mechanic',
+    g: () => { const g = conPuzzleDeDatos('prefix'); delete g.puzzles[0].mechanic; return g; }, opts: { dir: DIR } },
+  { nombre: 'v2: puzzle de contenido sin solución (esquema)', tipo: 'error', espera: 'solution',
+    g: () => { const g = clonV2(); g.puzzles = [{ id: 'caja', name: 'Caja', kind: 'contenido', page: { elements: [] } }]; return g; }, opts: { dir: DIR } },
+  { nombre: 'v2: arte de la biblioteca (id@versión) sobre una página con PDF', tipo: 'ok',
+    g: () => { const g = clonV2(); g.pages[0].elements.unshift({ id: 'arte-bib', kind: 'art', ref: `${ARTE_OK.id}@${ARTE_OK.version}`, x: 10, y: 10, w: 20, h: 10, angle: 0 }); return g; },
+    opts: { dir: DIR, kit: ARTE_BIB } },
+  { nombre: 'v2: pieza de la biblioteca pendiente de reexportar', tipo: 'error', espera: 'pendiente de reexportar',
+    g: () => { const g = clonV2(); g.pages[0].elements.unshift({ id: 'arte-bib', kind: 'art', ref: ARTE_REEXPORTAR.id, x: 10, y: 10, w: 20, h: 10, angle: 0 }); return g; },
+    opts: { dir: DIR, kit: ARTE_BIB } },
   { nombre: 'mecánica sin un parámetro requerido', tipo: 'error', espera: 'falta el parámetro «boxes»',
     g: () => { const g = clon(); delete bloque(g, 'ticks').params.boxes; return g; }, opts: { dir: DIR } },
   { nombre: 'mecánica desconocida', tipo: 'error', espera: 'mecánica desconocida',
