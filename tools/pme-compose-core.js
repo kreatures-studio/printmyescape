@@ -791,6 +791,16 @@ async function composeGame(deps) {
     finales.forEach((m) => registro[m.type].drawPage(
       { page: np, source: emb, PW: PW2, PH: PH2, ops, rgb, values, lang: deps.lang, fields: campos }, m.params || {}));
   }
+  /* Marca de agua (T6.2): texto diagonal y translúcido en cada página, p. ej. «BORRADOR» o «VISTA PREVIA».
+     Sin la opción no cambia nada del PDF. */
+  if (deps.watermark) {
+    const fuente = await out.embedFont(PDFLib.StandardFonts.Helvetica);
+    for (const pg of out.getPages()) {
+      const { width, height } = pg.getSize();
+      pg.drawText(String(deps.watermark), { x: width * 0.12, y: height * 0.42, size: 64, font: fuente,
+        color: rgb(0.5, 0.5, 0.5), opacity: 0.25, rotate: degrees(35) });
+    }
+  }
   return { bytes: await out.save(), warns };
 }
 

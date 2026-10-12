@@ -48,21 +48,13 @@ export async function componerVistaPrevia({ juego, lang, ejemplo, almacen, kit }
     photos[campo] = { bytes: await almacen.leerFichero(juego.id, ruta), format: /\.png$/i.test(ruta) ? 'png' : 'jpg' };
   }
 
+  // La marca de agua la pone el motor (opción watermark, T6.2): el mismo PDF que el CLI con marca.
   const res = await PC.composeGame({
     bgBytes, assets, fonts, template: juego.template, fixed: juego.texts, i18n, i18nAll: juego.i18n,
-    lang, values, photos, mechanics: juego.mechanics || [], fields: juego.fields || {},
+    lang, values, photos, mechanics: juego.mechanics || [], fields: juego.fields || {}, watermark: 'VISTA PREVIA',
   });
-
-  const doc = await PDFLib.PDFDocument.load(res.bytes);
-  const fuente = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
-  for (const pagina of doc.getPages()) {
-    const { width, height } = pagina.getSize();
-    pagina.drawText('VISTA PREVIA', {
-      x: width * 0.12, y: height * 0.42, size: 64, font: fuente,
-      color: PDFLib.rgb(0.5, 0.5, 0.5), opacity: 0.25, rotate: PDFLib.degrees(35),
-    });
-  }
-  const bytes = await doc.save();
+  const bytes = res.bytes;
+  const doc = await PDFLib.PDFDocument.load(bytes);
   const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
   return { url, paginas: doc.getPageCount(), avisos: res.warns || [] };
 }

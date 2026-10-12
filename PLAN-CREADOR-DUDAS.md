@@ -453,3 +453,15 @@ Pendiente (no bloquea M2):
 - Prueba: `tools/qa/creator-publicado.py` (8/8): construye, sirve `docs/` y comprueba lista, kit,
   mecánicas, validación y vista previa (aviso del PDF que falta).
 - `creator/serve.mjs` acepta `--raiz <carpeta>` para servir otra raíz (la copia publicada).
+
+## T3.3 (cierre)
+
+- Decisión del responsable: se olvida la prueba de humo «límite W». La prueba `tools/qa/game-smoke.py`
+  queda como estaba (falla en final3 en «límite W»); no bloquea el resto. No se vuelve a tratar salvo que
+  lo pidan.
+
+## T6.2 (marca de agua en el motor)
+
+- `composeGame` acepta `watermark` (texto): lo dibuja en cada página, diagonal y translúcido (mismo
+  estilo que «VISTA PREVIA»). Sin la opción el PDF no cambia (golden 96/96, e2e demo 30/30).
+- El editor usa la opción en `creator/vista-previa.js` en vez de su propio código.
