@@ -210,7 +210,17 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   registro admite ahora los nombres limpios `Caveat Bold`, `Open Sans Bold`, `Courier Prime` y `Courier Prime Bold`
   (antes no había forma de pedir la máquina de escribir). *Aceptación:* `mcp/test-v2.mjs` 37/37 (las fuentes del skill
   validan); golden 96/96.
-- **F3.3 Ensayo** en una sesión limpia: juego de 6 páginas, sin sospechosos, con 2 puzzles de contenido y 1 del catálogo.
+- **F3.3 Ensayo (hecho; falta la partida de una persona).** Un agente sin contexto, con el skill y las herramientas del
+  paquete `.pme/` (por `mcp/cli.mjs`, cliente de línea de órdenes nuevo), compuso en un repositorio de juegos limpio
+  «Misión Secreta: Operación Cumpleaños»: 6 páginas, sin sospechosos, 2 puzzles de contenido (runas y frutas) y
+  `puzzle-strips@1`, en español e inglés. El estudio hizo de cliente: encargo y aprobación de la estructura antes de
+  maquetar. Valida sin errores ni avisos (borrador y envío); vista previa revisada por el agente y por el estudio.
+  Lo que encontró y se arregló: `update_puzzle` y `remove_puzzle` (2 herramientas más, 36 en total), validador de línea
+  de órdenes con el arte de la biblioteca, avisos de caracteres que la fuente no tiene y de claves de texto sin usar,
+  `set_texts` con `null`, ids libres en puzzles, y el skill documenta las dos bandas de arte, el orden de un puzzle con
+  solución y las opciones de estilo del motor. Todo en `ensayos/f3/` (juego e `INFORME.md`, con la lista de qué
+  observar en la partida). *Pendiente:* la partida de prueba de una persona; guardar en la biblioteca una sección
+  infantil desde este juego.
 - *Aceptación:* validado sin errores, vista previa revisada por Claude, y una partida de prueba hecha por una persona.
 
 ### F4 · Creador web

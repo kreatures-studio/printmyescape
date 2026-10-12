@@ -5,7 +5,8 @@ description: Crea o cambia un juego de escape room imprimible en el repositorio 
 
 # Crear un escape room
 
-Trabajas en el repositorio de juegos a través del servidor MCP `printmyescape`. Los juegos son
+Trabajas en el repositorio de juegos a través del servidor MCP `printmyescape` (si no lo tienes registrado, las
+mismas herramientas desde la terminal: `node .pme/mcp/cli.mjs list` y `node .pme/mcp/cli.mjs <herramienta> '<json>'`). Los juegos son
 `games/<id>/game.json` en formato `pme-game/2` (páginas con elementos); **nunca escribes el JSON a mano**: cada
 herramienta valida antes de guardar y se niega si el cambio deja el juego mal. Lee las referencias cuando las
 necesites:

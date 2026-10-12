@@ -34,11 +34,22 @@ export function herramientasV2(ctx) {
     return p;
   };
   const idNuevoDePagina = (g) => `p${Math.max(0, ...g.pages.map((p) => Number(p.id.slice(1)) || 0)) + 1}`;
-  const idNuevoDeElemento = (pagina) => {
+  /** Id libre para un elemento nuevo; «reservados»: ids que van a llegar en la misma petición (F3.3). */
+  const idNuevoDeElemento = (pagina, reservados = new Set()) => {
     let n = pagina.elements.length + 1;
-    while (pagina.elements.some((e) => e.id === `${pagina.id}-e${n}`)) n++;
+    while (pagina.elements.some((e) => e.id === `${pagina.id}-e${n}`) || reservados.has(`${pagina.id}-e${n}`)) n++;
     return `${pagina.id}-e${n}`;
   };
+  /** Prepara la lista de elementos de un puzzle de contenido (ids libres aunque algunos vengan dados). */
+  function elementosDePuzzle(g, idPuzzle, elementos) {
+    const caja0 = { id: idPuzzle, elements: [] };
+    const reservados = new Set(elementos.map((el) => el.id).filter(Boolean));
+    return elementos.map((el) => {
+      const x = prepararElemento(g, caja0, el.id ? el : { ...el, id: idNuevoDeElemento(caja0, reservados) });
+      caja0.elements.push(x);
+      return x;
+    });
+  }
   /** Campos que calcula el juego (mecánicas y puzzles de datos): no hace falta pedirlos. */
   const derivados = (g) => new Set([...(g.mechanics || []).flatMap((m) => m.derives || []), ...(g.puzzles || []).flatMap((z) => z.derives || [])]);
   function faltanCampos(g, campos, que) {
@@ -315,8 +326,7 @@ export function herramientasV2(ctx) {
           nuevo = structuredClone(puzzle);
           const elementos = (nuevo.page && nuevo.page.elements) || [];
           if (!elementos.length) throw new E('invalid', 'el puzzle de contenido necesita page.elements (lo que se dibuja)');
-          const caja0 = { id: `${nuevo.id}`, elements: [] };
-          nuevo.page.elements = elementos.map((el) => { const x = prepararElemento(g, caja0, el); caja0.elements.push(x); return x; });
+          nuevo.page.elements = elementosDePuzzle(g, nuevo.id, elementos);
           caja = box || PAGINA_ENTERA;
         }
         if (g.puzzles.some((z) => z.id === nuevo.id)) throw new E('exists', `ya hay un puzzle «${nuevo.id}» (usa puzzle_id para otro nombre)`);
@@ -324,6 +334,40 @@ export function herramientasV2(ctx) {
         const bloque = { id: idNuevoDeElemento(p), kind: 'puzzle', puzzle: nuevo.id, ...caja };
         p.elements.push(bloque);
         return { puzzle: nuevo.id, from: nuevo.from ?? null, kind: nuevo.kind, page, element: bloque.id };
+      }, { formato: 'v2' }),
+    },
+    {
+      name: 'update_puzzle',
+      description: 'Cambia un puzzle del juego: ficha (name, difficulty, minAge, minutes), solution {idioma: texto}, hints [{idioma: texto}] y, en los de contenido, page.elements. Los de datos no cambian su mecánica ni sus parámetros (vienen del catálogo).',
+      schema: esquema({ id: ID, puzzle: { type: 'string', description: 'id del puzzle en el juego' }, changes: { type: 'object' } }, ['id', 'puzzle', 'changes']),
+      run: async ({ id, puzzle, changes }) => mutar(id, `Cambiar puzzle ${puzzle}`, (g) => {
+        const z = (g.puzzles || []).find((x) => x.id === puzzle);
+        if (!z) throw new E('not-found', `no hay puzzle «${puzzle}» (hay: ${(g.puzzles || []).map((x) => x.id).join(', ') || 'ninguno'})`);
+        const permitidos = ['name', 'difficulty', 'minAge', 'minutes', 'solution', 'hints', 'examples', ...(z.kind === 'contenido' ? ['page'] : [])];
+        const otros = Object.keys(changes).filter((k) => !permitidos.includes(k));
+        if (otros.length) throw new E('invalid', `no se cambia ${otros.join(', ')} (se puede: ${permitidos.join(', ')})`);
+        for (const [k, v] of Object.entries(changes)) {
+          if (v === null) { delete z[k]; continue; }
+          if (k === 'page') {
+            z.page = { elements: elementosDePuzzle(g, z.id, v.elements || []) };
+          } else z[k] = structuredClone(v);
+        }
+        return z;
+      }, { formato: 'v2' }),
+    },
+    {
+      name: 'remove_puzzle',
+      description: 'Quita un puzzle del juego y sus bloques en las páginas. Se niega si alguna página usa campos que solo calcula ese puzzle.',
+      schema: esquema({ id: ID, puzzle: { type: 'string', description: 'id del puzzle en el juego' } }, ['id', 'puzzle']),
+      run: async ({ id, puzzle }) => mutar(id, `Quitar puzzle ${puzzle}`, (g) => {
+        const antes = (g.puzzles || []).length;
+        g.puzzles = (g.puzzles || []).filter((x) => x.id !== puzzle);
+        if (g.puzzles.length === antes) throw new E('not-found', `no hay puzzle «${puzzle}»`);
+        let bloques = 0;
+        const quitar = (els) => els.filter((e) => { const fuera = e.kind === 'puzzle' && e.puzzle === puzzle; if (fuera) bloques++; return !fuera; });
+        for (const p of g.pages) p.elements = quitar(p.elements);
+        for (const z of g.puzzles) if (z.page && z.page.elements) z.page.elements = quitar(z.page.elements);
+        return { removed: puzzle, bloques };
       }, { formato: 'v2' }),
     },
     {

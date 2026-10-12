@@ -287,11 +287,13 @@ export function crearHerramientas({ raiz }) {
       }),
     },
     {
-      name: 'set_texts', description: 'Textos fijos del idioma (entries: clave → texto).',
+      name: 'set_texts', description: 'Textos fijos del idioma (entries: clave → texto; null quita una clave que ya no usa ningún texto).',
       schema: esquema({ id: ID, lang: S, entries: { type: 'object' } }, ['id', 'lang', 'entries']),
       run: async ({ id, lang, entries }) => mutar(id, `Textos ${lang} de ${id}`, (g) => {
         if (!g.languages.includes(lang)) throw new ErrorHerramienta('invalid', `«${lang}» no está en languages`);
         g.i18n[lang] = { ...(g.i18n[lang] || {}), ...entries };
+        // null quita la clave (F3.3): solo si ningún texto la usa; si no, el validador lo rechaza.
+        for (const [k, v] of Object.entries(entries)) if (v === null) delete g.i18n[lang][k];
         return { lang, claves: Object.keys(g.i18n[lang]).length };
       }),
     },

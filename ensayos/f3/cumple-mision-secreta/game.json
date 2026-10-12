@@ -1,0 +1,3136 @@
+{
+  "schema": "pme-game/2",
+  "id": "cumple-mision-secreta",
+  "version": "0.1.0",
+  "status": "borrador",
+  "name": {
+    "es": "Misión Secreta: Operación Cumpleaños",
+    "en": "Secret Mission: Operation Birthday"
+  },
+  "languages": [
+    "es",
+    "en"
+  ],
+  "pageSize": "A4",
+  "pages": [
+    {
+      "id": "p1",
+      "title": "Expediente de la misión",
+      "background": {
+        "kind": "color",
+        "value": "#FFFFFF"
+      },
+      "elements": [
+        {
+          "kind": "art",
+          "ref": "papel-sobre-amarillo-sello@1",
+          "x": 6,
+          "y": 81,
+          "w": 34,
+          "id": "p1-e1",
+          "h": 17.69,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "papel-hoja-kraft-anillas@1",
+          "x": 5,
+          "y": 17.5,
+          "w": 72,
+          "id": "p1-e2",
+          "h": 64.34,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "decoracion-banda-titulo-verde@1",
+          "x": 10,
+          "y": 1.5,
+          "w": 80,
+          "id": "p1-e3",
+          "h": 14.5,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "marco-foto-polaroid-verde-grande@1",
+          "x": 63,
+          "y": 18,
+          "w": 32,
+          "id": "p1-e4",
+          "h": 28.71,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "objeto-lupa@1",
+          "x": 81,
+          "y": 52,
+          "w": 12,
+          "id": "p1-e5",
+          "h": 11.75,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "decoracion-linea-salvia@1",
+          "x": 12,
+          "y": 50,
+          "w": 52,
+          "id": "p1-e6",
+          "h": 2.26,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "papel-nota-kraft-clip@1",
+          "x": 50,
+          "y": 79.5,
+          "w": 46,
+          "id": "p1-e7",
+          "h": 17.04,
+          "angle": 0
+        },
+        {
+          "kind": "photo",
+          "field": "FOTO_CUMPLE",
+          "x": 69.05,
+          "y": 22.85,
+          "w": 20.62,
+          "h": 16.99,
+          "id": "p1-e8"
+        },
+        {
+          "kind": "text",
+          "x": 14,
+          "y": 3.6,
+          "w": 72,
+          "h": 6.2,
+          "size": 5.2,
+          "fontFamily": "Anton",
+          "color": "#FFFFFF",
+          "align": "center",
+          "id": "p1-e9",
+          "key": "mision-secreta"
+        },
+        {
+          "kind": "text",
+          "x": 14,
+          "y": 10,
+          "w": 72,
+          "h": 3.8,
+          "size": 2.6,
+          "fontFamily": "Anton",
+          "color": "#CFE3D6",
+          "align": "center",
+          "id": "p1-e10",
+          "key": "operacion-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 12,
+          "y": 21,
+          "w": 49,
+          "h": 3.2,
+          "size": 2.1,
+          "fontFamily": "Courier Prime Bold",
+          "color": "#8B1E1E",
+          "align": "left",
+          "id": "p1-e11",
+          "key": "expediente-confidencial"
+        },
+        {
+          "kind": "text",
+          "x": 12,
+          "y": 27.4,
+          "w": 20,
+          "h": 2.8,
+          "size": 1.75,
+          "fontFamily": "Courier Prime Bold",
+          "color": "#3B2A20",
+          "align": "left",
+          "id": "p1-e12",
+          "key": "agente"
+        },
+        {
+          "kind": "field",
+          "field": "NOMBRE_CUMPLE",
+          "x": 32.5,
+          "y": 26.5,
+          "w": 29,
+          "h": 4.2,
+          "size": 2,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p1-e13"
+        },
+        {
+          "kind": "text",
+          "x": 12,
+          "y": 33,
+          "w": 20,
+          "h": 2.8,
+          "size": 1.75,
+          "fontFamily": "Courier Prime Bold",
+          "color": "#3B2A20",
+          "align": "left",
+          "id": "p1-e14",
+          "key": "nombre-en-clave"
+        },
+        {
+          "kind": "field",
+          "field": "B_ALIAS",
+          "x": 32.5,
+          "y": 32.1,
+          "w": 29,
+          "h": 4.2,
+          "size": 2,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p1-e15"
+        },
+        {
+          "kind": "text",
+          "x": 12,
+          "y": 38.6,
+          "w": 20,
+          "h": 2.8,
+          "size": 1.75,
+          "fontFamily": "Courier Prime Bold",
+          "color": "#3B2A20",
+          "align": "left",
+          "id": "p1-e16",
+          "key": "cumple-anos"
+        },
+        {
+          "kind": "field",
+          "field": "EDAD",
+          "x": 32.5,
+          "y": 37.7,
+          "w": 29,
+          "h": 4.2,
+          "size": 2,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p1-e17"
+        },
+        {
+          "kind": "text",
+          "x": 12,
+          "y": 44.2,
+          "w": 20,
+          "h": 2.8,
+          "size": 1.75,
+          "fontFamily": "Courier Prime Bold",
+          "color": "#3B2A20",
+          "align": "left",
+          "id": "p1-e18",
+          "key": "especialidad"
+        },
+        {
+          "kind": "field",
+          "field": "ESPECIALIDAD",
+          "x": 32.5,
+          "y": 43.300000000000004,
+          "w": 29,
+          "h": 4.2,
+          "size": 2,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p1-e19"
+        },
+        {
+          "kind": "text",
+          "x": 12,
+          "y": 53.5,
+          "w": 61,
+          "h": 25,
+          "size": 1.75,
+          "fontFamily": "Courier Prime",
+          "color": "#3B2A20",
+          "align": "left",
+          "id": "p1-e20",
+          "key": "la-agencia-secreta-de-cumpleanos-os-ha-e",
+          "vTop": true,
+          "tight": true
+        },
+        {
+          "kind": "field",
+          "field": "NOMBRE_CUMPLE",
+          "x": 65,
+          "y": 40.6,
+          "w": 28,
+          "h": 4,
+          "size": 2.1,
+          "fontFamily": "Caveat Bold",
+          "color": "#FFFFFF",
+          "align": "center",
+          "id": "p1-e21"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 83,
+          "w": 36,
+          "h": 5.2,
+          "size": 1.6,
+          "fontFamily": "Courier Prime Bold",
+          "color": "#8B1E1E",
+          "align": "center",
+          "id": "p1-e22",
+          "key": "contrasena-palabra-secreta-numero"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 88.6,
+          "w": 36,
+          "h": 2.6,
+          "size": 1.6,
+          "fontFamily": "Courier Prime",
+          "color": "#3B2A20",
+          "align": "center",
+          "id": "p1-e23",
+          "key": "decidsela-a"
+        },
+        {
+          "kind": "field",
+          "field": "JEFE_MISION",
+          "x": 56,
+          "y": 91.3,
+          "w": 36,
+          "h": 4,
+          "size": 2.1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "center",
+          "id": "p1-e24"
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "title": "Carnets de agente",
+      "background": {
+        "kind": "color",
+        "value": "#FFFFFF"
+      },
+      "elements": [
+        {
+          "kind": "art",
+          "ref": "decoracion-banda-titulo-verde-corta@1",
+          "x": 25,
+          "y": 1.5,
+          "w": 50,
+          "id": "p2-e1",
+          "h": 9.08,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "marco-ficha-sospechoso-verde-regalo@1",
+          "x": 2.6,
+          "y": 15.2,
+          "w": 46,
+          "id": "p2-e2",
+          "h": 16.79,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "marco-ficha-sospechoso-verde@1",
+          "x": 51.4,
+          "y": 15.2,
+          "w": 46,
+          "id": "p2-e3",
+          "h": 16.53,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "marco-ficha-sospechoso-verde@1",
+          "x": 2.6,
+          "y": 33.6,
+          "w": 46,
+          "id": "p2-e4",
+          "h": 16.53,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "marco-ficha-sospechoso-verde@1",
+          "x": 51.4,
+          "y": 33.6,
+          "w": 46,
+          "id": "p2-e5",
+          "h": 16.53,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "marco-ficha-sospechoso-verde@1",
+          "x": 2.6,
+          "y": 52,
+          "w": 46,
+          "id": "p2-e6",
+          "h": 16.53,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "marco-ficha-sospechoso-verde@1",
+          "x": 51.4,
+          "y": 52,
+          "w": 46,
+          "id": "p2-e7",
+          "h": 16.53,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "marco-ficha-sospechoso-verde@1",
+          "x": 2.6,
+          "y": 70.4,
+          "w": 46,
+          "id": "p2-e8",
+          "h": 16.53,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "marco-ficha-sospechoso-verde@1",
+          "x": 51.4,
+          "y": 70.4,
+          "w": 46,
+          "id": "p2-e9",
+          "h": 16.53,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "decoracion-lapiz-verde@1",
+          "x": 88,
+          "y": 88.5,
+          "w": 7,
+          "id": "p2-e10",
+          "h": 6.22,
+          "angle": 0
+        },
+        {
+          "kind": "photo",
+          "field": "FOTO_CUMPLE",
+          "x": 29.78,
+          "y": 18.53,
+          "w": 11.47,
+          "h": 9.75,
+          "id": "p2-e11"
+        },
+        {
+          "kind": "text",
+          "x": 27,
+          "y": 2.9,
+          "w": 46,
+          "h": 5.2,
+          "size": 3.3,
+          "fontFamily": "Anton",
+          "color": "#FFFFFF",
+          "align": "center",
+          "id": "p2-e12",
+          "key": "carnets-de-agente"
+        },
+        {
+          "kind": "text",
+          "x": 6,
+          "y": 11.3,
+          "w": 88,
+          "h": 2.6,
+          "size": 1.3,
+          "fontFamily": "Open Sans",
+          "color": "#3B2A20",
+          "align": "center",
+          "id": "p2-e13",
+          "key": "recortad-vuestro-carnet-rellenadlo-y-dib"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 17.55,
+          "w": 19.32,
+          "h": 2.18,
+          "size": 1.35,
+          "fontFamily": "Anton",
+          "color": "#0E2B27",
+          "align": "left",
+          "id": "p2-e14",
+          "key": "carnet-de-agente"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 19.9,
+          "w": 19.32,
+          "h": 1.51,
+          "size": 0.85,
+          "fontFamily": "Open Sans Bold",
+          "color": "#5B6E66",
+          "align": "left",
+          "id": "p2-e15",
+          "key": "agencia-secreta-de-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 21.53,
+          "w": 6.44,
+          "h": 1.1600000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e16",
+          "key": "nombre"
+        },
+        {
+          "kind": "field",
+          "field": "NOMBRE_CUMPLE",
+          "x": 13.87,
+          "y": 21.38,
+          "w": 14.26,
+          "h": 1.31,
+          "size": 1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p2-e17"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 22.96,
+          "w": 6.44,
+          "h": 1.1600000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e18",
+          "key": "clave"
+        },
+        {
+          "kind": "field",
+          "field": "B_ALIAS",
+          "x": 13.87,
+          "y": 22.81,
+          "w": 14.26,
+          "h": 1.31,
+          "size": 1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p2-e19"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 24.47,
+          "w": 6.44,
+          "h": 1.1600000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e20",
+          "key": "edad"
+        },
+        {
+          "kind": "field",
+          "field": "EDAD",
+          "x": 13.87,
+          "y": 24.32,
+          "w": 14.26,
+          "h": 1.31,
+          "size": 1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p2-e21"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 26.06,
+          "w": 6.44,
+          "h": 1.1600000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e22",
+          "key": "poder"
+        },
+        {
+          "kind": "field",
+          "field": "ESPECIALIDAD",
+          "x": 13.87,
+          "y": 25.91,
+          "w": 14.26,
+          "h": 1.31,
+          "size": 1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p2-e23"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 27.66,
+          "w": 6.44,
+          "h": 1.1600000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e24",
+          "key": "mision"
+        },
+        {
+          "kind": "text",
+          "x": 13.87,
+          "y": 27.51,
+          "w": 14.26,
+          "h": 1.31,
+          "size": 1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p2-e25",
+          "key": "operacion-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 17.51,
+          "w": 19.32,
+          "h": 2.15,
+          "size": 1.35,
+          "fontFamily": "Anton",
+          "color": "#0E2B27",
+          "align": "left",
+          "id": "p2-e26",
+          "key": "carnet-de-agente"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 19.83,
+          "w": 19.32,
+          "h": 1.49,
+          "size": 0.85,
+          "fontFamily": "Open Sans Bold",
+          "color": "#5B6E66",
+          "align": "left",
+          "id": "p2-e27",
+          "key": "agencia-secreta-de-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 21.08,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e28",
+          "key": "nombre"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 22.49,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e29",
+          "key": "clave"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 23.97,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e30",
+          "key": "edad"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 25.54,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e31",
+          "key": "poder"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 27.11,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e32",
+          "key": "mision"
+        },
+        {
+          "kind": "text",
+          "x": 62.67,
+          "y": 26.96,
+          "w": 14.26,
+          "h": 1.29,
+          "size": 1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p2-e33",
+          "key": "operacion-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 79.5,
+          "y": 22.41,
+          "w": 9.63,
+          "h": 1.98,
+          "size": 0.95,
+          "fontFamily": "Caveat",
+          "color": "#8E9A95",
+          "align": "center",
+          "id": "p2-e34",
+          "key": "dibujate-aqui"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 35.91,
+          "w": 19.32,
+          "h": 2.15,
+          "size": 1.35,
+          "fontFamily": "Anton",
+          "color": "#0E2B27",
+          "align": "left",
+          "id": "p2-e35",
+          "key": "carnet-de-agente"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 38.23,
+          "w": 19.32,
+          "h": 1.49,
+          "size": 0.85,
+          "fontFamily": "Open Sans Bold",
+          "color": "#5B6E66",
+          "align": "left",
+          "id": "p2-e36",
+          "key": "agencia-secreta-de-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 39.48,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e37",
+          "key": "nombre"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 40.89,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e38",
+          "key": "clave"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 42.37,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e39",
+          "key": "edad"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 43.94,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e40",
+          "key": "poder"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 45.51,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e41",
+          "key": "mision"
+        },
+        {
+          "kind": "text",
+          "x": 13.87,
+          "y": 45.36,
+          "w": 14.26,
+          "h": 1.29,
+          "size": 1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p2-e42",
+          "key": "operacion-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 30.7,
+          "y": 40.81,
+          "w": 9.63,
+          "h": 1.98,
+          "size": 0.95,
+          "fontFamily": "Caveat",
+          "color": "#8E9A95",
+          "align": "center",
+          "id": "p2-e43",
+          "key": "dibujate-aqui"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 35.91,
+          "w": 19.32,
+          "h": 2.15,
+          "size": 1.35,
+          "fontFamily": "Anton",
+          "color": "#0E2B27",
+          "align": "left",
+          "id": "p2-e44",
+          "key": "carnet-de-agente"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 38.23,
+          "w": 19.32,
+          "h": 1.49,
+          "size": 0.85,
+          "fontFamily": "Open Sans Bold",
+          "color": "#5B6E66",
+          "align": "left",
+          "id": "p2-e45",
+          "key": "agencia-secreta-de-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 39.48,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e46",
+          "key": "nombre"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 40.89,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e47",
+          "key": "clave"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 42.37,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e48",
+          "key": "edad"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 43.94,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e49",
+          "key": "poder"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 45.51,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e50",
+          "key": "mision"
+        },
+        {
+          "kind": "text",
+          "x": 62.67,
+          "y": 45.36,
+          "w": 14.26,
+          "h": 1.29,
+          "size": 1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p2-e51",
+          "key": "operacion-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 79.5,
+          "y": 40.81,
+          "w": 9.63,
+          "h": 1.98,
+          "size": 0.95,
+          "fontFamily": "Caveat",
+          "color": "#8E9A95",
+          "align": "center",
+          "id": "p2-e52",
+          "key": "dibujate-aqui"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 54.31,
+          "w": 19.32,
+          "h": 2.15,
+          "size": 1.35,
+          "fontFamily": "Anton",
+          "color": "#0E2B27",
+          "align": "left",
+          "id": "p2-e53",
+          "key": "carnet-de-agente"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 56.63,
+          "w": 19.32,
+          "h": 1.49,
+          "size": 0.85,
+          "fontFamily": "Open Sans Bold",
+          "color": "#5B6E66",
+          "align": "left",
+          "id": "p2-e54",
+          "key": "agencia-secreta-de-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 57.88,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e55",
+          "key": "nombre"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 59.29,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e56",
+          "key": "clave"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 60.77,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e57",
+          "key": "edad"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 62.34,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e58",
+          "key": "poder"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 63.91,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e59",
+          "key": "mision"
+        },
+        {
+          "kind": "text",
+          "x": 13.87,
+          "y": 63.76,
+          "w": 14.26,
+          "h": 1.29,
+          "size": 1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p2-e60",
+          "key": "operacion-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 30.7,
+          "y": 59.21,
+          "w": 9.63,
+          "h": 1.98,
+          "size": 0.95,
+          "fontFamily": "Caveat",
+          "color": "#8E9A95",
+          "align": "center",
+          "id": "p2-e61",
+          "key": "dibujate-aqui"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 54.31,
+          "w": 19.32,
+          "h": 2.15,
+          "size": 1.35,
+          "fontFamily": "Anton",
+          "color": "#0E2B27",
+          "align": "left",
+          "id": "p2-e62",
+          "key": "carnet-de-agente"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 56.63,
+          "w": 19.32,
+          "h": 1.49,
+          "size": 0.85,
+          "fontFamily": "Open Sans Bold",
+          "color": "#5B6E66",
+          "align": "left",
+          "id": "p2-e63",
+          "key": "agencia-secreta-de-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 57.88,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e64",
+          "key": "nombre"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 59.29,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e65",
+          "key": "clave"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 60.77,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e66",
+          "key": "edad"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 62.34,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e67",
+          "key": "poder"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 63.91,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e68",
+          "key": "mision"
+        },
+        {
+          "kind": "text",
+          "x": 62.67,
+          "y": 63.76,
+          "w": 14.26,
+          "h": 1.29,
+          "size": 1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p2-e69",
+          "key": "operacion-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 79.5,
+          "y": 59.21,
+          "w": 9.63,
+          "h": 1.98,
+          "size": 0.95,
+          "fontFamily": "Caveat",
+          "color": "#8E9A95",
+          "align": "center",
+          "id": "p2-e70",
+          "key": "dibujate-aqui"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 72.71,
+          "w": 19.32,
+          "h": 2.15,
+          "size": 1.35,
+          "fontFamily": "Anton",
+          "color": "#0E2B27",
+          "align": "left",
+          "id": "p2-e71",
+          "key": "carnet-de-agente"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 75.03,
+          "w": 19.32,
+          "h": 1.49,
+          "size": 0.85,
+          "fontFamily": "Open Sans Bold",
+          "color": "#5B6E66",
+          "align": "left",
+          "id": "p2-e72",
+          "key": "agencia-secreta-de-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 76.28,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e73",
+          "key": "nombre"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 77.69,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e74",
+          "key": "clave"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 79.17,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e75",
+          "key": "edad"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 80.74,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e76",
+          "key": "poder"
+        },
+        {
+          "kind": "text",
+          "x": 7.2,
+          "y": 82.31,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e77",
+          "key": "mision"
+        },
+        {
+          "kind": "text",
+          "x": 13.87,
+          "y": 82.16,
+          "w": 14.26,
+          "h": 1.29,
+          "size": 1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p2-e78",
+          "key": "operacion-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 30.7,
+          "y": 77.61,
+          "w": 9.63,
+          "h": 1.98,
+          "size": 0.95,
+          "fontFamily": "Caveat",
+          "color": "#8E9A95",
+          "align": "center",
+          "id": "p2-e79",
+          "key": "dibujate-aqui"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 72.71,
+          "w": 19.32,
+          "h": 2.15,
+          "size": 1.35,
+          "fontFamily": "Anton",
+          "color": "#0E2B27",
+          "align": "left",
+          "id": "p2-e80",
+          "key": "carnet-de-agente"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 75.03,
+          "w": 19.32,
+          "h": 1.49,
+          "size": 0.85,
+          "fontFamily": "Open Sans Bold",
+          "color": "#5B6E66",
+          "align": "left",
+          "id": "p2-e81",
+          "key": "agencia-secreta-de-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 76.28,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e82",
+          "key": "nombre"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 77.69,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e83",
+          "key": "clave"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 79.17,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e84",
+          "key": "edad"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 80.74,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e85",
+          "key": "poder"
+        },
+        {
+          "kind": "text",
+          "x": 56,
+          "y": 82.31,
+          "w": 6.44,
+          "h": 1.1400000000000001,
+          "size": 0.9,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B4A45",
+          "align": "left",
+          "id": "p2-e86",
+          "key": "mision"
+        },
+        {
+          "kind": "text",
+          "x": 62.67,
+          "y": 82.16,
+          "w": 14.26,
+          "h": 1.29,
+          "size": 1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p2-e87",
+          "key": "operacion-cumpleanos"
+        },
+        {
+          "kind": "text",
+          "x": 79.5,
+          "y": 77.61,
+          "w": 9.63,
+          "h": 1.98,
+          "size": 0.95,
+          "fontFamily": "Caveat",
+          "color": "#8E9A95",
+          "align": "center",
+          "id": "p2-e88",
+          "key": "dibujate-aqui"
+        },
+        {
+          "kind": "text",
+          "x": 6,
+          "y": 90,
+          "w": 80,
+          "h": 2.6,
+          "size": 1.3,
+          "fontFamily": "Courier Prime",
+          "color": "#3B2A20",
+          "align": "center",
+          "id": "p2-e89",
+          "key": "un-carnet-para-cada-agente-los-que-sobre"
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "title": "Prueba 1: Mensaje interceptado",
+      "background": {
+        "kind": "color",
+        "value": "#FFFFFF"
+      },
+      "elements": [
+        {
+          "kind": "art",
+          "ref": "decoracion-banda-titulo-verde@1",
+          "x": 12,
+          "y": 1.5,
+          "w": 76,
+          "id": "p3-e1",
+          "h": 13.78,
+          "angle": 0
+        },
+        {
+          "id": "p3-e2",
+          "kind": "puzzle",
+          "puzzle": "mensaje-interceptado",
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "kind": "text",
+          "x": 14,
+          "y": 3.2,
+          "w": 72,
+          "h": 5,
+          "size": 3.6,
+          "fontFamily": "Anton",
+          "color": "#FFFFFF",
+          "align": "center",
+          "id": "p3-e3",
+          "key": "prueba-1"
+        },
+        {
+          "kind": "text",
+          "x": 14,
+          "y": 8.7,
+          "w": 72,
+          "h": 3.5,
+          "size": 2.3,
+          "fontFamily": "Anton",
+          "color": "#CFE3D6",
+          "align": "center",
+          "id": "p3-e4",
+          "key": "mensaje-interceptado"
+        },
+        {
+          "kind": "text",
+          "x": 6,
+          "y": 16.2,
+          "w": 88,
+          "h": 2.8,
+          "size": 1.35,
+          "fontFamily": "Open Sans",
+          "color": "#3B2A20",
+          "align": "center",
+          "id": "p3-e5",
+          "key": "hemos-interceptado-este-mensaje-del-cifr"
+        }
+      ]
+    },
+    {
+      "id": "p4",
+      "title": "Prueba 2: El móvil del cifrador",
+      "background": {
+        "kind": "color",
+        "value": "#FFFFFF"
+      },
+      "elements": [
+        {
+          "kind": "art",
+          "ref": "decoracion-banda-titulo-verde@1",
+          "x": 12,
+          "y": 1,
+          "w": 76,
+          "id": "p4-e1",
+          "h": 13.78,
+          "angle": 0
+        },
+        {
+          "id": "p4-e2",
+          "kind": "puzzle",
+          "puzzle": "movil-del-cifrador",
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "kind": "text",
+          "x": 14,
+          "y": 2.7,
+          "w": 72,
+          "h": 5,
+          "size": 3.6,
+          "fontFamily": "Anton",
+          "color": "#FFFFFF",
+          "align": "center",
+          "id": "p4-e3",
+          "key": "prueba-2"
+        },
+        {
+          "kind": "text",
+          "x": 14,
+          "y": 8.2,
+          "w": 72,
+          "h": 3.5,
+          "size": 2.3,
+          "fontFamily": "Anton",
+          "color": "#CFE3D6",
+          "align": "center",
+          "id": "p4-e4",
+          "key": "el-movil-del-cifrador"
+        }
+      ]
+    },
+    {
+      "id": "p5",
+      "title": "Prueba final: Documento triturado",
+      "background": {
+        "kind": "color",
+        "value": "#FFFFFF"
+      },
+      "elements": [
+        {
+          "kind": "art",
+          "ref": "papel-nota-kraft-rasgada-grande@1",
+          "x": 7.3,
+          "y": 33.6,
+          "w": 86,
+          "id": "p5-e1",
+          "h": 60.1,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "decoracion-banda-titulo-verde-corta@1",
+          "x": 3,
+          "y": 1.5,
+          "w": 56,
+          "id": "p5-e2",
+          "h": 10.17,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "papel-nota-kraft-clip-interrogacion@1",
+          "x": 3,
+          "y": 12,
+          "w": 52,
+          "id": "p5-e3",
+          "h": 19.36,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "marco-foto-polaroid-verde-grande@1",
+          "x": 64,
+          "y": 2,
+          "w": 30,
+          "id": "p5-e4",
+          "h": 26.92,
+          "angle": 0
+        },
+        {
+          "kind": "field",
+          "field": "TEST_LUGAR",
+          "x": 11,
+          "y": 42.5,
+          "w": 78,
+          "h": 6.5,
+          "size": 2.5,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "center",
+          "id": "p5-e5"
+        },
+        {
+          "kind": "field",
+          "field": "TEST_RESULTADO",
+          "x": 10,
+          "y": 51,
+          "w": 80,
+          "h": 28,
+          "size": 2.3,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "center",
+          "wrap": true,
+          "id": "p5-e6",
+          "tight": true
+        },
+        {
+          "id": "p5-e7",
+          "kind": "puzzle",
+          "puzzle": "documento-triturado",
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "kind": "photo",
+          "field": "FOTO_CUMPLE",
+          "x": 69.67,
+          "y": 6.55,
+          "w": 19.33,
+          "h": 15.93,
+          "id": "p5-e8"
+        },
+        {
+          "kind": "text",
+          "x": 6,
+          "y": 2.5,
+          "w": 50,
+          "h": 4.6,
+          "size": 3,
+          "fontFamily": "Anton",
+          "color": "#FFFFFF",
+          "align": "center",
+          "id": "p5-e9",
+          "key": "prueba-final"
+        },
+        {
+          "kind": "text",
+          "x": 6,
+          "y": 7.2,
+          "w": 50,
+          "h": 3,
+          "size": 1.9,
+          "fontFamily": "Anton",
+          "color": "#CFE3D6",
+          "align": "center",
+          "id": "p5-e10",
+          "key": "documento-triturado"
+        },
+        {
+          "kind": "text",
+          "x": 8.5,
+          "y": 14.6,
+          "w": 38,
+          "h": 14.5,
+          "size": 1.2,
+          "fontFamily": "Caveat Bold",
+          "color": "#3B2A20",
+          "align": "left",
+          "tight": true,
+          "id": "p5-e11",
+          "key": "contrasena-correcta-agentes-este-documen"
+        },
+        {
+          "kind": "text",
+          "x": 67,
+          "y": 23.27,
+          "w": 10,
+          "h": 3.6,
+          "size": 1.6,
+          "fontFamily": "Caveat Bold",
+          "color": "#FFFFFF",
+          "align": "right",
+          "id": "p5-e12",
+          "key": "agente-2"
+        },
+        {
+          "kind": "field",
+          "field": "B_ALIAS",
+          "x": 77.5,
+          "y": 23.27,
+          "w": 14,
+          "h": 3.6,
+          "size": 1.6,
+          "fontFamily": "Caveat Bold",
+          "color": "#FFFFFF",
+          "align": "left",
+          "id": "p5-e13"
+        },
+        {
+          "kind": "text",
+          "x": 12,
+          "y": 37.5,
+          "w": 76,
+          "h": 4.2,
+          "size": 2.6,
+          "fontFamily": "Anton",
+          "color": "#3B2A20",
+          "align": "center",
+          "id": "p5-e14",
+          "key": "el-tesoro-esta-en"
+        },
+        {
+          "kind": "text",
+          "x": 9.5,
+          "y": 82.5,
+          "w": 6.93,
+          "h": 7.5,
+          "size": 4.6,
+          "fontFamily": "Anton",
+          "color": "#8B1E1E",
+          "align": "center",
+          "id": "p5-e15",
+          "key": "f"
+        },
+        {
+          "kind": "text",
+          "x": 18.83,
+          "y": 82.5,
+          "w": 6.93,
+          "h": 7.5,
+          "size": 4.6,
+          "fontFamily": "Anton",
+          "color": "#8B1E1E",
+          "align": "center",
+          "id": "p5-e16",
+          "key": "e"
+        },
+        {
+          "kind": "text",
+          "x": 28.17,
+          "y": 82.5,
+          "w": 6.93,
+          "h": 7.5,
+          "size": 4.6,
+          "fontFamily": "Anton",
+          "color": "#8B1E1E",
+          "align": "center",
+          "id": "p5-e17",
+          "key": "l"
+        },
+        {
+          "kind": "text",
+          "x": 37.5,
+          "y": 82.5,
+          "w": 6.93,
+          "h": 7.5,
+          "size": 4.6,
+          "fontFamily": "Anton",
+          "color": "#8B1E1E",
+          "align": "center",
+          "id": "p5-e18",
+          "key": "i"
+        },
+        {
+          "kind": "text",
+          "x": 46.83,
+          "y": 82.5,
+          "w": 6.93,
+          "h": 7.5,
+          "size": 4.6,
+          "fontFamily": "Anton",
+          "color": "#8B1E1E",
+          "align": "center",
+          "id": "p5-e19",
+          "key": "c"
+        },
+        {
+          "kind": "text",
+          "x": 56.17,
+          "y": 82.5,
+          "w": 6.93,
+          "h": 7.5,
+          "size": 4.6,
+          "fontFamily": "Anton",
+          "color": "#8B1E1E",
+          "align": "center",
+          "id": "p5-e20",
+          "key": "i-2"
+        },
+        {
+          "kind": "text",
+          "x": 65.5,
+          "y": 82.5,
+          "w": 6.93,
+          "h": 7.5,
+          "size": 4.6,
+          "fontFamily": "Anton",
+          "color": "#8B1E1E",
+          "align": "center",
+          "id": "p5-e21",
+          "key": "d"
+        },
+        {
+          "kind": "text",
+          "x": 74.83,
+          "y": 82.5,
+          "w": 6.93,
+          "h": 7.5,
+          "size": 4.6,
+          "fontFamily": "Anton",
+          "color": "#8B1E1E",
+          "align": "center",
+          "id": "p5-e22",
+          "key": "a"
+        },
+        {
+          "kind": "text",
+          "x": 84.17,
+          "y": 82.5,
+          "w": 6.93,
+          "h": 7.5,
+          "size": 4.6,
+          "fontFamily": "Anton",
+          "color": "#8B1E1E",
+          "align": "center",
+          "id": "p5-e23",
+          "key": "d-2"
+        }
+      ]
+    },
+    {
+      "id": "p6",
+      "title": "Hoja de quien dirige la misión",
+      "background": {
+        "kind": "color",
+        "value": "#FFFFFF"
+      },
+      "elements": [
+        {
+          "kind": "art",
+          "ref": "decoracion-banda-titulo-verde@1",
+          "x": 4,
+          "y": 1,
+          "w": 92,
+          "id": "p6-e1",
+          "h": 16.68,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "papel-nota-kraft-casillas@1",
+          "x": 4,
+          "y": 23.5,
+          "w": 66,
+          "id": "p6-e2",
+          "h": 25.98,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "decoracion-lapiz-verde@1",
+          "x": 84,
+          "y": 37,
+          "w": 10,
+          "id": "p6-e3",
+          "h": 8.88,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "decoracion-linea-salvia@1",
+          "x": 6,
+          "y": 50.4,
+          "w": 88,
+          "id": "p6-e4",
+          "h": 3.82,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "decoracion-linea-salvia@1",
+          "x": 6,
+          "y": 64.3,
+          "w": 88,
+          "id": "p6-e5",
+          "h": 3.82,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "decoracion-linea-salvia@1",
+          "x": 6,
+          "y": 85.1,
+          "w": 88,
+          "id": "p6-e6",
+          "h": 3.82,
+          "angle": 0
+        },
+        {
+          "kind": "art",
+          "ref": "papel-etiqueta-kraft-alargada@1",
+          "x": 21,
+          "y": 75.9,
+          "w": 58,
+          "id": "p6-e7",
+          "h": 8.8,
+          "angle": 0
+        },
+        {
+          "kind": "text",
+          "x": 8,
+          "y": 3.4,
+          "w": 84,
+          "h": 6.2,
+          "size": 4,
+          "fontFamily": "Anton",
+          "color": "#FFFFFF",
+          "align": "center",
+          "id": "p6-e8",
+          "key": "no-entregar-a-los-jugadores"
+        },
+        {
+          "kind": "text",
+          "x": 8,
+          "y": 10.6,
+          "w": 84,
+          "h": 3.4,
+          "size": 1.9,
+          "fontFamily": "Anton",
+          "color": "#F2C94C",
+          "align": "center",
+          "id": "p6-e9",
+          "key": "hoja-solo-para-quien-dirige-la-mision-co"
+        },
+        {
+          "kind": "text",
+          "x": 22,
+          "y": 19.2,
+          "w": 30,
+          "h": 3.2,
+          "size": 1.8,
+          "fontFamily": "Courier Prime Bold",
+          "color": "#3B2A20",
+          "align": "left",
+          "id": "p6-e10",
+          "key": "al-mando-de-la-mision"
+        },
+        {
+          "kind": "field",
+          "field": "JEFE_MISION",
+          "x": 52.5,
+          "y": 18.8,
+          "w": 30,
+          "h": 4,
+          "size": 2.1,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p6-e11"
+        },
+        {
+          "kind": "text",
+          "x": 7.96,
+          "y": 24.54,
+          "w": 31.68,
+          "h": 3.9,
+          "size": 2,
+          "fontFamily": "Anton",
+          "color": "#FFFFFF",
+          "align": "left",
+          "id": "p6-e12",
+          "key": "preparacion"
+        },
+        {
+          "kind": "text",
+          "x": 14.23,
+          "y": 31.58,
+          "w": 52.8,
+          "h": 2.8,
+          "size": 1.2,
+          "fontFamily": "Open Sans",
+          "color": "#3B2A20",
+          "align": "left",
+          "id": "p6-e13",
+          "key": "imprime-las-6-paginas-guarda-esta-la-6-y"
+        },
+        {
+          "kind": "text",
+          "x": 14.23,
+          "y": 34.44,
+          "w": 17,
+          "h": 2.8,
+          "size": 1.2,
+          "fontFamily": "Open Sans Bold",
+          "color": "#3B2A20",
+          "align": "left",
+          "id": "p6-e14",
+          "key": "esconde-el-tesoro-en"
+        },
+        {
+          "kind": "field",
+          "field": "TEST_LUGAR",
+          "x": 31.63,
+          "y": 33.94,
+          "w": 34,
+          "h": 3.6,
+          "size": 1.45,
+          "fontFamily": "Caveat Bold",
+          "color": "#1F3B5C",
+          "align": "left",
+          "id": "p6-e15"
+        },
+        {
+          "kind": "text",
+          "x": 14.23,
+          "y": 37.3,
+          "w": 52.8,
+          "h": 2.8,
+          "size": 1.2,
+          "fontFamily": "Open Sans",
+          "color": "#3B2A20",
+          "align": "left",
+          "id": "p6-e16",
+          "key": "mete-la-pagina-5-en-un-sobre-cerrado-ult"
+        },
+        {
+          "kind": "text",
+          "x": 14.23,
+          "y": 39.9,
+          "w": 52.8,
+          "h": 2.8,
+          "size": 1.2,
+          "fontFamily": "Open Sans",
+          "color": "#3B2A20",
+          "align": "left",
+          "id": "p6-e17",
+          "key": "ten-tijeras-a-mano-y-vigila-el-recorte"
+        },
+        {
+          "kind": "text",
+          "x": 14.23,
+          "y": 42.23,
+          "w": 52.8,
+          "h": 2.8,
+          "size": 1.2,
+          "fontFamily": "Open Sans",
+          "color": "#3B2A20",
+          "align": "left",
+          "id": "p6-e18",
+          "key": "reparte-las-paginas-1-a-4-y-pon-un-crono"
+        },
+        {
+          "kind": "text",
+          "x": 72,
+          "y": 25,
+          "w": 24,
+          "h": 13,
+          "size": 1.25,
+          "fontFamily": "Caveat Bold",
+          "color": "#3B2A20",
+          "align": "left",
+          "tight": true,
+          "id": "p6-e19",
+          "key": "orden-de-la-mision-p1-expediente-p2-carn"
+        },
+        {
+          "kind": "text",
+          "x": 7,
+          "y": 50.95,
+          "w": 88,
+          "h": 2.7,
+          "size": 1.6,
+          "fontFamily": "Anton",
+          "color": "#0E2B27",
+          "align": "left",
+          "id": "p6-e20",
+          "key": "prueba-1-mensaje-interceptado-p3"
+        },
+        {
+          "kind": "text",
+          "x": 6,
+          "y": 54.8,
+          "w": 88,
+          "h": 5.17,
+          "size": 1.35,
+          "fontFamily": "Open Sans",
+          "color": "#3B2A20",
+          "align": "left",
+          "tight": true,
+          "id": "p6-e21",
+          "key": "dificultad-2-5-desde-8-anos-unos-12-min"
+        },
+        {
+          "kind": "text",
+          "x": 7,
+          "y": 64.85,
+          "w": 88,
+          "h": 2.7,
+          "size": 1.6,
+          "fontFamily": "Anton",
+          "color": "#0E2B27",
+          "align": "left",
+          "id": "p6-e22",
+          "key": "prueba-2-el-movil-del-cifrador-p4"
+        },
+        {
+          "kind": "text",
+          "x": 6,
+          "y": 68.7,
+          "w": 88,
+          "h": 5.17,
+          "size": 1.35,
+          "fontFamily": "Open Sans",
+          "color": "#3B2A20",
+          "align": "left",
+          "tight": true,
+          "id": "p6-e23",
+          "key": "dificultad-2-5-desde-8-anos-unos-10-min"
+        },
+        {
+          "kind": "text",
+          "x": 23,
+          "y": 78.5,
+          "w": 54,
+          "h": 3.2,
+          "size": 1.35,
+          "fontFamily": "Courier Prime Bold",
+          "color": "#8B1E1E",
+          "align": "center",
+          "id": "p6-e24",
+          "key": "contrasena-confeti-20-entrega-el-sobre-c"
+        },
+        {
+          "kind": "text",
+          "x": 7,
+          "y": 85.65,
+          "w": 88,
+          "h": 2.7,
+          "size": 1.6,
+          "fontFamily": "Anton",
+          "color": "#0E2B27",
+          "align": "left",
+          "id": "p6-e25",
+          "key": "prueba-final-documento-triturado-p5"
+        },
+        {
+          "kind": "text",
+          "x": 6,
+          "y": 89.5,
+          "w": 88,
+          "h": 6.37,
+          "size": 1.35,
+          "fontFamily": "Open Sans",
+          "color": "#3B2A20",
+          "align": "left",
+          "tight": true,
+          "id": "p6-e26",
+          "key": "dificultad-2-5-desde-8-anos-unos-12-min-2"
+        }
+      ]
+    }
+  ],
+  "i18n": {
+    "es": {
+      "16": "= 16",
+      "18": "= 18",
+      "30": "= 30",
+      "mision-secreta": "MISIÓN SECRETA",
+      "operacion-cumpleanos": "Operación Cumpleaños",
+      "expediente-confidencial": "EXPEDIENTE CONFIDENCIAL",
+      "agente": "Agente:",
+      "nombre-en-clave": "Nombre en clave:",
+      "cumple-anos": "Cumple (años):",
+      "especialidad": "Especialidad:",
+      "la-agencia-secreta-de-cumpleanos-os-ha-e": "La Agencia Secreta de Cumpleaños os ha elegido para una\nmisión muy especial: el tesoro de cumpleaños está\nescondido en algún lugar de la casa, y solo los mejores\nagentes podrán encontrarlo.\n\nPara llegar hasta él tenéis que superar tres pruebas:\n1. Descifrar un mensaje interceptado: os dará una PALABRA\nSECRETA.\n2. Desbloquear el móvil del cifrador: os dará un NÚMERO.\n3. Reconstruir un documento triturado, que está en un\nsobre ultrasecreto.\n\nTenéis 45 minutos. ¡Mucha suerte, agentes!",
+      "contrasena-palabra-secreta-numero": "CONTRASEÑA = PALABRA SECRETA + NÚMERO",
+      "decidsela-a": "Decídsela a:",
+      "carnets-de-agente": "CARNETS DE AGENTE",
+      "recortad-vuestro-carnet-rellenadlo-y-dib": "Recortad vuestro carnet, rellenadlo y dibujaos en el recuadro. ¡Sin carnet no hay misión!",
+      "carnet-de-agente": "CARNET DE AGENTE",
+      "agencia-secreta-de-cumpleanos": "Agencia Secreta de Cumpleaños",
+      "nombre": "Nombre:",
+      "clave": "Clave:",
+      "edad": "Edad:",
+      "poder": "Poder:",
+      "mision": "Misión:",
+      "dibujate-aqui": "¡Dibújate aquí!",
+      "un-carnet-para-cada-agente-los-que-sobre": "Un carnet para cada agente. Los que sobren, para quien dirige la misión.",
+      "la-palabra-secreta-es-confeti": "LA PALABRA",
+      "clave-del-cifrado": "Clave del cifrado",
+      "mensaje-descifrado": "MENSAJE DESCIFRADO",
+      "escribid-aqui-el-mensaje-letra-a-letra": "Escribid aquí el mensaje, letra a letra:",
+      "palabra-secreta": "PALABRA SECRETA: ________________",
+      "prueba-1": "PRUEBA 1",
+      "mensaje-interceptado": "Mensaje interceptado",
+      "hemos-interceptado-este-mensaje-del-cifr": "Hemos interceptado este mensaje del cifrador. Usad la clave para traducir cada símbolo a su letra.",
+      "secreta-es": "SECRETA ES",
+      "confeti": "CONFETI",
+      "el-cifrador": "El Cifrador",
+      "cual-es-el-numero-secreto-lo-necesito-ya": "¿Cuál es el número secreto? ¡Lo necesito ya!",
+      "texto": "+",
+      "texto-2": "= ?",
+      "notas-del-agente": "NOTAS DEL AGENTE",
+      "numero": "NÚMERO: _______",
+      "prueba-2": "PRUEBA 2",
+      "el-movil-del-cifrador": "El móvil del cifrador",
+      "lo-he-escondido-en-las-frutas-es-el-resu-2": "Lo he escondido en las frutas: es el\nresultado de la última fila. ¡Nadie lo\nadivinará!",
+      "averiguad-cuanto-vale-cada-fruta-y-resol-2": "Averiguad cuánto vale cada\nfruta y resolved la última fila del\nchat: ese es el NÚMERO.",
+      "prueba-final": "PRUEBA FINAL",
+      "documento-triturado": "Documento triturado",
+      "contrasena-correcta-agentes-este-documen": "¡Contraseña correcta, agentes! Este documento ha\npasado por la trituradora. Recortad las 9 tiras por\nlas líneas de puntos y ordenadlas hasta que la fila de\nabajo forme una palabra. Después… ¡id a por el\ntesoro!",
+      "agente-2": "Agente",
+      "el-tesoro-esta-en": "EL TESORO ESTÁ EN:",
+      "f": "F",
+      "e": "E",
+      "l": "L",
+      "i": "I",
+      "c": "C",
+      "i-2": "I",
+      "d": "D",
+      "a": "A",
+      "d-2": "D",
+      "no-entregar-a-los-jugadores": "NO ENTREGAR A LOS JUGADORES",
+      "hoja-solo-para-quien-dirige-la-mision-co": "Hoja solo para quien dirige la misión · contiene las soluciones",
+      "al-mando-de-la-mision": "Al mando de la misión:",
+      "preparacion": "PREPARACIÓN",
+      "imprime-las-6-paginas-guarda-esta-la-6-y": "Imprime las 6 páginas. Guarda esta (la 6) y la 5.",
+      "esconde-el-tesoro-en": "Esconde el tesoro en:",
+      "mete-la-pagina-5-en-un-sobre-cerrado-ult": "Mete la página 5 en un sobre cerrado: «ULTRASECRETO».",
+      "ten-tijeras-a-mano-y-vigila-el-recorte": "Ten tijeras a mano y vigila el recorte.",
+      "reparte-las-paginas-1-a-4-y-pon-un-crono": "Reparte las páginas 1 a 4 y pon un cronómetro de 45 minutos.",
+      "orden-de-la-mision-p1-expediente-p2-carn": "Orden de la misión:\np1 Expediente\np2 Carnets\np3 Prueba 1\np4 Prueba 2\nContraseña: sobre (p5)\n¡Tesoro!",
+      "prueba-1-mensaje-interceptado-p3": "PRUEBA 1 · Mensaje interceptado (p3)",
+      "dificultad-2-5-desde-8-anos-unos-12-min": "Dificultad 2/5 · desde 8 años · unos 12 min.\nSolución: LA PALABRA SECRETA ES CONFETI — palabra secreta: CONFETI.\nPistas (de una en una, solo si se atascan): 1) Cada símbolo es una letra: buscad su forma en la clave (qué rejilla y qué casilla). 2) Los\nsímbolos con punto son de la segunda rejilla (J–R) o de la segunda X (W–Z). 3) La primera palabra es «LA».",
+      "prueba-2-el-movil-del-cifrador-p4": "PRUEBA 2 · El móvil del cifrador (p4)",
+      "dificultad-2-5-desde-8-anos-unos-10-min": "Dificultad 2/5 · desde 8 años · unos 10 min.\nSolución: manzana = 10, plátano = 4, mango = 6. Última fila: 6 + 10 + 4 = 20.\nPistas: 1) Empezad por la primera fila: tres manzanas valen 30. 2) En la tercera fila hay dos mangos, uno detrás del otro. 3) La última fila\nes mango + manzana + plátano: sumad sus valores.",
+      "contrasena-confeti-20-entrega-el-sobre-c": "CONTRASEÑA: CONFETI 20 — entrega el sobre con la página 5",
+      "prueba-final-documento-triturado-p5": "PRUEBA FINAL · Documento triturado (p5)",
+      "dificultad-2-5-desde-8-anos-unos-12-min-2": "Dificultad 2/5 · desde 8 años · unos 12 min con el recorte.\nSolución: numerando las tiras de izquierda a derecha tal como salen impresas, el orden es 7-3-6-9-1-4-8-2-5; abajo se lee FELICIDAD y el\ndocumento dice dónde está el tesoro (el escondite de la preparación).\nPistas: 1) Las letras grandes de abajo forman una palabra de 9 letras. 2) El texto tiene que seguir recto de una tira a la siguiente. 3) La\nprimera tira es la séptima empezando por la izquierda."
+    },
+    "en": {
+      "16": "= 16",
+      "18": "= 18",
+      "30": "= 30",
+      "mision-secreta": "SECRET MISSION",
+      "operacion-cumpleanos": "Operation Birthday",
+      "expediente-confidencial": "CONFIDENTIAL FILE",
+      "agente": "Agent:",
+      "nombre-en-clave": "Code name:",
+      "cumple-anos": "Turning:",
+      "especialidad": "Speciality:",
+      "la-agencia-secreta-de-cumpleanos-os-ha-e": "The Secret Birthday Agency has chosen you for a very\nspecial mission: the birthday treasure is hidden\nsomewhere in the house, and only the best agents will be\nable to find it.\n\nTo reach it you must pass three tests:\n1. Decode an intercepted message: it gives you a SECRET\nWORD.\n2. Unlock the cipher master's phone: it gives you a\nNUMBER.\n3. Rebuild a shredded document, kept in a top-secret\nenvelope.\n\nYou have 45 minutes. Good luck, agents!",
+      "contrasena-palabra-secreta-numero": "PASSWORD = SECRET WORD + NUMBER",
+      "decidsela-a": "Say it to:",
+      "carnets-de-agente": "AGENT ID CARDS",
+      "recortad-vuestro-carnet-rellenadlo-y-dib": "Cut out your ID card, fill it in and draw yourself in the box. No ID card, no mission!",
+      "carnet-de-agente": "AGENT ID CARD",
+      "agencia-secreta-de-cumpleanos": "Secret Birthday Agency",
+      "nombre": "Name:",
+      "clave": "Code:",
+      "edad": "Age:",
+      "poder": "Power:",
+      "mision": "Mission:",
+      "dibujate-aqui": "Draw yourself here!",
+      "un-carnet-para-cada-agente-los-que-sobre": "One ID card per agent. Any spare ones are for the mission leader.",
+      "la-palabra-secreta-es-confeti": "THE SECRET",
+      "clave-del-cifrado": "Cipher key",
+      "mensaje-descifrado": "DECODED MESSAGE",
+      "escribid-aqui-el-mensaje-letra-a-letra": "Write the message here, letter by letter:",
+      "palabra-secreta": "SECRET WORD: ________________",
+      "prueba-1": "TEST 1",
+      "mensaje-interceptado": "Intercepted message",
+      "hemos-interceptado-este-mensaje-del-cifr": "We intercepted this message from the cipher master. Use the key to turn each symbol into its letter.",
+      "secreta-es": "WORD IS",
+      "confeti": "CONFETTI",
+      "el-cifrador": "The Cipher Master",
+      "cual-es-el-numero-secreto-lo-necesito-ya": "What is the secret number? I need it now!",
+      "texto": "+",
+      "texto-2": "= ?",
+      "notas-del-agente": "AGENT'S NOTES",
+      "numero": "NUMBER: _______",
+      "prueba-2": "TEST 2",
+      "el-movil-del-cifrador": "The cipher master's phone",
+      "lo-he-escondido-en-las-frutas-es-el-resu-2": "I hid it in the fruit: it is the result of the\nlast row. Nobody will ever guess it!",
+      "averiguad-cuanto-vale-cada-fruta-y-resol-2": "Work out how much each fruit is\nworth and solve the last row of\nthe chat: that is the NUMBER.",
+      "prueba-final": "FINAL TEST",
+      "documento-triturado": "Shredded document",
+      "contrasena-correcta-agentes-este-documen": "Correct password, agents! This document went\nthrough the shredder. Cut out the 9 strips along the\ndotted lines and put them in order until the bottom\nrow spells a word. Then… go and get the treasure!",
+      "agente-2": "Agent",
+      "el-tesoro-esta-en": "THE TREASURE IS IN:",
+      "f": "C",
+      "e": "E",
+      "l": "L",
+      "i": "E",
+      "c": "B",
+      "i-2": "R",
+      "d": "A",
+      "a": "T",
+      "d-2": "E",
+      "no-entregar-a-los-jugadores": "DO NOT GIVE TO THE PLAYERS",
+      "hoja-solo-para-quien-dirige-la-mision-co": "For the mission leader only · contains the answers",
+      "al-mando-de-la-mision": "Mission leader:",
+      "preparacion": "BEFORE YOU START",
+      "imprime-las-6-paginas-guarda-esta-la-6-y": "Print all 6 pages. Keep this one (page 6) and page 5.",
+      "esconde-el-tesoro-en": "Hide the treasure in:",
+      "mete-la-pagina-5-en-un-sobre-cerrado-ult": "Put page 5 in a sealed envelope: \"TOP SECRET\".",
+      "ten-tijeras-a-mano-y-vigila-el-recorte": "Have scissors ready and supervise the cutting.",
+      "reparte-las-paginas-1-a-4-y-pon-un-crono": "Hand out pages 1 to 4 and set a 45-minute timer.",
+      "orden-de-la-mision-p1-expediente-p2-carn": "Mission order:\np1 Mission file\np2 ID cards\np3 Test 1\np4 Test 2\nPassword: envelope (p5)\nTreasure!",
+      "prueba-1-mensaje-interceptado-p3": "TEST 1 · Intercepted message (p3)",
+      "dificultad-2-5-desde-8-anos-unos-12-min": "Difficulty 2/5 · age 8+ · about 12 min.\nAnswer: THE SECRET WORD IS CONFETTI — secret word: CONFETTI.\nHints (one at a time, only if they get stuck): 1) Each symbol is one letter: find its shape in the key (which grid and which cell). 2) Symbols\nwith a dot belong to the second grid (J–R) or the second X (W–Z). 3) The first word is \"THE\".",
+      "prueba-2-el-movil-del-cifrador-p4": "TEST 2 · The cipher master's phone (p4)",
+      "dificultad-2-5-desde-8-anos-unos-10-min": "Difficulty 2/5 · age 8+ · about 10 min.\nAnswer: apple = 10, banana = 4, mango = 6. Last row: 6 + 10 + 4 = 20.\nHints: 1) Start with the first row: three apples are worth 30. 2) The third row has two mangoes, one behind the other. 3) The last row is\nmango + apple + banana: add up their values.",
+      "contrasena-confeti-20-entrega-el-sobre-c": "PASSWORD: CONFETTI 20 — hand over the envelope with page 5",
+      "prueba-final-documento-triturado-p5": "FINAL TEST · Shredded document (p5)",
+      "dificultad-2-5-desde-8-anos-unos-12-min-2": "Difficulty 2/5 · age 8+ · about 12 min including cutting.\nAnswer: numbering the strips left to right as printed, the order is 7-3-6-9-1-4-8-2-5; CELEBRATE appears at the bottom and the\ndocument says where the treasure is (the hiding place above).\nHints: 1) The big letters at the bottom spell a 9-letter word. 2) The text must run straight from one strip to the next. 3) The first strip is\nthe seventh one from the left."
+    }
+  },
+  "fields": {
+    "NOMBRE_CUMPLE": {
+      "type": "name",
+      "required": true,
+      "cap": 12,
+      "q": {
+        "es": "¿Cómo se llama el cumpleañero o la cumpleañera?",
+        "en": "What is the birthday child's name?"
+      },
+      "ej": {
+        "es": "Lucía",
+        "en": "Lucy"
+      },
+      "corta": {
+        "es": "Agente · Nombre",
+        "en": "Agent · Name"
+      }
+    },
+    "B_ALIAS": {
+      "type": "name",
+      "required": true,
+      "cap": 12,
+      "q": {
+        "es": "Su nombre en clave de agente",
+        "en": "Their secret agent code name"
+      },
+      "ej": {
+        "es": "Halcón, Rayo, Pantera…",
+        "en": "Falcon, Lightning, Panther…"
+      },
+      "corta": {
+        "es": "Agente · Nombre en clave",
+        "en": "Agent · Code name"
+      }
+    },
+    "FOTO_CUMPLE": {
+      "type": "photo",
+      "required": true,
+      "q": {
+        "es": "Sube una foto suya (mejor de cara)",
+        "en": "Upload a photo of them (a face photo works best)"
+      },
+      "corta": {
+        "es": "Agente · Foto",
+        "en": "Agent · Photo"
+      }
+    },
+    "EDAD": {
+      "type": "number",
+      "required": true,
+      "min": 6,
+      "max": 16,
+      "q": {
+        "es": "¿Cuántos años cumple?",
+        "en": "How old are they turning?"
+      },
+      "corta": {
+        "es": "Agente · Años",
+        "en": "Agent · Age"
+      }
+    },
+    "ESPECIALIDAD": {
+      "type": "text",
+      "required": true,
+      "cap": 18,
+      "q": {
+        "es": "¿Qué es lo que mejor se le da? (su «superpoder»)",
+        "en": "What are they best at? (their \"superpower\")"
+      },
+      "ej": {
+        "es": "Dibujar cómics, el fútbol, los acertijos…",
+        "en": "Drawing comics, football, riddles…"
+      },
+      "corta": {
+        "es": "Agente · Especialidad",
+        "en": "Agent · Speciality"
+      }
+    },
+    "JEFE_MISION": {
+      "type": "name",
+      "required": true,
+      "cap": 14,
+      "q": {
+        "es": "¿Quién dirigirá la misión? (el adulto que tendrá las soluciones)",
+        "en": "Who will lead the mission? (the adult who keeps the answers)"
+      },
+      "ej": {
+        "es": "Mamá, Papá, Tía Carmen…",
+        "en": "Mum, Dad, Aunt Carol…"
+      },
+      "corta": {
+        "es": "Misión · Quién la dirige",
+        "en": "Mission · Leader"
+      }
+    },
+    "TEST_LUGAR": {
+      "type": "text",
+      "required": true,
+      "cap": 26,
+      "q": {
+        "es": "¿Dónde esconderéis el tesoro? (el regalo, unas chuches…)",
+        "en": "Where will you hide the treasure? (the present, some sweets…)"
+      },
+      "desc": {
+        "es": "Los jugadores lo leerán al final. Escondedlo allí antes de empezar.",
+        "en": "The players will read it at the end. Hide it there before you start."
+      },
+      "ej": {
+        "es": "Dentro de la lavadora",
+        "en": "Inside the washing machine"
+      },
+      "corta": {
+        "es": "Misión · Escondite del tesoro",
+        "en": "Mission · Treasure hiding place"
+      }
+    },
+    "TEST_RESULTADO": {
+      "type": "long",
+      "required": true,
+      "cap": 180,
+      "q": {
+        "es": "Mensaje secreto para quien cumple años",
+        "en": "Secret message for the birthday child"
+      },
+      "desc": {
+        "es": "Lo leerán al juntar las tiras del documento final.",
+        "en": "They will read it when they put the strips of the final document together."
+      },
+      "ej": {
+        "es": "¡Feliz cumpleaños, agente! Misión cumplida: eres el mejor equipo.",
+        "en": "Happy birthday, agent! Mission accomplished: you are the best team."
+      },
+      "corta": {
+        "es": "Misión · Mensaje secreto",
+        "en": "Mission · Secret message"
+      }
+    }
+  },
+  "form": {
+    "sections": [
+      {
+        "id": "agente",
+        "title": {
+          "es": "El agente del cumpleaños",
+          "en": "The birthday agent"
+        },
+        "hint": {
+          "es": "Los datos de quien cumple años: salen en el expediente y en su carnet de agente.",
+          "en": "About the birthday child: shown on the mission file and on their agent ID card."
+        },
+        "nameField": "NOMBRE_CUMPLE",
+        "photoField": "FOTO_CUMPLE",
+        "fields": [
+          "NOMBRE_CUMPLE",
+          "B_ALIAS",
+          "EDAD",
+          "FOTO_CUMPLE",
+          "ESPECIALIDAD"
+        ]
+      },
+      {
+        "id": "mision",
+        "title": {
+          "es": "La misión",
+          "en": "The mission"
+        },
+        "hint": {
+          "es": "Quién la dirige, dónde estará el tesoro y el mensaje secreto del final.",
+          "en": "Who leads it, where the treasure will be and the secret message at the end."
+        },
+        "fields": [
+          "JEFE_MISION",
+          "TEST_LUGAR",
+          "TEST_RESULTADO"
+        ]
+      }
+    ]
+  },
+  "mechanics": [],
+  "examples": [
+    {
+      "id": "1",
+      "values": {
+        "es": {
+          "NOMBRE_CUMPLE": "Ana",
+          "B_ALIAS": "Rayo",
+          "EDAD": "9",
+          "ESPECIALIDAD": "Saltar",
+          "JEFE_MISION": "Mamá",
+          "TEST_LUGAR": "En el horno",
+          "TEST_RESULTADO": "¡Bien hecho, agentes!"
+        },
+        "en": {
+          "NOMBRE_CUMPLE": "Ana",
+          "B_ALIAS": "Ray",
+          "EDAD": "9",
+          "ESPECIALIDAD": "Jumping",
+          "JEFE_MISION": "Mum",
+          "TEST_LUGAR": "In the oven",
+          "TEST_RESULTADO": "Well done, agents!"
+        }
+      },
+      "photos": {
+        "FOTO_CUMPLE": "fotos/retrato-CUMPLE.jpg"
+      }
+    },
+    {
+      "id": "2",
+      "values": {
+        "es": {
+          "NOMBRE_CUMPLE": "Lucía",
+          "B_ALIAS": "Halcón",
+          "EDAD": "10",
+          "ESPECIALIDAD": "Dibujar cómics",
+          "JEFE_MISION": "Tía Carmen",
+          "TEST_LUGAR": "Dentro de la lavadora",
+          "TEST_RESULTADO": "¡Feliz cumpleaños, agente Halcón! Misión cumplida: sois el mejor equipo de la Agencia."
+        },
+        "en": {
+          "NOMBRE_CUMPLE": "Lucy",
+          "B_ALIAS": "Falcon",
+          "EDAD": "10",
+          "ESPECIALIDAD": "Drawing comics",
+          "JEFE_MISION": "Aunt Carol",
+          "TEST_LUGAR": "Inside the washing machine",
+          "TEST_RESULTADO": "Happy birthday, Agent Falcon! Mission accomplished: you are the best team in the Agency."
+        }
+      },
+      "photos": {
+        "FOTO_CUMPLE": "fotos/retrato-CUMPLE.jpg"
+      }
+    },
+    {
+      "id": "3",
+      "values": {
+        "es": {
+          "NOMBRE_CUMPLE": "Maximiliano",
+          "B_ALIAS": "Superpantera",
+          "EDAD": "12",
+          "ESPECIALIDAD": "Resolver acertijos",
+          "JEFE_MISION": "Abuela Rosario",
+          "TEST_LUGAR": "Debajo del sofá del salón",
+          "TEST_RESULTADO": "Querido agente Superpantera: doce años y ya eres el espía más listo de la familia. Hoy tus amigos y tú habéis resuelto la misión más difícil. ¡Te queremos mucho! ¡Feliz cumple!"
+        },
+        "en": {
+          "NOMBRE_CUMPLE": "Maximilian",
+          "B_ALIAS": "Superpanther",
+          "EDAD": "12",
+          "ESPECIALIDAD": "Solving riddles",
+          "JEFE_MISION": "Grandma Rosie",
+          "TEST_LUGAR": "Under the living room sofa",
+          "TEST_RESULTADO": "Dear Agent Superpanther: twelve years old and already the smartest spy in the whole family. Today you and your friends solved the hardest mission. We love you lots. Happy birthday!"
+        }
+      },
+      "photos": {
+        "FOTO_CUMPLE": "fotos/retrato-CUMPLE.jpg"
+      }
+    }
+  ],
+  "solutions": [],
+  "puzzles": [
+    {
+      "id": "mensaje-interceptado",
+      "name": "Mensaje interceptado",
+      "kind": "contenido",
+      "difficulty": 2,
+      "minAge": 8,
+      "minutes": 12,
+      "solution": {
+        "es": "El mensaje dice «LA PALABRA SECRETA ES CONFETI». Palabra secreta: CONFETI.",
+        "en": "The message reads \"THE SECRET WORD IS CONFETTI\". Secret word: CONFETTI."
+      },
+      "hints": [
+        {
+          "es": "Cada símbolo es una letra: buscad su forma en la clave (qué rejilla es y en qué casilla está).",
+          "en": "Each symbol is one letter: find its shape in the key (which grid it is and which cell)."
+        },
+        {
+          "es": "Los símbolos con punto son de la segunda rejilla (J–R) o de la segunda X (W–Z).",
+          "en": "Symbols with a dot belong to the second grid (J–R) or the second X (W–Z)."
+        },
+        {
+          "es": "La primera palabra es «LA».",
+          "en": "The first word is \"THE\"."
+        }
+      ],
+      "page": {
+        "elements": [
+          {
+            "kind": "art",
+            "ref": "papel-nota-kraft-rasgada-grande@1",
+            "x": 3,
+            "y": 20,
+            "w": 61,
+            "id": "mensaje-interceptado-e1",
+            "h": 39.24,
+            "angle": 0
+          },
+          {
+            "kind": "art",
+            "ref": "puzzle-clave-cifrado-pigpen@1",
+            "x": 66.5,
+            "y": 21,
+            "w": 31,
+            "id": "mensaje-interceptado-e2",
+            "h": 23.98,
+            "angle": 0
+          },
+          {
+            "kind": "art",
+            "ref": "papel-nota-kraft-lineas@1",
+            "x": 6,
+            "y": 63,
+            "w": 70,
+            "id": "mensaje-interceptado-e3",
+            "h": 27.88,
+            "angle": 0
+          },
+          {
+            "kind": "art",
+            "ref": "decoracion-lapiz-verde@1",
+            "x": 80,
+            "y": 67,
+            "w": 11,
+            "id": "mensaje-interceptado-e4",
+            "h": 9.77,
+            "angle": 0
+          },
+          {
+            "kind": "text",
+            "x": 8,
+            "y": 25.5,
+            "w": 51,
+            "h": 6.5,
+            "size": 3.4,
+            "fontFamily": "Pigpen",
+            "color": "#2B1D14",
+            "align": "center",
+            "id": "mensaje-interceptado-e5",
+            "key": "la-palabra-secreta-es-confeti"
+          },
+          {
+            "kind": "text",
+            "x": 8,
+            "y": 34.5,
+            "w": 51,
+            "h": 6.5,
+            "size": 3.4,
+            "fontFamily": "Pigpen",
+            "color": "#2B1D14",
+            "align": "center",
+            "id": "mensaje-interceptado-linea2",
+            "key": "secreta-es"
+          },
+          {
+            "kind": "text",
+            "x": 8,
+            "y": 43.5,
+            "w": 51,
+            "h": 6.5,
+            "size": 3.4,
+            "fontFamily": "Pigpen",
+            "color": "#2B1D14",
+            "align": "center",
+            "id": "mensaje-interceptado-linea3",
+            "key": "confeti"
+          },
+          {
+            "kind": "text",
+            "x": 66.5,
+            "y": 45.5,
+            "w": 31,
+            "h": 3,
+            "size": 1.5,
+            "fontFamily": "Caveat Bold",
+            "color": "#3B2A20",
+            "align": "center",
+            "id": "mensaje-interceptado-e6",
+            "key": "clave-del-cifrado"
+          },
+          {
+            "kind": "text",
+            "x": 10.5,
+            "y": 64.3,
+            "w": 37,
+            "h": 3.4,
+            "size": 1.9,
+            "fontFamily": "Anton",
+            "color": "#FFFFFF",
+            "align": "left",
+            "id": "mensaje-interceptado-e7",
+            "key": "mensaje-descifrado"
+          },
+          {
+            "kind": "text",
+            "x": 9,
+            "y": 70.5,
+            "w": 62,
+            "h": 2.8,
+            "size": 1.5,
+            "fontFamily": "Caveat",
+            "color": "#3B2A20",
+            "align": "left",
+            "id": "mensaje-interceptado-e8",
+            "key": "escribid-aqui-el-mensaje-letra-a-letra"
+          },
+          {
+            "kind": "text",
+            "x": 9,
+            "y": 84.2,
+            "w": 62,
+            "h": 3,
+            "size": 1.75,
+            "fontFamily": "Courier Prime Bold",
+            "color": "#8B1E1E",
+            "align": "left",
+            "id": "mensaje-interceptado-e9",
+            "key": "palabra-secreta"
+          }
+        ]
+      }
+    },
+    {
+      "id": "movil-del-cifrador",
+      "name": "El móvil del cifrador",
+      "kind": "contenido",
+      "difficulty": 2,
+      "minAge": 8,
+      "minutes": 10,
+      "solution": {
+        "es": "Manzana = 10 (30 ÷ 3), plátano = 4 ((18 − 10) ÷ 2), mango = 6 ((16 − 4) ÷ 2). Última fila: mango + manzana + plátano = 6 + 10 + 4 = 20. NÚMERO: 20.",
+        "en": "Apple = 10 (30 ÷ 3), banana = 4 ((18 − 10) ÷ 2), mango = 6 ((16 − 4) ÷ 2). Last row: mango + apple + banana = 6 + 10 + 4 = 20. NUMBER: 20."
+      },
+      "hints": [
+        {
+          "es": "Empezad por la primera fila: tres manzanas valen 30.",
+          "en": "Start with the first row: three apples are worth 30."
+        },
+        {
+          "es": "En la tercera fila hay dos mangos, uno detrás del otro.",
+          "en": "The third row has two mangoes, one behind the other."
+        },
+        {
+          "es": "La última fila es mango + manzana + plátano: sumad sus valores.",
+          "en": "The last row is mango + apple + banana: add up their values."
+        }
+      ],
+      "page": {
+        "elements": [
+          {
+            "kind": "art",
+            "ref": "dispositivo-movil-morado@1",
+            "x": 4,
+            "y": 15.5,
+            "w": 60,
+            "id": "movil-del-cifrador-e1",
+            "h": 75.75,
+            "angle": 0
+          },
+          {
+            "kind": "art",
+            "ref": "papel-nota-kraft-clip@1",
+            "x": 65,
+            "y": 19,
+            "w": 33,
+            "id": "movil-del-cifrador-e2",
+            "h": 12.22,
+            "angle": 0
+          },
+          {
+            "kind": "art",
+            "ref": "papel-nota-kraft-lineas@1",
+            "x": 65,
+            "y": 44,
+            "w": 33,
+            "id": "movil-del-cifrador-e3",
+            "h": 13.15,
+            "angle": 0
+          },
+          {
+            "kind": "art",
+            "ref": "papel-etiqueta-kraft-regalo@1",
+            "x": 64,
+            "y": 74,
+            "w": 34,
+            "id": "movil-del-cifrador-e4",
+            "h": 7.47,
+            "angle": 0
+          },
+          {
+            "kind": "text",
+            "x": 14.2,
+            "y": 32.62,
+            "w": 24,
+            "h": 3.33,
+            "size": 1.5,
+            "fontFamily": "Open Sans Bold",
+            "color": "#2A2340",
+            "align": "left",
+            "id": "movil-del-cifrador-e5",
+            "key": "el-cifrador"
+          },
+          {
+            "kind": "text",
+            "x": 14.8,
+            "y": 38.98,
+            "w": 25.2,
+            "h": 3.48,
+            "size": 1.3,
+            "fontFamily": "Open Sans",
+            "color": "#2A2340",
+            "align": "left",
+            "id": "movil-del-cifrador-e6",
+            "key": "cual-es-el-numero-secreto-lo-necesito-ya"
+          },
+          {
+            "kind": "text",
+            "x": 29.2,
+            "y": 44.59,
+            "w": 22.8,
+            "h": 5,
+            "size": 1.2,
+            "fontFamily": "Open Sans",
+            "color": "#2A2340",
+            "align": "left",
+            "tight": true,
+            "id": "movil-del-cifrador-e7",
+            "key": "lo-he-escondido-en-las-frutas-es-el-resu-2"
+          },
+          {
+            "kind": "text",
+            "x": 34.06,
+            "y": 53.75,
+            "w": 1.8,
+            "h": 3.03,
+            "size": 1.6,
+            "fontFamily": "Open Sans Bold",
+            "color": "#7A2E4A",
+            "align": "center",
+            "id": "movil-del-cifrador-e8",
+            "key": "texto"
+          },
+          {
+            "kind": "text",
+            "x": 40.18,
+            "y": 53.75,
+            "w": 1.8,
+            "h": 3.03,
+            "size": 1.6,
+            "fontFamily": "Open Sans Bold",
+            "color": "#7A2E4A",
+            "align": "center",
+            "id": "movil-del-cifrador-e9",
+            "key": "texto"
+          },
+          {
+            "kind": "text",
+            "x": 46.36,
+            "y": 53.75,
+            "w": 5.16,
+            "h": 3.03,
+            "size": 1.65,
+            "fontFamily": "Open Sans Bold",
+            "color": "#7A2E4A",
+            "align": "left",
+            "id": "movil-del-cifrador-e10",
+            "key": "30"
+          },
+          {
+            "kind": "text",
+            "x": 33.94,
+            "y": 59.06,
+            "w": 1.8,
+            "h": 3.03,
+            "size": 1.6,
+            "fontFamily": "Open Sans Bold",
+            "color": "#7A2E4A",
+            "align": "center",
+            "id": "movil-del-cifrador-e11",
+            "key": "texto"
+          },
+          {
+            "kind": "text",
+            "x": 39.18,
+            "y": 59.06,
+            "w": 1.8,
+            "h": 3.03,
+            "size": 1.6,
+            "fontFamily": "Open Sans Bold",
+            "color": "#7A2E4A",
+            "align": "center",
+            "id": "movil-del-cifrador-e12",
+            "key": "texto"
+          },
+          {
+            "kind": "text",
+            "x": 46.36,
+            "y": 59.06,
+            "w": 5.16,
+            "h": 3.03,
+            "size": 1.65,
+            "fontFamily": "Open Sans Bold",
+            "color": "#7A2E4A",
+            "align": "left",
+            "id": "movil-del-cifrador-e13",
+            "key": "18"
+          },
+          {
+            "kind": "text",
+            "x": 34.78,
+            "y": 64.13,
+            "w": 1.8,
+            "h": 3.03,
+            "size": 1.6,
+            "fontFamily": "Open Sans Bold",
+            "color": "#7A2E4A",
+            "align": "center",
+            "id": "movil-del-cifrador-e14",
+            "key": "texto"
+          },
+          {
+            "kind": "text",
+            "x": 46.36,
+            "y": 64.13,
+            "w": 5.16,
+            "h": 3.03,
+            "size": 1.65,
+            "fontFamily": "Open Sans Bold",
+            "color": "#7A2E4A",
+            "align": "left",
+            "id": "movil-del-cifrador-e15",
+            "key": "16"
+          },
+          {
+            "kind": "text",
+            "x": 34.06,
+            "y": 69.28,
+            "w": 1.8,
+            "h": 3.03,
+            "size": 1.6,
+            "fontFamily": "Open Sans Bold",
+            "color": "#7A2E4A",
+            "align": "center",
+            "id": "movil-del-cifrador-e16",
+            "key": "texto"
+          },
+          {
+            "kind": "text",
+            "x": 39.3,
+            "y": 69.28,
+            "w": 1.8,
+            "h": 3.03,
+            "size": 1.6,
+            "fontFamily": "Open Sans Bold",
+            "color": "#7A2E4A",
+            "align": "center",
+            "id": "movil-del-cifrador-e17",
+            "key": "texto"
+          },
+          {
+            "kind": "text",
+            "x": 46.36,
+            "y": 69.28,
+            "w": 5.16,
+            "h": 3.03,
+            "size": 1.65,
+            "fontFamily": "Open Sans Bold",
+            "color": "#7A2E4A",
+            "align": "left",
+            "id": "movil-del-cifrador-e18",
+            "key": "texto-2"
+          },
+          {
+            "kind": "text",
+            "x": 69.5,
+            "y": 21.5,
+            "w": 26,
+            "h": 7.220000000000001,
+            "size": 1.35,
+            "fontFamily": "Caveat Bold",
+            "color": "#3B2A20",
+            "align": "left",
+            "id": "movil-del-cifrador-e19",
+            "tight": true,
+            "key": "averiguad-cuanto-vale-cada-fruta-y-resol-2"
+          },
+          {
+            "kind": "text",
+            "x": 67.2,
+            "y": 44.6,
+            "w": 17,
+            "h": 2.6,
+            "size": 1.5,
+            "fontFamily": "Anton",
+            "color": "#FFFFFF",
+            "align": "left",
+            "id": "movil-del-cifrador-e20",
+            "key": "notas-del-agente"
+          },
+          {
+            "kind": "text",
+            "x": 67,
+            "y": 75.9,
+            "w": 26,
+            "h": 3,
+            "size": 1.6,
+            "fontFamily": "Courier Prime Bold",
+            "color": "#8B1E1E",
+            "align": "left",
+            "id": "movil-del-cifrador-e21",
+            "key": "numero"
+          }
+        ]
+      }
+    },
+    {
+      "id": "documento-triturado",
+      "from": "puzzle-strips@1",
+      "name": "Documento triturado",
+      "kind": "datos",
+      "mechanic": "strips",
+      "params": {
+        "x0": 8.3,
+        "x1": 92.3,
+        "y0": 33.8,
+        "y1": 93.6,
+        "strips": 9,
+        "perm": [
+          4,
+          7,
+          1,
+          5,
+          8,
+          2,
+          0,
+          6,
+          3
+        ]
+      },
+      "needs": [
+        {
+          "field": "TEST_LUGAR",
+          "type": "text",
+          "max": 26
+        },
+        {
+          "field": "TEST_RESULTADO",
+          "type": "long",
+          "max": 180
+        }
+      ],
+      "solution": {
+        "es": "Recortad las 9 tiras y ordenadlas; numeradas de izquierda a derecha tal como salen impresas, el orden correcto es 7-3-6-9-1-4-8-2-5. Abajo se lee FELICIDAD y el documento dice: «El tesoro está en: {{TEST_LUGAR}}», seguido del mensaje secreto {{TEST_RESULTADO}}. El tesoro está en {{TEST_LUGAR}}.",
+        "en": "Cut out the 9 strips and put them in order; numbered left to right as printed, the right order is 7-3-6-9-1-4-8-2-5. CELEBRATE appears at the bottom and the document reads: \"The treasure is in: {{TEST_LUGAR}}\", followed by the secret message {{TEST_RESULTADO}}. The treasure is in {{TEST_LUGAR}}."
+      },
+      "difficulty": 2,
+      "minAge": 8,
+      "minutes": 12,
+      "hints": [
+        {
+          "es": "Las letras grandes de abajo forman una palabra de 9 letras.",
+          "en": "The big letters at the bottom spell a 9-letter word."
+        },
+        {
+          "es": "Las líneas de texto tienen que seguir rectas de una tira a la siguiente.",
+          "en": "The lines of text must run straight from one strip to the next."
+        },
+        {
+          "es": "La primera tira es la séptima empezando por la izquierda.",
+          "en": "The first strip is the seventh one from the left."
+        }
+      ]
+    }
+  ],
+  "notes": [],
+  "changes": [
+    {
+      "date": "2026-10-12",
+      "text": "Juego nuevo «Misión Secreta: Operación Cumpleaños» / «Secret Mission: Operation Birthday» (ES/EN), 6 páginas A4, de 9 a 12 años, de 2 a 6 jugadores y unos 45 min. Se ha montado según la estructura aprobada, con los cambios que pidió el cliente: en la prueba 2 solo hay sumas (contraseña CONFETI 20 / CONFETTI 20), y la p6 es una hoja para quien dirige la misión con el aviso «NO ENTREGAR A LOS JUGADORES».\n\nPáginas:\n- p1, Expediente: historia, ficha del agente (nombre, nombre en clave, edad, especialidad), foto en la polaroid y nota con la contraseña y la persona a quien decírsela.\n- p2, Carnets: 8 carnets para recortar; el del cumpleaños va relleno y con su foto, y los otros 7 están en blanco para dibujarse.\n- p3, Prueba 1 (puzzle de contenido «Mensaje interceptado»): mensaje en cifrado pigpen con su clave; da la palabra CONFETI / CONFETTI.\n- p4, Prueba 2 (puzzle de contenido «El móvil del cifrador»): sumas de frutas en el chat del móvil; da el número 20.\n- p5, Prueba final (puzzle del catálogo puzzle-strips@1, «Documento triturado»): 9 tiras para recortar y ordenar (7-3-6-9-1-4-8-2-5). Al reconstruirlo se lee FELICIDAD / CELEBRATE, el escondite del tesoro (TEST_LUGAR) y el mensaje secreto (TEST_RESULTADO). Ficha, solución y pistas van dentro del puzzle (update_puzzle).\n- p6, Quien dirige la misión: preparación con el escondite, orden de la misión, fichas, soluciones, pistas y contraseña.\n\nFormulario: se insertó la sección cumpleanero@1 solo para traer la foto de ejemplo. Luego se cambió por dos secciones propias (agente, mision), se sustituyeron los tres ejemplos por datos de niños y se quitaron FAMA, DEBILIDAD_TEXTO, TALENTO, SOSPECHA, DEBILIDAD, OTRO, B_INFO y B_NOTES: en el juego no queda ningún texto de adultos ni de «quién ha sido». Campos (con su tope): NOMBRE_CUMPLE 12, B_ALIAS 12, EDAD (número de 6 a 16), FOTO_CUMPLE, ESPECIALIDAD 18, JEFE_MISION 14, TEST_LUGAR 26 y TEST_RESULTADO 180. No se ha bajado ningún tope.\n\nArte: todo de la biblioteca (el-regalo-robado); no falta ninguna pieza y no se encarga arte nuevo. No se usa la tableta. En p5, la nota rasgada grande va estirada en vertical (+8 %) para cubrir toda la zona de tiras; se cambió por la hoja rayada porque las rayas impresas de esa hoja se confundían con las guías de corte.\n\nPendiente: cada puzzle lo tiene que jugar una persona antes de venderlo (sobre todo el recorte y el orden de las tiras, y si se distinguen los dos mangos de la tercera fila). No hay mecánicas nuevas que presupuestar."
+    },
+    {
+      "date": "2026-10-12",
+      "text": "Revisión del estudio: quitadas dos claves de texto que no usaba ningún elemento (restos de la prueba 2)."
+    }
+  ]
+}

@@ -29,9 +29,26 @@ las herramientas (validan antes de guardar). `get_game` devuelve el juego entero
     `color`, `fontFamily`, `align`, `angle`.
   - `field`: `field` (id de un campo del juego) y el mismo estilo; `photo`: un campo de tipo `photo`.
   - `puzzle`: un bloque que coloca un puzzle (`add_puzzle` lo crea).
-- `fontFamily`, exactamente uno de estos nombres (otro no valida): `Caveat` y `Caveat Bold` (manuscrita), `Anton`
+- `fontFamily`: usa uno de estos nombres (el registro acepta también los nombres antiguos de juegos migrados, pero en juegos nuevos no se usan): `Caveat` y `Caveat Bold` (manuscrita), `Anton`
   (títulos), `Open Sans` y `Open Sans Bold` (texto), `Courier Prime` y `Courier Prime Bold` (máquina de escribir),
   `Pigpen` (runas).
+
+### Lo que conviene saber del motor (lo encontró el primer ensayo)
+
+- **El arte va en dos bandas.** Toda pieza de arte que va antes del primer texto, campo o foto de la página se
+  dibuja debajo de los textos; la que va después, encima de todos ellos. Pon primero el arte (fondo, papeles,
+  marcos) y después los textos; deja después solo lo que de verdad tiene que tapar (una cinta, un clip).
+- **Caracteres.** Si un texto usa un carácter que su fuente no tiene, sale un recuadro vacío; `validate_game` lo avisa.
+  Las flechas (→) solo están en Anton: en las demás, usa «—» o «:».
+- **Estilo de textos y campos:**
+  - un texto de varias líneas se reparte por toda la altura de su caja; `tight: true` las junta arriba;
+  - en un campo, `vTop: true` empieza el texto arriba de su caja;
+  - un campo largo necesita `wrap: true` para partir líneas; antes de partir, el motor estrecha la letra hasta un
+    80 %;
+  - un texto fijo y un campo en la misma línea se recolocan juntos («Hola, {NOMBRE}»); con otra caja muy cerca, no.
+    Las frases con datos, mejor cortas.
+- **Textos que sobran.** `set_texts` con `null` quita una clave que ya no usa ningún texto (el validador avisa de las
+  que sobran).
 
 ## Campos
 

@@ -55,7 +55,7 @@ async function main() {
   try {
     const nombres = (await cliente.listTools()).tools.map((t) => t.name);
     const nuevas = ['list_library', 'duplicate_game', 'insert_page', 'insert_section', 'add_element', 'update_element', 'remove_element',
-      'add_puzzle', 'import_art', 'create_vector_art', 'save_to_library', 'read_notes', 'write_change_summary'];
+      'add_puzzle', 'update_puzzle', 'remove_puzzle', 'import_art', 'create_vector_art', 'save_to_library', 'read_notes', 'write_change_summary'];
     rec('el servidor anuncia las herramientas de §2.4 e insert_section', nuevas.every((n) => nombres.includes(n)), nuevas.filter((n) => !nombres.includes(n)).join(' '));
 
     // Biblioteca
@@ -124,8 +124,31 @@ async function main() {
         { kind: 'text', texts: { es: '¿Quién gana?', en: 'Who wins?' }, x: 0, y: 0, w: 100, h: 10, size: 4, color: '#3B2A20', fontFamily: 'Anton' },
       ] } } });
     rec('add_puzzle de contenido con arte y texto en su caja', contenido.kind === 'contenido' && contenido.element);
+    // Elementos sin id junto a otros con id explícito: ids libres (lo encontró el ensayo F3.3).
+    const conIds = await ok(cliente, 'update_puzzle', { id: ID, puzzle: 'tres-en-raya', changes: { page: { elements: [
+      { kind: 'art', ref: rejilla.ref, x: 10, y: 0, w: 80, h: 100 },
+      { id: 'tres-en-raya-e1', kind: 'text', texts: { es: '¿Quién gana?', en: 'Who wins?' }, x: 0, y: 0, w: 100, h: 10, size: 4, color: '#3B2A20', fontFamily: 'Anton' },
+    ] } } });
+    const idsPz = conIds.page.elements.map((e) => e.id);
+    rec('update_puzzle: ids libres aunque otro elemento traiga el suyo', new Set(idsPz).size === 2 && idsPz.includes('tres-en-raya-e1'), idsPz.join(' '));
+    await ok(cliente, 'set_texts', { id: ID, lang: 'es', entries: { 'clave-suelta': 'x' } });
+    await ok(cliente, 'set_texts', { id: ID, lang: 'en', entries: { 'clave-suelta': 'x' } });
+    const avisoClave = await ok(cliente, 'validate_game', { id: ID, mode: 'draft' });
+    rec('validate_game avisa de la clave que no usa ningún texto', avisoClave.warnings.some((w) => w.includes('clave-suelta')));
+    await ok(cliente, 'set_texts', { id: ID, lang: 'es', entries: { 'clave-suelta': null } });
+    await ok(cliente, 'set_texts', { id: ID, lang: 'en', entries: { 'clave-suelta': null } });
+    const sinClave = await ok(cliente, 'get_game', { id: ID, part: 'texts' });
+    rec('set_texts con null quita la clave', !('clave-suelta' in sinClave.es) && !('clave-suelta' in sinClave.en));
+    const usada = await llamar(cliente, 'set_texts', { id: ID, lang: 'es', entries: { [titulo.key]: null } });
+    rec('set_texts con null de una clave que usa un texto se rechaza', !usada.ok && usada.error.code === 'invalido');
     const repetido = await llamar(cliente, 'add_puzzle', { id: ID, page: 'p2', from: 'puzzle-prefix@1' });
     rec('add_puzzle repetido del catálogo se rechaza', !repetido.ok && repetido.error.code === 'exists');
+    const ficha = await ok(cliente, 'update_puzzle', { id: ID, puzzle: 'prefix', changes: { name: 'Apodos', difficulty: 1, minAge: 6, minutes: 1 } });
+    rec('update_puzzle: ficha del puzzle del catálogo', ficha.difficulty === 1 && ficha.name === 'Apodos');
+    const params = await llamar(cliente, 'update_puzzle', { id: ID, puzzle: 'prefix', changes: { params: {} } });
+    rec('update_puzzle no cambia los parámetros de un puzzle de datos', !params.ok && params.error.code === 'invalid');
+    const quitarUsado = await llamar(cliente, 'remove_puzzle', { id: ID, puzzle: 'prefix' });
+    rec('remove_puzzle se niega si la página usa los campos que calcula', !quitarUsado.ok && quitarUsado.error.code === 'invalido');
     const sinNeeds = await llamar(cliente, 'add_puzzle', { id: ID, page: 'p2', from: 'puzzle-strips' });
     rec('add_puzzle del catálogo sin sus campos: faltan-campos', !sinNeeds.ok && sinNeeds.error.code === 'faltan-campos' && /TEST_LUGAR/.test(sinNeeds.error.message));
 

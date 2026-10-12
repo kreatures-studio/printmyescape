@@ -56,7 +56,7 @@ def construir(repo):
     pme = os.path.join(repo, '.pme')
     shutil.rmtree(os.path.join(pme, 'mcp'), ignore_errors=True)
     for mod in ['mcp/server.mjs', 'mcp/store-fs.mjs', 'mcp/motor.mjs', 'mcp/herramientas.mjs', 'mcp/herramientas-v2.mjs',
-                'mcp/test-client.mjs']:
+                'mcp/test-client.mjs', 'mcp/cli.mjs']:
         copiar(mod, pme)
     for f in sorted(glob.glob(os.path.join(ROOT, 'mechanics', '*.js'))):
         copiar(os.path.relpath(f, ROOT).replace(os.sep, '/'), pme)
