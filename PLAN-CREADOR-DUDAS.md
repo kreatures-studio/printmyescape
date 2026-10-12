@@ -514,3 +514,13 @@ Pendiente (no bloquea M2):
   (T4.3: los assets los descargas tú). En cuanto haya piezas, basta con regenerar `.pme/` y ejecutar la
   prueba sin `--kit` (usa las piezas del kit de `.pme/assets/kit`).
 - La prueba falla con un mensaje claro si el kit está vacío (no lo oculta).
+
+## T7.1 (skill crear-escape-room)
+
+- `.claude/skills/crear-escape-room/`: `SKILL.md` (encabezado con name y description; flujo de 9 pasos del
+  plan; reglas fijas) y `reference/`: `formato.md` (estructura del juego, a partir del esquema),
+  `reglas-contenido.md`, `lista.md` (comprobación antes de dar un juego por terminado) y `mecanicas.md`.
+- `mecanicas.md` lo genera `tools/build-skill-reference.mjs` desde el registro del motor; el paquete para el
+  repositorio de juegos lo regenera antes de copiarlo (tools/build-mcp-bundle.py).
+- Las reglas del skill dicen que los juegos se cambian solo con las herramientas, nunca escribiendo el JSON.
+- T7.2 (ensayo con una sesión limpia y otra persona editando): PENDIENTE, lo hace una persona.

@@ -82,6 +82,10 @@ def construir(repo):
 
     skill_destino = os.path.join(repo, '.claude', 'skills', 'crear-escape-room')
     if os.path.isdir(SKILL):
+        # El catálogo de mecánicas sale del registro del motor: se regenera antes de copiarlo.
+        r = subprocess.run(['node', os.path.join(ROOT, 'tools', 'build-skill-reference.mjs')], cwd=ROOT)
+        if r.returncode:
+            raise SystemExit('ERROR no se pudo generar el catálogo de mecánicas del skill')
         shutil.rmtree(skill_destino, ignore_errors=True)
         shutil.copytree(SKILL, skill_destino)
         estado_skill = 'skill copiado'
