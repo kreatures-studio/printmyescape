@@ -491,3 +491,12 @@ Pendiente (no bloquea M2):
   de la página (p1, p2…). `create_game` acepta el nombre como texto (igual en todos los idiomas) o como
   objeto por idioma.
 - Pruebas: `mcp/test-client.mjs` (T6.5, ver abajo).
+
+## T6.3 (sync y submit_to_studio)
+
+- Probado (`mcp/test-client.mjs --nuevo`, 31/31): sync push y pull contra un origin local; push rechazado
+  si origin tiene cambios nuevos; pull con conflicto que para, aborta el rebase y deja la copia limpia.
+- NO probado de extremo a extremo: la creación del pull request con `gh pr create`. En este entorno el
+  token de `gh` (GH_TOKEN) no es válido, así que `submit_to_studio` solo se verifica hasta los
+  requisitos (sin gh: «sin-gh»; con gh y sin requisitos: «invalido»). Hay que probarlo en el ordenador
+  del estudio, con `gh auth login` y un repositorio de juegos real.

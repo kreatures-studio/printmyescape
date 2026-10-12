@@ -176,6 +176,34 @@ async function main() {
   } finally {
     await cliente.close();
   }
+
+  // Conflicto (T6.3): dos copias locales editan el mismo juego. La segunda no sube (rechazado) y, al
+  // traer cambios, para y lo explica sin dejar la copia a medias.
+  if (nuevo) {
+    const origen = `${repo}-origin.git`;
+    const copia = `${repo}-b`;
+    fs.rmSync(copia, { recursive: true, force: true });
+    git(['clone', '-q', origen, copia], os.tmpdir());
+    git(['config', 'user.email', 'prueba@local'], copia);
+    git(['config', 'user.name', 'Prueba MCP B'], copia);
+    git(['checkout', '-q', `juego/${ID}`], copia);
+    const a = await conectar(repo, kit);
+    const b = await conectar(copia, kit);
+    try {
+      await ok(a, 'set_texts', { id: ID, lang: 'es', entries: { TITULO: 'Cambio desde A' } });
+      await ok(a, 'sync', { id: ID, direction: 'push', message: 'A cambia el título' });
+      await ok(b, 'set_texts', { id: ID, lang: 'es', entries: { TITULO: 'Cambio desde B' } });
+      const rech = await llamar(b, 'sync', { id: ID, direction: 'push', message: 'B cambia el título' });
+      rec('sync push desde B rechazado si origin tiene cambios nuevos', !rech.ok && rech.error.code === 'rechazado', rech.ok ? '' : rech.error.code);
+      const conf = await llamar(b, 'sync', { id: ID, direction: 'pull' });
+      rec('sync pull con conflicto: para y lo explica', !conf.ok && conf.error.code === 'conflicto', conf.ok ? '' : conf.error.code);
+      const estado = git(['status', '--porcelain'], copia);
+      rec('tras el conflicto la copia queda limpia (rebase abortado)', estado === '' && !fs.existsSync(path.join(copia, '.git', 'rebase-merge')) && !fs.existsSync(path.join(copia, '.git', 'rebase-apply')));
+    } finally {
+      await a.close();
+      await b.close();
+    }
+  }
   const total = RES.length;
   const bien = RES.filter(Boolean).length;
   console.log(`\nRESUMEN: ${bien}/${total} OK`);
