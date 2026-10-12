@@ -70,6 +70,33 @@ export function reglasPagina(coleccion, { existe = null } = {}) {
   return { errores, avisos };
 }
 
+/**
+ * Reglas de una colección de puzzles de datos (F2.6). «mecanicas» es el registro de mecánicas
+ * ({ nombre: { params: { required } } }), que lee validar.mjs de mechanics/. Un puzzle de datos
+ * es una mecánica con sus parámetros: no lleva contenido propio (los de contenido vienen en F3).
+ */
+export function reglasPuzzle(coleccion, { mecanicas = {} } = {}) {
+  const errores = [], avisos = [];
+  const vistas = new Set();
+  for (const z of coleccion.pieces || []) {
+    const r = `puzzles/${z.id}`;
+    if (vistas.has(`${z.id}@${z.version}`)) errores.push(`${r}: la versión ${z.version} está repetida`);
+    vistas.add(`${z.id}@${z.version}`);
+    if (z.kind !== 'datos') errores.push(`${r}: solo se admiten puzzles de datos por ahora («${z.kind}»)`);
+    const m = mecanicas[z.mechanic];
+    if (!m) { errores.push(`${r}: la mecánica «${z.mechanic}» no existe en mechanics/`); continue; }
+    if (z.origin.mechanic !== z.mechanic) errores.push(`${r}: el origen dice «${z.origin.mechanic}» y la mecánica es «${z.mechanic}»`);
+    if (z.id !== `puzzle-${z.mechanic}`) errores.push(`${r}: el id debe ser «puzzle-${z.mechanic}»`);
+    for (const req of (m.params && m.params.required) || []) {
+      if (!(req in z.params)) errores.push(`${r}: faltan los parámetros de «${z.mechanic}»: «${req}»`);
+    }
+    const derivados = new Set(z.derives || []);
+    for (const c of z.needs) if (derivados.has(c)) errores.push(`${r}: «${c}» es un campo que el propio puzzle calcula, no uno que necesite`);
+    if (z.status === 'reexportar') avisos.push(`${r}: pendiente de revisar (no usar en juegos)`);
+  }
+  return { errores, avisos };
+}
+
 /** Reglas de una colección de secciones (F2.5): cada campo tiene definición y los ejemplos solo usan sus campos. */
 export function reglasSeccion(coleccion) {
   const errores = [], avisos = [];

@@ -6,13 +6,17 @@
 // spec.json:
 //   { "coleccion": "el-regalo-robado",
 //     "paginas":   [ { "de": "p1", "id": "ficha-victima", "nombre": "Ficha de la víctima", "etiquetas": ["misterio", "kraft", "foto"] } ],
-//     "secciones": [ { "de": "victima", "id": "seccion-victima", "nombre": "Cumpleañero", "etiquetas": ["formulario", "foto", "nombre"] } ] }
+//     "secciones": [ { "de": "victima", "id": "seccion-victima", "nombre": "Cumpleañero", "etiquetas": ["formulario", "foto", "nombre"] } ],
+//     "puzzles":   [ { "de": "ticks", "id": "puzzle-ticks", "nombre": "Casillas marcadas", "etiquetas": ["casillas", "marcas", "datos"] } ] }
 //
-// Escribe biblioteca/paginas/<coleccion>/ y biblioteca/secciones/<coleccion>/ (manifest.json y, para el fondo PDF,
-// fondos/<id>-v1.pdf con la página del PDF del juego). Cada entrada guarda su origen (juego, versión, página o sección)
-// y se valida con tools/biblioteca/validar.mjs; si no valida, no se escribe nada.
+// Escribe biblioteca/paginas/<coleccion>/, biblioteca/secciones/<coleccion>/ y biblioteca/puzzles/<coleccion>/
+// (manifest.json y, para el fondo PDF, fondos/<id>-v1.pdf con la página del PDF del juego). Cada entrada guarda su
+// origen (juego, versión, página, sección o mecánica) y se valida con tools/biblioteca/validar.mjs; si no valida,
+// no se escribe nada.
 //
-// Una página con puzzles (elementos «puzzle») se rechaza: los puzzles se guardan en F2.6.
+// Puzzles: «de» es el tipo de una mecánica del juego (game.mechanics[].type), y debe aparecer una sola vez. Se guarda
+// como puzzle de datos: sus parámetros, los campos que lee (needs) y la solución del juego si la hay en la misma página.
+// Una página con puzzles (elementos «puzzle») se rechaza: aún no se pueden colocar en una página de la biblioteca.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -106,6 +110,37 @@ function exportarSecciones({ g }, specs) {
   });
 }
 
+/** Campos que una mecánica lee de la ficha, según sus parámetros (sin los que calcula). */
+function camposQueLee(m) {
+  const p = m.params || {};
+  const campos = [];
+  if (p.field) campos.push(p.field);
+  if (p.name) campos.push(p.name);
+  if (p.alias) campos.push(p.alias);
+  if (p.map) campos.push(...Object.keys(p.map));
+  return campos;
+}
+
+function exportarPuzzles({ g }, specs) {
+  return specs.map((s) => {
+    const iguales = (g.mechanics || []).filter((x) => x.type === s.de);
+    if (iguales.length !== 1) throw new Error(`el juego tiene ${iguales.length} mecánica(s) «${s.de}» (hace falta exactamente una)`);
+    const m = iguales[0];
+    const solucion = (g.solutions || []).find((x) => x.page === m.page);
+    const derives = m.derives || [];
+    const necesita = [...new Set([...camposQueLee(m), ...((solucion && solucion.dependsOn) || [])])].filter((c) => !derives.includes(c));
+    for (const c of necesita) if (!g.fields[c]) throw new Error(`el puzzle «${s.id}» lee el campo «${c}», que no existe en fields`);
+    const entrada = {
+      id: s.id, version: 1, name: s.nombre, tags: s.etiquetas,
+      origin: { game: g.id, version: g.version, mechanic: m.type, page: m.page },
+      kind: 'datos', mechanic: m.type, params: structuredClone(m.params), needs: necesita,
+    };
+    if (derives.length) entrada.derives = [...derives];
+    if (solucion) entrada.solution = structuredClone(solucion);
+    return entrada;
+  });
+}
+
 function escribirColeccion(tipo, carpeta, entradas) {
   const file = path.join(carpeta, 'manifest.json');
   const previas = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')).pieces : [];
@@ -126,12 +161,15 @@ async function main() {
   const origen = leerJuegoV2(path.resolve(carpeta));
   const colPag = path.join(BIBLIOTECA, 'paginas', spec.coleccion);
   const colSec = path.join(BIBLIOTECA, 'secciones', spec.coleccion);
-  const antes = { pag: fs.existsSync(path.join(colPag, 'manifest.json')) ? fs.readFileSync(path.join(colPag, 'manifest.json'), 'utf8') : null,
-                  sec: fs.existsSync(path.join(colSec, 'manifest.json')) ? fs.readFileSync(path.join(colSec, 'manifest.json'), 'utf8') : null };
+  const colPuz = path.join(BIBLIOTECA, 'puzzles', spec.coleccion);
+  const leer = (dir) => (fs.existsSync(path.join(dir, 'manifest.json')) ? fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8') : null);
+  const antes = { pag: leer(colPag), sec: leer(colSec), puz: leer(colPuz) };
   // Antes de copiar nada: los ids nuevos no pueden existir ya en la colección.
   const existentes = (carpeta) => new Set(fs.existsSync(path.join(carpeta, 'manifest.json'))
     ? JSON.parse(fs.readFileSync(path.join(carpeta, 'manifest.json'), 'utf8')).pieces.map((p) => `${p.id}@${p.version}`) : []);
-  for (const [carpeta, ids] of [[colPag, (spec.paginas || []).map((p) => p.id)], [colSec, (spec.secciones || []).map((s) => s.id)]]) {
+  const grupos = [[colPag, (spec.paginas || []).map((p) => p.id)], [colSec, (spec.secciones || []).map((s) => s.id)],
+    [colPuz, (spec.puzzles || []).map((z) => z.id)]];
+  for (const [carpeta, ids] of grupos) {
     const previas = existentes(carpeta);
     const repetidos = ids.filter((id) => previas.has(`${id}@1`));
     if (repetidos.length) { console.error(`ERROR ya existe en la biblioteca: ${repetidos.join(', ')} (usa otro id o una versión nueva)\nNo se ha guardado nada.`); return 1; }
@@ -153,9 +191,16 @@ async function main() {
       if (errores.length) throw new Error(`la colección de secciones no valida:\n  ${errores.join('\n  ')}`);
       console.log(`OK ${entradas.length} sección(es) → ${path.relative(ROOT, colSec)}`);
     }
+    if (spec.puzzles?.length) {
+      const entradas = exportarPuzzles(origen, spec.puzzles);
+      escribirColeccion('puzzle', colPuz, entradas);
+      const { errores } = validarColeccion(colPuz);
+      if (errores.length) throw new Error(`la colección de puzzles no valida:\n  ${errores.join('\n  ')}`);
+      console.log(`OK ${entradas.length} puzzle(s) → ${path.relative(ROOT, colPuz)}`);
+    }
   } catch (e) {
     // Deshace: restaura los manifiestos y borra las carpetas nuevas.
-    for (const [dir, previo, antesF] of [[colPag, antes.pag, fondosAntes.pag], [colSec, antes.sec, fondosAntes.sec]]) {
+    for (const [dir, previo, antesF] of [[colPag, antes.pag, fondosAntes.pag], [colSec, antes.sec, fondosAntes.sec], [colPuz, antes.puz, new Set()]]) {
       if (previo === null) { fs.rmSync(dir, { recursive: true, force: true }); continue; }
       if (fs.existsSync(dir)) fs.writeFileSync(path.join(dir, 'manifest.json'), previo);
       for (const f of fondosDe(dir)) if (!antesF.has(f)) fs.rmSync(path.join(dir, 'fondos', f), { force: true });

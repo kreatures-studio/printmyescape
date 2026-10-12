@@ -79,8 +79,8 @@
       "estilo": "normal",
       "fichero": "PigpenRunes.ttf",
       "embeberCompleta": true,
-      "licencia": "por confirmar",
-      "origen": "por confirmar"
+      "licencia": "propia-estudio",
+      "origen": "Diseño propio del estudio (Kreatures)"
     }
   ],
   "nombres": {
@@ -172,7 +172,7 @@
     "Pigpen": {
       "key": "runes",
       "manuscrita": false,
-      "nota": "Fuente de runas de la mecánica «runes». Licencia por confirmar."
+      "nota": "Fuente de runas de la mecánica «runes-panel». Diseño propio del estudio."
     }
   }
 }

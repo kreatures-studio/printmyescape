@@ -119,7 +119,8 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   y la traducción de cada nombre que aparece en un juego (`fontFamily`, p. ej. SegoeScript → Caveat). El motor resuelve
   el nombre en el registro cuando se le pasa `fuentes` (CLI y servidor MCP); la demo del navegador conserva las reglas
   antiguas hasta F4. *Aceptación:* golden 96/96; el validador rechaza un nombre que no está en el registro (2 casos
-  nuevos). *Pendiente:* la licencia de Pigpen (runas) es «por confirmar»: el validador lo avisa.
+  nuevos). La licencia de Pigpen (runas) está confirmada: es diseño propio del estudio (`propia-estudio`), así que
+  no hay avisos de fuentes para El regalo robado.
 - **F1.5 Validador y límites v2 (hecho).** Reglas nuevas: cajas dentro de la página (texto, campo y foto: error;
   pieza de arte que sobresale: aviso), puzzles de contenido sin mecánica, puzzles inexistentes o sin elementos,
   y que cada PDF de página exista. El esquema del puzzle admite ahora `name`, `page` y los metadatos del §2.3.
@@ -146,14 +147,21 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   rechazos sin dejar nada).
 - **F2.3 Piezas de El regalo robado (parcial).** Las 28 listas están en `biblioteca/arte/el-regalo-robado/` (autor
   Kreatures). Las 12 por reexportar esperan al artista; cuando lleguen se importan con `importar-arte.py` (nueva versión).
-- **F2.4 Fuentes de Google Fonts** elegidas por el estudio, con licencia.
+- **F2.4 Fuentes (hecho).** Cuatro familias de Google Fonts, siete ficheros, con licencia libre (Caveat, Anton, Open Sans, Courier Prime; OFL o
+  Apache-2.0) más Pigpen, fuente propia del estudio (`propia-estudio`). No se añaden más salvo que el estudio lo pida.
 - **F2.5 Páginas y secciones guardadas desde un juego, con origen (hecho).** `tools/biblioteca/desde-juego.mjs
   <juego> <spec.json>` guarda páginas (`biblioteca/paginas/<colección>/`, con el fondo PDF de la página en
   `fondos/`) y secciones (`biblioteca/secciones/<colección>/`, con sus campos, definiciones y ejemplos). Cada entrada
   lleva su origen (juego, versión, página o sección). El esquema admite los tipos `pagina` y `seccion`. *Aceptación:*
   páginas y secciones de final3 exportadas y válidas; `tools/qa/biblioteca-paginas-test.mjs` (los errores se detectan
   y una exportación fallida no deja nada escrito).
-- **F2.6 Catálogo de puzzles:** las 6 mecánicas actuales como puzzles de `datos` y 3 puzzles de `contenido` de ejemplo.
+- **F2.6 Catálogo de puzzles (hecho).** Las 6 mecánicas de El regalo robado (`ticks`, `join`, `prefix`, `strips`,
+  `runes-panel`, `initial`) como puzzles de `datos` en `biblioteca/puzzles/el-regalo-robado/` (`tools/biblioteca/desde-juego.mjs`
+  con `spec.puzzles`). Cada uno lleva sus parámetros, los campos que lee (`needs`), los que calcula (`derives`) y la solución
+  del juego si la hay (la de las tiras de la página 9). No se inventan puzzles de contenido: quedan para F3.
+  *Aceptación:* `tools/qa/biblioteca-puzzles-test.mjs` (colección real válida, 8 casos negativos y 3 exportaciones
+  rechazadas sin dejar nada escrito). *Límite:* una página de la biblioteca aún no puede llevar un puzzle de datos;
+  el motor no lo dibuja sin elementos propios (`aV1` lo rechaza con mensaje claro).
 - *Aceptación de la fase:* el validador rechaza piezas sin licencia o sin autor; un juego v2 de prueba usa arte,
   fuente, página, sección y puzzle de la biblioteca.
 

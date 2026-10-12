@@ -6,10 +6,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import Ajv2020 from 'ajv/dist/2020.js';
-import { reglasArte, reglasPagina, reglasSeccion } from './reglas.mjs';
+import { reglasArte, reglasPagina, reglasSeccion, reglasPuzzle } from './reglas.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const SCHEMA = JSON.parse(fs.readFileSync(path.join(ROOT, 'schema', 'biblioteca-1.schema.json'), 'utf8'));
+/** Registro de mecánicas del motor (mechanics/), para comprobar los puzzles de datos. */
+const MECANICAS = createRequire(import.meta.url)(path.join(ROOT, 'mechanics', 'index.js'));
 
 /** Errores de esquema y de reglas de una carpeta de colección. */
 export function validarColeccion(carpeta) {
@@ -47,6 +49,10 @@ export function validarColeccion(carpeta) {
       }
     }
     const r = reglasSeccion(coleccion);
+    return { errores: [...errores, ...r.errores], avisos: [...avisos, ...r.avisos] };
+  }
+  if (coleccion.tipo === 'puzzle') {
+    const r = reglasPuzzle(coleccion, { mecanicas: MECANICAS });
     return { errores: [...errores, ...r.errores], avisos: [...avisos, ...r.avisos] };
   }
   return { errores: [...errores, `tipo «${coleccion.tipo}» sin reglas`], avisos };
