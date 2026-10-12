@@ -139,7 +139,11 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   las piezas por reexportar avisan). CLI: `node tools/biblioteca/validar.mjs <colección>`. *Aceptación:* el validador
   rechaza piezas sin licencia o sin autor: `tools/qa/biblioteca-casos.mjs` 11/11. La colección de El regalo robado
   (40 piezas: 28 ok y 12 por reexportar; la descartada no entra) pasa.
-- **F2.2 Importar arte** de los artistas (PDF con capas `zona-foto`/`zona-texto`, PNG, SVG) con miniatura y tamaño.
+- **F2.2 Importar arte (hecho).** `tools/biblioteca/importar-arte.py <fichero> <colección> --id … --categoria …`:
+  PDF o SVG vectorial (las capas `zona-foto`/`zona-texto` pasan a zonas y no se dibujan; texto o imágenes dentro:
+  se rechaza), PNG (zonas de un fichero JSON). Crea PDF, miniatura y entrada del manifiesto, y valida la colección;
+  si no valida, deshace todo. *Aceptación:* `tools/qa/biblioteca-importar-test.py` 18/18 (tres formatos entran;
+  rechazos sin dejar nada).
 - **F2.3 Piezas de El regalo robado:** las 28 listas (`biblioteca/arte/el-regalo-robado/`) y las 12 reexportadas.
 - **F2.4 Fuentes de Google Fonts** elegidas por el estudio, con licencia.
 - **F2.5 Páginas y secciones** guardadas desde un juego, con origen.
