@@ -271,3 +271,31 @@ export function plantillaParaMotor(game) {
   }
   return { ...tpl, fields: lista };
 }
+
+/**
+ * Reglas propias de pme-game/2 (F1.5 de PLAN-CREADOR-2.md), además de las de reglasCruzadas sobre su forma v1:
+ * ids de elemento únicos en cada página, puzzles con id único y mecánica conocida, y cada bloque de puzzle
+ * apunta a un puzzle del juego.
+ */
+export function reglasV2(game) {
+  const errs = [];
+  const puzzles = new Map();
+  for (const pz of game.puzzles || []) {
+    if (puzzles.has(pz.id)) errs.push(`puzzles/${pz.id}: id repetido`);
+    puzzles.set(pz.id, pz);
+    if (pz.mechanic && !(globalThis.PMEMechanics || {})[pz.mechanic]) errs.push(`puzzles/${pz.id}: la mecánica «${pz.mechanic}» no está en el catálogo`);
+    if (pz.kind === 'datos' && !pz.mechanic) errs.push(`puzzles/${pz.id}: un puzzle de datos necesita una mecánica del catálogo`);
+  }
+  const paginas = new Set();
+  for (const p of game.pages || []) {
+    if (paginas.has(p.id)) errs.push(`pages/${p.id}: la página está repetida`);
+    paginas.add(p.id);
+    const ids = new Set();
+    for (const e of p.elements || []) {
+      if (ids.has(e.id)) errs.push(`pages/${p.id}: el elemento «${e.id}» está repetido`);
+      ids.add(e.id);
+      if (e.kind === 'puzzle' && !puzzles.has(e.puzzle)) errs.push(`pages/${p.id}/${e.id}: el puzzle «${e.puzzle}» no existe en puzzles`);
+    }
+  }
+  return errs;
+}

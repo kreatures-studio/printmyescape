@@ -170,3 +170,7 @@ fuente sale con huecos en blanco, probar `subset: false` para ella.
   Comprueba la guía de artistas (categoría, nombre, 3 a 6 etiquetas) y escribe `piezas/`, `piezas.csv`,
   `manifest.json` y `revisar.jpg`.
 - `biblioteca/` no se publica en `docs/`: el arte de los artistas es privado.
+- Formato v2 (F1): `node tools/game/migrar-v2.mjs games/final3 salidas/final3-v2` migra sin pérdida (si la vuelta a v1
+  no da el original, no escribe nada). `loadGame` entrega los juegos v2 al motor en su forma v1; el validador
+  comprueba el esquema v2 (`schema/pme-game-2.schema.json`). Pruebas: `node tools/qa/v2-ida-vuelta.mjs` y
+  `PME_GAME=salidas/final3-v2 PME_OUT=salidas/golden-v2 python3 tools/qa/golden.py` (96/96).

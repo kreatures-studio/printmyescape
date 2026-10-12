@@ -47,8 +47,8 @@ Cambia `template` por `pages`; el resto (campos, formulario, idiomas, ejemplos, 
       "elements": [
         { "id": "e1", "kind": "art",   "ref": "marco-foto-polaroid-verde@1", "x": 5, "y": 10, "w": 30, "h": 30, "angle": 0 },
         { "id": "e2", "kind": "photo", "field": "FOTO_CUMPLE", "x": 9, "y": 13, "w": 22, "h": 19, "angle": -2 },
-        { "id": "e3", "kind": "field", "field": "NOMBRE_CUMPLE", "x": 41, "y": 12, "w": 22, "h": 3, "style": { "font": "Open Sans", "size": 2, "color": "#1B2420" } },
-        { "id": "e4", "kind": "text",  "key": "p3.titulo", "x": 3, "y": 2, "w": 58, "h": 5, "style": { "font": "Anton", "size": 5 } },
+        { "id": "e3", "kind": "field", "field": "NOMBRE_CUMPLE", "x": 41, "y": 12, "w": 22, "h": 3, "fontFamily": "Open Sans", "size": 2, "color": "#1B2420" },
+        { "id": "e4", "kind": "text",  "key": "p3.titulo", "x": 3, "y": 2, "w": 58, "h": 5, "fontFamily": "Anton", "size": 5 },
         { "id": "e5", "kind": "puzzle", "puzzle": "cifrado-1", "x": 10, "y": 50, "w": 80, "h": 30 }
       ]
     }
@@ -61,6 +61,9 @@ Cambia `template` por `pages`; el resto (campos, formulario, idiomas, ejemplos, 
 - Coordenadas en % de la página; `elements` en orden de dibujo (el primero, debajo).
 - Los textos fijos (`kind: text`) apuntan a una clave de `i18n`; nunca llevan el texto dentro.
 - `field` y `photo` sustituyen a los `slots` de v1; conservan sus opciones (`transform`, `upper`, `wrap`, `xscale`…).
+- El estilo va en propiedades planas, las mismas de v1 (`fontFamily`, `size`, `color`, `align`, `xscale`, `angle`…).
+- `compat` (solo en juegos migrados) guarda lo que el motor actual necesita para dar el mismo PDF: la plantilla
+  heredada, el tipo de fondo y el orden original de los textos fijos.
 - La migración v1 → v2 es automática y sin pérdida (F1.2).
 
 ### 2.2 Biblioteca (`biblioteca/manifest.json` por tipo)
@@ -105,8 +108,10 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
 - **F1.1 Esquema** `schema/pme-game-2.schema.json` (2.1). *Aceptación:* casos del validador para cada tipo de elemento y fondo.
 - **F1.2 Migración** `tools/game/migrar-v2.mjs`: v1 → v2 (slots → field/photo, texts → text, fondo PDF por página,
   layers → art). *Aceptación:* final3 y el juego de capas migran sin errores; la migración es idempotente.
-- **F1.3 Motor por elementos.** `composeGame` dibuja `pages[].elements` en orden. *Aceptación:* final3 migrado:
-  golden 96/96, paridad navegador ↔ CLI, e2e de la demo 30/30.
+- **F1.3a Motor con juegos v2 (hecho).** `loadGame` entrega la forma v1 equivalente (`aV1`) al motor, la CLI y los
+  límites. *Aceptación:* final3 migrado a v2: golden 96/96.
+- **F1.3b Elementos nuevos en el motor.** Dibujar `art` de la biblioteca en cualquier capa, fondos `art` y `color`,
+  varios PDF de fondo y bloques de `puzzle`. *Aceptación:* golden 96/96 y prueba de capas con su referencia en PNG.
 - **F1.4 Registro de fuentes** `assets/fonts/registro.json`; el motor elige por familia y peso, no por expresiones.
   *Aceptación:* golden 96/96; el validador rechaza una fuente que no está en el registro.
 - **F1.5 Validador y límites v2.** *Aceptación:* los 18 casos actuales, adaptados, y nuevos de elementos.

@@ -15,20 +15,31 @@ import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { loadGame } from './load.mjs';
-import { reglasCruzadas, erroresKitDatos, avisosGame } from './reglas.mjs';
+import { reglasCruzadas, erroresKitDatos, avisosGame as avisosV1, reglasV2 } from './reglas.mjs';
+import { aV1 } from './v2.mjs';
 
-export { avisosGame, erroresKitDatos };
+export { erroresKitDatos };
+
+/** Avisos (no bloquean). Un juego v2 se mira en su forma v1 equivalente. */
+export function avisosGame(game, opts = {}) {
+  return avisosV1(game.schema === 'pme-game/2' ? aV1(game) : game, opts);
+}
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..', '..');
-const SCHEMA = path.join(ROOT, 'schema', 'pme-game-1.schema.json');
+const SCHEMAS = {
+  'pme-game/1': path.join(ROOT, 'schema', 'pme-game-1.schema.json'),
+  'pme-game/2': path.join(ROOT, 'schema', 'pme-game-2.schema.json'),
+};
 // Registro de mecánicas y transformaciones (las mismas que usa el motor en Node).
 createRequire(import.meta.url)(path.join(ROOT, 'mechanics', 'index.js'));
 
 /** Errores de esquema (ajv), uno por línea, con la ruta del dato. */
 export function schemaErrors(game) {
+  const ficheroEsquema = SCHEMAS[game && game.schema];
+  if (!ficheroEsquema) return [`esquema: formato desconocido «${game && game.schema}» (pme-game/1 o pme-game/2)`];
   const ajv = new Ajv2020({ allErrors: true, strict: false });
-  const validate = ajv.compile(JSON.parse(fs.readFileSync(SCHEMA, 'utf8')));
+  const validate = ajv.compile(JSON.parse(fs.readFileSync(ficheroEsquema, 'utf8')));
   if (validate(game)) return [];
   return validate.errors.map((e) => `esquema ${e.instancePath || '/'}: ${e.message}`);
 }
@@ -63,7 +74,15 @@ export function codigosDePdf(pdf) {
 export function validateGame(game, opts = {}) {
   const errs = schemaErrors(game);
   // Las comprobaciones cruzadas solo tienen sentido si la forma básica es correcta.
-  if (!errs.length) errs.push(...crossErrors(game, opts));
+  if (errs.length) return errs;
+  if (game.schema === 'pme-game/2') {
+    errs.push(...reglasV2(game));
+    let v1;
+    try { v1 = aV1(game); } catch (e) { return [...errs, `pages: ${e.message}`]; }
+    errs.push(...crossErrors(v1, opts));
+    return errs;
+  }
+  errs.push(...crossErrors(game, opts));
   return errs;
 }
 
@@ -82,7 +101,7 @@ function main() {
   }
   let game;
   try {
-    game = loadGame(target);
+    game = loadGame(target, { tal: true });
   } catch (e) {
     console.log(`ERROR no se puede leer ${target}: ${e.message}`);
     process.exit(1);
