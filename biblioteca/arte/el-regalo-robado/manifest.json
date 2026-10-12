@@ -1,0 +1,1173 @@
+{
+  "pieces": [
+    {
+      "id": "papel-hoja-kraft-lupa-sobre",
+      "version": 1,
+      "file": "piezas/papel-hoja-kraft-lupa-sobre-v1.pdf",
+      "thumb": "piezas/papel-hoja-kraft-lupa-sobre-v1.png",
+      "name": "Hoja kraft con lupa y sobre",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "pista"
+      ],
+      "widthMm": 250.5,
+      "heightMm": 313.2,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          1
+        ]
+      },
+      "status": "reexportar",
+      "notes": "Salen pegadas tres piezas: hoja kraft"
+    },
+    {
+      "id": "marco-ficha-sospechoso-verde-regalo",
+      "version": 1,
+      "file": "piezas/marco-ficha-sospechoso-verde-regalo-v1.pdf",
+      "thumb": "piezas/marco-ficha-sospechoso-verde-regalo-v1.png",
+      "name": "Ficha de sospechoso con regalo",
+      "category": "marco",
+      "tags": [
+        "misterio",
+        "cumpleanos",
+        "verde",
+        "foto",
+        "texto-corto"
+      ],
+      "widthMm": 98.2,
+      "heightMm": 50.7,
+      "zones": [
+        {
+          "tipo": "zona-foto",
+          "x": 59.08,
+          "y": 19.85,
+          "w": 24.94,
+          "h": 58.07
+        }
+      ],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          2
+        ]
+      },
+      "status": "ok",
+      "notes": "Zona de foto detectada"
+    },
+    {
+      "id": "marco-ficha-sospechoso-verde",
+      "version": 1,
+      "file": "piezas/marco-ficha-sospechoso-verde-v1.pdf",
+      "thumb": "piezas/marco-ficha-sospechoso-verde-v1.png",
+      "name": "Ficha de sospechoso",
+      "category": "marco",
+      "tags": [
+        "misterio",
+        "verde",
+        "foto",
+        "texto-corto"
+      ],
+      "widthMm": 98.2,
+      "heightMm": 49.9,
+      "zones": [
+        {
+          "tipo": "zona-foto",
+          "x": 59.08,
+          "y": 20.16,
+          "w": 24.94,
+          "h": 58.97
+        }
+      ],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      },
+      "status": "ok",
+      "notes": "Zona de foto detectada; aparece 8 veces en la página 2"
+    },
+    {
+      "id": "papel-etiqueta-kraft-alargada",
+      "version": 1,
+      "file": "piezas/papel-etiqueta-kraft-alargada-v1.pdf",
+      "thumb": "piezas/papel-etiqueta-kraft-alargada-v1.png",
+      "name": "Etiqueta kraft alargada",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-corto"
+      ],
+      "widthMm": 91.8,
+      "heightMm": 19.7,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          2
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "objeto-regalo-azul",
+      "version": 1,
+      "file": "piezas/objeto-regalo-azul-v1.pdf",
+      "thumb": "piezas/objeto-regalo-azul-v1.png",
+      "name": "Regalo azul con lazo",
+      "category": "objeto",
+      "tags": [
+        "cumpleanos",
+        "azul",
+        "pista"
+      ],
+      "widthMm": 13.1,
+      "heightMm": 16.5,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          2,
+          3
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "decoracion-banda-titulo-verde",
+      "version": 1,
+      "file": "piezas/decoracion-banda-titulo-verde-v1.pdf",
+      "thumb": "piezas/decoracion-banda-titulo-verde-v1.png",
+      "name": "Banda para título",
+      "category": "decoracion",
+      "tags": [
+        "misterio",
+        "verde",
+        "titular"
+      ],
+      "widthMm": 97.9,
+      "heightMm": 25.1,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          2
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "puzzle-plano-casa-cuadricula",
+      "version": 1,
+      "file": "piezas/puzzle-plano-casa-cuadricula-v1.pdf",
+      "thumb": "piezas/puzzle-plano-casa-cuadricula-v1.png",
+      "name": "Plano de la casa con cuadrícula",
+      "category": "puzzle",
+      "tags": [
+        "misterio",
+        "kraft",
+        "pista"
+      ],
+      "widthMm": 197.2,
+      "heightMm": 170.8,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          3
+        ]
+      },
+      "status": "ok",
+      "notes": "Lleva letras y números de la cuadrícula"
+    },
+    {
+      "id": "papel-etiqueta-kraft-regalo",
+      "version": 1,
+      "file": "piezas/papel-etiqueta-kraft-regalo-v1.pdf",
+      "thumb": "piezas/papel-etiqueta-kraft-regalo-v1.png",
+      "name": "Etiqueta kraft con regalo",
+      "category": "papel",
+      "tags": [
+        "cumpleanos",
+        "kraft",
+        "texto-corto"
+      ],
+      "widthMm": 85.9,
+      "heightMm": 26.7,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          3
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "marco-panel-calaveras-verde",
+      "version": 1,
+      "file": "piezas/marco-panel-calaveras-verde-v1.pdf",
+      "thumb": "piezas/marco-panel-calaveras-verde-v1.png",
+      "name": "Panel oscuro con calaveras",
+      "category": "marco",
+      "tags": [
+        "misterio",
+        "verde",
+        "texto-largo"
+      ],
+      "widthMm": 93.1,
+      "heightMm": 62.7,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          3
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "objeto-lupa",
+      "version": 1,
+      "file": "piezas/objeto-lupa-v1.pdf",
+      "thumb": "piezas/objeto-lupa-v1.png",
+      "name": "Lupa",
+      "category": "objeto",
+      "tags": [
+        "misterio",
+        "verde",
+        "pista"
+      ],
+      "widthMm": 16.9,
+      "heightMm": 23.4,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          3
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "papel-notas-kraft-casillas-lineas",
+      "version": 1,
+      "file": "piezas/papel-notas-kraft-casillas-lineas-v1.pdf",
+      "thumb": "piezas/papel-notas-kraft-casillas-lineas-v1.png",
+      "name": "Dos notas kraft (casillas y líneas)",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-largo"
+      ],
+      "widthMm": 137.0,
+      "heightMm": 153.3,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          4
+        ]
+      },
+      "status": "reexportar",
+      "notes": "Dos notas pegadas: separar la de casillas y la de líneas"
+    },
+    {
+      "id": "marco-foto-polaroid-verde",
+      "version": 1,
+      "file": "piezas/marco-foto-polaroid-verde-v1.pdf",
+      "thumb": "piezas/marco-foto-polaroid-verde-v1.png",
+      "name": "Marco de foto polaroid",
+      "category": "marco",
+      "tags": [
+        "misterio",
+        "verde",
+        "foto"
+      ],
+      "widthMm": 72.6,
+      "heightMm": 91.3,
+      "zones": [
+        {
+          "tipo": "zona-foto",
+          "x": 17.43,
+          "y": 15.11,
+          "w": 63.85,
+          "h": 60.79
+        }
+      ],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          4
+        ]
+      },
+      "status": "ok",
+      "notes": "Zona de foto detectada"
+    },
+    {
+      "id": "decoracion-banda-titulo-verde-corta",
+      "version": 1,
+      "file": "piezas/decoracion-banda-titulo-verde-corta-v1.pdf",
+      "thumb": "piezas/decoracion-banda-titulo-verde-corta-v1.png",
+      "name": "Banda corta para título",
+      "category": "decoracion",
+      "tags": [
+        "misterio",
+        "verde",
+        "titular"
+      ],
+      "widthMm": 73.2,
+      "heightMm": 18.8,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          4
+        ]
+      },
+      "status": "ok",
+      "notes": "Parecida a la banda de título; más corta"
+    },
+    {
+      "id": "decoracion-lapiz-verde",
+      "version": 1,
+      "file": "piezas/decoracion-lapiz-verde-v1.pdf",
+      "thumb": "piezas/decoracion-lapiz-verde-v1.png",
+      "name": "Lápiz verde",
+      "category": "decoracion",
+      "tags": [
+        "misterio",
+        "verde",
+        "texto-corto"
+      ],
+      "widthMm": 21.9,
+      "heightMm": 27.5,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          4
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "marco-lista-ubicaciones-cuatro-fotos",
+      "version": 1,
+      "file": "piezas/marco-lista-ubicaciones-cuatro-fotos-v1.pdf",
+      "thumb": "piezas/marco-lista-ubicaciones-cuatro-fotos-v1.png",
+      "name": "Lista de ubicaciones con cuatro fotos",
+      "category": "marco",
+      "tags": [
+        "misterio",
+        "kraft",
+        "foto",
+        "texto-corto"
+      ],
+      "widthMm": 190.7,
+      "heightMm": 292.4,
+      "zones": [
+        {
+          "tipo": "zona-foto",
+          "x": 13.37,
+          "y": 79.63,
+          "w": 17.86,
+          "h": 13.5
+        },
+        {
+          "tipo": "zona-foto",
+          "x": 13.4,
+          "y": 54.65,
+          "w": 17.86,
+          "h": 13.5
+        },
+        {
+          "tipo": "zona-foto",
+          "x": 13.43,
+          "y": 29.55,
+          "w": 17.86,
+          "h": 13.5
+        },
+        {
+          "tipo": "zona-foto",
+          "x": 13.46,
+          "y": 4.84,
+          "w": 17.86,
+          "h": 13.5
+        }
+      ],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          5,
+          6
+        ]
+      },
+      "status": "ok",
+      "notes": "Bloque compuesto; cuatro zonas de foto"
+    },
+    {
+      "id": "puzzle-clave-cifrado-pigpen",
+      "version": 1,
+      "file": "piezas/puzzle-clave-cifrado-pigpen-v1.pdf",
+      "thumb": "piezas/puzzle-clave-cifrado-pigpen-v1.png",
+      "name": "Clave del cifrado pigpen",
+      "category": "puzzle",
+      "tags": [
+        "misterio",
+        "kraft",
+        "pista"
+      ],
+      "widthMm": 81.9,
+      "heightMm": 89.6,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          7
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "ilustracion-perros-jugando-cartas",
+      "version": 1,
+      "file": "piezas/ilustracion-perros-jugando-cartas-v1.pdf",
+      "thumb": "piezas/ilustracion-perros-jugando-cartas-v1.png",
+      "name": "Perros jugando a las cartas",
+      "category": "ilustracion",
+      "tags": [
+        "misterio",
+        "marron",
+        "pista"
+      ],
+      "widthMm": 181.8,
+      "heightMm": 163.9,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          7
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "puzzle-tarjeta-iconos-bici-cajon",
+      "version": 1,
+      "file": "piezas/puzzle-tarjeta-iconos-bici-cajon-v1.pdf",
+      "thumb": "piezas/puzzle-tarjeta-iconos-bici-cajon-v1.png",
+      "name": "Tarjeta de iconos: bici y cajón",
+      "category": "puzzle",
+      "tags": [
+        "misterio",
+        "kraft",
+        "pista"
+      ],
+      "widthMm": 25.0,
+      "heightMm": 41.5,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          7
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "puzzle-tarjeta-iconos-libros-cafetera",
+      "version": 1,
+      "file": "piezas/puzzle-tarjeta-iconos-libros-cafetera-v1.pdf",
+      "thumb": "piezas/puzzle-tarjeta-iconos-libros-cafetera-v1.png",
+      "name": "Tarjeta de iconos: libros y cafetera",
+      "category": "puzzle",
+      "tags": [
+        "misterio",
+        "kraft",
+        "pista"
+      ],
+      "widthMm": 24.6,
+      "heightMm": 41.3,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          7
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "puzzle-tarjeta-iconos-taza-cafetera",
+      "version": 1,
+      "file": "piezas/puzzle-tarjeta-iconos-taza-cafetera-v1.pdf",
+      "thumb": "piezas/puzzle-tarjeta-iconos-taza-cafetera-v1.png",
+      "name": "Tarjeta de iconos: taza y cafetera",
+      "category": "puzzle",
+      "tags": [
+        "misterio",
+        "kraft",
+        "pista"
+      ],
+      "widthMm": 24.6,
+      "heightMm": 41.3,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          7
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "puzzle-maletin-cuadricula",
+      "version": 1,
+      "file": "piezas/puzzle-maletin-cuadricula-v1.pdf",
+      "thumb": "piezas/puzzle-maletin-cuadricula-v1.png",
+      "name": "Maletín con cuadrícula",
+      "category": "puzzle",
+      "tags": [
+        "misterio",
+        "verde",
+        "pista"
+      ],
+      "widthMm": 151.8,
+      "heightMm": 260.5,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          8
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "papel-hoja-kraft-rayada",
+      "version": 1,
+      "file": "piezas/papel-hoja-kraft-rayada-v1.pdf",
+      "thumb": "piezas/papel-hoja-kraft-rayada-v1.png",
+      "name": "Hoja kraft rayada",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-largo"
+      ],
+      "widthMm": 180.7,
+      "heightMm": 178.6,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          9
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "papel-nota-kraft-clip-interrogacion",
+      "version": 1,
+      "file": "piezas/papel-nota-kraft-clip-interrogacion-v1.pdf",
+      "thumb": "piezas/papel-nota-kraft-clip-interrogacion-v1.png",
+      "name": "Nota kraft con clip e interrogación",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-corto"
+      ],
+      "widthMm": 108.8,
+      "heightMm": 57.3,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          9,
+          10,
+          14,
+          15,
+          16
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "marco-foto-polaroid-verde-grande",
+      "version": 1,
+      "file": "piezas/marco-foto-polaroid-verde-grande-v1.pdf",
+      "thumb": "piezas/marco-foto-polaroid-verde-grande-v1.png",
+      "name": "Marco de foto polaroid grande",
+      "category": "marco",
+      "tags": [
+        "misterio",
+        "verde",
+        "foto"
+      ],
+      "widthMm": 72.9,
+      "heightMm": 92.5,
+      "zones": [
+        {
+          "tipo": "zona-foto",
+          "x": 18.9,
+          "y": 16.89,
+          "w": 64.43,
+          "h": 59.18
+        }
+      ],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          9,
+          10,
+          14
+        ]
+      },
+      "status": "ok",
+      "notes": "Zona de foto detectada"
+    },
+    {
+      "id": "puzzle-nota-texto-cifrado",
+      "version": 1,
+      "file": "piezas/puzzle-nota-texto-cifrado-v1.pdf",
+      "thumb": "piezas/puzzle-nota-texto-cifrado-v1.png",
+      "name": "Nota con texto cifrado",
+      "category": "puzzle",
+      "tags": [
+        "misterio",
+        "kraft",
+        "pista"
+      ],
+      "widthMm": 187.3,
+      "heightMm": 170.4,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          10
+        ]
+      },
+      "status": "reexportar",
+      "notes": "Lleva el texto cifrado de este juego: hace falta la nota sin texto"
+    },
+    {
+      "id": "marco-polaroid-nota-kraft",
+      "version": 1,
+      "file": "piezas/marco-polaroid-nota-kraft-v1.pdf",
+      "thumb": "piezas/marco-polaroid-nota-kraft-v1.png",
+      "name": "Polaroid y nota kraft",
+      "category": "marco",
+      "tags": [
+        "misterio",
+        "verde",
+        "kraft",
+        "foto"
+      ],
+      "widthMm": 176.2,
+      "heightMm": 92.5,
+      "zones": [
+        {
+          "tipo": "zona-foto",
+          "x": 7.82,
+          "y": 16.89,
+          "w": 26.66,
+          "h": 59.18
+        }
+      ],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          11
+        ]
+      },
+      "status": "reexportar",
+      "notes": "Salen pegadas: polaroid y nota kraft"
+    },
+    {
+      "id": "decoracion-linea-salvia",
+      "version": 1,
+      "file": "piezas/decoracion-linea-salvia-v1.pdf",
+      "thumb": "piezas/decoracion-linea-salvia-v1.png",
+      "name": "Línea salvia",
+      "category": "decoracion",
+      "tags": [
+        "misterio",
+        "verde",
+        "titular"
+      ],
+      "widthMm": 166.0,
+      "heightMm": 10.2,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          11
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "dispositivo-movil-morado-chat",
+      "version": 1,
+      "file": "piezas/dispositivo-movil-morado-chat-v1.pdf",
+      "thumb": "piezas/dispositivo-movil-morado-chat-v1.png",
+      "name": "Móvil morado con chat y polaroid",
+      "category": "dispositivo",
+      "tags": [
+        "misterio",
+        "morado",
+        "pista"
+      ],
+      "widthMm": 190.1,
+      "heightMm": 286.7,
+      "zones": [
+        {
+          "tipo": "zona-foto",
+          "x": 7.25,
+          "y": 5.45,
+          "w": 24.71,
+          "h": 19.1
+        }
+      ],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          12
+        ]
+      },
+      "status": "reexportar",
+      "notes": "Salen pegados: polaroid y móvil"
+    },
+    {
+      "id": "papel-nota-kraft-clip",
+      "version": 1,
+      "file": "piezas/papel-nota-kraft-clip-v1.pdf",
+      "thumb": "piezas/papel-nota-kraft-clip-v1.png",
+      "name": "Nota kraft con clip",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-corto"
+      ],
+      "widthMm": 96.4,
+      "heightMm": 50.5,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          12
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "decoracion-forma-oscura-destello",
+      "version": 1,
+      "file": "piezas/decoracion-forma-oscura-destello-v1.pdf",
+      "thumb": "piezas/decoracion-forma-oscura-destello-v1.png",
+      "name": "Forma oscura con destellos",
+      "category": "decoracion",
+      "tags": [
+        "misterio",
+        "negro",
+        "pista"
+      ],
+      "widthMm": 47.1,
+      "heightMm": 49.1,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          12
+        ]
+      },
+      "status": "reexportar",
+      "notes": "No se identifica bien: ¿parte de otra pieza?"
+    },
+    {
+      "id": "dispositivo-monitor-morado-constelaciones",
+      "version": 1,
+      "file": "piezas/dispositivo-monitor-morado-constelaciones-v1.pdf",
+      "thumb": "piezas/dispositivo-monitor-morado-constelaciones-v1.png",
+      "name": "Monitor morado con constelaciones",
+      "category": "dispositivo",
+      "tags": [
+        "misterio",
+        "morado",
+        "pista"
+      ],
+      "widthMm": 171.4,
+      "heightMm": 272.5,
+      "zones": [
+        {
+          "tipo": "zona-foto",
+          "x": 61.79,
+          "y": 1.0,
+          "w": 31.96,
+          "h": 17.24
+        }
+      ],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          13
+        ]
+      },
+      "status": "reexportar",
+      "notes": "Salen pegados: nota kraft y monitor; la zona blanca es de otra pieza"
+    },
+    {
+      "id": "marco-foto-polaroid-verde-horizontal",
+      "version": 1,
+      "file": "piezas/marco-foto-polaroid-verde-horizontal-v1.pdf",
+      "thumb": "piezas/marco-foto-polaroid-verde-horizontal-v1.png",
+      "name": "Marco de foto polaroid horizontal",
+      "category": "marco",
+      "tags": [
+        "misterio",
+        "verde",
+        "foto"
+      ],
+      "widthMm": 92.5,
+      "heightMm": 72.9,
+      "zones": [
+        {
+          "tipo": "zona-foto",
+          "x": 23.93,
+          "y": 18.9,
+          "w": 59.18,
+          "h": 64.43
+        }
+      ],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          13
+        ]
+      },
+      "status": "ok",
+      "notes": "Zona de foto detectada"
+    },
+    {
+      "id": "papel-sobres-postales-iconos",
+      "version": 1,
+      "file": "piezas/papel-sobres-postales-iconos-v1.pdf",
+      "thumb": "piezas/papel-sobres-postales-iconos-v1.png",
+      "name": "Sobres y tarjeta de iconos",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "pista"
+      ],
+      "widthMm": 150.1,
+      "heightMm": 94.7,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          14
+        ]
+      },
+      "status": "reexportar",
+      "notes": "Salen pegados: sobres y tarjeta de iconos"
+    },
+    {
+      "id": "papel-nota-kraft-sello",
+      "version": 1,
+      "file": "piezas/papel-nota-kraft-sello-v1.pdf",
+      "thumb": "piezas/papel-nota-kraft-sello-v1.png",
+      "name": "Nota kraft con sello",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-corto"
+      ],
+      "widthMm": 137.1,
+      "heightMm": 84.4,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          14
+        ]
+      },
+      "status": "reexportar",
+      "notes": "Salen pegados: nota y sello"
+    },
+    {
+      "id": "papel-hoja-kraft-polaroid",
+      "version": 1,
+      "file": "piezas/papel-hoja-kraft-polaroid-v1.pdf",
+      "thumb": "piezas/papel-hoja-kraft-polaroid-v1.png",
+      "name": "Hoja kraft con polaroid",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "foto"
+      ],
+      "widthMm": 185.5,
+      "heightMm": 275.2,
+      "zones": [
+        {
+          "tipo": "zona-foto",
+          "x": 7.43,
+          "y": 5.68,
+          "w": 25.33,
+          "h": 19.9
+        }
+      ],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          15
+        ]
+      },
+      "status": "reexportar",
+      "notes": "Salen pegadas: polaroid y hoja"
+    },
+    {
+      "id": "dispositivo-tableta-morada",
+      "version": 1,
+      "file": "piezas/dispositivo-tableta-morada-v1.pdf",
+      "thumb": "piezas/dispositivo-tableta-morada-v1.png",
+      "name": "Tableta morada con polaroid",
+      "category": "dispositivo",
+      "tags": [
+        "misterio",
+        "morado",
+        "pista"
+      ],
+      "widthMm": 186.1,
+      "heightMm": 283.8,
+      "zones": [
+        {
+          "tipo": "zona-foto",
+          "x": 7.4,
+          "y": 5.51,
+          "w": 25.24,
+          "h": 19.29
+        }
+      ],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          16
+        ]
+      },
+      "status": "reexportar",
+      "notes": "Incompleta y pegada a una polaroid"
+    },
+    {
+      "id": "icono-app-fotos",
+      "version": 1,
+      "file": "piezas/icono-app-fotos-v1.pdf",
+      "thumb": "piezas/icono-app-fotos-v1.png",
+      "name": "Icono de app de fotos",
+      "category": "icono",
+      "tags": [
+        "misterio",
+        "blanco",
+        "pista"
+      ],
+      "widthMm": 20.9,
+      "heightMm": 19.5,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          16
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "decoracion-forma-oscura-destello-2",
+      "version": 1,
+      "file": "piezas/decoracion-forma-oscura-destello-2-v1.pdf",
+      "thumb": "piezas/decoracion-forma-oscura-destello-2-v1.png",
+      "name": "Forma oscura con destellos (variante)",
+      "category": "decoracion",
+      "tags": [
+        "misterio",
+        "negro",
+        "pista"
+      ],
+      "widthMm": 28.5,
+      "heightMm": 28.0,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          16
+        ]
+      },
+      "status": "reexportar",
+      "notes": "No se identifica bien: ¿parte de otra pieza?"
+    },
+    {
+      "id": "icono-app-camara",
+      "version": 1,
+      "file": "piezas/icono-app-camara-v1.pdf",
+      "thumb": "piezas/icono-app-camara-v1.png",
+      "name": "Icono de app de cámara",
+      "category": "icono",
+      "tags": [
+        "misterio",
+        "blanco",
+        "pista"
+      ],
+      "widthMm": 17.7,
+      "heightMm": 17.7,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          16
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    },
+    {
+      "id": "icono-app-correo",
+      "version": 1,
+      "file": "piezas/icono-app-correo-v1.pdf",
+      "thumb": "piezas/icono-app-correo-v1.png",
+      "name": "Icono de app de correo",
+      "category": "icono",
+      "tags": [
+        "misterio",
+        "azul",
+        "pista"
+      ],
+      "widthMm": 17.7,
+      "heightMm": 17.7,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Artista de El regalo robado (por confirmar)",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          16
+        ]
+      },
+      "status": "ok",
+      "notes": ""
+    }
+  ]
+}

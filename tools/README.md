@@ -160,3 +160,13 @@ fuente sale con huecos en blanco, probar `subset: false` para ella.
 - Vista previa: compone en el navegador con el motor único (`tools/pme-compose-core.js`) y pdf-lib
   (`creator/vendor/`); el PDF lleva la marca «VISTA PREVIA». El kit de la vista previa es el de
   `assets/kit/manifest.json`; con `?kit=` se cambia (pruebas).
+
+## Biblioteca de arte (creador v2, ver PLAN-CREADOR-2.md)
+
+- Recuperar piezas de un PDF de fondo del artista (vectorial): `python3 tools/biblioteca/extraer-piezas.py <fondo.pdf> <carpeta> --juego "…" --prefijo f3`.
+  Agrupa los trazos que se tocan, quita las repetidas y convierte la guía magenta del artista en zona útil
+  (`zona-foto` / `zona-texto`). Deja `candidatas.json` y la hoja `revisar.jpg`.
+- Ponerles nombre y etiquetas: `python3 tools/biblioteca/nombrar-piezas.py <carpeta> <nombres.csv> <destino>`.
+  Comprueba la guía de artistas (categoría, nombre, 3 a 6 etiquetas) y escribe `piezas/`, `piezas.csv`,
+  `manifest.json` y `revisar.jpg`.
+- `biblioteca/` no se publica en `docs/`: el arte de los artistas es privado.
