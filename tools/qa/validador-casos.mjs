@@ -30,7 +30,12 @@ const PAGINA_ENTERA = { x: 0, y: 0, w: 100, h: 100 };
 const ARTE_BIB = path.join(ROOT, 'biblioteca', 'arte', 'el-regalo-robado', 'manifest.json');
 const PIEZAS_BIB = JSON.parse(fs.readFileSync(ARTE_BIB, 'utf8')).pieces;
 const ARTE_OK = PIEZAS_BIB.find((p) => p.status !== 'reexportar');
-const ARTE_REEXPORTAR = PIEZAS_BIB.find((p) => p.status === 'reexportar');
+/* Una copia de la colección con una pieza marcada «por reexportar» (en la real ya no queda ninguna). */
+const ARTE_BIB_REEXPORTAR = path.join(ROOT, 'tools', 'qa', 'salida-qa', 'validador-casos', 'arte-reexportar', 'manifest.json');
+fs.mkdirSync(path.dirname(ARTE_BIB_REEXPORTAR), { recursive: true });
+const ARTE_REEXPORTAR = { ...ARTE_OK, id: ARTE_OK.id, status: 'reexportar',
+  file: path.relative(path.dirname(ARTE_BIB_REEXPORTAR), path.join(path.dirname(ARTE_BIB), ARTE_OK.file)) };
+fs.writeFileSync(ARTE_BIB_REEXPORTAR, JSON.stringify({ schema: 'pme-biblioteca/1', tipo: 'arte', pieces: [ARTE_REEXPORTAR] }, null, 2));
 function conPuzzleDeDatos(mec, idJuego = 'pz-' + mec) {
   const g = clonV2();
   const b = PUZZLES_BIB.find((z) => z.mechanic === mec);
@@ -98,7 +103,7 @@ const CASOS = [
     opts: { dir: DIR, kit: ARTE_BIB } },
   { nombre: 'v2: pieza de la biblioteca pendiente de reexportar', tipo: 'error', espera: 'pendiente de reexportar',
     g: () => { const g = clonV2(); g.pages[0].elements.unshift({ id: 'arte-bib', kind: 'art', ref: ARTE_REEXPORTAR.id, x: 10, y: 10, w: 20, h: 10, angle: 0 }); return g; },
-    opts: { dir: DIR, kit: ARTE_BIB } },
+    opts: { dir: DIR, kit: ARTE_BIB_REEXPORTAR } },
   { nombre: 'mecánica sin un parámetro requerido', tipo: 'error', espera: 'falta el parámetro «boxes»',
     g: () => { const g = clon(); delete bloque(g, 'ticks').params.boxes; return g; }, opts: { dir: DIR } },
   { nombre: 'mecánica desconocida', tipo: 'error', espera: 'mecánica desconocida',

@@ -8,12 +8,16 @@ Formatos:
   SVG   vectorial, sin capas: las zonas van en un fichero de zonas (ver abajo).
   PNG   mapa de bits; el tamaño sale de su resolución (300 ppp salvo que el PNG diga otra) y las zonas, del fichero de zonas.
 
+Con --tal-cual (piezas ya limpias, p. ej. las de separar-piezas.py): el PDF se copia sin redibujar y puede llevar
+imágenes de mapa de bits (pantallas de dispositivos); el texto sigue sin admitirse. --paginas guarda en el origen de
+qué páginas del juego viene la pieza.
+
 Fichero de zonas (opcional, JSON): [{"tipo": "zona-foto", "x": 5, "y": 10, "w": 30, "h": 30}, ...] en % de la pieza.
 
 Uso:
   python3 tools/biblioteca/importar-arte.py <fichero> <colección> --id papel-hoja-kraft --categoria papel \
       --nombre "Hoja kraft" --etiquetas "misterio, kraft, pista" --autor "Kreatures" --origen "El regalo robado" \
-      [--zonas zonas.json] [--version N] [--licencia propia-estudio]
+      [--zonas zonas.json] [--version N] [--licencia propia-estudio] [--tal-cual] [--paginas 12,16]
 
 Escribe piezas/<id>-v<N>.pdf y .png y añade la entrada a manifest.json. Después valida la colección con
 tools/biblioteca/validar.mjs; si la validación falla, deshace los cambios y sale con error.
@@ -85,6 +89,17 @@ def desde_pdf(doc, salida_pdf):
     return W, H, zonas
 
 
+def tal_cual(doc, salida_pdf):
+    """PDF ya limpio de una página → se copia sin tocar (admite imágenes; no texto)."""
+    if doc.page_count != 1:
+        raise ValueError(f'el PDF tiene {doc.page_count} páginas: una pieza por archivo')
+    page = doc[0]
+    if page.get_text('words'):
+        raise ValueError('la pieza tiene texto: exportala como vector sin texto (o como PNG)')
+    doc.save(salida_pdf, garbage=3, deflate=True)
+    return page.rect.width, page.rect.height, []
+
+
 def desde_png(ruta, salida_pdf):
     """PNG → (ancho pt, alto pt, zonas vacías, PDF con la imagen a su tamaño real)."""
     im = Image.open(ruta)
@@ -110,6 +125,8 @@ def main():
     ap.add_argument('--licencia', default='propia-estudio')
     ap.add_argument('--zonas', help='fichero JSON de zonas (obligatorio para PNG si tiene zonas)')
     ap.add_argument('--version', type=int)
+    ap.add_argument('--tal-cual', action='store_true', help='PDF ya limpio: se copia sin redibujar (admite imágenes)')
+    ap.add_argument('--paginas', help='páginas del juego de origen, separadas por comas')
     a = ap.parse_args()
 
     if a.categoria not in CATEGORIAS:
@@ -142,7 +159,7 @@ def main():
             doc = pymupdf.open(a.fichero)
             if ext == '.svg':
                 doc = pymupdf.open('pdf', doc.convert_to_pdf())
-            W, H, zonas = desde_pdf(doc, pdf_abs)
+            W, H, zonas = tal_cual(doc, pdf_abs) if a.tal_cual else desde_pdf(doc, pdf_abs)
         else:
             return error(f'formato «{ext}» no admitido (PDF, SVG o PNG)')
         if a.zonas:
@@ -157,6 +174,8 @@ def main():
         'category': a.categoria, 'tags': etiquetas, 'widthMm': round(W * PT_A_MM, 1), 'heightMm': round(H * PT_A_MM, 1),
         'zones': zonas, 'license': a.licencia, 'author': a.autor, 'origin': {'game': a.origen},
     }
+    if a.paginas:
+        entrada['origin']['pages'] = [int(n) for n in a.paginas.split(',')]
     manifiesto['pieces'].append(entrada)
     antes = open(manifiesto_path, encoding='utf-8').read() if os.path.exists(manifiesto_path) else None
     with open(manifiesto_path, 'w', encoding='utf-8') as f:

@@ -1,0 +1,369 @@
+{
+  "nota": "Piezas que salieron pegadas al recuperarlas (F2.3), separadas del PDF vectorial del artista (Final3-Clean.pdf) con tools/biblioteca/separar-piezas.py. Coordenadas en puntos de la página. «sustituye»: la pieza pegada que reemplazan. La hoja de la página 1 es el mismo dibujo que la de la 15 (se queda la 15) y la lupa ya está como objeto-lupa.",
+  "piezas": [
+    {
+      "id": "papel-hoja-kraft-anillas",
+      "pagina": 15,
+      "dentro": [
+        85,
+        220,
+        545,
+        805
+      ],
+      "bloques": [
+        1
+      ],
+      "nombre": "Hoja kraft con anillas",
+      "categoria": "papel",
+      "etiquetas": "misterio, kraft, texto-largo",
+      "paginas": [
+        15
+      ],
+      "sustituye": [
+        "papel-hoja-kraft-polaroid",
+        "papel-hoja-kraft-lupa-sobre"
+      ]
+    },
+    {
+      "id": "papel-nota-kraft-casillas",
+      "pagina": 4,
+      "dentro": [
+        8,
+        380,
+        412,
+        610
+      ],
+      "nombre": "Nota kraft con casillas",
+      "categoria": "papel",
+      "etiquetas": "misterio, kraft, lista",
+      "paginas": [
+        4
+      ],
+      "sustituye": [
+        "papel-notas-kraft-casillas-lineas"
+      ]
+    },
+    {
+      "id": "papel-nota-kraft-lineas",
+      "pagina": 4,
+      "dentro": [
+        8,
+        600,
+        412,
+        830
+      ],
+      "nombre": "Nota kraft con líneas",
+      "categoria": "papel",
+      "etiquetas": "misterio, kraft, texto-largo",
+      "paginas": [
+        4
+      ],
+      "sustituye": [
+        "papel-notas-kraft-casillas-lineas"
+      ]
+    },
+    {
+      "id": "papel-nota-kraft-rasgada-grande",
+      "pagina": 10,
+      "dentro": [
+        20,
+        285,
+        575,
+        790
+      ],
+      "sin_color": [
+        [
+          0.27,
+          0.06,
+          0.08
+        ]
+      ],
+      "nombre": "Nota kraft rasgada grande (sin texto)",
+      "categoria": "papel",
+      "etiquetas": "misterio, kraft, texto-largo",
+      "paginas": [
+        10
+      ],
+      "sustituye": [
+        "puzzle-nota-texto-cifrado"
+      ]
+    },
+    {
+      "id": "papel-nota-kraft-rasgada",
+      "pagina": 11,
+      "dentro": [
+        215,
+        40,
+        565,
+        255
+      ],
+      "fuera": [
+        [
+          40,
+          0,
+          250,
+          270
+        ]
+      ],
+      "nombre": "Nota kraft rasgada con clip",
+      "categoria": "papel",
+      "etiquetas": "misterio, kraft, texto-corto",
+      "paginas": [
+        11
+      ],
+      "sustituye": [
+        "marco-polaroid-nota-kraft"
+      ]
+    },
+    {
+      "id": "dispositivo-movil-morado",
+      "pagina": 12,
+      "dentro": [
+        195,
+        195,
+        560,
+        830
+      ],
+      "nombre": "Móvil morado con chat",
+      "categoria": "dispositivo",
+      "etiquetas": "misterio, morado, pista",
+      "paginas": [
+        12
+      ],
+      "sustituye": [
+        "dispositivo-movil-morado-chat"
+      ]
+    },
+    {
+      "id": "icono-bombilla",
+      "pagina": 12,
+      "dentro": [
+        35,
+        340,
+        185,
+        505
+      ],
+      "nombre": "Bombilla (idea)",
+      "categoria": "icono",
+      "etiquetas": "misterio, negro, pista",
+      "paginas": [
+        12,
+        16
+      ],
+      "sustituye": [
+        "decoracion-forma-oscura-destello",
+        "decoracion-forma-oscura-destello-2"
+      ]
+    },
+    {
+      "id": "dispositivo-monitor-morado",
+      "pagina": 13,
+      "dentro": [
+        40,
+        215,
+        545,
+        830
+      ],
+      "fuera": [
+        [
+          45,
+          40,
+          245,
+          360
+        ],
+        [
+          280,
+          15,
+          560,
+          228
+        ]
+      ],
+      "nombre": "Monitor morado con muro y constelaciones",
+      "categoria": "dispositivo",
+      "etiquetas": "misterio, morado, pista",
+      "paginas": [
+        13
+      ],
+      "sustituye": [
+        "dispositivo-monitor-morado-constelaciones"
+      ]
+    },
+    {
+      "id": "papel-tira-kraft",
+      "pagina": 13,
+      "dentro": [
+        45,
+        40,
+        245,
+        360
+      ],
+      "nombre": "Tira kraft colgante",
+      "categoria": "papel",
+      "etiquetas": "misterio, kraft, texto-corto",
+      "paginas": [
+        13
+      ],
+      "sustituye": [
+        "dispositivo-monitor-morado-constelaciones"
+      ]
+    },
+    {
+      "id": "papel-nota-kraft-clip-ancha",
+      "pagina": 14,
+      "dentro": [
+        115,
+        290,
+        420,
+        540
+      ],
+      "fuera": [
+        [
+          390,
+          340,
+          512,
+          472
+        ]
+      ],
+      "nombre": "Nota kraft ancha con clip",
+      "categoria": "papel",
+      "etiquetas": "misterio, kraft, texto-corto",
+      "paginas": [
+        14
+      ],
+      "sustituye": [
+        "papel-nota-kraft-sello"
+      ]
+    },
+    {
+      "id": "objeto-sello-barco",
+      "pagina": 14,
+      "dentro": [
+        390,
+        340,
+        512,
+        472
+      ],
+      "nombre": "Sello con barco",
+      "categoria": "objeto",
+      "etiquetas": "misterio, sello, verde",
+      "paginas": [
+        14
+      ],
+      "sustituye": [
+        "papel-nota-kraft-sello"
+      ]
+    },
+    {
+      "id": "puzzle-postal-kraft-iconos",
+      "pagina": 14,
+      "dentro": [
+        100,
+        535,
+        460,
+        815
+      ],
+      "fuera": [
+        [
+          322,
+          530,
+          352,
+          815
+        ],
+        [
+          325,
+          535,
+          548,
+          698
+        ],
+        [
+          325,
+          640,
+          548,
+          815
+        ]
+      ],
+      "nombre": "Postal kraft con cuadrícula de iconos",
+      "categoria": "puzzle",
+      "etiquetas": "misterio, kraft, iconos, pista",
+      "paginas": [
+        14
+      ],
+      "sustituye": [
+        "papel-sobres-postales-iconos"
+      ]
+    },
+    {
+      "id": "papel-sobre-amarillo-sello",
+      "pagina": 14,
+      "dentro": [
+        325,
+        535,
+        545,
+        695
+      ],
+      "nombre": "Sobre amarillo con sello",
+      "categoria": "papel",
+      "etiquetas": "misterio, correo, amarillo",
+      "paginas": [
+        14
+      ],
+      "sustituye": [
+        "papel-sobres-postales-iconos"
+      ]
+    },
+    {
+      "id": "papel-sobre-amarillo-solapa",
+      "pagina": 14,
+      "dentro": [
+        325,
+        640,
+        545,
+        815
+      ],
+      "nombre": "Sobre amarillo por detrás",
+      "categoria": "papel",
+      "etiquetas": "misterio, correo, amarillo",
+      "paginas": [
+        14
+      ],
+      "sustituye": [
+        "papel-sobres-postales-iconos"
+      ],
+      "fuera": [
+        [
+          325,
+          535,
+          548,
+          698
+        ]
+      ]
+    },
+    {
+      "id": "dispositivo-tableta-morada",
+      "pagina": 16,
+      "dentro": [
+        118,
+        245,
+        560,
+        830
+      ],
+      "fuera": [
+        [
+          20,
+          10,
+          232,
+          290
+        ]
+      ],
+      "nombre": "Tableta morada con apps",
+      "categoria": "dispositivo",
+      "etiquetas": "misterio, morado, pista",
+      "paginas": [
+        16
+      ],
+      "sustituye": [
+        "dispositivo-tableta-morada"
+      ]
+    }
+  ]
+}

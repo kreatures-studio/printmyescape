@@ -16,7 +16,9 @@ const clon = () => structuredClone(base);
 const pieza = (m, i = 0) => m.pieces[i];
 
 const CASOS = [
-  { nombre: 'colección real pasa; solo avisos de reexportar', tipo: 'ok', m: clon, avisos: 'pendiente de reexportar' },
+  { nombre: 'colección real pasa sin avisos (ya no queda nada por reexportar)', tipo: 'ok', m: clon },
+  { nombre: 'pieza por reexportar: aviso, no error', tipo: 'ok', avisos: 'pendiente de reexportar',
+    m: () => { const m = clon(); pieza(m).status = 'reexportar'; return m; } },
   { nombre: 'pieza sin autor: error de esquema', tipo: 'error', espera: 'author',
     m: () => { const m = clon(); pieza(m).author = ''; return m; } },
   { nombre: 'pieza sin licencia: error', tipo: 'error', espera: "required property 'license'",
@@ -47,7 +49,7 @@ for (const [i, c] of CASOS.entries()) {
   fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(c.m(), null, 2));
   const { errores, avisos } = validarColeccion(dir);
   let ok;
-  if (c.tipo === 'ok') ok = errores.length === 0 && avisos.some((a) => a.includes(c.avisos));
+  if (c.tipo === 'ok') ok = errores.length === 0 && (c.avisos ? avisos.some((a) => a.includes(c.avisos)) : avisos.length === 0);
   else ok = errores.some((e) => e.includes(c.espera));
   if (!ok) fallos++;
   console.log(`${ok ? 'OK  ' : 'FALLO'} ${c.nombre}${ok ? '' : ' | errores: ' + JSON.stringify(errores.slice(0, 3))}`);

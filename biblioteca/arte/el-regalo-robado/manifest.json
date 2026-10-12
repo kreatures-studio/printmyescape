@@ -3,32 +3,6 @@
   "tipo": "arte",
   "pieces": [
     {
-      "id": "papel-hoja-kraft-lupa-sobre",
-      "version": 1,
-      "file": "piezas/papel-hoja-kraft-lupa-sobre-v1.pdf",
-      "thumb": "piezas/papel-hoja-kraft-lupa-sobre-v1.png",
-      "name": "Hoja kraft con lupa y sobre",
-      "category": "papel",
-      "tags": [
-        "misterio",
-        "kraft",
-        "pista"
-      ],
-      "widthMm": 250.5,
-      "heightMm": 313.2,
-      "zones": [],
-      "license": "propia-estudio",
-      "author": "Kreatures",
-      "origin": {
-        "game": "El regalo robado",
-        "pages": [
-          1
-        ]
-      },
-      "status": "reexportar",
-      "notes": "Salen pegadas tres piezas: hoja kraft"
-    },
-    {
       "id": "marco-ficha-sospechoso-verde-regalo",
       "version": 1,
       "file": "piezas/marco-ficha-sospechoso-verde-regalo-v1.pdf",
@@ -288,32 +262,6 @@
       },
       "status": "ok",
       "notes": ""
-    },
-    {
-      "id": "papel-notas-kraft-casillas-lineas",
-      "version": 1,
-      "file": "piezas/papel-notas-kraft-casillas-lineas-v1.pdf",
-      "thumb": "piezas/papel-notas-kraft-casillas-lineas-v1.png",
-      "name": "Dos notas kraft (casillas y líneas)",
-      "category": "papel",
-      "tags": [
-        "misterio",
-        "kraft",
-        "texto-largo"
-      ],
-      "widthMm": 137.0,
-      "heightMm": 153.3,
-      "zones": [],
-      "license": "propia-estudio",
-      "author": "Kreatures",
-      "origin": {
-        "game": "El regalo robado",
-        "pages": [
-          4
-        ]
-      },
-      "status": "reexportar",
-      "notes": "Dos notas pegadas: separar la de casillas y la de líneas"
     },
     {
       "id": "marco-foto-polaroid-verde",
@@ -707,67 +655,6 @@
       "notes": "Zona de foto detectada"
     },
     {
-      "id": "puzzle-nota-texto-cifrado",
-      "version": 1,
-      "file": "piezas/puzzle-nota-texto-cifrado-v1.pdf",
-      "thumb": "piezas/puzzle-nota-texto-cifrado-v1.png",
-      "name": "Nota con texto cifrado",
-      "category": "puzzle",
-      "tags": [
-        "misterio",
-        "kraft",
-        "pista"
-      ],
-      "widthMm": 187.3,
-      "heightMm": 170.4,
-      "zones": [],
-      "license": "propia-estudio",
-      "author": "Kreatures",
-      "origin": {
-        "game": "El regalo robado",
-        "pages": [
-          10
-        ]
-      },
-      "status": "reexportar",
-      "notes": "Lleva el texto cifrado de este juego: hace falta la nota sin texto"
-    },
-    {
-      "id": "marco-polaroid-nota-kraft",
-      "version": 1,
-      "file": "piezas/marco-polaroid-nota-kraft-v1.pdf",
-      "thumb": "piezas/marco-polaroid-nota-kraft-v1.png",
-      "name": "Polaroid y nota kraft",
-      "category": "marco",
-      "tags": [
-        "misterio",
-        "verde",
-        "kraft",
-        "foto"
-      ],
-      "widthMm": 176.2,
-      "heightMm": 92.5,
-      "zones": [
-        {
-          "tipo": "zona-foto",
-          "x": 7.82,
-          "y": 16.89,
-          "w": 26.66,
-          "h": 59.18
-        }
-      ],
-      "license": "propia-estudio",
-      "author": "Kreatures",
-      "origin": {
-        "game": "El regalo robado",
-        "pages": [
-          11
-        ]
-      },
-      "status": "reexportar",
-      "notes": "Salen pegadas: polaroid y nota kraft"
-    },
-    {
       "id": "decoracion-linea-salvia",
       "version": 1,
       "file": "piezas/decoracion-linea-salvia-v1.pdf",
@@ -794,40 +681,6 @@
       "notes": ""
     },
     {
-      "id": "dispositivo-movil-morado-chat",
-      "version": 1,
-      "file": "piezas/dispositivo-movil-morado-chat-v1.pdf",
-      "thumb": "piezas/dispositivo-movil-morado-chat-v1.png",
-      "name": "Móvil morado con chat y polaroid",
-      "category": "dispositivo",
-      "tags": [
-        "misterio",
-        "morado",
-        "pista"
-      ],
-      "widthMm": 190.1,
-      "heightMm": 286.7,
-      "zones": [
-        {
-          "tipo": "zona-foto",
-          "x": 7.25,
-          "y": 5.45,
-          "w": 24.71,
-          "h": 19.1
-        }
-      ],
-      "license": "propia-estudio",
-      "author": "Kreatures",
-      "origin": {
-        "game": "El regalo robado",
-        "pages": [
-          12
-        ]
-      },
-      "status": "reexportar",
-      "notes": "Salen pegados: polaroid y móvil"
-    },
-    {
       "id": "papel-nota-kraft-clip",
       "version": 1,
       "file": "piezas/papel-nota-kraft-clip-v1.pdf",
@@ -852,66 +705,6 @@
       },
       "status": "ok",
       "notes": ""
-    },
-    {
-      "id": "decoracion-forma-oscura-destello",
-      "version": 1,
-      "file": "piezas/decoracion-forma-oscura-destello-v1.pdf",
-      "thumb": "piezas/decoracion-forma-oscura-destello-v1.png",
-      "name": "Forma oscura con destellos",
-      "category": "decoracion",
-      "tags": [
-        "misterio",
-        "negro",
-        "pista"
-      ],
-      "widthMm": 47.1,
-      "heightMm": 49.1,
-      "zones": [],
-      "license": "propia-estudio",
-      "author": "Kreatures",
-      "origin": {
-        "game": "El regalo robado",
-        "pages": [
-          12
-        ]
-      },
-      "status": "reexportar",
-      "notes": "No se identifica bien: ¿parte de otra pieza?"
-    },
-    {
-      "id": "dispositivo-monitor-morado-constelaciones",
-      "version": 1,
-      "file": "piezas/dispositivo-monitor-morado-constelaciones-v1.pdf",
-      "thumb": "piezas/dispositivo-monitor-morado-constelaciones-v1.png",
-      "name": "Monitor morado con constelaciones",
-      "category": "dispositivo",
-      "tags": [
-        "misterio",
-        "morado",
-        "pista"
-      ],
-      "widthMm": 171.4,
-      "heightMm": 272.5,
-      "zones": [
-        {
-          "tipo": "zona-foto",
-          "x": 61.79,
-          "y": 1.0,
-          "w": 31.96,
-          "h": 17.24
-        }
-      ],
-      "license": "propia-estudio",
-      "author": "Kreatures",
-      "origin": {
-        "game": "El regalo robado",
-        "pages": [
-          13
-        ]
-      },
-      "status": "reexportar",
-      "notes": "Salen pegados: nota kraft y monitor; la zona blanca es de otra pieza"
     },
     {
       "id": "marco-foto-polaroid-verde-horizontal",
@@ -948,126 +741,6 @@
       "notes": "Zona de foto detectada"
     },
     {
-      "id": "papel-sobres-postales-iconos",
-      "version": 1,
-      "file": "piezas/papel-sobres-postales-iconos-v1.pdf",
-      "thumb": "piezas/papel-sobres-postales-iconos-v1.png",
-      "name": "Sobres y tarjeta de iconos",
-      "category": "papel",
-      "tags": [
-        "misterio",
-        "kraft",
-        "pista"
-      ],
-      "widthMm": 150.1,
-      "heightMm": 94.7,
-      "zones": [],
-      "license": "propia-estudio",
-      "author": "Kreatures",
-      "origin": {
-        "game": "El regalo robado",
-        "pages": [
-          14
-        ]
-      },
-      "status": "reexportar",
-      "notes": "Salen pegados: sobres y tarjeta de iconos"
-    },
-    {
-      "id": "papel-nota-kraft-sello",
-      "version": 1,
-      "file": "piezas/papel-nota-kraft-sello-v1.pdf",
-      "thumb": "piezas/papel-nota-kraft-sello-v1.png",
-      "name": "Nota kraft con sello",
-      "category": "papel",
-      "tags": [
-        "misterio",
-        "kraft",
-        "texto-corto"
-      ],
-      "widthMm": 137.1,
-      "heightMm": 84.4,
-      "zones": [],
-      "license": "propia-estudio",
-      "author": "Kreatures",
-      "origin": {
-        "game": "El regalo robado",
-        "pages": [
-          14
-        ]
-      },
-      "status": "reexportar",
-      "notes": "Salen pegados: nota y sello"
-    },
-    {
-      "id": "papel-hoja-kraft-polaroid",
-      "version": 1,
-      "file": "piezas/papel-hoja-kraft-polaroid-v1.pdf",
-      "thumb": "piezas/papel-hoja-kraft-polaroid-v1.png",
-      "name": "Hoja kraft con polaroid",
-      "category": "papel",
-      "tags": [
-        "misterio",
-        "kraft",
-        "foto"
-      ],
-      "widthMm": 185.5,
-      "heightMm": 275.2,
-      "zones": [
-        {
-          "tipo": "zona-foto",
-          "x": 7.43,
-          "y": 5.68,
-          "w": 25.33,
-          "h": 19.9
-        }
-      ],
-      "license": "propia-estudio",
-      "author": "Kreatures",
-      "origin": {
-        "game": "El regalo robado",
-        "pages": [
-          15
-        ]
-      },
-      "status": "reexportar",
-      "notes": "Salen pegadas: polaroid y hoja"
-    },
-    {
-      "id": "dispositivo-tableta-morada",
-      "version": 1,
-      "file": "piezas/dispositivo-tableta-morada-v1.pdf",
-      "thumb": "piezas/dispositivo-tableta-morada-v1.png",
-      "name": "Tableta morada con polaroid",
-      "category": "dispositivo",
-      "tags": [
-        "misterio",
-        "morado",
-        "pista"
-      ],
-      "widthMm": 186.1,
-      "heightMm": 283.8,
-      "zones": [
-        {
-          "tipo": "zona-foto",
-          "x": 7.4,
-          "y": 5.51,
-          "w": 25.24,
-          "h": 19.29
-        }
-      ],
-      "license": "propia-estudio",
-      "author": "Kreatures",
-      "origin": {
-        "game": "El regalo robado",
-        "pages": [
-          16
-        ]
-      },
-      "status": "reexportar",
-      "notes": "Incompleta y pegada a una polaroid"
-    },
-    {
       "id": "icono-app-fotos",
       "version": 1,
       "file": "piezas/icono-app-fotos-v1.pdf",
@@ -1092,32 +765,6 @@
       },
       "status": "ok",
       "notes": ""
-    },
-    {
-      "id": "decoracion-forma-oscura-destello-2",
-      "version": 1,
-      "file": "piezas/decoracion-forma-oscura-destello-2-v1.pdf",
-      "thumb": "piezas/decoracion-forma-oscura-destello-2-v1.png",
-      "name": "Forma oscura con destellos (variante)",
-      "category": "decoracion",
-      "tags": [
-        "misterio",
-        "negro",
-        "pista"
-      ],
-      "widthMm": 28.5,
-      "heightMm": 28.0,
-      "zones": [],
-      "license": "propia-estudio",
-      "author": "Kreatures",
-      "origin": {
-        "game": "El regalo robado",
-        "pages": [
-          16
-        ]
-      },
-      "status": "reexportar",
-      "notes": "No se identifica bien: ¿parte de otra pieza?"
     },
     {
       "id": "icono-app-camara",
@@ -1170,6 +817,368 @@
       },
       "status": "ok",
       "notes": ""
+    },
+    {
+      "id": "papel-hoja-kraft-anillas",
+      "version": 1,
+      "file": "piezas/papel-hoja-kraft-anillas-v1.pdf",
+      "thumb": "piezas/papel-hoja-kraft-anillas-v1.png",
+      "name": "Hoja kraft con anillas",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-largo"
+      ],
+      "widthMm": 159.2,
+      "heightMm": 201.2,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          15
+        ]
+      }
+    },
+    {
+      "id": "papel-nota-kraft-casillas",
+      "version": 1,
+      "file": "piezas/papel-nota-kraft-casillas-v1.pdf",
+      "thumb": "piezas/papel-nota-kraft-casillas-v1.png",
+      "name": "Nota kraft con casillas",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "lista"
+      ],
+      "widthMm": 136.5,
+      "heightMm": 76.0,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          4
+        ]
+      }
+    },
+    {
+      "id": "papel-nota-kraft-lineas",
+      "version": 1,
+      "file": "piezas/papel-nota-kraft-lineas-v1.pdf",
+      "thumb": "piezas/papel-nota-kraft-lineas-v1.png",
+      "name": "Nota kraft con líneas",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-largo"
+      ],
+      "widthMm": 136.5,
+      "heightMm": 76.9,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          4
+        ]
+      }
+    },
+    {
+      "id": "papel-nota-kraft-rasgada-grande",
+      "version": 1,
+      "file": "piezas/papel-nota-kraft-rasgada-grande-v1.pdf",
+      "thumb": "piezas/papel-nota-kraft-rasgada-grande-v1.png",
+      "name": "Nota kraft rasgada grande (sin texto)",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-largo"
+      ],
+      "widthMm": 187.3,
+      "heightMm": 170.4,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          10
+        ]
+      }
+    },
+    {
+      "id": "papel-nota-kraft-rasgada",
+      "version": 1,
+      "file": "piezas/papel-nota-kraft-rasgada-v1.pdf",
+      "thumb": "piezas/papel-nota-kraft-rasgada-v1.png",
+      "name": "Nota kraft rasgada con clip",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-corto"
+      ],
+      "widthMm": 110.1,
+      "heightMm": 65.0,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          11
+        ]
+      }
+    },
+    {
+      "id": "dispositivo-movil-morado",
+      "version": 1,
+      "file": "piezas/dispositivo-movil-morado-v1.pdf",
+      "thumb": "piezas/dispositivo-movil-morado-v1.png",
+      "name": "Móvil morado con chat",
+      "category": "dispositivo",
+      "tags": [
+        "misterio",
+        "morado",
+        "pista"
+      ],
+      "widthMm": 122.1,
+      "heightMm": 218.0,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          12
+        ]
+      }
+    },
+    {
+      "id": "icono-bombilla",
+      "version": 1,
+      "file": "piezas/icono-bombilla-v1.pdf",
+      "thumb": "piezas/icono-bombilla-v1.png",
+      "name": "Bombilla (idea)",
+      "category": "icono",
+      "tags": [
+        "misterio",
+        "negro",
+        "pista"
+      ],
+      "widthMm": 47.1,
+      "heightMm": 50.9,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          12,
+          16
+        ]
+      }
+    },
+    {
+      "id": "dispositivo-monitor-morado",
+      "version": 1,
+      "file": "piezas/dispositivo-monitor-morado-v1.pdf",
+      "thumb": "piezas/dispositivo-monitor-morado-v1.png",
+      "name": "Monitor morado con muro y constelaciones",
+      "category": "dispositivo",
+      "tags": [
+        "misterio",
+        "morado",
+        "pista"
+      ],
+      "widthMm": 170.9,
+      "heightMm": 208.4,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          13
+        ]
+      }
+    },
+    {
+      "id": "papel-tira-kraft",
+      "version": 1,
+      "file": "piezas/papel-tira-kraft-v1.pdf",
+      "thumb": "piezas/papel-tira-kraft-v1.png",
+      "name": "Tira kraft colgante",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-corto"
+      ],
+      "widthMm": 65.0,
+      "heightMm": 108.7,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          13
+        ]
+      }
+    },
+    {
+      "id": "papel-nota-kraft-clip-ancha",
+      "version": 1,
+      "file": "piezas/papel-nota-kraft-clip-ancha-v1.pdf",
+      "thumb": "piezas/papel-nota-kraft-clip-ancha-v1.png",
+      "name": "Nota kraft ancha con clip",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-corto"
+      ],
+      "widthMm": 104.9,
+      "heightMm": 84.4,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          14
+        ]
+      }
+    },
+    {
+      "id": "objeto-sello-barco",
+      "version": 1,
+      "file": "piezas/objeto-sello-barco-v1.pdf",
+      "thumb": "piezas/objeto-sello-barco-v1.png",
+      "name": "Sello con barco",
+      "category": "objeto",
+      "tags": [
+        "misterio",
+        "sello",
+        "verde"
+      ],
+      "widthMm": 39.4,
+      "heightMm": 44.5,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          14
+        ]
+      }
+    },
+    {
+      "id": "puzzle-postal-kraft-iconos",
+      "version": 1,
+      "file": "piezas/puzzle-postal-kraft-iconos-v1.pdf",
+      "thumb": "piezas/puzzle-postal-kraft-iconos-v1.png",
+      "name": "Postal kraft con cuadrícula de iconos",
+      "category": "puzzle",
+      "tags": [
+        "misterio",
+        "kraft",
+        "iconos",
+        "pista"
+      ],
+      "widthMm": 99.5,
+      "heightMm": 92.6,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          14
+        ]
+      }
+    },
+    {
+      "id": "papel-sobre-amarillo-sello",
+      "version": 1,
+      "file": "piezas/papel-sobre-amarillo-sello-v1.pdf",
+      "thumb": "piezas/papel-sobre-amarillo-sello-v1.png",
+      "name": "Sobre amarillo con sello",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "correo",
+        "amarillo"
+      ],
+      "widthMm": 73.4,
+      "heightMm": 54.0,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          14
+        ]
+      }
+    },
+    {
+      "id": "papel-sobre-amarillo-solapa",
+      "version": 1,
+      "file": "piezas/papel-sobre-amarillo-solapa-v1.pdf",
+      "thumb": "piezas/papel-sobre-amarillo-solapa-v1.png",
+      "name": "Sobre amarillo por detrás",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "correo",
+        "amarillo"
+      ],
+      "widthMm": 71.4,
+      "heightMm": 59.8,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          14
+        ]
+      }
+    },
+    {
+      "id": "dispositivo-tableta-morada",
+      "version": 2,
+      "file": "piezas/dispositivo-tableta-morada-v2.pdf",
+      "thumb": "piezas/dispositivo-tableta-morada-v2.png",
+      "name": "Tableta morada con apps",
+      "category": "dispositivo",
+      "tags": [
+        "misterio",
+        "morado",
+        "pista"
+      ],
+      "widthMm": 148.4,
+      "heightMm": 200.0,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (separada del PDF vectorial del artista)",
+        "pages": [
+          16
+        ]
+      }
     }
   ]
 }

@@ -145,8 +145,14 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   se rechaza), PNG (zonas de un fichero JSON). Crea PDF, miniatura y entrada del manifiesto, y valida la colección;
   si no valida, deshace todo. *Aceptación:* `tools/qa/biblioteca-importar-test.py` 18/18 (tres formatos entran;
   rechazos sin dejar nada).
-- **F2.3 Piezas de El regalo robado (parcial).** Las 28 listas están en `biblioteca/arte/el-regalo-robado/` (autor
-  Kreatures). Las 12 por reexportar esperan al artista; cuando lleguen se importan con `importar-arte.py` (nueva versión).
+- **F2.3 Piezas de El regalo robado (hecho).** 43 piezas en `biblioteca/arte/el-regalo-robado/` (autor Kreatures),
+  ninguna por reexportar. Las 12 que salieron pegadas se separaron del PDF vectorial del artista con
+  `tools/biblioteca/separar-piezas.py` (rectángulos por pieza en `separar/spec.json`; también copia las imágenes y
+  degradados de las pantallas) en 15 piezas: hoja con anillas, notas de casillas, de líneas, rasgadas y ancha con clip,
+  tira kraft, sello, postal kraft con iconos, sobre amarillo con sello y por detrás, móvil, monitor, tableta y bombilla.
+  Se importan con `importar-arte.py --tal-cual`; las pegadas se retiran (nunca se pudieron usar) y `nombres.csv` dice
+  por cuáles se sustituyen. Los PNG sueltos que llegaron después (72 ppp) son el mismo arte en baja resolución: no se
+  importan. *Aceptación:* `tools/qa/biblioteca-separar-test.py` (rehacer desde el spec da las mismas piezas).
 - **F2.4 Fuentes (hecho).** Cuatro familias de Google Fonts, siete ficheros, con licencia libre (Caveat, Anton, Open Sans, Courier Prime; OFL o
   Apache-2.0) más Pigpen, fuente propia del estudio (`propia-estudio`). No se añaden más salvo que el estudio lo pida.
 - **F2.5 Páginas y secciones guardadas desde un juego, con origen (hecho).** `tools/biblioteca/desde-juego.mjs
@@ -174,7 +180,7 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   página, sección y puzzle de la biblioteca valida y se compone (apodos con su prefijo, marco dibujado);
   `tools/qa/validador-casos.mjs` 36/36.
 - *Aceptación de la fase (cumplida):* el validador rechaza piezas sin licencia o sin autor; un juego v2 de prueba usa
-  arte, fuente, página, sección y puzzle de la biblioteca. Queda del lado del artista F2.3 (12 piezas por reexportar).
+  arte, fuente, página, sección y puzzle de la biblioteca.
 
 ### F3 · Claude compone desde cero
 

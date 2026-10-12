@@ -1,5 +1,5 @@
 fichero,nombre,categoría,etiquetas,autor,juego de origen,licencia,estado,notas
-papel-hoja-kraft-lupa-sobre-v1.pdf,Hoja kraft con lupa y sobre,papel,"misterio, kraft, pista",Kreatures,El regalo robado,Propia del estudio,reexportar,Salen pegadas tres piezas: hoja kraft
+papel-hoja-kraft-lupa-sobre-v1.pdf,Hoja kraft con lupa y sobre,papel,"misterio, kraft, pista",Kreatures,El regalo robado,Propia del estudio,separada,Separada del PDF vectorial (separar-piezas.py) en: papel-hoja-kraft-anillas
 marco-ficha-sospechoso-verde-regalo-v1.pdf,Ficha de sospechoso con regalo,marco,"misterio, cumpleanos, verde, foto, texto-corto",Kreatures,El regalo robado,Propia del estudio,ok,Zona de foto detectada
 marco-ficha-sospechoso-verde-v1.pdf,Ficha de sospechoso,marco,"misterio, verde, foto, texto-corto",Kreatures,El regalo robado,Propia del estudio,ok,Zona de foto detectada; aparece 8 veces en la página 2
 papel-etiqueta-kraft-alargada-v1.pdf,Etiqueta kraft alargada,papel,"misterio, kraft, texto-corto",Kreatures,El regalo robado,Propia del estudio,ok,
@@ -9,7 +9,7 @@ puzzle-plano-casa-cuadricula-v1.pdf,Plano de la casa con cuadrícula,puzzle,"mis
 papel-etiqueta-kraft-regalo-v1.pdf,Etiqueta kraft con regalo,papel,"cumpleanos, kraft, texto-corto",Kreatures,El regalo robado,Propia del estudio,ok,
 marco-panel-calaveras-verde-v1.pdf,Panel oscuro con calaveras,marco,"misterio, verde, texto-largo",Kreatures,El regalo robado,Propia del estudio,ok,
 objeto-lupa-v1.pdf,Lupa,objeto,"misterio, verde, pista",Kreatures,El regalo robado,Propia del estudio,ok,
-papel-notas-kraft-casillas-lineas-v1.pdf,Dos notas kraft (casillas y líneas),papel,"misterio, kraft, texto-largo",Kreatures,El regalo robado,Propia del estudio,reexportar,Dos notas pegadas: separar la de casillas y la de líneas
+papel-notas-kraft-casillas-lineas-v1.pdf,Dos notas kraft (casillas y líneas),papel,"misterio, kraft, texto-largo",Kreatures,El regalo robado,Propia del estudio,separada,"Separada del PDF vectorial (separar-piezas.py) en: papel-nota-kraft-casillas, papel-nota-kraft-lineas"
 marco-foto-polaroid-verde-v1.pdf,Marco de foto polaroid,marco,"misterio, verde, foto",Kreatures,El regalo robado,Propia del estudio,ok,Zona de foto detectada
 decoracion-banda-titulo-verde-corta-v1.pdf,Banda corta para título,decoracion,"misterio, verde, titular",Kreatures,El regalo robado,Propia del estudio,ok,Parecida a la banda de título; más corta
 decoracion-lapiz-verde-v1.pdf,Lápiz verde,decoracion,"misterio, verde, texto-corto",Kreatures,El regalo robado,Propia del estudio,ok,
@@ -23,19 +23,19 @@ puzzle-maletin-cuadricula-v1.pdf,Maletín con cuadrícula,puzzle,"misterio, verd
 papel-hoja-kraft-rayada-v1.pdf,Hoja kraft rayada,papel,"misterio, kraft, texto-largo",Kreatures,El regalo robado,Propia del estudio,ok,
 papel-nota-kraft-clip-interrogacion-v1.pdf,Nota kraft con clip e interrogación,papel,"misterio, kraft, texto-corto",Kreatures,El regalo robado,Propia del estudio,ok,
 marco-foto-polaroid-verde-grande-v1.pdf,Marco de foto polaroid grande,marco,"misterio, verde, foto",Kreatures,El regalo robado,Propia del estudio,ok,Zona de foto detectada
-puzzle-nota-texto-cifrado-v1.pdf,Nota con texto cifrado,puzzle,"misterio, kraft, pista",Kreatures,El regalo robado,Propia del estudio,reexportar,Lleva el texto cifrado de este juego: hace falta la nota sin texto
-marco-polaroid-nota-kraft-v1.pdf,Polaroid y nota kraft,marco,"misterio, verde, kraft, foto",Kreatures,El regalo robado,Propia del estudio,reexportar,Salen pegadas: polaroid y nota kraft
+puzzle-nota-texto-cifrado-v1.pdf,Nota con texto cifrado,puzzle,"misterio, kraft, pista",Kreatures,El regalo robado,Propia del estudio,separada,Separada del PDF vectorial (separar-piezas.py) en: papel-nota-kraft-rasgada-grande
+marco-polaroid-nota-kraft-v1.pdf,Polaroid y nota kraft,marco,"misterio, verde, kraft, foto",Kreatures,El regalo robado,Propia del estudio,separada,Separada del PDF vectorial (separar-piezas.py) en: papel-nota-kraft-rasgada
 decoracion-linea-salvia-v1.pdf,Línea salvia,decoracion,"misterio, verde, titular",Kreatures,El regalo robado,Propia del estudio,ok,
-dispositivo-movil-morado-chat-v1.pdf,Móvil morado con chat y polaroid,dispositivo,"misterio, morado, pista",Kreatures,El regalo robado,Propia del estudio,reexportar,Salen pegados: polaroid y móvil
+dispositivo-movil-morado-chat-v1.pdf,Móvil morado con chat y polaroid,dispositivo,"misterio, morado, pista",Kreatures,El regalo robado,Propia del estudio,separada,Separada del PDF vectorial (separar-piezas.py) en: dispositivo-movil-morado
 papel-nota-kraft-clip-v1.pdf,Nota kraft con clip,papel,"misterio, kraft, texto-corto",Kreatures,El regalo robado,Propia del estudio,ok,
-decoracion-forma-oscura-destello-v1.pdf,Forma oscura con destellos,decoracion,"misterio, negro, pista",Kreatures,El regalo robado,Propia del estudio,reexportar,No se identifica bien: ¿parte de otra pieza?
-dispositivo-monitor-morado-constelaciones-v1.pdf,Monitor morado con constelaciones,dispositivo,"misterio, morado, pista",Kreatures,El regalo robado,Propia del estudio,reexportar,Salen pegados: nota kraft y monitor; la zona blanca es de otra pieza
+decoracion-forma-oscura-destello-v1.pdf,Forma oscura con destellos,decoracion,"misterio, negro, pista",Kreatures,El regalo robado,Propia del estudio,separada,Separada del PDF vectorial (separar-piezas.py) en: icono-bombilla
+dispositivo-monitor-morado-constelaciones-v1.pdf,Monitor morado con constelaciones,dispositivo,"misterio, morado, pista",Kreatures,El regalo robado,Propia del estudio,separada,"Separada del PDF vectorial (separar-piezas.py) en: dispositivo-monitor-morado, papel-tira-kraft"
 marco-foto-polaroid-verde-horizontal-v1.pdf,Marco de foto polaroid horizontal,marco,"misterio, verde, foto",Kreatures,El regalo robado,Propia del estudio,ok,Zona de foto detectada
-papel-sobres-postales-iconos-v1.pdf,Sobres y tarjeta de iconos,papel,"misterio, kraft, pista",Kreatures,El regalo robado,Propia del estudio,reexportar,Salen pegados: sobres y tarjeta de iconos
-papel-nota-kraft-sello-v1.pdf,Nota kraft con sello,papel,"misterio, kraft, texto-corto",Kreatures,El regalo robado,Propia del estudio,reexportar,Salen pegados: nota y sello
-papel-hoja-kraft-polaroid-v1.pdf,Hoja kraft con polaroid,papel,"misterio, kraft, foto",Kreatures,El regalo robado,Propia del estudio,reexportar,Salen pegadas: polaroid y hoja
-dispositivo-tableta-morada-v1.pdf,Tableta morada con polaroid,dispositivo,"misterio, morado, pista",Kreatures,El regalo robado,Propia del estudio,reexportar,Incompleta y pegada a una polaroid
+papel-sobres-postales-iconos-v1.pdf,Sobres y tarjeta de iconos,papel,"misterio, kraft, pista",Kreatures,El regalo robado,Propia del estudio,separada,"Separada del PDF vectorial (separar-piezas.py) en: puzzle-postal-kraft-iconos, papel-sobre-amarillo-sello, papel-sobre-amarillo-solapa"
+papel-nota-kraft-sello-v1.pdf,Nota kraft con sello,papel,"misterio, kraft, texto-corto",Kreatures,El regalo robado,Propia del estudio,separada,"Separada del PDF vectorial (separar-piezas.py) en: papel-nota-kraft-clip-ancha, objeto-sello-barco"
+papel-hoja-kraft-polaroid-v1.pdf,Hoja kraft con polaroid,papel,"misterio, kraft, foto",Kreatures,El regalo robado,Propia del estudio,separada,Separada del PDF vectorial (separar-piezas.py) en: papel-hoja-kraft-anillas
+dispositivo-tableta-morada-v1.pdf,Tableta morada con polaroid,dispositivo,"misterio, morado, pista",Kreatures,El regalo robado,Propia del estudio,separada,Separada del PDF vectorial (separar-piezas.py) en: dispositivo-tableta-morada
 icono-app-fotos-v1.pdf,Icono de app de fotos,icono,"misterio, blanco, pista",Kreatures,El regalo robado,Propia del estudio,ok,
-decoracion-forma-oscura-destello-2-v1.pdf,Forma oscura con destellos (variante),decoracion,"misterio, negro, pista",Kreatures,El regalo robado,Propia del estudio,reexportar,No se identifica bien: ¿parte de otra pieza?
+decoracion-forma-oscura-destello-2-v1.pdf,Forma oscura con destellos (variante),decoracion,"misterio, negro, pista",Kreatures,El regalo robado,Propia del estudio,separada,Separada del PDF vectorial (separar-piezas.py) en: icono-bombilla
 icono-app-camara-v1.pdf,Icono de app de cámara,icono,"misterio, blanco, pista",Kreatures,El regalo robado,Propia del estudio,ok,
 icono-app-correo-v1.pdf,Icono de app de correo,icono,"misterio, azul, pista",Kreatures,El regalo robado,Propia del estudio,ok,
