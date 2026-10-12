@@ -212,6 +212,19 @@
             "es": "El cumpleañero · Notas",
             "en": "The birthday person · Notes"
           }
+        },
+        "OTRO": {
+          "type": "text",
+          "required": false,
+          "cap": 40,
+          "q": {
+            "es": "Otro",
+            "en": "Other"
+          },
+          "corta": {
+            "es": "? · Otro",
+            "en": "? · Other"
+          }
         }
       },
       "examples": [
@@ -227,6 +240,7 @@
               "SOSPECHA": "Robo de tarta",
               "EDAD": "30",
               "DEBILIDAD": "Llegar tarde||Robar comida ajena||Otro: Roncar",
+              "OTRO": "Roncar",
               "B_INFO": "Le encantan las sorpresas",
               "B_NOTES": "Alergia a los frutos secos"
             },
@@ -239,12 +253,13 @@
               "SOSPECHA": "Stealing a cake",
               "EDAD": "30",
               "DEBILIDAD": "Being late||Stealing food from others||Other: Snoring",
+              "OTRO": "Snoring",
               "B_INFO": "Loves surprises",
               "B_NOTES": "Allergic to nuts"
             }
           },
           "photos": {
-            "FOTO_CUMPLE": "../../assets/retratos/retrato-CUMPLE.jpg"
+            "FOTO_CUMPLE": "fotos/retrato-CUMPLE.jpg"
           }
         },
         {
@@ -259,6 +274,7 @@
               "SOSPECHA": "Robo de joyas",
               "EDAD": "45",
               "DEBILIDAD": "Hacer trampas jugando||Otro: Dormir la siesta",
+              "OTRO": "Dormir la siesta",
               "B_INFO": "Cuidado con sus pastas caseras",
               "B_NOTES": "Odia madrugar. Le encanta el chocolate negro."
             },
@@ -271,12 +287,13 @@
               "SOSPECHA": "Stealing jewels",
               "EDAD": "45",
               "DEBILIDAD": "Cheating at games||Other: Napping",
+              "OTRO": "Napping",
               "B_INFO": "Watch out for her homemade pasta",
               "B_NOTES": "Hates early mornings. Loves dark chocolate."
             }
           },
           "photos": {
-            "FOTO_CUMPLE": "../../assets/retratos/retrato-CUMPLE.jpg"
+            "FOTO_CUMPLE": "fotos/retrato-CUMPLE.jpg"
           }
         },
         {
@@ -291,6 +308,7 @@
               "SOSPECHA": "Robo de las velas",
               "EDAD": "71",
               "DEBILIDAD": "Llegar tarde||Robar comida ajena||Otro: Roncar como un tractor en las siestas!!!",
+              "OTRO": "Roncar como un tractor en las siestas!!!",
               "B_INFO": "Le encanta cocinar para toda la familia los domingos, pero si le pides una receta siempre cambia algún ingrediente en secreto para que nadie la copie. Dice que es su toque personal. Nunca lo cuenta.",
               "B_NOTES": "Tiene alergia a los frutos secos y no soporta el ruido de las bolsas de patatas. Pide siempre bizcocho de limón con mucha canela, y se pone nervioso con las sorpresas de última hora. Le gusta avisar."
             },
@@ -303,12 +321,13 @@
               "SOSPECHA": "Stealing the cake",
               "EDAD": "71",
               "DEBILIDAD": "Being late||Stealing food from others||Other: Snoring like a tractor at naps!!!",
+              "OTRO": "Snoring like a tractor at naps!!!",
               "B_INFO": "Loves cooking for the whole family on Sundays, but if you ask for a recipe he always changes one ingredient in secret so nobody can copy it. He says that is his personal touch. Nobody knows how.",
               "B_NOTES": "Allergic to nuts and cannot stand the noise of crisp packets. Always asks for lemon sponge with plenty of cinnamon, and gets nervous about last-minute surprises. He hates surprise parties too."
             }
           },
           "photos": {
-            "FOTO_CUMPLE": "../../assets/retratos/retrato-CUMPLE.jpg"
+            "FOTO_CUMPLE": "fotos/retrato-CUMPLE.jpg"
           }
         }
       ]

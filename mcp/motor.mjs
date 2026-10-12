@@ -27,19 +27,31 @@ export function cargarMotor() {
   return motor;
 }
 
-/** Piezas del kit que usa el juego: id → { kind, bytes } (como espera composeGame). */
-function piezasDelKit(game) {
+/** Manifiesto de arte con el que se compone y se valida: PME_KIT si se da (un kit o una colección), y si no, todo
+ *  el arte de la biblioteca (tools/biblioteca/indice.mjs), con los ficheros en ruta absoluta. */
+export async function arteDisponible() {
+  if (process.env.PME_KIT) {
+    const file = manifiestoDelKit();
+    const m = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return { manifiesto: m, dir: path.dirname(file), nombre: file };
+  }
+  const { arteCombinado, rutaBiblioteca } = await import(path.join(ROOT, 'tools', 'biblioteca', 'indice.mjs'));
+  return { manifiesto: arteCombinado(), dir: '/', nombre: `la biblioteca (${rutaBiblioteca()})` };
+}
+
+/** Piezas de arte que usa el juego: id → { kind, bytes } (como espera composeGame). */
+async function piezasDelKit(game) {
   const usadas = new Set();
   for (const p of game.template.pages) for (const c of [...(p.layers || []), ...(p.topLayers || [])]) usadas.add(c.asset);
   const assets = {};
   if (!usadas.size) return assets;
-  const file = manifiestoDelKit();
+  const { manifiesto, dir, nombre } = await arteDisponible();
   const { indicePiezas } = require(path.join(ROOT, 'tools', 'game', 'kit.cjs'));
-  const piezas = indicePiezas(JSON.parse(fs.readFileSync(file, 'utf8')));
+  const piezas = indicePiezas(manifiesto);
   for (const id of usadas) {
     const p = piezas.get(id);
-    if (!p) throw new Error(`la pieza «${id}» no está en ${file}`);
-    const f = path.resolve(path.dirname(file), p.file);
+    if (!p) throw new Error(`la pieza «${id}» no está en ${nombre}`);
+    const f = path.resolve(dir, p.file);
     assets[id] = { kind: /\.pdf$/i.test(f) ? 'pdf' : 'png', bytes: fs.readFileSync(f) };
   }
   return assets;
@@ -68,7 +80,7 @@ export async function componerJuego(game, { dir, lang, example = null, watermark
   const ficheros = [...new Set([game.background.file, ...deps.template.pages.map((p) => p.bgFile)].filter(Boolean))];
   const bgFiles = Object.fromEntries(ficheros.map((f) => [f, fs.readFileSync(path.resolve(dir, f))]));
   const bgBytes = game.background.kind === 'pdf' ? bgFiles[game.background.file] : null;
-  const assets = piezasDelKit({ template: deps.template });
+  const assets = await piezasDelKit({ template: deps.template });
 
   const fonts = {};
   for (const k of Object.keys(FUENTES)) {

@@ -170,7 +170,8 @@ export function aV1(g) {
     }
     if (bg.kind === 'color') pagina.bgColor = bg.value;
     pagina.slots = slots;
-    if (conCapas) pagina.layers = layers;
+    // En un juego sin ningún PDF (fondo «layers» en v1) cada página declara sus capas, aunque no tenga ninguna.
+    if (conCapas || kind === 'layers') pagina.layers = layers;
     if (topLayers.length) pagina.topLayers = topLayers;
     return pagina;
   });

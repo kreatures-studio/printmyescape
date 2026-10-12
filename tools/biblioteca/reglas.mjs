@@ -102,22 +102,29 @@ export function reglasPuzzle(coleccion, { mecanicas = {} } = {}) {
   return { errores, avisos };
 }
 
-/** Reglas de una colección de secciones (F2.5): cada campo tiene definición y los ejemplos solo usan sus campos. */
-export function reglasSeccion(coleccion) {
+/** Reglas de una colección de secciones (F2.5): cada campo tiene definición y los ejemplos solo usan sus campos.
+ *  Admite además los campos «Otro» (otherField) de sus campos de opción múltiple, que no salen en el formulario. */
+export function reglasSeccion(coleccion, { existe = null } = {}) {
   const errores = [], avisos = [];
   const vistas = new Set();
   for (const s of coleccion.pieces || []) {
     const r = `secciones/${s.id}`;
     if (vistas.has(`${s.id}@${s.version}`)) errores.push(`${r}: la versión ${s.version} está repetida`);
     vistas.add(`${s.id}@${s.version}`);
-    const campos = new Set(s.section.fields);
     const definidos = new Set(Object.keys(s.fieldDefs));
-    for (const c of campos) if (!definidos.has(c)) errores.push(`${r}: el campo «${c}» no tiene definición en fieldDefs`);
+    const delFormulario = new Set(s.section.fields);
+    for (const c of delFormulario) if (!definidos.has(c)) errores.push(`${r}: el campo «${c}» no tiene definición en fieldDefs`);
+    const companeros = new Set([...delFormulario].map((c) => s.fieldDefs[c] && s.fieldDefs[c].otherField).filter(Boolean));
+    for (const c of companeros) if (!definidos.has(c)) errores.push(`${r}: falta la definición de «${c}» (el «Otro» de otro campo)`);
+    const campos = new Set([...delFormulario, ...companeros]);
     for (const c of definidos) if (!campos.has(c)) errores.push(`${r}: la definición «${c}» no está en los campos de la sección`);
     for (const extra of ['nameField', 'photoField']) {
       if (s.section[extra] && !campos.has(s.section[extra])) errores.push(`${r}: ${extra} «${s.section[extra]}» no está en la sección`);
     }
     for (const ej of s.examples) {
+      for (const [campo, foto] of Object.entries(ej.photos || {})) {
+        if (existe && !existe(foto)) errores.push(`${r}: no existe la foto «${foto}» del ejemplo «${ej.id}» (${campo})`);
+      }
       for (const lang of Object.keys(ej.values)) {
         for (const c of Object.keys(ej.values[lang])) {
           if (!campos.has(c)) errores.push(`${r}: el ejemplo «${ej.id}» (${lang}) da valor a «${c}», que no es campo de la sección`);

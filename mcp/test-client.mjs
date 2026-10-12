@@ -88,12 +88,13 @@ async function main() {
   try {
     const herr = await cliente.listTools();
     const nombres = herr.tools.map((t) => t.name);
-    rec('el servidor anuncia las 21 herramientas de 3.3', nombres.length === 21, nombres.join(' '));
+    // 21 de PLAN-CREADOR.md §3.3, 12 de PLAN-CREADOR-2.md §2.4 e insert_section (F3.1). El flujo v2: mcp/test-v2.mjs.
+    rec('el servidor anuncia las 34 herramientas (3.3, 2.4 e insert_section)', nombres.length === 34, nombres.join(' '));
 
     rec('list_games: repositorio vacío', (await ok(cliente, 'list_games')).length === 0);
 
     // Juego de 2 páginas con piezas del kit.
-    const creado = await ok(cliente, 'create_game', { id: ID, name: 'Prueba MCP', languages: ['es', 'en'], pages: 2 });
+    const creado = await ok(cliente, 'create_game', { id: ID, name: 'Prueba MCP', languages: ['es', 'en'], pages: 2, format: 'v1' });
     rec('create_game: juego de 2 páginas en borrador', creado.status === 'borrador' && creado.paginas === 2, JSON.stringify(creado.name));
 
     const piezas = await ok(cliente, 'list_assets');

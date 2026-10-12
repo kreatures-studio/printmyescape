@@ -87,9 +87,15 @@ export function erroresKit(manifiesto) {
   return erroresKitDatos(m, (rel) => fs.existsSync(path.resolve(dirKit, rel)));
 }
 
-/** Comprobaciones cruzadas con los ficheros del disco (dir: carpeta del juego; kit: manifiesto). */
-export function crossErrors(game, { submit = false, dir = null, codigos = null, kit = null } = {}) {
+/** Comprobaciones cruzadas con los ficheros del disco (dir: carpeta del juego; kit: manifiesto).
+ *  kitDatos: un manifiesto ya leído (p. ej. todo el arte de la biblioteca, tools/biblioteca/indice.mjs), con
+ *  rutas de fichero absolutas; si se da, se usa en lugar de «kit». */
+export function crossErrors(game, { submit = false, dir = null, codigos = null, kit = null, kitDatos = null } = {}) {
   const existe = dir ? (rel) => fs.existsSync(path.resolve(dir, rel)) : null;
+  if (kitDatos) {
+    const kitInfo = erroresKitDatos(kitDatos, (f) => fs.existsSync(f));
+    return reglasCruzadas(game, { submit, existe, codigos, kit: kitInfo, kitForzado: false, kitNombre: 'el arte de la biblioteca' });
+  }
   const manifiesto = kit || path.join(ROOT, 'assets', 'kit', 'manifest.json');
   const kitInfo = fs.existsSync(manifiesto) ? erroresKit(manifiesto) : null;
   return reglasCruzadas(game, { submit, existe, codigos, kit: kitInfo, kitForzado: !!kit, kitNombre: path.relative(ROOT, manifiesto) });

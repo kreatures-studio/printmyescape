@@ -131,6 +131,14 @@
           },
           "done": {
             "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "description": "Identificador de la nota (lo usa write_change_summary para marcarla hecha)."
+          },
+          "element": {
+            "type": "string",
+            "description": "Elemento de la página al que se refiere."
           }
         }
       }
@@ -138,6 +146,33 @@
     "compat": {
       "type": "object",
       "description": "Solo en juegos migrados de v1: lo que el motor actual necesita para dar el mismo PDF."
+    },
+    "changes": {
+      "type": "array",
+      "description": "Resúmenes de cambios de Claude para la pantalla de revisión (write_change_summary).",
+      "items": {
+        "type": "object",
+        "required": [
+          "date",
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
     }
   },
   "$defs": {

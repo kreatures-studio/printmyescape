@@ -8,11 +8,15 @@ import { spawnSync } from 'node:child_process';
 import { validateGame, avisosGame } from '../tools/game/validate.mjs';
 import { medirLimites } from '../tools/game/limites.mjs';
 import { crearAlmacenFs } from './store-fs.mjs';
-import { cargarMotor, componerJuego, manifiestoDelKit } from './motor.mjs';
+import { cargarMotor, componerJuego, manifiestoDelKit, arteDisponible } from './motor.mjs';
 import { aV1 } from '../tools/game/v2.mjs';
+import { herramientasV2 } from './herramientas-v2.mjs';
 
-/* F1.6: un juego pme-game/2 se lee y se compone en su forma v1 equivalente; la edición aún no (F3). */
+/* Un juego pme-game/2 se compone y se miden sus límites en su forma v1 equivalente (aV1). Se edita con las
+   herramientas de herramientas-v2.mjs (F3.1) y con las de campos, formulario, textos, ejemplos y soluciones,
+   que son iguales en los dos formatos. */
 const vistaV1 = (g) => (g.schema === 'pme-game/2' ? aV1(g) : g);
+const esV2 = (g) => g.schema === 'pme-game/2';
 
 export class ErrorHerramienta extends Error {
   constructor(code, message, detalles = null) {
@@ -70,25 +74,30 @@ export function crearHerramientas({ raiz }) {
 
   /* En borrador, una lista vacía (sin secciones, sin campos aún) es contenido que falta, no un error:
      se admite mientras se edita. Para enviar (submit) cuenta como error, como en el validador. */
-  function validar(game, { submit = false, dir }) {
-    const kit = process.env.PME_KIT ? manifiestoDelKit() : null;
-    const errors = validateGame(game, { submit, dir, kit })
+  async function validar(game, { submit = false, dir }) {
+    // El arte: PME_KIT si se da; si no, todo el arte de la biblioteca (F3.1).
+    const opciones = process.env.PME_KIT ? { kit: manifiestoDelKit() } : { kitDatos: (await arteDisponible()).manifiesto };
+    const errors = validateGame(game, { submit, dir, ...opciones })
       .filter((e) => submit || !/must NOT have fewer than 1 items/.test(e));
     return { errors, warnings: avisosGame(game) };
   }
 
-  /** Carga el juego, aplica `cambiar` sobre una copia, valida y guarda. */
-  async function mutar(id, mensaje, cambiar) {
+  /** Carga el juego, aplica `cambiar` sobre una copia, valida y guarda. formato: 'v1', 'v2' o 'ambos' (las
+   *  herramientas que solo tienen sentido en uno de los dos formatos se niegan con el otro). */
+  async function mutar(id, mensaje, cambiar, { formato = 'ambos' } = {}) {
     const { game, rev } = await almacen.load(id);
-    if (game.schema === 'pme-game/2') {
-      throw new ErrorHerramienta('v2-no-editable', `«${id}» está en pme-game/2: las herramientas de edición llegan en la fase F3; de momento se puede leer, validar y componer`);
+    if (formato === 'v1' && esV2(game)) {
+      throw new ErrorHerramienta('solo-v1', `«${id}» está en pme-game/2: usa insert_page, add_element, update_element y remove_element`);
+    }
+    if (formato === 'v2' && !esV2(game)) {
+      throw new ErrorHerramienta('solo-v2', `«${id}» está en pme-game/1: esta herramienta es para juegos v2 (duplicate_game hace una copia en v2)`);
     }
     if (game.status !== 'borrador') {
       throw new ErrorHerramienta('no-borrador', `«${id}» está en «${game.status}»: solo se edita en borrador`);
     }
     const nuevo = structuredClone(game);
     const resultado = await cambiar(nuevo);
-    const { errors } = validar(nuevo, { dir: almacen.carpeta(id) });
+    const { errors } = await validar(nuevo, { dir: almacen.carpeta(id) });
     if (errors.length) throw new ErrorHerramienta('invalido', 'el cambio dejaría el juego inválido; no se ha guardado', errors);
     await almacen.save(id, nuevo, rev, mensaje);
     return resultado;
@@ -100,11 +109,13 @@ export function crearHerramientas({ raiz }) {
     return p;
   };
   const resumen = (g) => ({
-    id: g.id, name: g.name, version: g.version, status: g.status, languages: g.languages,
-    paginas: g.template.pages.length, campos: Object.keys(g.fields || {}).length,
+    id: g.id, schema: g.schema, name: g.name, version: g.version, status: g.status, languages: g.languages,
+    paginas: esV2(g) ? g.pages.length : g.template.pages.length, campos: Object.keys(g.fields || {}).length,
     mecanicas: (g.mechanics || []).length, ejemplos: (g.examples || []).length, soluciones: (g.solutions || []).length,
+    ...(esV2(g) ? { puzzles: (g.puzzles || []).length, notas_pendientes: (g.notes || []).filter((n) => !n.done).length } : {}),
   });
-  const cargar = async (id) => vistaV1((await almacen.load(id)).game);
+  const cargarCrudo = async (id) => (await almacen.load(id)).game;
+  const cargar = async (id) => vistaV1(await cargarCrudo(id));
 
   /** Sincroniza la rama juego/<id> del juego con origin (pull o push). */
   function sincronizar(id, direccion, mensaje) {
@@ -150,25 +161,32 @@ export function crearHerramientas({ raiz }) {
       run: async () => almacen.list(),
     },
     {
-      name: 'get_game', description: 'Devuelve un juego o una parte: summary, form, fields, pages, mechanics o full.',
-      schema: esquema({ id: ID, part: { type: 'string', enum: ['summary', 'form', 'fields', 'pages', 'mechanics', 'full'] } }, ['id']),
+      name: 'get_game', description: 'Devuelve un juego o una parte: summary, form, fields, pages, mechanics, puzzles, texts (i18n), notes o full. Un juego v2 se devuelve en v2 (páginas con elementos).',
+      schema: esquema({ id: ID, part: { type: 'string', enum: ['summary', 'form', 'fields', 'pages', 'mechanics', 'puzzles', 'texts', 'notes', 'full'] } }, ['id']),
       run: async ({ id, part = 'summary' }) => {
-        const g = await cargar(id);
+        const g = await cargarCrudo(id);
         const partes = { summary: () => resumen(g), form: () => g.form, fields: () => g.fields,
-          pages: () => g.template.pages, mechanics: () => g.mechanics, full: () => g };
+          pages: () => (esV2(g) ? g.pages : g.template.pages), mechanics: () => g.mechanics, puzzles: () => g.puzzles || [],
+          texts: () => g.i18n, notes: () => g.notes || [], full: () => g };
         return partes[part]();
       },
     },
     {
-      name: 'create_game', description: 'Crea un juego vacío en borrador, con N páginas (capas de arte vacías).',
+      name: 'create_game', description: 'Crea un juego vacío en borrador, con N páginas. format v2 (por defecto): páginas en blanco con elementos (insert_page, add_element…); v1: capas y huecos (set_page, upsert_slot).',
       schema: esquema({ id: ID, name: { description: 'Nombre: texto (igual en todos los idiomas) u objeto { idioma: texto }' },
         languages: { type: 'array', description: 'Idiomas, p. ej. ["es","en"]; por defecto ["es"]' },
-        pages: { type: 'integer', description: 'Número de páginas (1 a 50)' } }, ['id', 'name', 'pages']),
-      run: async ({ id, name, languages = ['es'], pages }) => {
-        if (pages < 1 || pages > MAX_PAGINAS) throw new ErrorHerramienta('invalid', `pages debe estar entre 1 y ${MAX_PAGINAS}`);
+        pages: { type: 'integer', description: 'Número de páginas (0 a 50; en v2 se pueden añadir luego con insert_page)' },
+        format: { type: 'string', enum: ['v1', 'v2'] } }, ['id', 'name', 'pages']),
+      run: async ({ id, name, languages = ['es'], pages, format = 'v2' }) => {
+        if (pages < (format === 'v2' ? 0 : 1) || pages > MAX_PAGINAS) throw new ErrorHerramienta('invalid', `pages debe estar entre ${format === 'v2' ? 0 : 1} y ${MAX_PAGINAS}`);
         if (await almacen.latestRev(id)) throw new ErrorHerramienta('exists', `ya existe el juego «${id}»`);
         const nombre = typeof name === 'string' ? Object.fromEntries(languages.map((l) => [l, name])) : name;
-        const g = {
+        const g = format === 'v2' ? {
+          schema: 'pme-game/2', id, version: '0.1.0', status: 'borrador', name: nombre, languages, pageSize: 'A4',
+          pages: Array.from({ length: pages }, (_, i) => ({ id: `p${i + 1}`, title: `Página ${i + 1}`, background: { kind: 'color', value: '#FFFFFF' }, elements: [] })),
+          i18n: Object.fromEntries(languages.map((l) => [l, {}])), fields: {}, form: { sections: [] },
+          mechanics: [], examples: [], solutions: [], puzzles: [], notes: [], changes: [],
+        } : {
           schema: 'pme-game/1', id, version: '0.1.0', status: 'borrador', name: nombre, languages,
           background: { kind: 'layers' },
           template: { id, version: 1, name: nombre[languages[0]] ?? id, pageSize: 'A4', fields: [],
@@ -176,7 +194,7 @@ export function crearHerramientas({ raiz }) {
           texts: [], i18n: Object.fromEntries(languages.map((l) => [l, {}])), fields: {}, form: { sections: [] },
           mechanics: [], examples: [], solutions: [],
         };
-        const { errors } = validar(g, { dir: almacen.carpeta(id) });
+        const { errors } = await validar(g, { dir: almacen.carpeta(id) });
         if (errors.length) throw new ErrorHerramienta('invalido', 'no se puede crear el juego', errors);
         await almacen.save(id, g, null, `Crear ${id}`);
         return resumen(g);
@@ -207,7 +225,7 @@ export function crearHerramientas({ raiz }) {
         if (p) p.layers = layers;
         else g.template.pages.push({ id: page, title: page, slots: [], layers });
         return pagina(g, page);
-      }),
+      }, { formato: 'v1' }),
     },
     {
       name: 'upsert_slot', description: 'Crea o cambia un hueco de texto de una página (slot.field, x, y, w, h en %).',
@@ -217,7 +235,7 @@ export function crearHerramientas({ raiz }) {
         const i = p.slots.findIndex((s) => s.field === slot.field);
         if (i >= 0) p.slots[i] = slot; else p.slots.push(slot);
         return slot;
-      }),
+      }, { formato: 'v1' }),
     },
     {
       name: 'remove_slot', description: 'Quita el hueco de un campo de una página.',
@@ -228,7 +246,7 @@ export function crearHerramientas({ raiz }) {
         p.slots = p.slots.filter((s) => s.field !== slot);
         if (p.slots.length === antes) throw new ErrorHerramienta('not-found', `no hay hueco de «${slot}» en ${page}`);
         return { removed: slot };
-      }),
+      }, { formato: 'v1' }),
     },
     {
       name: 'upsert_field', description: 'Crea o cambia un campo (def: type, required, cap, q por idioma, ...).',
@@ -296,7 +314,7 @@ export function crearHerramientas({ raiz }) {
       name: 'validate_game', description: 'Valida el juego: mode draft (borrador) o submit (para enviar). Devuelve errores y avisos.',
       schema: esquema({ id: ID, mode: { type: 'string', enum: ['draft', 'submit'] } }, ['id', 'mode']),
       run: async ({ id, mode }) => {
-        const g = await cargar(id);
+        const g = await cargarCrudo(id);
         return validar(g, { submit: mode === 'submit', dir: almacen.carpeta(id) });
       },
     },
@@ -351,7 +369,7 @@ export function crearHerramientas({ raiz }) {
         if (game.status !== 'borrador' && game.status !== 'enviado') {
           throw new ErrorHerramienta('no-borrador', `«${id}» está en «${game.status}»: no se puede enviar`);
         }
-        const { errors } = validar(game, { submit: true, dir: almacen.carpeta(id) });
+        const { errors } = await validar(game, { submit: true, dir: almacen.carpeta(id) });
         if (errors.length) throw new ErrorHerramienta('invalido', 'no se puede enviar: hay errores', errors);
         if (game.status === 'borrador') {
           // Reintentable: si la subida falla después, el juego queda «enviado» y basta con repetir la llamada.
@@ -366,6 +384,7 @@ export function crearHerramientas({ raiz }) {
         return { url: pr.out, status: 'enviado', rama, sincronizacion: sub.status };
       },
     },
+    ...herramientasV2({ almacen, mutar, cargarCrudo, validar, ErrorHerramienta, esquema, ID, PAGINA, raiz }),
   ];
 
   return { herramientas, almacen, comprobarArgs };

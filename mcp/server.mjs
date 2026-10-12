@@ -4,6 +4,7 @@
 // El motor, las mecánicas, el kit y el esquema son los de este repositorio (o de .pme/ en la copia).
 // Uso: node mcp/server.mjs            (lo lanza Claude Code con .mcp.json)
 // Nunca escribe en stdout que no sea MCP: los mensajes de diagnóstico van a stderr.
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -12,6 +13,11 @@ import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprot
 import { crearHerramientas, ErrorHerramienta } from './herramientas.mjs';
 
 export function arrancar({ raiz = process.env.PME_JUEGOS || process.cwd(), transporte = new StdioServerTransport() } = {}) {
+  // La biblioteca (F3.1): la de PME_BIBLIOTECA; si no, la del repositorio de juegos (biblioteca/), y si no tiene,
+  // la del repositorio de código.
+  if (!process.env.PME_BIBLIOTECA && fs.existsSync(path.join(path.resolve(raiz), 'biblioteca'))) {
+    process.env.PME_BIBLIOTECA = path.join(path.resolve(raiz), 'biblioteca');
+  }
   const { herramientas, comprobarArgs } = crearHerramientas({ raiz: path.resolve(raiz) });
   const porNombre = new Map(herramientas.map((h) => [h.name, h]));
   const servidor = new Server({ name: 'printmyescape', version: '0.1.0' }, { capabilities: { tools: {} } });

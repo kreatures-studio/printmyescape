@@ -48,7 +48,7 @@ export function validarColeccion(carpeta) {
         if (!validarCampo(def)) for (const e of validarCampo.errors) errores.push(`esquema secciones/${s.id} campo ${campo}${e.instancePath}: ${e.message}`);
       }
     }
-    const r = reglasSeccion(coleccion);
+    const r = reglasSeccion(coleccion, { existe });
     return { errores: [...errores, ...r.errores], avisos: [...avisos, ...r.avisos] };
   }
   if (coleccion.tipo === 'puzzle') {

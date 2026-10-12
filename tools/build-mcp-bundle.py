@@ -8,6 +8,8 @@ Copia a <ruta>/.pme/ lo que el servidor necesita (mcp/, motor, mecánicas, herra
 kit y fuentes), con un package.json propio. Deja en la raíz del repositorio de juegos:
   - .mcp.json                       registro del servidor para Claude Code (ámbito proyecto);
   - .claude/skills/crear-escape-room/  el skill, si existe en este repositorio (M7);
+  - biblioteca/                     la biblioteca (arte, páginas, secciones y puzzles), solo si aún no la tiene: a partir
+                                    de ahí es del repositorio de juegos (import_art y save_to_library escriben en ella);
   - .gitignore con .pme/node_modules/ y salidas/ (las dependencias y las vistas previas no se versionan).
 Después, una vez: npm install --prefix .pme   (o ejecutar este script con --instalar).
 
@@ -53,7 +55,8 @@ def copiar_carpeta(rel, destino_base):
 def construir(repo):
     pme = os.path.join(repo, '.pme')
     shutil.rmtree(os.path.join(pme, 'mcp'), ignore_errors=True)
-    for mod in ['mcp/server.mjs', 'mcp/store-fs.mjs', 'mcp/motor.mjs', 'mcp/herramientas.mjs', 'mcp/test-client.mjs']:
+    for mod in ['mcp/server.mjs', 'mcp/store-fs.mjs', 'mcp/motor.mjs', 'mcp/herramientas.mjs', 'mcp/herramientas-v2.mjs',
+                'mcp/test-client.mjs']:
         copiar(mod, pme)
     for f in sorted(glob.glob(os.path.join(ROOT, 'mechanics', '*.js'))):
         copiar(os.path.relpath(f, ROOT).replace(os.sep, '/'), pme)
@@ -62,7 +65,16 @@ def construir(repo):
         rel = os.path.relpath(f, ROOT).replace(os.sep, '/')
         if os.path.isfile(f) and rel not in NO_TOOLS and f.endswith(('.mjs', '.cjs')):
             copiar(rel, pme)
-    copiar('schema/pme-game-1.schema.json', pme)
+    for esquema in ['pme-game-1', 'pme-game-2', 'biblioteca-1']:
+        copiar(f'schema/{esquema}.schema.json', pme)
+    shutil.rmtree(os.path.join(pme, 'tools', 'biblioteca'), ignore_errors=True)
+    for f in ['indice.mjs', 'reglas.mjs', 'validar.mjs', 'desde-juego.mjs', 'importar-arte.py']:
+        copiar(f'tools/biblioteca/{f}', pme)
+    with open(os.path.join(pme, 'tools', 'package.json'), 'w', encoding='utf-8') as f:
+        f.write('{ "private": true }\n')  # ancla de createRequire en tools/biblioteca/desde-juego.mjs
+    biblioteca = os.path.join(repo, 'biblioteca')
+    if not os.path.isdir(biblioteca):
+        shutil.copytree(os.path.join(ROOT, 'biblioteca'), biblioteca)
     copiar_carpeta('assets/kit', pme)
     copiar_carpeta('assets/fonts', pme)
 

@@ -25,10 +25,11 @@ import { createRequire } from 'node:module';
 import { migrarAV2 } from '../game/v2.mjs';
 import { validarColeccion } from './validar.mjs';
 
-const require = createRequire(import.meta.url);
-const { PDFDocument } = require(path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'node_modules', 'pdf-lib'));
+// pdf-lib: tools/node_modules en el repositorio de código, o node_modules de .pme/ en el repositorio de juegos.
+const require = createRequire(path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'package.json'));
+const { PDFDocument } = require('pdf-lib');
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const BIBLIOTECA = path.join(ROOT, 'biblioteca');
+const BIBLIOTECA = process.env.PME_BIBLIOTECA ? path.resolve(process.env.PME_BIBLIOTECA) : path.join(ROOT, 'biblioteca');
 
 function leerJuegoV2(carpeta) {
   const raw = JSON.parse(fs.readFileSync(path.join(carpeta, 'game.json'), 'utf8'));
@@ -85,20 +86,36 @@ async function exportarPaginas({ g, carpeta }, specs, dir) {
   return piezas;
 }
 
-function exportarSecciones({ g }, specs) {
+function exportarSecciones({ g, carpeta }, specs, dir) {
   return specs.map((s) => {
     const sec = (g.form.sections || []).find((x) => x.id === s.de);
     if (!sec) throw new Error(`el juego no tiene la sección «${s.de}»`);
     const campos = sec.fields;
-    const fieldDefs = Object.fromEntries(campos.map((c) => {
+    // Un campo de opción múltiple con «Otro» guarda ese texto en otro campo (otherField), que no sale en el formulario:
+    // viaja con la sección.
+    const companeros = campos.map((c) => g.fields[c] && g.fields[c].otherField).filter((c) => c && !campos.includes(c));
+    const fieldDefs = Object.fromEntries([...campos, ...companeros].map((c) => {
       if (!g.fields[c]) throw new Error(`el campo «${c}» de la sección «${s.de}» no existe en fields`);
       return [c, g.fields[c]];
+    }));
+    const todos = [...campos, ...companeros];
+    // Las fotos de los ejemplos se copian a la colección (fotos/), para que la sección no dependa del juego.
+    const fotos = (ej) => Object.fromEntries(Object.entries(ej.photos || {}).filter(([k]) => campos.includes(k)).map(([k, rel]) => {
+      const destino = `fotos/${path.basename(rel)}`;
+      const abs = path.join(dir, destino);
+      if (!fs.existsSync(abs)) {
+        const origen = path.resolve(carpeta, rel);
+        if (!fs.existsSync(origen)) throw new Error(`no existe la foto «${rel}» del ejemplo ${ej.id}`);
+        fs.mkdirSync(path.dirname(abs), { recursive: true });
+        fs.copyFileSync(origen, abs);
+      }
+      return [k, destino];
     }));
     const examples = (g.examples || []).map((ej) => ({
       id: String(ej.id),
       values: Object.fromEntries(Object.entries(ej.values || {}).map(([lang, v]) =>
-        [lang, Object.fromEntries(Object.entries(v).filter(([k]) => campos.includes(k)))])),
-      photos: Object.fromEntries(Object.entries(ej.photos || {}).filter(([k]) => campos.includes(k))),
+        [lang, Object.fromEntries(Object.entries(v).filter(([k]) => todos.includes(k)))])),
+      photos: fotos(ej),
     }));
     const section = { id: sec.id, title: sec.title };
     for (const k of ['hint', 'nameField', 'photoField']) if (sec[k] !== undefined) section[k] = sec[k];
@@ -181,7 +198,8 @@ async function main() {
     const repetidos = ids.filter((id) => previas.has(`${id}@1`));
     if (repetidos.length) { console.error(`ERROR ya existe en la biblioteca: ${repetidos.join(', ')} (usa otro id o una versión nueva)\nNo se ha guardado nada.`); return 1; }
   }
-  const fondosDe = (dir) => new Set(fs.existsSync(path.join(dir, 'fondos')) ? fs.readdirSync(path.join(dir, 'fondos')) : []);
+  // Ficheros que la exportación copia en la colección (fondos de página y fotos de ejemplo): se borran si falla.
+  const fondosDe = (dir) => new Set(['fondos', 'fotos'].flatMap((d) => (fs.existsSync(path.join(dir, d)) ? fs.readdirSync(path.join(dir, d)).map((f) => `${d}/${f}`) : [])));
   const fondosAntes = { pag: fondosDe(colPag), sec: fondosDe(colSec) };
   try {
     if (spec.paginas?.length) {
@@ -192,7 +210,7 @@ async function main() {
       console.log(`OK ${piezas.length} página(s) → ${path.relative(ROOT, colPag)}`);
     }
     if (spec.secciones?.length) {
-      const entradas = exportarSecciones(origen, spec.secciones);
+      const entradas = exportarSecciones(origen, spec.secciones, colSec);
       escribirColeccion('seccion', colSec, entradas);
       const { errores } = validarColeccion(colSec);
       if (errores.length) throw new Error(`la colección de secciones no valida:\n  ${errores.join('\n  ')}`);
@@ -210,7 +228,7 @@ async function main() {
     for (const [dir, previo, antesF] of [[colPag, antes.pag, fondosAntes.pag], [colSec, antes.sec, fondosAntes.sec], [colPuz, antes.puz, new Set()]]) {
       if (previo === null) { fs.rmSync(dir, { recursive: true, force: true }); continue; }
       if (fs.existsSync(dir)) fs.writeFileSync(path.join(dir, 'manifest.json'), previo);
-      for (const f of fondosDe(dir)) if (!antesF.has(f)) fs.rmSync(path.join(dir, 'fondos', f), { force: true });
+      for (const f of fondosDe(dir)) if (!antesF.has(f)) fs.rmSync(path.join(dir, f), { force: true });
     }
     console.error(`ERROR ${e.message}\nNo se ha guardado nada.`);
     return 1;

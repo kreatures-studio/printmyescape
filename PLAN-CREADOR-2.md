@@ -130,7 +130,7 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   convierte con `tools/game/a-v1.mjs`), la CLI y la composición del MCP leen la forma v1 equivalente, y las herramientas
   de edición del MCP rechazan v2 con un mensaje claro (`v2-no-editable`) hasta F3. *Aceptación:* e2e de la demo 30/30
   con final3 en v2 (`PME_DEMO=salidas/demo-v2/index.html`); golden 96/96 también desde v2.
-  *Pendiente:* `tools/qa/game-smoke.py` lee el JSON crudo; las pruebas del MCP cubren solo juegos v1.
+  *Pendiente:* `tools/qa/game-smoke.py` lee el JSON crudo. (Las pruebas del MCP cubren v2 desde F3.1.)
 
 ### F2 · Bibliotecas
 
@@ -184,7 +184,25 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
 
 ### F3 · Claude compone desde cero
 
-- **F3.1** Herramientas MCP de 2.4. **F3.2** Skill reescrito (flujo del documento de decisiones).
+- **F3.1 Herramientas MCP de 2.4 (hecho).** 13 herramientas nuevas en `mcp/herramientas-v2.mjs` (las 12 de 2.4 e
+  `insert_section`, que hacía falta para reutilizar secciones), 34 en total. Componen juegos `pme-game/2` con la
+  biblioteca: `list_library`, `insert_page` (copia fondo, elementos y textos con `from`; admite los puzzles del catálogo
+  que calculan sus campos), `insert_section` (campos, el «Otro» de las opciones, ejemplos y sus fotos), `add_element`
+  (texto con `texts` por idioma; arte con versión fija y la proporción de la pieza), `update_element`, `remove_element`,
+  `add_puzzle` (del catálogo o de contenido en su caja), `duplicate_game` (siempre a v2), `import_art`,
+  `create_vector_art` (solo formas geométricas para rejillas y casillas, a la colección «formas», con autor humano;
+  no es para ilustraciones), `save_to_library`, `read_notes`, `write_change_summary`. Cuando faltan campos, el error
+  dice qué sección o puzzle de la biblioteca los trae. `create_game` crea v2 por defecto; las herramientas de huecos y
+  capas (`set_page`, `upsert_slot`, `remove_slot`) son solo v1 y las nuevas solo v2. El arte se valida y se compone
+  con toda la biblioteca (`PME_KIT` sigue valiendo para un kit concreto). La biblioteca del servidor: `PME_BIBLIOTECA`,
+  o `biblioteca/` del repositorio de juegos (el paquete la siembra la primera vez y no la pisa), o la del repositorio
+  de código. El esquema v2 suma `changes` y notas con `id`. Arreglos encontrados: las secciones exportadas no traían el
+  campo «Otro» de una opción múltiple ni sus fotos de ejemplo (se reexporta El cumpleañero), y un juego v2 sin ningún
+  PDF no validaba (faltaba `layers: []`). *Aceptación:* `mcp/test-v2.mjs` 36/36 (un juego de 3 páginas desde cero, con
+  página, sección y puzzle de la biblioteca, puzzle de contenido, notas, copia, guardado e importación; la biblioteca
+  real no cambia), `mcp/test-client.mjs` 31/31 (v1), golden 96/96 desde v1 y desde v2; el paquete (.pme/) compone un
+  juego v2 con la biblioteca del repositorio de juegos.
+- **F3.2** Skill reescrito (flujo del documento de decisiones).
 - **F3.3 Ensayo** en una sesión limpia: juego de 6 páginas, sin sospechosos, con 2 puzzles de contenido y 1 del catálogo.
 - *Aceptación:* validado sin errores, vista previa revisada por Claude, y una partida de prueba hecha por una persona.
 
