@@ -133,7 +133,12 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
 
 ### F2 · Bibliotecas
 
-- **F2.1 Manifiesto de la biblioteca** (2.2) y su validación (licencias, autor, versiones).
+- **F2.1 Manifiesto de la biblioteca y su validación (hecho).** Formato `pme-biblioteca/1` (tipo `arte`) en
+  `schema/biblioteca-1.schema.json`; reglas en `tools/biblioteca/reglas.mjs` (licencias admitidas: `propia-estudio`
+  y `CC0-1.0`; autor real; origen; zonas dentro de la pieza; ficheros y miniaturas que existen; versiones únicas;
+  las piezas por reexportar avisan). CLI: `node tools/biblioteca/validar.mjs <colección>`. *Aceptación:* el validador
+  rechaza piezas sin licencia o sin autor: `tools/qa/biblioteca-casos.mjs` 11/11. La colección de El regalo robado
+  (40 piezas: 28 ok y 12 por reexportar; la descartada no entra) pasa.
 - **F2.2 Importar arte** de los artistas (PDF con capas `zona-foto`/`zona-texto`, PNG, SVG) con miniatura y tamaño.
 - **F2.3 Piezas de El regalo robado:** las 28 listas (`biblioteca/arte/el-regalo-robado/`) y las 12 reexportadas.
 - **F2.4 Fuentes de Google Fonts** elegidas por el estudio, con licencia.

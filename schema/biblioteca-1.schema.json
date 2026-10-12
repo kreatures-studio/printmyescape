@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pme-biblioteca/1",
+  "title": "Manifiesto de una colección de la biblioteca (pme-biblioteca/1)",
+  "description": "F2.1 de PLAN-CREADOR-2.md. Hoy: colecciones de arte (tipo «arte»). Las reglas que el esquema no puede expresar (ficheros, cajas dentro de la pieza, autor real, licencias permitidas) están en tools/biblioteca/reglas.mjs.",
+  "type": "object",
+  "required": [
+    "schema",
+    "tipo",
+    "pieces"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "pme-biblioteca/1"
+    },
+    "tipo": {
+      "const": "arte"
+    },
+    "pieces": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/pieza"
+      }
+    }
+  },
+  "$defs": {
+    "pieza": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "file",
+        "thumb",
+        "name",
+        "category",
+        "tags",
+        "widthMm",
+        "heightMm",
+        "zones",
+        "license",
+        "author",
+        "origin"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "file": {
+          "type": "string",
+          "pattern": "^piezas/[^/]+\\.pdf$"
+        },
+        "thumb": {
+          "type": "string",
+          "pattern": "^piezas/[^/]+\\.png$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "enum": [
+            "fondo",
+            "marco",
+            "papel",
+            "dispositivo",
+            "objeto",
+            "icono",
+            "decoracion",
+            "ilustracion",
+            "puzzle"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-záéíóúñü0-9-]+$"
+          }
+        },
+        "widthMm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "heightMm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "zones": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "tipo",
+              "x",
+              "y",
+              "w",
+              "h"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "tipo": {
+                "enum": [
+                  "zona-foto",
+                  "zona-texto"
+                ]
+              },
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              },
+              "w": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "h": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            }
+          }
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Licencia: la lista admitida está en tools/biblioteca/reglas.mjs (LICENCIAS_ARTE)."
+        },
+        "author": {
+          "type": "string",
+          "minLength": 2
+        },
+        "origin": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "reexportar"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+// Valida una colección de la biblioteca: esquema (ajv) y reglas (reglas.mjs).
+// Uso: node tools/biblioteca/validar.mjs <carpeta de la colección>   (código 0 si no hay errores)
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import Ajv2020 from 'ajv/dist/2020.js';
+import { reglasArte } from './reglas.mjs';
+
+const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const SCHEMA = JSON.parse(fs.readFileSync(path.join(ROOT, 'schema', 'biblioteca-1.schema.json'), 'utf8'));
+
+/** Errores de esquema y de reglas de una carpeta de colección. */
+export function validarColeccion(carpeta) {
+  const errores = [], avisos = [];
+  const file = path.join(carpeta, 'manifest.json');
+  if (!fs.existsSync(file)) return { errores: [`falta ${file}`], avisos };
+  const coleccion = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const ajv = new Ajv2020({ allErrors: true });
+  const validar = ajv.compile(SCHEMA);
+  if (!validar(coleccion)) {
+    for (const e of validar.errors) errores.push(`esquema ${e.instancePath || '/'}: ${e.message}`);
+    return { errores, avisos };
+  }
+  const r = reglasArte(coleccion, { existe: (rel) => fs.existsSync(path.resolve(carpeta, rel)) });
+  return { errores: [...errores, ...r.errores], avisos: [...avisos, ...r.avisos] };
+}
+
+function main() {
+  const carpeta = process.argv[2];
+  if (!carpeta) { console.error('uso: node tools/biblioteca/validar.mjs <carpeta de la colección>'); return 2; }
+  const { errores, avisos } = validarColeccion(path.resolve(carpeta));
+  for (const a of avisos) console.log(`AVISO ${a}`);
+  for (const e of errores) console.log(`ERROR ${e}`);
+  console.log(errores.length ? `NO VÁLIDA: ${errores.length} error(es)` : `VÁLIDA (${avisos.length} aviso(s))`);
+  return errores.length ? 1 : 0;
+}
+
+if (process.argv[1] && fs.realpathSync(process.argv[1]) === fs.realpathSync(fileURLToPath(import.meta.url))) {
+  process.exitCode = main();
+}
