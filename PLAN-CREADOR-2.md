@@ -120,7 +120,11 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   el nombre en el registro cuando se le pasa `fuentes` (CLI y servidor MCP); la demo del navegador conserva las reglas
   antiguas hasta F4. *Aceptación:* golden 96/96; el validador rechaza un nombre que no está en el registro (2 casos
   nuevos). *Pendiente:* la licencia de Pigpen (runas) es «por confirmar»: el validador lo avisa.
-- **F1.5 Validador y límites v2.** *Aceptación:* los 18 casos actuales, adaptados, y nuevos de elementos.
+- **F1.5 Validador y límites v2 (hecho).** Reglas nuevas: cajas dentro de la página (texto, campo y foto: error;
+  pieza de arte que sobresale: aviso), puzzles de contenido sin mecánica, puzzles inexistentes o sin elementos,
+  y que cada PDF de página exista. El esquema del puzzle admite ahora `name`, `page` y los metadatos del §2.3.
+  *Aceptación:* 20 casos anteriores (v1) y 7 nuevos de v2 en `tools/qa/validador-casos.mjs` (27/27); final3 migrado
+  pasa sin errores; límites 26/26.
 - **F1.6 Formulario del comprador y CLI** leen v2. *Aceptación:* e2e de la demo 30/30 con final3 en v2.
 
 ### F2 · Bibliotecas

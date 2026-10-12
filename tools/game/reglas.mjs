@@ -277,25 +277,62 @@ export function plantillaParaMotor(game) {
  * ids de elemento únicos en cada página, puzzles con id único y mecánica conocida, y cada bloque de puzzle
  * apunta a un puzzle del juego.
  */
-export function reglasV2(game) {
-  const errs = [];
+/* F1.5: las cajas de los elementos (en % de la página, o de la caja del puzzle) deben caber en ella.
+   Un texto, campo o foto fuera de la página es error; una pieza de arte puede sobresalir (aviso). */
+const TOL_CAJA = 0.01;
+function cajaFueraDe(e) {
+  if (![e.x, e.y, e.w, e.h].every((v) => typeof v === 'number')) return null;
+  if (e.x < -TOL_CAJA || e.y < -TOL_CAJA || e.x + e.w > 100 + TOL_CAJA || e.y + e.h > 100 + TOL_CAJA) {
+    return `la caja (${e.x}, ${e.y}, ${e.w}×${e.h}) sale de la página`;
+  }
+  return null;
+}
+/* Recorre los elementos de una página o de un puzzle: ids, puzzles citados y cajas. */
+function elementosV2(elementos, ruta, puzzles, errs, avisos, visitados = new Set()) {
+  const ids = new Set();
+  for (const e of elementos || []) {
+    if (ids.has(e.id)) errs.push(`${ruta}: el elemento «${e.id}» está repetido`);
+    ids.add(e.id);
+    const fuera = cajaFueraDe(e);
+    if (fuera) {
+      if (e.kind === 'art') avisos.push(`${ruta}/${e.id}: la pieza de arte ${fuera} (puede sobresalir a propósito)`);
+      else errs.push(`${ruta}/${e.id}: ${fuera}`);
+    }
+    if (e.kind === 'puzzle') {
+      if (!puzzles.has(e.puzzle)) { errs.push(`${ruta}/${e.id}: el puzzle «${e.puzzle}» no existe en puzzles`); continue; }
+      if (visitados.has(e.puzzle)) { errs.push(`${ruta}/${e.id}: el puzzle «${e.puzzle}» se contiene a sí mismo`); continue; }
+      const pz = puzzles.get(e.puzzle);
+      if (pz.page && pz.page.elements) elementosV2(pz.page.elements, `puzzles/${pz.id}`, puzzles, errs, avisos, new Set([...visitados, e.puzzle]));
+    }
+  }
+}
+/* Mapa de puzzles y sus errores propios (sin depender de la página donde se usan). */
+function puzzlesV2(game, errs) {
   const puzzles = new Map();
   for (const pz of game.puzzles || []) {
     if (puzzles.has(pz.id)) errs.push(`puzzles/${pz.id}: id repetido`);
     puzzles.set(pz.id, pz);
     if (pz.mechanic && !(globalThis.PMEMechanics || {})[pz.mechanic]) errs.push(`puzzles/${pz.id}: la mecánica «${pz.mechanic}» no está en el catálogo`);
     if (pz.kind === 'datos' && !pz.mechanic) errs.push(`puzzles/${pz.id}: un puzzle de datos necesita una mecánica del catálogo`);
+    if (pz.kind === 'contenido' && pz.mechanic) errs.push(`puzzles/${pz.id}: un puzzle de contenido no lleva mecánica`);
   }
+  return puzzles;
+}
+export function reglasV2(game) {
+  const errs = [];
+  const puzzles = puzzlesV2(game, errs);
   const paginas = new Set();
   for (const p of game.pages || []) {
     if (paginas.has(p.id)) errs.push(`pages/${p.id}: la página está repetida`);
     paginas.add(p.id);
-    const ids = new Set();
-    for (const e of p.elements || []) {
-      if (ids.has(e.id)) errs.push(`pages/${p.id}: el elemento «${e.id}» está repetido`);
-      ids.add(e.id);
-      if (e.kind === 'puzzle' && !puzzles.has(e.puzzle)) errs.push(`pages/${p.id}/${e.id}: el puzzle «${e.puzzle}» no existe en puzzles`);
-    }
+    elementosV2(p.elements, `pages/${p.id}`, puzzles, errs, []);
   }
   return errs;
+}
+/* Avisos v2 (no bloquean): piezas de arte que sobresalen de la página. */
+export function avisosV2(game) {
+  const errs = [], avisos = [];
+  const puzzles = puzzlesV2(game, errs);
+  for (const p of game.pages || []) elementosV2(p.elements, `pages/${p.id}`, puzzles, errs, avisos);
+  return avisos;
 }

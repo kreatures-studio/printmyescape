@@ -15,14 +15,18 @@ import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { loadGame } from './load.mjs';
-import { reglasCruzadas, erroresKitDatos, avisosGame as avisosV1, reglasV2 } from './reglas.mjs';
+import { reglasCruzadas, erroresKitDatos, avisosGame as avisosV1, reglasV2, avisosV2 } from './reglas.mjs';
 import { aV1 } from './v2.mjs';
 
 export { erroresKitDatos };
 
 /** Avisos (no bloquean). Un juego v2 se mira en su forma v1 equivalente. */
 export function avisosGame(game, opts = {}) {
-  return [...avisosV1(game.schema === 'pme-game/2' ? aV1(game) : game, opts), ...avisosDeFuentes(game)];
+  const v2 = game.schema === 'pme-game/2';
+  let v1Avisos = [];
+  if (!v2) v1Avisos = avisosV1(game, opts);
+  else { try { v1Avisos = avisosV1(aV1(game), opts); } catch { /* el error de conversión ya lo da validateGame */ } }
+  return [...v1Avisos, ...avisosDeFuentes(game), ...(v2 ? avisosV2(game) : [])];
 }
 
 // Fuentes (F1.4): cada nombre fontFamily del juego, en cualquier forma (v1 o v2), debe estar en assets/fonts/registro.json.
@@ -107,6 +111,13 @@ export function validateGame(game, opts = {}) {
   errs.push(...erroresDeFuentes(game));
   if (game.schema === 'pme-game/2') {
     errs.push(...reglasV2(game));
+    // Cada PDF de página debe existir (si se conoce la carpeta del juego).
+    if (opts.dir) {
+      for (const p of game.pages) {
+        const f = p.background && p.background.kind === 'pdf' ? p.background.file : null;
+        if (f && !fs.existsSync(path.resolve(opts.dir, f))) errs.push(`pages/${p.id}: no existe el PDF «${f}»`);
+      }
+    }
     let v1;
     try { v1 = aV1(game); } catch (e) { return [...errs, `pages: ${e.message}`]; }
     errs.push(...crossErrors(v1, opts));

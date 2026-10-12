@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { migrarAV2 } from '../game/v2.mjs';
 import { validateGame, avisosGame, codigosDePdf } from '../game/validate.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -12,6 +13,10 @@ const FIX = path.join(ROOT, 'tools', 'qa', 'fixtures');
 const BASE = JSON.parse(fs.readFileSync(path.join(ROOT, 'games', 'final3', 'game.json'), 'utf8'));
 const DIR = path.join(ROOT, 'games', 'final3');
 const clon = () => structuredClone(BASE);
+// F1.5: juegos pme-game/2. final3 migrado sin pérdida; las pruebas le cambian una cosa.
+const KIT_PRUEBA = path.join(ROOT, 'tools', 'qa', 'fixtures', 'capas', 'kit', 'manifest.json');
+const clonV2 = () => structuredClone(migrarAV2(BASE));
+const primerElemento = (g, kind) => g.pages[0].elements.find((e) => e.kind === kind);
 /* Fondo por capas: la primera página lleva estas capas y las demás, ninguna. */
 const capas = (g, lista) => {
   g.background = { kind: 'layers' };
@@ -34,6 +39,22 @@ const CASOS = [
     g: () => { const g = clon(); g.template.pages[0].slots[0].fontFamily = 'Comic Sans MS'; return g; }, opts: { dir: DIR } },
   { nombre: 'fuente registrada: sin errores', tipo: 'ok',
     g: () => { const g = clon(); g.template.pages[0].slots[0].fontFamily = 'Anton-Regular'; return g; }, opts: { dir: DIR } },
+  { nombre: 'v2: final3 migrado pasa sin errores', tipo: 'ok', g: clonV2, opts: { dir: DIR } },
+  { nombre: 'v2: texto que sale de la página', tipo: 'error', espera: 'sale de la página',
+    g: () => { const g = clonV2(); const t = primerElemento(g, 'text'); t.x = 95; t.w = 20; return g; }, opts: { dir: DIR } },
+  { nombre: 'v2: pieza de arte que sobresale: aviso, no error', tipo: 'aviso', espera: 'puede sobresalir',
+    g: () => { const g = clonV2(); g.pages[0].elements.push({ id: 'arte-fuera', kind: 'art', ref: 'prueba-azul', x: 90, y: 0, w: 20, h: 10, angle: 0 }); return g; },
+    opts: { dir: DIR, kit: KIT_PRUEBA } },
+  { nombre: 'v2: puzzle de contenido con mecánica', tipo: 'error', espera: 'no lleva mecánica',
+    g: () => { const g = clonV2(); g.puzzles = [{ id: 'pz', name: 'Caja', kind: 'contenido', mechanic: 'ticks', solution: { es: 'x' }, page: { elements: [] } }]; return g; }, opts: { dir: DIR } },
+  { nombre: 'v2: puzzle que no existe', tipo: 'error', espera: 'el puzzle «fantasma» no existe',
+    g: () => { const g = clonV2(); g.pages[0].elements.push({ id: 'pz-fantasma', kind: 'puzzle', puzzle: 'fantasma', x: 0, y: 0, w: 10, h: 10 }); return g; },
+    opts: { dir: DIR } },
+  { nombre: 'v2: PDF de una página que no existe', tipo: 'error', espera: 'no existe el PDF «no-esta.pdf»',
+    g: () => { const g = clonV2(); g.pages[0].background = { kind: 'pdf', file: 'no-esta.pdf', page: 1 }; return g; }, opts: { dir: DIR } },
+  { nombre: 'v2: puzzle sin elementos que dibujar', tipo: 'error', espera: 'aún no tiene elementos que dibujar',
+    g: () => { const g = clonV2(); g.puzzles = [{ id: 'vacio', name: 'Vacío', kind: 'contenido', solution: { es: 'x' }, page: { elements: [] } }]; g.pages[0].elements.push({ id: 'pz-vacio', kind: 'puzzle', puzzle: 'vacio', x: 0, y: 0, w: 10, h: 10 }); return g; },
+    opts: { dir: DIR } },
   { nombre: 'mecánica sin un parámetro requerido', tipo: 'error', espera: 'falta el parámetro «boxes»',
     g: () => { const g = clon(); delete bloque(g, 'ticks').params.boxes; return g; }, opts: { dir: DIR } },
   { nombre: 'mecánica desconocida', tipo: 'error', espera: 'mecánica desconocida',

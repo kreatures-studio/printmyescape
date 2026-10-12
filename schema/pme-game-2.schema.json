@@ -912,6 +912,49 @@
           "items": {
             "$ref": "#/$defs/i18n"
           }
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nombre del puzzle para el estudio y el creador."
+        },
+        "page": {
+          "type": "object",
+          "required": [
+            "elements"
+          ],
+          "additionalProperties": false,
+          "description": "Elementos del puzzle, en % de su caja (como una página).",
+          "properties": {
+            "elements": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/element"
+              }
+            }
+          }
+        },
+        "difficulty": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "minAge": {
+          "type": "integer",
+          "minimum": 3
+        },
+        "minutes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "needs": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "examples": {
+          "type": "string"
         }
       }
     }
