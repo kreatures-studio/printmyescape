@@ -17,5 +17,6 @@ se anota como «mecánica nueva a presupuestar» en el resumen final.
 Para el significado de cada parámetro, leer `.pme/mechanics/<tipo>.js` (la mecánica explica sus
 parámetros y su `validate`). Usar `list_mechanics` para ver las mismas definiciones desde el servidor.
 
-- Una mecánica va asociada a una página (`page`: p1, p2…) y se añade con `upsert_mechanic`.
+- En un juego v2 una mecánica llega como **puzzle del catálogo**: `list_library` tipo `puzzle` y `add_puzzle` con
+  `from` (o `insert_page` con `puzzles`). Ver `puzzles.md`. `upsert_mechanic` queda para juegos v1.
 - `derives`: campos que la mecánica calcula y que no están en `fields` (no se crean a mano).

@@ -202,7 +202,14 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   página, sección y puzzle de la biblioteca, puzzle de contenido, notas, copia, guardado e importación; la biblioteca
   real no cambia), `mcp/test-client.mjs` 31/31 (v1), golden 96/96 desde v1 y desde v2; el paquete (.pme/) compone un
   juego v2 con la biblioteca del repositorio de juegos.
-- **F3.2** Skill reescrito (flujo del documento de decisiones).
+- **F3.2 Skill reescrito (hecho).** `.claude/skills/crear-escape-room/` sigue los 8 pasos del documento de decisiones
+  («Cómo trabaja Claude Code»): traer y leer notas, encargo, estructura aprobada por el cliente antes de maquetar,
+  puzzles (catálogo o contenido; mecánica nueva a presupuestar), páginas con la biblioteca (`[FALTA ARTE: …]` y encargo
+  si no hay pieza), formulario con topes y tres ejemplos, validar y mirar cada PNG, resumen para «Revisar» y subida.
+  Referencias nuevas: `biblioteca.md` y `puzzles.md`; `formato.md` pasa a v2 con la lista exacta de fuentes. El
+  registro admite ahora los nombres limpios `Caveat Bold`, `Open Sans Bold`, `Courier Prime` y `Courier Prime Bold`
+  (antes no había forma de pedir la máquina de escribir). *Aceptación:* `mcp/test-v2.mjs` 37/37 (las fuentes del skill
+  validan); golden 96/96.
 - **F3.3 Ensayo** en una sesión limpia: juego de 6 páginas, sin sospechosos, con 2 puzzles de contenido y 1 del catálogo.
 - *Aceptación:* validado sin errores, vista previa revisada por Claude, y una partida de prueba hecha por una persona.
 

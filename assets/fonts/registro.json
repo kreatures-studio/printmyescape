@@ -173,6 +173,22 @@
       "key": "runes",
       "manuscrita": false,
       "nota": "Fuente de runas de la mecánica «runes-panel». Diseño propio del estudio."
+    },
+    "Caveat Bold": {
+      "key": "caveatBold",
+      "manuscrita": true
+    },
+    "Open Sans Bold": {
+      "key": "opensansBold",
+      "manuscrita": false
+    },
+    "Courier Prime": {
+      "key": "courier",
+      "manuscrita": false
+    },
+    "Courier Prime Bold": {
+      "key": "courierBold",
+      "manuscrita": false
     }
   }
 }

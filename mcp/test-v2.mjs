@@ -160,6 +160,11 @@ async function main() {
     rec('la copia valida', (await ok(cliente, 'validate_game', { id: `${ID}-copia`, mode: 'draft' })).errors.length === 0);
     const p3 = await ok(cliente, 'insert_page', { id: ID, title: 'Instrucciones' });
     await ok(cliente, 'add_element', { id: ID, page: p3.page, element: { kind: 'text', texts: { es: 'Recortad las piezas.', en: 'Cut out the pieces.' }, x: 10, y: 10, w: 80, h: 6, size: 3, color: '#3B2A20', fontFamily: 'Open Sans' } });
+    // Los nombres de fuente que da el skill (reference/formato.md) valen todos.
+    for (const [i, f] of ['Caveat', 'Caveat Bold', 'Anton', 'Open Sans Bold', 'Courier Prime', 'Courier Prime Bold'].entries()) {
+      await ok(cliente, 'add_element', { id: ID, page: p3.page, element: { kind: 'text', texts: { es: `Fuente ${f}`, en: `Font ${f}` }, x: 10, y: 20 + i * 6, w: 80, h: 5, size: 3, color: '#3B2A20', fontFamily: f } });
+    }
+    rec('las fuentes del skill validan (Courier Prime incluida)', true);
     const guardada = await ok(cliente, 'save_to_library', { id: ID, tipo: 'pagina', de: p3.page, new_id: 'instrucciones-recortar', nombre: 'Instrucciones: recortar', etiquetas: ['instrucciones', 'texto', 'blanco'], coleccion: 'prueba' });
     rec('save_to_library: página nueva en la biblioteca', guardada.ref === 'instrucciones-recortar@1');
     const seccionG = await ok(cliente, 'save_to_library', { id: ID, tipo: 'seccion', de: 'sospechosos', new_id: 'sospechosos-ocho', nombre: 'Ocho sospechosos con alias', etiquetas: ['sospechosos', 'nombre', 'alias'], coleccion: 'prueba' });
