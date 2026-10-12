@@ -500,3 +500,17 @@ Pendiente (no bloquea M2):
   token de `gh` (GH_TOKEN) no es válido, así que `submit_to_studio` solo se verifica hasta los
   requisitos (sin gh: «sin-gh»; con gh y sin requisitos: «invalido»). Hay que probarlo en el ordenador
   del estudio, con `gh auth login` y un repositorio de juegos real.
+
+## T6.4 (paquete para el repositorio de juegos) y T6.5 (aceptación)
+
+- `python3 tools/build-mcp-bundle.py <repo-juegos> [--instalar]` copia a `.pme/` el servidor, el cliente de
+  prueba, el motor, las mecánicas, las herramientas de Node (`tools/game/`), el esquema, el kit y las
+  fuentes, con su `package.json` y un `VERSION.txt`. Deja `.mcp.json` en la raíz y añade `.pme/node_modules/`
+  y `salidas/` al `.gitignore`. No toca `games/`.
+- El skill (`.claude/skills/crear-escape-room/`) todavía no existe (es M7): el script lo copia cuando exista.
+- Aceptación (T6.5): desde dentro del repositorio de juegos, `node .pme/mcp/test-client.mjs --nuevo <carpeta>`
+  pasa 31/31 con el kit de prueba (`--kit <ruta>/tools/qa/fixtures/capas/kit/manifest.json`).
+- PENDIENTE: con el kit real la aceptación no se puede cerrar todavía: `assets/kit/manifest.json` está vacío
+  (T4.3: los assets los descargas tú). En cuanto haya piezas, basta con regenerar `.pme/` y ejecutar la
+  prueba sin `--kit` (usa las piezas del kit de `.pme/assets/kit`).
+- La prueba falla con un mensaje claro si el kit está vacío (no lo oculta).

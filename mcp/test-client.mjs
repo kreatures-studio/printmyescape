@@ -98,6 +98,7 @@ async function main() {
 
     const piezas = await ok(cliente, 'list_assets');
     rec('list_assets: el kit tiene piezas', piezas.length > 0, `${piezas.length} piezas`);
+    if (!piezas.length) throw new Error('el kit está vacío: la aceptación necesita piezas (usa --kit con un manifiesto que tenga piezas)');
     const pieza = (id) => piezas.find((p) => p.id === id) || piezas[0];
     const rojo = pieza('prueba-rojo').id;
     const azul = pieza('prueba-azul').id;
