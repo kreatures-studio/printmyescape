@@ -110,8 +110,11 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   layers → art). *Aceptación:* final3 y el juego de capas migran sin errores; la migración es idempotente.
 - **F1.3a Motor con juegos v2 (hecho).** `loadGame` entrega la forma v1 equivalente (`aV1`) al motor, la CLI y los
   límites. *Aceptación:* final3 migrado a v2: golden 96/96.
-- **F1.3b Elementos nuevos en el motor.** Dibujar `art` de la biblioteca en cualquier capa, fondos `art` y `color`,
-  varios PDF de fondo y bloques de `puzzle`. *Aceptación:* golden 96/96 y prueba de capas con su referencia en PNG.
+- **F1.3b Elementos nuevos en el motor (hecho).** Fondos `color` y `art`, varios PDF de fondo (`bgFile`/`bgPage`
+  por página), piezas de arte bajo y sobre los textos (`layers`/`topLayers`) y bloques de `puzzle` aplanados en su caja
+  (`tools/game/v2.mjs`, `aV1`). *Aceptación:* golden 96/96 y `tools/qa/capas-v2-test.py` (píxeles conocidos y
+  referencias en PNG). *Límites:* el orden entre arte y texto solo se conserva en dos bandas (baja y alta); un
+  puzzle de `datos` sin elementos propios no se dibuja todavía y falla con un mensaje claro (queda para el catálogo de puzzles, F2.6).
 - **F1.4 Registro de fuentes** `assets/fonts/registro.json`; el motor elige por familia y peso, no por expresiones.
   *Aceptación:* golden 96/96; el validador rechaza una fuente que no está en el registro.
 - **F1.5 Validador y límites v2.** *Aceptación:* los 18 casos actuales, adaptados, y nuevos de elementos.

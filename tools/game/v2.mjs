@@ -2,9 +2,16 @@
 //
 // migrarAV2(juegoV1) → juego v2, sin pérdida.
 // aV1(juegoV2)      → juego v1 equivalente: es lo que siguen leyendo el motor, el validador y el formulario
-//                     del comprador mientras F1.3 no dibuje los elementos directamente.
+//                     del comprador mientras el motor no dibuje los elementos directamente.
 // Garantía (prueba: tools/qa/v2-ida-vuelta.mjs): aV1(migrarAV2(g)) es igual a g. Por eso un juego migrado da
 // el mismo PDF, píxel a píxel.
+//
+// F1.3b: aV1 también traduce lo nuevo de v2 a lo que el motor sabe dibujar:
+//   - fondo de página «pdf» de varios ficheros → bgFile/bgPage por página;
+//   - fondo «color» → bgColor; fondo «art» → una pieza de arte a página completa;
+//   - elementos «art» antes del primer texto/campo/foto → capa baja (layers); después → capa alta (topLayers);
+//   - elementos «puzzle» con elementos propios → se aplanan dentro de su caja (la escala del texto sigue el ancho).
+// Limitación: el orden entre piezas de arte y textos se conserva solo en dos bandas (baja y alta).
 //
 // Sin importaciones de Node: lo usan también el creador web y la vista previa del navegador.
 
@@ -38,7 +45,8 @@ export function migrarAV2(g) {
     const pagina = {
       id: p.id,
       title: p.title,
-      background: fondoPdf ? { kind: 'pdf', file: g.background.file, page: i + 1 } : { kind: 'none' },
+      // Una página con capas (en blanco en v1) no lleva PDF: así el motor la compone igual que antes.
+      background: fondoPdf && p.layers === undefined ? { kind: 'pdf', file: g.background.file, page: i + 1 } : { kind: 'none' },
       elements,
     };
     if (p.background !== undefined) pagina.preview = p.background; // imagen de referencia (extract.py)
@@ -57,6 +65,40 @@ export function migrarAV2(g) {
   return v2;
 }
 
+/** Caja absoluta (en % de la página) de un elemento que vive dentro de otra caja (o de la página si no hay). */
+function enPagina(e, caja) {
+  if (!caja) return { x: e.x, y: e.y, w: e.w, h: e.h };
+  return { x: caja.x + (e.x * caja.w) / 100, y: caja.y + (e.y * caja.h) / 100, w: (e.w * caja.w) / 100, h: (e.h * caja.h) / 100 };
+}
+
+/** Aplana los elementos (y los de los puzzles que contengan) a elementos de página, con sus cajas absolutas. */
+function aplanar(elementos, puzzles, caja, visitados) {
+  const salida = [];
+  for (const e of elementos || []) {
+    if (e.kind !== 'puzzle') {
+      const { id, kind, ...resto } = e;
+      const abs = enPagina(e, caja);
+      // Los tamaños de letra son % del ancho de página: se escalan con la caja del puzzle.
+      const f = caja ? caja.w / 100 : 1;
+      const escalado = {};
+      if (f !== 1) {
+        for (const k of ['size', 'leading']) if (typeof resto[k] === 'number') escalado[k] = resto[k] * f;
+      }
+      salida.push({ kind, ...resto, ...abs, ...escalado });
+      continue;
+    }
+    if (visitados.has(e.puzzle)) throw new Error(`puzzle «${e.puzzle}» contenido en sí mismo`);
+    const pz = puzzles.get(e.puzzle);
+    if (!pz) throw new Error(`no existe el puzzle «${e.puzzle}»`);
+    if (!pz.page || !(pz.page.elements || []).length) {
+      throw new Error(`el puzzle «${e.puzzle}» (${pz.mechanic || 'sin mecánica'}) aún no tiene elementos que dibujar`);
+    }
+    const abs = enPagina(e, caja);
+    salida.push(...aplanar(pz.page.elements, puzzles, abs, new Set([...visitados, e.puzzle])));
+  }
+  return salida;
+}
+
 /** Juego v2 → v1 equivalente (lo que leen hoy el motor, el validador y el formulario). */
 export function aV1(g) {
   if (g.schema === 'pme-game/1') return structuredClone(g);
@@ -65,30 +107,48 @@ export function aV1(g) {
   const tplCompat = compat.template || {};
   const lang0 = (g.languages || [])[0];
   const i18nEs = (g.i18n && (g.i18n.es || g.i18n[lang0])) || {};
-  const pdfs = new Set(g.pages.filter((p) => p.background && p.background.kind === 'pdf').map((p) => p.background.file));
-  if (pdfs.size > 1) throw new Error('el motor actual solo admite un PDF de fondo por juego');
+  const puzzles = new Map((g.puzzles || []).map((p) => [p.id, p]));
+  const pdfs = [...new Set(g.pages.filter((p) => p.background && p.background.kind === 'pdf').map((p) => p.background.file))];
   const textos = [];
   const pages = g.pages.map((p, i) => {
     const slots = [];
     const layers = [];
-    for (const e of p.elements || []) {
-      const { id, kind, ...resto } = e;
+    const topLayers = [];
+    let hayContenido = false;
+    for (const e of aplanar(p.elements, puzzles, null, new Set())) {
+      const { kind, ...resto } = e;
       if (kind === 'art') {
         const { ref, ...pos } = resto;
-        layers.push({ asset: ref, ...pos });
+        (hayContenido ? topLayers : layers).push({ asset: ref, ...pos });
       } else if (kind === 'text') {
+        hayContenido = true;
         const { key, ...estilo } = resto;
         textos.push({ page: i + 1, key, es: i18nEs[key], ...estilo });
       } else if (kind === 'field' || kind === 'photo') {
+        hayContenido = true;
         slots.push(resto);
       } else {
         throw new Error(`página ${p.id}: el motor actual aún no dibuja elementos «${kind}»`);
       }
     }
+    // Fondo de la página. El motor, sin «bgKind», toma una página con capas como hoja en blanco y el
+    // resto como PDF; bgKind solo se escribe cuando eso no coincide con el fondo de la página.
+    const bg = p.background || { kind: 'none' };
     const pagina = { id: p.id, title: p.title };
     if (p.preview !== undefined) pagina.background = p.preview;
+    if (bg.kind === 'art') layers.unshift({ asset: bg.ref, x: 0, y: 0, w: 100, h: 100, angle: 0 });
+    const conCapas = layers.length > 0 || !!p.emptyLayers;
+    if (bg.kind === 'pdf') {
+      const pdfPorDefecto = bg.file === pdfs[0] && bg.page === i + 1;
+      if (!pdfPorDefecto) { pagina.bgFile = bg.file; pagina.bgPage = bg.page - 1; }
+      if (conCapas) pagina.bgKind = 'pdf';
+    } else if (!conCapas) {
+      pagina.bgKind = 'blank';
+    }
+    if (bg.kind === 'color') pagina.bgColor = bg.value;
     pagina.slots = slots;
-    if (layers.length || p.emptyLayers) pagina.layers = layers;
+    if (conCapas) pagina.layers = layers;
+    if (topLayers.length) pagina.topLayers = topLayers;
     return pagina;
   });
   // El orden de los textos fijos importa al motor (flujo de textos): se respeta el original si existe.
@@ -99,9 +159,9 @@ export function aV1(g) {
     textosV1 = compat.textOrder.map(([pg, k]) => porPagina[pg] && porPagina[pg][k]);
     if (textosV1.some((t) => !t)) textosV1 = textos; // la lista cambió: orden por página
   }
-  const { schema, pages: _p, pageSize, puzzles, compat: _c, ...resto } = g;
-  const kind = compat.backgroundKind || (pdfs.size ? 'pdf' : 'layers');
-  const background = kind === 'pdf' ? { kind: 'pdf', file: [...pdfs][0] } : { kind };
+  const { schema, pages: _p, pageSize, puzzles: _z, compat: _c, ...resto } = g;
+  const kind = compat.backgroundKind || (pdfs.length ? 'pdf' : 'layers');
+  const background = kind === 'pdf' ? { kind: 'pdf', file: pdfs[0] } : { kind };
   const v1 = {
     schema: 'pme-game/1',
     id: resto.id, version: resto.version, status: resto.status, name: resto.name, languages: resto.languages,

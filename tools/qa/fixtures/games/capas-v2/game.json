@@ -1,0 +1,43 @@
+{
+  "schema": "pme-game/2",
+  "id": "capas-v2",
+  "version": 1,
+  "status": "borrador",
+  "name": "Prueba de capas v2 (F1.3b)",
+  "languages": ["es"],
+  "pageSize": "A4",
+  "i18n": { "es": { "t1": "Texto de prueba bajo la pieza azul" } },
+  "fields": {},
+  "form": { "sections": [] },
+  "pages": [
+    {
+      "id": "p1", "title": "Color, arte y puzzle",
+      "background": { "kind": "color", "value": "#EFE6D2" },
+      "elements": [
+        { "id": "e1", "kind": "art", "ref": "prueba-degradado", "x": 5, "y": 5, "w": 90, "h": 40, "angle": 0 },
+        { "id": "e2", "kind": "text", "key": "t1", "x": 5, "y": 62, "w": 90, "h": 8, "fontFamily": "Open Sans", "size": 4, "color": "#1B2420" },
+        { "id": "e3", "kind": "art", "ref": "prueba-azul", "x": 55, "y": 55, "w": 30, "h": 30, "angle": 30 },
+        { "id": "e4", "kind": "puzzle", "puzzle": "caja-rojo", "x": 5, "y": 75, "w": 60, "h": 20 }
+      ]
+    },
+    {
+      "id": "p2", "title": "PDF propio de la página",
+      "background": { "kind": "pdf", "file": "fondo-p2.pdf", "page": 1 },
+      "elements": [
+        { "id": "e1", "kind": "art", "ref": "prueba-azul", "x": 10, "y": 10, "w": 30, "h": 30, "angle": 0 }
+      ]
+    },
+    {
+      "id": "p3", "title": "Arte a página completa",
+      "background": { "kind": "art", "ref": "prueba-degradado" },
+      "elements": [
+        { "id": "e1", "kind": "text", "key": "t1", "x": 5, "y": 40, "w": 90, "h": 8, "fontFamily": "Open Sans", "size": 4, "color": "#FFFFFF" }
+      ]
+    }
+  ],
+  "puzzles": [
+    { "id": "caja-rojo", "kind": "contenido", "name": "Caja con pieza roja", "page": { "elements": [
+      { "id": "a", "kind": "art", "ref": "prueba-rojo", "x": 0, "y": 0, "w": 50, "h": 100, "angle": 0 }
+    ] } }
+  ]
+}

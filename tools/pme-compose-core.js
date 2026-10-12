@@ -396,6 +396,17 @@ async function composeGame(deps) {
   const out = await PDFDocument.create();
   out.registerFontkit(fontkit);
   const bgDoc = bgBytes ? await PDFDocument.load(bgBytes) : null;
+  /* F1.3b: varios PDF de fondo. Cada página puede llevar su fichero (bgFile) y su página (bgPage);
+     sin ellos se usa el PDF único de siempre (bgBytes). deps.bgFiles: { [fichero]: bytes }. */
+  const bgDocs = {};
+  const docDe = async (file) => {
+    if (!bgDocs[file]) {
+      const b = (deps.bgFiles || {})[file];
+      if (!b) throw new Error(`falta el PDF de fondo «${file}»`);
+      bgDocs[file] = await PDFDocument.load(b);
+    }
+    return bgDocs[file];
+  };
   const artCache = {};
   const ff = {};
   for (const k of Object.keys(fonts)) {
@@ -606,18 +617,24 @@ async function composeGame(deps) {
   const n = template.pages.length;
   for (let pi = 0; pi < n; pi++) {
     let bg;
-    if (template.pages[pi].layers) {
-      /* Página por capas: hoja en blanco del tamaño de la plantilla, con sus piezas de arte. */
+    const tp = template.pages[pi];
+    /* bgKind: 'pdf' o 'blank'. Sin él, como siempre: una página con capas es en blanco y el resto, PDF. */
+    const kindPag = tp.bgKind || (tp.layers ? 'blank' : 'pdf');
+    if (kindPag === 'blank') {
+      /* Página en blanco del tamaño de la plantilla: color de fondo (bgColor) y/o piezas de arte. */
       const size = PAGE_SIZES[template.pageSize];
       if (!size) throw new Error(`tamaño de página desconocido: ${template.pageSize}`);
       bg = out.addPage(size);
-      await dibujarCapas(out, bg, template.pages[pi].layers, deps.assets, artCache, degrees);
+      if (tp.bgColor) bg.drawRectangle({ x: 0, y: 0, width: size[0], height: size[1], color: hex(tp.bgColor, rgb) });
     } else {
-      if (!bgDoc) throw new Error(`la página ${template.pages[pi].id} no tiene fondo (ni PDF ni capas)`);
-      const pages = await out.copyPages(bgDoc, [pi]);
+      const src = tp.bgFile ? await docDe(tp.bgFile) : bgDoc;
+      if (!src) throw new Error(`la página ${tp.id} no tiene fondo (ni PDF ni capas)`);
+      const pages = await out.copyPages(src, [tp.bgPage !== undefined ? tp.bgPage : pi]);
       bg = pages[0];
       out.addPage(bg);
     }
+    /* Piezas de arte bajo los textos (capas «bajo»). Con fondo PDF también van encima del PDF. */
+    if (tp.layers) await dibujarCapas(out, bg, tp.layers, deps.assets, artCache, degrees);
     const PW = bg.getWidth(), PH = bg.getHeight();
     /* slot.xEn: posición horizontal solo en inglés (p. ej. el nombre abre la línea
        en inglés y va tras "A" en español). */
@@ -773,6 +790,8 @@ async function composeGame(deps) {
     }
     /* Marcas de mecánicas sobre la página (capa «over», p. ej. casillas marcadas). */
     correrMecanicas(template.pages[pi].id, 'over', bg, PW, PH);
+    /* Piezas de arte por encima de los textos (capas «sobre», F1.3b). */
+    if (tp.topLayers) await dibujarCapas(out, bg, tp.topLayers, deps.assets, artCache, degrees);
     /* Nota cifrada (p10): igual que en Node. */
     tick((pi + 1) / n);
   }

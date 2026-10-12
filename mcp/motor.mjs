@@ -30,7 +30,7 @@ export function cargarMotor() {
 /** Piezas del kit que usa el juego: id → { kind, bytes } (como espera composeGame). */
 function piezasDelKit(game) {
   const usadas = new Set();
-  for (const p of game.template.pages) for (const c of p.layers || []) usadas.add(c.asset);
+  for (const p of game.template.pages) for (const c of [...(p.layers || []), ...(p.topLayers || [])]) usadas.add(c.asset);
   const assets = {};
   if (!usadas.size) return assets;
   const file = manifiestoDelKit();
@@ -63,10 +63,11 @@ export async function componerJuego(game, { dir, lang, example = null, watermark
     values = ex.values[lang];
     photosPaths = ex.photos || {};
   }
-  let bgBytes = null;
-  let assets = {};
-  if (game.background.kind === 'pdf') bgBytes = fs.readFileSync(path.resolve(dir, game.background.file));
-  else assets = piezasDelKit(game);
+  /* F1.3b: todos los PDF de fondo (el del juego y los de cada página) y las piezas de arte del kit. */
+  const ficheros = [...new Set([game.background.file, ...deps.template.pages.map((p) => p.bgFile)].filter(Boolean))];
+  const bgFiles = Object.fromEntries(ficheros.map((f) => [f, fs.readFileSync(path.resolve(dir, f))]));
+  const bgBytes = game.background.kind === 'pdf' ? bgFiles[game.background.file] : null;
+  const assets = piezasDelKit({ template: deps.template });
 
   const fonts = {};
   for (const k of Object.keys(FUENTES)) {
@@ -77,7 +78,7 @@ export async function componerJuego(game, { dir, lang, example = null, watermark
     photos[campo] = { bytes: fs.readFileSync(path.resolve(dir, ruta)), format: /\.png$/i.test(ruta) ? 'png' : 'jpg' };
   }
   return PC.composeGame({
-    bgBytes, assets, fonts, template: deps.template, fixed: deps.fixed, i18n: deps.i18n, i18nAll: deps.i18nAll,
+    bgBytes, bgFiles, assets, fonts, template: deps.template, fixed: deps.fixed, i18n: deps.i18n, i18nAll: deps.i18nAll,
     lang, values, photos, mechanics: deps.mechanics, fields: deps.fields, watermark,
   });
 }

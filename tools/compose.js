@@ -47,11 +47,12 @@ function args() {
 
 /* Piezas de arte de las capas (T4.2): id → { kind, bytes }, leídas del manifiesto del kit (3.4). */
 function cargarKit(manifiesto, game) {
+  if (!game.template.pages.some((p) => (p.layers || []).length || (p.topLayers || []).length)) return {};
   const file = path.resolve(ROOT, manifiesto || 'assets/kit/manifest.json');
   const piezas = new Map((JSON.parse(fs.readFileSync(file, 'utf8')).pieces || []).map((p) => [p.id, p]));
   const assets = {};
   for (const p of game.template.pages) {
-    for (const capa of p.layers || []) {
+    for (const capa of [...(p.layers || []), ...(p.topLayers || [])]) {
       if (assets[capa.asset]) continue;
       const pieza = piezas.get(capa.asset);
       if (!pieza) throw new Error(`la pieza «${capa.asset}» no está en ${path.relative(ROOT, file)}`);
@@ -80,12 +81,12 @@ async function fromGame(o) {
   if (o.valuesGiven) values = o.values;
   /* --photos-file: rutas relativas a la raíz del repo; las del ejemplo, a la carpeta del juego. */
   if (o.photosGiven) photosPaths = Object.fromEntries(Object.entries(o.photos).map(([k, v]) => [k, path.resolve(ROOT, v)]));
-  let bgBytes = null;
-  let assets = {};
-  if (game.background.kind === 'pdf') bgBytes = fs.readFileSync(path.resolve(gameDir, game.background.file));
-  else if (game.background.kind === 'layers') assets = cargarKit(o.kit, game);
-  else throw new Error(`fondo desconocido: ${game.background.kind}`);
-  return { bgBytes, assets, template: deps.template, fixed: deps.fixed, i18n: deps.i18n, i18nAll: deps.i18nAll,
+  /* F1.3b: todos los PDF de fondo (el del juego y los de cada página) y las piezas de arte del kit. */
+  const ficheros = [...new Set([game.background.file, ...deps.template.pages.map((p) => p.bgFile)].filter(Boolean))];
+  const bgFiles = Object.fromEntries(ficheros.map((f) => [f, fs.readFileSync(path.resolve(gameDir, f))]));
+  const bgBytes = game.background.kind === 'pdf' ? bgFiles[game.background.file] : null;
+  const assets = cargarKit(o.kit, { template: deps.template });
+  return { bgBytes, bgFiles, assets, template: deps.template, fixed: deps.fixed, i18n: deps.i18n, i18nAll: deps.i18nAll,
     mechanics: deps.mechanics, fields: deps.fields, values, photosPaths, resolvePhoto: (p) => path.resolve(gameDir, p) };
 }
 
@@ -109,7 +110,7 @@ async function main() {
   }
 
   const res = await composeGame({
-    bgBytes: src.bgBytes, assets: src.assets,
+    bgBytes: src.bgBytes, bgFiles: src.bgFiles, assets: src.assets,
     fonts, template: src.template, fixed: src.fixed, i18n: src.i18n, i18nAll: src.i18nAll, lang: o.lang,
     values: src.values, photos, mechanics: src.mechanics || [], fields: src.fields || {},
   });
