@@ -1,709 +1,369 @@
-// Editor de juegos. T5.1: lista de juegos y páginas. T5.2: entrada con token y almacén de GitHub.
-// T5.3: lienzo de la página (huecos y capas), propiedades, deshacer y guardar. T5.4: kit (soltar
-// piezas añade capas). T5.5: formulario (secciones y campos) y mecánicas (params por clave).
-// T5.6: validación con enlaces a lo que falla, vista previa (marca «VISTA PREVIA»), envío al estudio
-// y aviso cuando otra versión del juego es más nueva (sondeo cada 15 s; ?sondeo=ms lo cambia).
-// Con ?almacen=memoria se usa el almacén en memoria (pruebas y demostraciones).
+// Creador de juegos (F4 de PLAN-CREADOR-2.md): sustituye al editor antiguo. Pantallas de la maqueta aprobada:
+// inicio y biblioteca, diseñar página, formulario, puzzles, vista previa y revisión de lo que hizo Claude.
+//
+// Los juegos son pme-game/2 en el repositorio privado de juegos (almacén de GitHub, con el token del cliente) o en
+// memoria (?almacen=memoria: pruebas y demostración). La lógica de edición es la misma que la de las herramientas de
+// Claude (tools/game/operaciones.mjs) y cada cambio se valida antes de aceptarlo con las mismas reglas: lo que guarda
+// el creador siempre se puede seguir editando desde Claude Code, y al revés.
+
 import { crearAlmacenMemoria } from './store/memory.js';
 import { crearAlmacenGitHub } from './store/github.js';
-import { pintarPagina, pintarPropiedades } from './lienzo.js';
-import { cargarKit, pintarKit } from './kit.js';
-import { componerVistaPrevia } from './vista-previa.js';
-import { reglasCruzadas, avisosGame } from './tools/game/reglas.mjs';
+import { cargarBiblioteca, TIPOS } from './biblioteca.js';
+import { cargarRegistro } from './fuentes.js';
+import { validar } from './validar.js';
+import { crearOperaciones } from './tools/game/operaciones.mjs';
+import { h, icono, enIdioma, haceCuanto, ESTADOS } from './dom.js';
+import { pintarInicio } from './vistas/inicio.js';
+import { pintarPaginas } from './vistas/paginas.js';
+import { pintarFormulario } from './vistas/formulario.js';
+import { pintarPuzzles } from './vistas/puzzles.js';
+import { pintarPrevia } from './vistas/previa.js';
+import { pintarRevision } from './vistas/revision.js';
 
-// Juegos del almacén en memoria (rutas relativas a esta página, en creator/).
-const FUENTES_MEMORIA = ['./games/final3/game.json', './tools/qa/fixtures/games/capas/game.json'];
 const CLAVE_TOKEN = 'pme-token';
 const CLAVE_REPO = 'pme-repo';
-const MAX_DESHACER = 200;
-const SONDEO_MS = Number(new URLSearchParams(location.search).get('sondeo')) || 15000;
-const TIPOS_CAMPO = ['name', 'text', 'long', 'number', 'photo', 'choice', 'multi'];
-const TIPOS_CON_TOPE = ['name', 'text', 'long'];
-// Manifiesto del kit: en la web, el de este repositorio; con ?kit= se cambia (pruebas).
-const KIT_POR_DEFECTO = './assets/kit/manifest.json';
+const PARAMS = new URLSearchParams(location.search);
+const GUARDAR_MS = Number(PARAMS.get('guardar')) || 2500;
+const SONDEO_MS = Number(PARAMS.get('sondeo')) || 20000;
+const MAX_DESHACER = 150;
+// Juegos del almacén en memoria (pruebas y demostración local).
+const FUENTES_MEMORIA = ['./ensayos/f3/cumple-mision-secreta/game.json', './games/final3/game.json'];
 
-let almacen = null;
-let kit = null;            // { piezas, porId, base }
-let juegoActual = null;    // juego en edición (copia; se guarda con el almacén)
-let revActual = null;      // rev leída: save() la exige
-let vista = 'paginas';     // 'paginas' | 'formulario' | 'mecanicas' | 'validar' | 'vista'
-let paginaIdx = null;      // página abierta (vista páginas)
-let seleccion = null;      // hueco seleccionado en la página
-let seccionIdx = null;     // sección abierta (vista formulario)
-let campoId = null;        // campo abierto (vista formulario)
-let mecanicaIdx = null;    // mecánica abierta (vista mecánicas)
-let pila = [];             // juegos anteriores, para deshacer
-let sucio = false;
-let novedades = false;     // hay una versión más nueva en el almacén (sondeo)
-let previa = { lang: null, ejemplo: null, url: null, paginas: 0, avisos: [], error: null };
-let envio = null;          // { url } tras enviar al estudio
-
+const leerSesion = (k) => { try { return sessionStorage.getItem(k); } catch { return null; } };
+const guardarSesion = (k, v) => { try { v === null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch { /* sin sessionStorage: se pedirá de nuevo */ } };
 const $ = (id) => document.getElementById(id);
+/** replaceChildren sin los huecos (null/false), que el DOM escribiría como texto. */
+const poner = (el, ...hijos) => el.replaceChildren(...hijos.flat().filter((x) => x !== null && x !== undefined && x !== false));
 
-function leerSesion(clave) {
-  try { return sessionStorage.getItem(clave); } catch { return null; }
-}
-function guardarSesion(clave, valor) {
-  try { valor === null ? sessionStorage.removeItem(clave) : sessionStorage.setItem(clave, valor); } catch { /* sin sessionStorage: se pedirá de nuevo */ }
-}
+/** Estado del creador. Las vistas lo reciben entero (app) y piden los cambios con app.cambiar(). */
+const app = {
+  almacen: null, biblioteca: null, registro: null, ops: null,
+  juegos: [], juego: null, rev: null, validacion: { errores: [], avisos: [] },
+  pila: [], sucio: false, guardando: false, guardadoEn: null, novedades: false,
+  ruta: { vista: 'inicio' },
+  ui: {}, // estado de cada vista (página abierta, elemento seleccionado, idioma, ejemplo…)
+};
 
-function mostrarEntrada(mensaje) {
-  $('principal').hidden = true;
-  $('salir').hidden = true;
-  $('entrada').hidden = false;
-  $('repo').value = leerSesion(CLAVE_REPO) || '';
-  $('entrada-error').hidden = !mensaje;
-  $('entrada-error').textContent = mensaje || '';
-}
+/* ---------------- Avisos flotantes y diálogos ---------------- */
 
-function mostrarPrincipal() {
-  $('entrada').hidden = true;
-  $('principal').hidden = false;
-  $('salir').hidden = false;
-  mostrarJuegos();
-  const url = new URLSearchParams(location.search).get('kit') || KIT_POR_DEFECTO;
-  cargarKit(new URL(url, location.href).href)
-    .then((k) => { kit = k; if (juegoActual && vista === 'paginas' && paginaIdx !== null) pintarDetalle(); })
-    .catch((e) => { kit = null; marcar(`Kit: ${e.message}`); });
-}
+app.aviso = function aviso(texto, { tipo = '', lista = null, ms = 5000 } = {}) {
+  const el = h('div', { class: `aviso-flotante ${tipo}` }, texto, lista && lista.length ? h('ul', {}, lista.slice(0, 6).map((x) => h('li', {}, x))) : null);
+  $('avisos').append(el);
+  setTimeout(() => el.remove(), ms + (lista ? 3000 : 0));
+};
 
-$('entrada').addEventListener('submit', (ev) => {
-  ev.preventDefault();
-  const repo = $('repo').value.trim();
-  const token = $('token').value.trim();
-  const [owner, nombre] = repo.split('/');
-  if (!owner || !nombre || !token) return mostrarEntrada('Hacen falta el repositorio y el token.');
-  guardarSesion(CLAVE_REPO, repo);
-  guardarSesion(CLAVE_TOKEN, token);
-  $('token').value = '';
-  almacen = crearAlmacenGitHub({ owner, repo: nombre, token });
-  mostrarPrincipal();
-});
+/** Abre el diálogo con un contenido; devuelve una promesa que resuelve con lo que pase a cerrar(valor). */
+app.dialogo = function dialogo(construir, { ancho = false } = {}) {
+  const d = $('dialogo');
+  d.className = ancho ? 'ancho' : '';
+  return new Promise((resolve) => {
+    const cerrar = (valor) => { d.close(); resolve(valor); };
+    d.replaceChildren(construir(cerrar));
+    d.onclose = () => resolve(undefined);
+    d.showModal();
+  });
+};
 
-$('salir').addEventListener('click', () => {
-  guardarSesion(CLAVE_TOKEN, null);
-  almacen = null;
-  juegoActual = null;
-  mostrarEntrada();
-});
+/* ---------------- Cambios: validar, deshacer, guardar ---------------- */
 
-function boton(texto, sub, activo, alPulsar) {
-  const li = document.createElement('li');
-  const b = document.createElement('button');
-  b.type = 'button';
-  b.textContent = texto;
-  b.setAttribute('aria-current', String(activo));
-  if (sub) { const s = document.createElement('small'); s.textContent = sub; b.append(s); }
-  b.addEventListener('click', alPulsar);
-  li.append(b);
-  return li;
+function revalidar() {
+  app.validacion = validar(app.juego, { biblioteca: app.biblioteca, registro: app.registro });
 }
 
-function error(donde, e) {
-  const p = document.createElement('li');
-  p.className = 'error';
-  p.textContent = `Error: ${e.message}`;
-  donde.replaceChildren(p);
-}
-
-function marcar(texto) { const e = $('estado'); if (e) e.textContent = texto; }
-
-async function mostrarJuegos() {
-  const ul = $('juegos');
+/**
+ * Aplica un cambio sobre una copia del juego. fn(copia) puede devolver un resultado; si lanza, el cambio no se hace.
+ * Si el cambio añade errores del validador, se rechaza (como las herramientas de Claude). copias: ficheros de la
+ * biblioteca que hay que llevar a la carpeta del juego (los devuelven las operaciones).
+ */
+app.cambiar = async function cambiar(descripcion, fn) {
+  if (!app.juego || app.soloLectura) return null;
+  const antes = app.juego;
+  const copia = structuredClone(antes);
+  let r;
   try {
-    const lista = await almacen.list();
-    ul.replaceChildren(...lista.map((j) => boton(j.name?.es || j.id, j.id, false, () => abrirJuego(j.id))));
+    r = await fn(copia);
   } catch (e) {
-    if (e.code === 'auth') { guardarSesion(CLAVE_TOKEN, null); almacen = null; return mostrarEntrada(e.message); }
-    error(ul, e);
+    app.aviso(`No se ha hecho: ${e.message}`, { tipo: 'error', lista: Array.isArray(e.detalles) ? e.detalles : null });
+    return null;
   }
-}
-
-async function abrirJuego(id) {
-  for (const li of $('juegos').children) li.querySelector('button').setAttribute('aria-current', String(li.querySelector('small').textContent === id));
-  try {
-    const { game, rev } = await almacen.load(id);
-    juegoActual = game;
-    revActual = rev;
-    pila = [];
-    sucio = false;
-    novedades = false;
-    envio = null;
-    vista = 'paginas';
-    paginaIdx = null; seleccion = null; seccionIdx = null; campoId = null; mecanicaIdx = null;
-    liberarPrevia();
-    mostrarVistas();
-    mostrarLista();
-    pintarDetalle();
-  } catch (e) { error($('paginas'), e); }
-}
-
-/* ---- Vistas: páginas, formulario y mecánicas ---- */
-
-function mostrarVistas() {
-  for (const b of document.querySelectorAll('#vistas button')) {
-    b.setAttribute('aria-pressed', String(b.dataset.vista === vista));
-    b.disabled = !juegoActual;
+  const despues = validar(copia, { biblioteca: app.biblioteca, registro: app.registro });
+  const nuevos = despues.errores.filter((e) => !app.validacion.errores.includes(e));
+  if (nuevos.length) {
+    app.aviso(`No se ha hecho «${descripcion}»: dejaría el juego con errores`, { tipo: 'error', lista: nuevos });
+    return null;
   }
-}
-
-function cambiarVista(v) {
-  vista = v;
-  seleccion = null;
-  mostrarVistas();
-  mostrarLista();
-  pintarDetalle();
-}
-
-for (const b of document.querySelectorAll('#vistas button')) {
-  b.addEventListener('click', () => cambiarVista(b.dataset.vista));
-}
-
-/** Lista de la columna central según la vista. */
-function mostrarLista() {
-  const ul = $('paginas');
-  if (!juegoActual) { ul.replaceChildren(); return; }
-  if (vista === 'paginas') {
-    ul.replaceChildren(...juegoActual.template.pages.map((p, i) => {
-      const sub = `${(p.slots || []).length} huecos · ${(p.layers || []).length} capas`;
-      return boton(p.title || p.id, sub, i === paginaIdx, () => { paginaIdx = i; seleccion = null; mostrarLista(); pintarDetalle(); });
-    }));
-  } else if (vista === 'formulario') {
-    ul.replaceChildren(...juegoActual.form.sections.map((s, i) => {
-      const titulo = s.title?.es || s.id;
-      return boton(titulo, `${(s.fields || []).length} campos`, i === seccionIdx, () => { seccionIdx = i; campoId = null; mostrarLista(); pintarDetalle(); });
-    }));
-  } else if (vista === 'mecanicas') {
-    ul.replaceChildren(...juegoActual.mechanics.map((m, i) => boton(m.type, `página ${m.page}`, i === mecanicaIdx,
-      () => { mecanicaIdx = i; mostrarLista(); pintarDetalle(); })));
-  } else {
-    ul.replaceChildren();
+  const copias = r && r.copias;
+  if (copias && copias.length) {
+    try {
+      for (const c of copias) {
+        const bytes = await app.biblioteca.bytes(c.tipo, c.coleccion, c.rel);
+        await app.almacen.escribirFichero(app.juego.id, c.destino, bytes, `Copiar ${c.destino} de la biblioteca`, { sobrescribir: false });
+      }
+    } catch (e) {
+      app.aviso(`No se ha hecho: no se pudo copiar un fichero de la biblioteca (${e.message})`, { tipo: 'error' });
+      return null;
+    }
   }
-}
+  app.pila.push({ juego: antes, descripcion });
+  if (app.pila.length > MAX_DESHACER) app.pila.shift();
+  app.juego = copia;
+  app.validacion = despues;
+  marcarSucio(descripcion);
+  repintar();
+  return r && Object.prototype.hasOwnProperty.call(r, 'resultado') ? r.resultado : r;
+};
 
-/** Contenido de la columna derecha: barra (deshacer, guardar, estado) y la vista abierta. */
-function pintarDetalle() {
-  const cont = $('detalle');
-  const barra = document.createElement('div');
-  barra.className = 'barra';
-  const deshacerBtn = Object.assign(document.createElement('button'), { type: 'button', textContent: 'Deshacer', disabled: !pila.length });
-  deshacerBtn.addEventListener('click', deshacer);
-  const guardarBtn = Object.assign(document.createElement('button'), { type: 'button', textContent: 'Guardar' });
-  guardarBtn.addEventListener('click', guardar);
-  const estado = Object.assign(document.createElement('span'), { id: 'estado', className: 'nota' });
-  estado.textContent = sucio ? 'Cambios sin guardar' : '';
-  barra.append(deshacerBtn, guardarBtn, estado);
-  if (novedades) barra.append(avisoNovedades());
+app.deshacer = function deshacer() {
+  const ultimo = app.pila.pop();
+  if (!ultimo) return;
+  app.juego = ultimo.juego;
+  revalidar();
+  marcarSucio(`Deshacer: ${ultimo.descripcion}`);
+  app.aviso(`Deshecho: ${ultimo.descripcion}`);
+  repintar();
+};
 
-  const cuerpo = document.createElement('div');
-  if (!juegoActual) {
-    cuerpo.append(nota('Elige un juego.'));
-  } else if (vista === 'paginas') {
-    if (paginaIdx === null) cuerpo.append(nota('Elige una página.'));
-    else pintarEditorPagina(cuerpo);
-  } else if (vista === 'formulario') {
-    pintarFormulario(cuerpo);
-  } else if (vista === 'mecanicas') {
-    pintarMecanicas(cuerpo);
-  } else if (vista === 'validar') {
-    pintarValidacion(cuerpo);
-  } else {
-    pintarVistaPrevia(cuerpo);
-  }
-  cont.replaceChildren(barra, cuerpo);
-}
-
-function nota(texto) {
-  return Object.assign(document.createElement('p'), { className: 'nota', textContent: texto });
-}
-
-/* ---- Cambios y deshacer (el juego entero: páginas, formulario y mecánicas) ---- */
-
-function cambiar(fn) {
-  pila.push(structuredClone(juegoActual));
-  if (pila.length > MAX_DESHACER) pila.shift();
-  fn(juegoActual);
-  sucio = true;
-  mostrarLista();
-  pintarDetalle();
-}
-
-function deshacer() {
-  if (!pila.length) return;
-  juegoActual = pila.pop();
-  sucio = pila.length > 0;
-  seleccion = null;
-  mostrarLista();
-  pintarDetalle();
+let temporizador = null;
+let ultimaDescripcion = '';
+function marcarSucio(descripcion) {
+  app.sucio = true;
+  ultimaDescripcion = descripcion;
+  clearTimeout(temporizador);
+  temporizador = setTimeout(guardar, GUARDAR_MS);
+  pintarCabecera();
 }
 
 async function guardar() {
-  if (!juegoActual) return;
+  if (!app.sucio || app.guardando || !app.juego) return;
+  app.guardando = true;
+  pintarCabecera();
   try {
-    const r = await almacen.save(juegoActual.id, juegoActual, revActual, `Editar ${juegoActual.id}`);
-    revActual = r.rev;
-    sucio = false;
-    marcar('Guardado');
+    const { rev } = await app.almacen.save(app.juego.id, app.juego, app.rev, `Creador: ${ultimaDescripcion}`);
+    app.rev = rev;
+    app.sucio = false;
+    app.guardadoEn = new Date();
   } catch (e) {
-    marcar(e.code === 'conflict' ? 'Hay cambios nuevos en el juego: recarga para verlos' : `No se guardó: ${e.message}`);
+    if (e.code === 'conflict') { app.novedades = true; app.aviso('Hay una versión más nueva del juego (quizá de Claude). Tus últimos cambios no se han guardado: recarga para verla.', { tipo: 'error', ms: 9000 }); }
+    else app.aviso(`No se pudo guardar: ${e.message}`, { tipo: 'error' });
+  } finally {
+    app.guardando = false;
+    pintarCabecera();
   }
 }
+app.guardarYa = async () => { clearTimeout(temporizador); await guardar(); };
 
-/* ---- Páginas: lienzo, propiedades y kit (T5.3, T5.4) ---- */
-
-function paginaActual() { return juegoActual.template.pages[paginaIdx]; }
-
-function pintarEditorPagina(cont) {
-  const pagina = paginaActual();
-  const zona = document.createElement('div');
-  zona.className = 'zona-lienzo';
-  const propiedades = document.createElement('div');
-  propiedades.className = 'propiedades-caja';
-  const operaciones = {
-    seleccion,
-    alSeleccionar(k) { seleccion = k; pintarDetalle(); },
-    alMover(k, cambios) { cambiar((j) => Object.assign(j.template.pages[paginaIdx].slots[k], cambios)); },
-    alRedimensionar(k, cambios) { cambiar((j) => Object.assign(j.template.pages[paginaIdx].slots[k], cambios)); },
-    alSoltarPieza(id, xPct, yPct) { soltarPieza(id, xPct, yPct); },
-  };
-  pintarPagina(zona, pagina, operaciones);
-  if (seleccion !== null && pagina.slots[seleccion]) {
-    pintarPropiedades(propiedades, pagina.slots[seleccion], seleccion, (k, campo, valor) => {
-      cambiar((j) => { j.template.pages[paginaIdx].slots[k][campo] = valor; });
-    });
-  } else {
-    propiedades.append(nota('Elige un hueco para ver sus propiedades.'));
-  }
-  if (kit) {
-    const panelKit = document.createElement('div');
-    pintarKit(panelKit, kit);
-    propiedades.append(panelKit);
-  }
-  const layout = document.createElement('div');
-  layout.className = 'editor';
-  layout.append(zona, propiedades);
-  cont.append(layout);
-}
-
-/** Añade una capa con la pieza del kit, centrada en el punto soltado (solo en juegos de fondo por capas). */
-function soltarPieza(id, xPct, yPct) {
-  if (juegoActual.background?.kind !== 'layers') {
-    return marcar('Este juego usa un PDF de fondo: pásalo a fondo por capas para añadir piezas.');
-  }
-  const pieza = kit && kit.porId.get(id);
-  if (!pieza) return marcar(`No está en el kit: ${id}`);
-  const w = Math.min(100, Math.round((pieza.widthMm / 210) * 10000) / 100);
-  const h = Math.min(100, Math.round((pieza.heightMm / 297) * 10000) / 100);
-  const x = Math.round(Math.min(Math.max(xPct - w / 2, 0), 100 - w) * 100) / 100;
-  const y = Math.round(Math.min(Math.max(yPct - h / 2, 0), 100 - h) * 100) / 100;
-  cambiar((j) => { const p = j.template.pages[paginaIdx]; p.layers = [...(p.layers || []), { asset: id, x, y, w, h }]; });
-}
-
-/* ---- Formulario: secciones y campos (T5.5) ---- */
-
-function pintarFormulario(cont) {
-  if (seccionIdx === null) { cont.append(nota('Elige una sección.')); return; }
-  const seccion = juegoActual.form.sections[seccionIdx];
-  const h = document.createElement('h3');
-  h.textContent = seccion.title?.es || seccion.id;
-  const lista = document.createElement('ul');
-  lista.className = 'campos-seccion';
-  for (const id of seccion.fields || []) {
-    const li = document.createElement('li');
-    const b = Object.assign(document.createElement('button'), { type: 'button', textContent: id });
-    b.setAttribute('aria-current', String(id === campoId));
-    b.addEventListener('click', () => { campoId = id; pintarDetalle(); });
-    li.append(b);
-    lista.append(li);
-  }
-  cont.append(h, lista);
-  if (campoId && juegoActual.fields[campoId]) pintarCampo(cont, campoId);
-  else cont.append(nota('Elige un campo para editarlo.'));
-}
-
-function pintarCampo(cont, id) {
-  const campo = juegoActual.fields[id];
-  const form = document.createElement('form');
-  form.className = 'propiedades campo';
-  const h = document.createElement('h3');
-  h.textContent = `Campo ${id}`;
-
-  // Cada control va con su etiqueta (htmlFor), para lectores de pantalla y para las pruebas.
-  let n = 0;
-  const fila = (texto, control) => {
-    const label = document.createElement('label');
-    label.textContent = texto;
-    n += 1;
-    control.id = `campo-${id}-${n}`;
-    label.htmlFor = control.id;
-    form.append(label, control);
-    return control;
-  };
-  // Un cambio que no altera el valor no se registra ni vuelve a pintar (el navegador puede repetir el
-  // evento «change» al quitar el control enfocado, y repintar dentro de otro repintado falla).
-  const cambiarCampo = (fn, igual) => {
-    if (igual && igual()) return;
-    cambiar((j) => fn(j.fields[id]));
-  };
-  const actual = () => juegoActual.fields[id];
-
-  const tipo = document.createElement('select');
-  for (const t of TIPOS_CAMPO) tipo.append(new Option(t, t));
-  tipo.value = campo.type;
-  tipo.addEventListener('change', () => cambiarCampo((c) => { c.type = tipo.value; }, () => actual().type === tipo.value));
-  fila('Tipo', tipo);
-
-  const obligatorio = document.createElement('input');
-  obligatorio.type = 'checkbox';
-  obligatorio.checked = !!campo.required;
-  obligatorio.addEventListener('change', () => cambiarCampo((c) => { c.required = obligatorio.checked; }, () => !!actual().required === obligatorio.checked));
-  fila('Obligatorio', obligatorio);
-
-  if (TIPOS_CON_TOPE.includes(campo.type)) {
-    const cap = document.createElement('input');
-    cap.type = 'number';
-    cap.min = '1';
-    cap.step = '1';
-    cap.value = campo.cap ?? '';
-    cap.addEventListener('change', () => { if (cap.value !== '') cambiarCampo((c) => { c.cap = Number(cap.value); }, () => actual().cap === Number(cap.value)); });
-    fila('Tope de caracteres (cap)', cap);
-  }
-
-  for (const lang of juegoActual.languages) {
-    const q = document.createElement('input');
-    q.type = 'text';
-    q.value = campo.q?.[lang] ?? '';
-    q.addEventListener('change', () => cambiarCampo((c) => { c.q = { ...(c.q || {}), [lang]: q.value }; }, () => (actual().q?.[lang] ?? '') === q.value));
-    fila(`Pregunta (${lang})`, q);
-    const corta = document.createElement('input');
-    corta.type = 'text';
-    corta.value = campo.corta?.[lang] ?? '';
-    corta.addEventListener('change', () => cambiarCampo((c) => { c.corta = { ...(c.corta || {}), [lang]: corta.value }; }, () => (actual().corta?.[lang] ?? '') === corta.value));
-    fila(`Etiqueta corta (${lang})`, corta);
-  }
-  cont.append(h, form);
-}
-
-/* ---- Mecánicas: params por clave, validación de la mecánica (T5.5) ---- */
-
-function pintarMecanicas(cont) {
-  if (mecanicaIdx === null) { cont.append(nota('Elige una mecánica.')); return; }
-  const m = juegoActual.mechanics[mecanicaIdx];
-  const def = globalThis.PMEMechanics && globalThis.PMEMechanics[m.type];
-  const h = document.createElement('h3');
-  h.textContent = def ? (def.label?.es || m.type) : `Mecánica desconocida: ${m.type}`;
-  cont.append(h, nota(`Tipo ${m.type} · página ${m.page}`));
-  if (!def) return;
-
-  // Claves: las obligatorias de la mecánica y las que ya tiene el juego. Cada una se edita como JSON.
-  const obligatorias = (def.params && def.params.required) || [];
-  const claves = [...new Set([...obligatorias, ...Object.keys(m.params || {})])];
-  const form = document.createElement('form');
-  form.className = 'propiedades mecanica';
-  const errores = document.createElement('ul');
-  errores.className = 'errores-mecanica';
-  const controles = {};
-  for (const clave of claves) {
-    const label = document.createElement('label');
-    label.htmlFor = `param-${clave}`;
-    label.textContent = clave + (obligatorias.includes(clave) ? ' (obligatorio)' : '');
-    const area = document.createElement('textarea');
-    area.id = `param-${clave}`;
-    area.rows = 2;
-    const actual = m.params && clave in m.params ? m.params[clave] : undefined;
-    // Texto plano para las cadenas (p. ej. field); JSON para el resto (listas, números, objetos).
-    area.value = typeof actual === 'string' ? actual : actual === undefined ? '' : JSON.stringify(actual);
-    controles[clave] = area;
-    form.append(label, area);
-  }
-  const aplicar = Object.assign(document.createElement('button'), { type: 'button', textContent: 'Aplicar parámetros' });
-  const aviso = Object.assign(document.createElement('p'), { className: 'error', hidden: true });
-  aplicar.addEventListener('click', () => {
-    const nuevos = {};
-    for (const [clave, area] of Object.entries(controles)) {
-      if (area.value.trim() === '') continue;
-      const original = m.params ? m.params[clave] : undefined;
-      if (typeof original === 'string') { nuevos[clave] = area.value.trim(); continue; }
-      try { nuevos[clave] = JSON.parse(area.value); } catch {
-        // Sin valor previo, un texto que no es JSON se toma como cadena.
-        if (original === undefined) { nuevos[clave] = area.value.trim(); continue; }
-        aviso.hidden = false;
-        aviso.textContent = `«${clave}» no es JSON válido`;
-        return;
-      }
-    }
-    if (obligatorias.some((c) => !(c in nuevos))) {
-      aviso.hidden = false;
-      aviso.textContent = `faltan parámetros obligatorios: ${obligatorias.filter((c) => !(c in nuevos)).join(', ')}`;
-      return;
-    }
-    cambiar((j) => { j.mechanics[mecanicaIdx].params = nuevos; });
-  });
-  form.append(aplicar);
-  cont.append(form, aviso);
-
-  // Validación de la propia mecánica con el juego actual (la misma que usa el validador).
-  const problemas = typeof def.validate === 'function' ? def.validate(juegoActual, m) : [];
-  if (problemas.length) {
-    for (const e of problemas) {
-      const li = document.createElement('li');
-      li.className = 'error';
-      li.textContent = e.message;
-      errores.append(li);
-    }
-  } else {
-    const li = document.createElement('li');
-    li.className = 'nota';
-    li.textContent = 'Sin problemas.';
-    errores.append(li);
-  }
-  cont.append(errores);
-}
-
-/* ---- Validación y envío al estudio (T5.6) ---- */
-
-/** Errores y avisos del juego, con las mismas reglas que el validador (la parte que no usa ficheros). */
-function validarJuego() {
-  const kitInfo = kit ? { errores: kit.errores, piezas: kit.porId } : null;
-  return {
-    errores: reglasCruzadas(juegoActual, { submit: true, kit: kitInfo, kitNombre: 'assets/kit/manifest.json' }),
-    avisos: avisosGame(juegoActual),
-  };
-}
-
-/** Dónde está lo que dice un mensaje del validador («fields/X/…», «mechanics/3 …», «template/p1: …»). */
-function destinoDe(texto) {
-  let m;
-  if ((m = /^fields\/([^/:\s]+)/.exec(texto))) return { vista: 'formulario', campo: m[1] };
-  if ((m = /^form\/([^/:\s]+)/.exec(texto))) return { vista: 'formulario', seccion: m[1] };
-  if ((m = /^mechanics\/(\d+)/.exec(texto))) return { vista: 'mecanicas', mecanica: Number(m[1]) };
-  if ((m = /^template\/pages\/([^/:\s]+)/.exec(texto)) || (m = /^template\/([^/:\s]+)/.exec(texto))) return { vista: 'paginas', pagina: m[1] };
-  if ((m = /^el campo «([^»]+)»/.exec(texto))) return { vista: 'formulario', campo: m[1] };
-  return null;
-}
-
-const indiceONull = (i) => (i >= 0 ? i : null);
-
-/** Abre la vista y el elemento de un mensaje del validador. */
-function irA(d) {
-  if (d.vista === 'formulario') {
-    if (d.campo) {
-      seccionIdx = indiceONull(juegoActual.form.sections.findIndex((s) => (s.fields || []).includes(d.campo)));
-      campoId = d.campo;
-    } else {
-      seccionIdx = indiceONull(juegoActual.form.sections.findIndex((s) => s.id === d.seccion));
-      campoId = null;
-    }
-  } else if (d.vista === 'mecanicas') {
-    mecanicaIdx = d.mecanica < juegoActual.mechanics.length ? d.mecanica : null;
-  } else if (d.vista === 'paginas') {
-    paginaIdx = indiceONull(juegoActual.template.pages.findIndex((p) => p.id === d.pagina));
-    seleccion = null;
-  }
-  vista = d.vista;
-  mostrarVistas();
-  mostrarLista();
-  pintarDetalle();
-}
-
-function listaProblemas(problemas, clase) {
-  const ul = document.createElement('ul');
-  ul.className = 'lista-problemas';
-  for (const texto of problemas) {
-    const li = document.createElement('li');
-    li.className = clase;
-    const d = destinoDe(texto);
-    if (d) {
-      const b = Object.assign(document.createElement('button'), { type: 'button', textContent: texto });
-      b.addEventListener('click', () => irA(d));
-      li.append(b);
-    } else {
-      li.textContent = texto;
-    }
-    ul.append(li);
-  }
-  return ul;
-}
-
-function pintarValidacion(cont) {
-  const { errores, avisos } = validarJuego();
-  const enviable = juegoActual.status === 'borrador' || juegoActual.status === 'enviado';
-  cont.append(Object.assign(document.createElement('h3'), { textContent: 'Para enviar al estudio' }));
-  if (errores.length) {
-    cont.append(nota(`Faltan ${errores.length} cosa(s). Pulsa una para ir a ella.`), listaProblemas(errores, 'error'));
-  } else {
-    cont.append(nota('Sin errores: el juego cumple lo necesario para enviarlo.'));
-  }
-  if (avisos.length) {
-    cont.append(Object.assign(document.createElement('h3'), { textContent: 'Avisos' }), listaProblemas(avisos, 'nota'));
-  }
-
-  const barra = document.createElement('div');
-  barra.className = 'barra';
-  const enviarBtn = Object.assign(document.createElement('button'), { type: 'button', textContent: 'Enviar al estudio' });
-  enviarBtn.disabled = errores.length > 0 || !enviable || !!envio || !almacen;
-  enviarBtn.addEventListener('click', enviarAlEstudio);
-  barra.append(enviarBtn);
-  cont.append(barra);
-  if (!enviable) cont.append(nota(`Este juego ya está ${juegoActual.status}.`));
-  if (envio) {
-    const p = document.createElement('p');
-    p.textContent = 'Enviado. Petición: ';
-    if (/^https?:/.test(envio.url)) {
-      const a = Object.assign(document.createElement('a'), { href: envio.url, target: '_blank', rel: 'noopener', textContent: 'abrir' });
-      p.append(a);
-    } else {
-      p.append(envio.url);
-    }
-    cont.append(p);
-  }
-}
-
-/** Marca el juego como enviado, lo guarda y abre la petición al estudio (contrato 3.6). */
-async function enviarAlEstudio() {
-  if (!juegoActual || envio) return;
-  if (validarJuego().errores.length) { marcar('No se envía: faltan cosas (ver Validar)'); return pintarDetalle(); }
-  const id = juegoActual.id;
-  try {
-    if (juegoActual.status === 'borrador') {
-      juegoActual.status = 'enviado';
-      try {
-        const r = await almacen.save(id, juegoActual, revActual, `Enviar ${id} al estudio`);
-        revActual = r.rev;
-        sucio = false;
-      } catch (e) {
-        juegoActual.status = 'borrador';
-        throw e;
-      }
-    }
-    const s = await almacen.submit(id, `Juego ${id} listo para revisar`);
-    envio = { url: s.url };
-    marcar('Enviado al estudio');
-  } catch (e) {
-    marcar(e.code === 'conflict' ? 'Hay cambios nuevos en el juego: recarga antes de enviar' : `No se envió: ${e.message}`);
-  }
-  pintarDetalle();
-}
-
-/* ---- Vista previa (T5.6): el mismo motor que el CLI, con marca «VISTA PREVIA» ---- */
-
-function liberarPrevia() {
-  if (previa.url) URL.revokeObjectURL(previa.url);
-  previa = { ...previa, url: null, paginas: 0, avisos: [], error: null };
-}
-
-function pintarVistaPrevia(cont) {
-  const form = document.createElement('form');
-  form.className = 'propiedades previa';
-  const h = Object.assign(document.createElement('h3'), { textContent: 'Vista previa' });
-
-  const selIdioma = document.createElement('select');
-  selIdioma.id = 'previa-idioma';
-  for (const l of juegoActual.languages) selIdioma.append(new Option(l, l));
-  selIdioma.value = juegoActual.languages.includes(previa.lang) ? previa.lang : juegoActual.languages[0];
-  const selEjemplo = document.createElement('select');
-  selEjemplo.id = 'previa-ejemplo';
-  for (const ex of juegoActual.examples || []) selEjemplo.append(new Option(`Ejemplo ${ex.id}`, ex.id));
-  selEjemplo.value = (juegoActual.examples || []).some((e) => e.id === previa.ejemplo) ? previa.ejemplo : (juegoActual.examples?.[0]?.id ?? '');
-  const etiqueta = (texto, control) => {
-    const label = Object.assign(document.createElement('label'), { textContent: texto, htmlFor: control.id });
-    form.append(label, control);
-  };
-  etiqueta('Idioma', selIdioma);
-  etiqueta('Ejemplo', selEjemplo);
-
-  const componer = Object.assign(document.createElement('button'), { type: 'submit', textContent: 'Componer vista previa' });
-  form.append(componer);
-  const estado = Object.assign(document.createElement('p'), { className: 'nota', id: 'previa-estado' });
-  form.append(estado);
-
-  form.addEventListener('submit', async (ev) => {
-    ev.preventDefault();
-    if (!juegoActual.examples?.length) { estado.textContent = 'El juego no tiene ejemplos.'; return; }
-    estado.textContent = 'Componiendo…';
-    componer.disabled = true;
-    const lang = selIdioma.value;
-    const ejemplo = selEjemplo.value;
-    try {
-      const r = await componerVistaPrevia({ juego: juegoActual, lang, ejemplo, almacen, kit });
-      liberarPrevia();
-      previa = { lang, ejemplo, url: r.url, paginas: r.paginas, avisos: r.avisos, error: null };
-    } catch (e) {
-      liberarPrevia();
-      previa = { ...previa, lang, ejemplo, error: e.message };
-    }
-    pintarDetalle();
-  });
-
-  cont.append(h, form);
-  if (previa.error) {
-    cont.append(Object.assign(document.createElement('p'), { className: 'error', textContent: `No se pudo componer: ${previa.error}` }));
-    return;
-  }
-  if (previa.url) {
-    cont.append(nota(`${previa.paginas} página(s) · ${previa.lang} · ejemplo ${previa.ejemplo} (con los cambios sin guardar)`));
-    const marco = document.createElement('iframe');
-    marco.className = 'previa-marco';
-    marco.title = 'Vista previa del juego';
-    marco.src = previa.url;
-    cont.append(marco);
-    if (previa.avisos.length) cont.append(listaProblemas(previa.avisos, 'nota'));
-  }
-}
-
-/* ---- Sondeo: aviso si otra versión del juego es más nueva (T5.6) ---- */
-
-async function comprobarNovedades() {
-  if (!almacen || !juegoActual || novedades) return;
-  try {
-    const rev = await almacen.latestRev(juegoActual.id);
-    if (rev && revActual && rev !== revActual) {
-      novedades = true;
-      const barra = document.querySelector('#detalle .barra');
-      if (barra) barra.append(avisoNovedades());
-    }
-  } catch { /* sin red o sin permiso: se vuelve a probar en el siguiente sondeo */ }
-}
-
-function avisoNovedades() {
-  const aviso = Object.assign(document.createElement('p'), { className: 'aviso-novedades', role: 'status' });
-  aviso.append('Hay cambios nuevos en el juego: ');
-  const recargar = Object.assign(document.createElement('button'), { type: 'button', textContent: 'recargar' });
-  recargar.addEventListener('click', () => abrirJuego(juegoActual.id));
-  aviso.append(recargar, sucio ? ' (se descartan los cambios sin guardar)' : '');
-  return aviso;
-}
-
-document.addEventListener('keydown', (ev) => {
-  if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'z' && !ev.target.matches('input, textarea')) {
-    ev.preventDefault();
-    deshacer();
-  }
-});
-
-// Acceso de pruebas: el juego y el almacén en uso.
-window.pmeCreador = {
-  get juego() { return juegoActual; },
-  get almacen() { return almacen; },
-  get sucio() { return sucio; },
-  get novedades() { return novedades; },
-  get envio() { return envio; },
+/** Recarga el juego desde el almacén (tras un aviso de versión nueva). */
+app.recargar = async function recargar() {
+  const { game, rev } = await app.almacen.load(app.juego.id);
+  app.juego = game;
+  app.rev = rev;
+  app.sucio = false;
+  app.novedades = false;
+  app.pila = [];
+  revalidar();
+  repintar();
 };
 
-// Arranque (al final: usa las funciones y constantes de arriba).
-setInterval(comprobarNovedades, SONDEO_MS);
-const params = new URLSearchParams(location.search);
-if (params.get('almacen') === 'memoria') {
-  almacen = crearAlmacenMemoria(FUENTES_MEMORIA);
-  mostrarPrincipal();
-} else {
-  const token = leerSesion(CLAVE_TOKEN);
-  const repo = leerSesion(CLAVE_REPO);
-  if (token && repo && repo.includes('/')) {
-    const [owner, nombre] = repo.split('/');
-    almacen = crearAlmacenGitHub({ owner, repo: nombre, token });
-    mostrarPrincipal();
-  } else {
-    mostrarEntrada();
+setInterval(async () => {
+  if (!app.juego || app.sucio || app.guardando || app.novedades) return;
+  try {
+    if ((await app.almacen.latestRev(app.juego.id)) !== app.rev) { app.novedades = true; pintarCabecera(); }
+  } catch { /* sin red: se intenta en el siguiente sondeo */ }
+}, SONDEO_MS);
+
+window.addEventListener('beforeunload', (e) => { if (app.sucio) { guardar(); e.preventDefault(); } });
+document.addEventListener('keydown', (e) => {
+  const enCampo = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement && document.activeElement.tagName);
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !enCampo) { e.preventDefault(); app.deshacer(); }
+});
+
+/* ---------------- Navegación ---------------- */
+
+function leerRuta() {
+  const partes = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
+  if (partes[0] === 'juego' && partes[1]) return { vista: partes[2] || 'paginas', id: partes[1], sub: partes[3] || null };
+  return { vista: 'inicio' };
+}
+app.navegar = (hash) => { if (location.hash === hash) repintar(); else location.hash = hash; };
+app.rutaJuego = (vista, sub = null) => `#/juego/${encodeURIComponent(app.juego.id)}/${vista}${sub ? `/${encodeURIComponent(sub)}` : ''}`;
+
+async function alCambiarRuta() {
+  const ruta = leerRuta();
+  if (app.sucio && (!ruta.id || !app.juego || ruta.id !== app.juego.id)) await app.guardarYa();
+  app.ruta = ruta;
+  if (ruta.id && (!app.juego || app.juego.id !== ruta.id)) {
+    try {
+      const { game, rev } = await app.almacen.load(ruta.id);
+      app.juego = game;
+      app.rev = rev;
+      app.pila = [];
+      app.sucio = false;
+      app.novedades = false;
+      app.ui = {};
+      app.soloLectura = game.schema !== 'pme-game/2' || game.status !== 'borrador';
+      revalidar();
+    } catch (e) {
+      app.aviso(`No se pudo abrir el juego: ${e.message}`, { tipo: 'error' });
+      location.hash = '#/';
+      return;
+    }
+  }
+  if (!ruta.id) { app.juego = null; app.juegos = await app.almacen.list().catch(() => []); }
+  repintar();
+}
+window.addEventListener('hashchange', alCambiarRuta);
+
+/* ---------------- Cabecera ---------------- */
+
+function pintarCabecera() {
+  const cab = $('cabecera');
+  if (!app.almacen) { cab.replaceChildren(marca()); return; }
+  if (!app.juego) {
+    poner(cab, marca(),
+      h('nav', { class: 'nav', 'aria-label': 'Principal' },
+        h('a', { href: '#/', 'aria-current': app.ruta.vista === 'inicio' ? 'page' : null }, 'Biblioteca'),
+        h('a', { href: './guia-token.html', target: '_blank', rel: 'noopener' }, 'Ayuda')),
+      h('div', { class: 'relleno' }),
+      h('span', { class: 'repo-chip' }, app.almacen.tipo === 'memoria' ? 'Demostración (sin guardar en GitHub)' : `Repositorio ${leerSesion(CLAVE_REPO) || ''}`),
+      app.almacen.tipo === 'github' ? h('button', { class: 'boton pequeno', type: 'button', onclick: salir }, 'Salir') : null);
+    return;
+  }
+  const g = app.juego;
+  const porRevisar = Math.max(0, (g.changes || []).length - ((g.review && g.review.changes) || 0));
+  const estado = app.soloLectura
+    ? (g.schema !== 'pme-game/2' ? 'Formato antiguo: solo lectura (duplícalo para editarlo)' : `${ESTADOS[g.status] || g.status}: solo lectura`)
+    : app.guardando ? 'Guardando…' : app.sucio ? 'Cambios sin guardar' : app.guardadoEn ? `Borrador · guardado ${haceCuanto(app.guardadoEn)}` : 'Borrador';
+  const enlace = (vista, texto, extra = null, clase = '') => h('a', { href: app.rutaJuego(vista), class: clase, 'aria-current': app.ruta.vista === vista ? 'page' : null }, texto, extra);
+  poner(cab,
+    h('a', { href: '#/', class: 'boton-icono', 'aria-label': 'Volver a la biblioteca', style: { background: 'var(--verde)', borderColor: 'var(--verde)' } }, icono('atras', { color: '#FFFFFF', tam: 18 })),
+    h('div', { class: 'juego-titulo' }, h('span', { class: 'nombre' }, enIdioma(g.name)), h('span', { class: 'estado', 'data-prueba': 'estado-guardado' }, estado)),
+    h('nav', { class: 'nav', 'aria-label': 'Partes del juego' },
+      enlace('paginas', 'Páginas'), enlace('formulario', 'Formulario'), enlace('puzzles', 'Puzzles y soluciones'), enlace('previa', 'Vista previa'),
+      enlace('revisar', 'Revisar', porRevisar ? h('span', { class: 'contador' }, String(porRevisar)) : null, 'revisar')),
+    h('div', { class: 'relleno' }),
+    app.novedades ? h('button', { class: 'boton contorno-claude', type: 'button', onclick: () => app.recargar() }, 'Hay cambios nuevos: recargar') : null,
+    app.validacion.errores.length ? h('a', { class: 'pastilla error', href: app.rutaJuego('previa') }, `${app.validacion.errores.length} errores`) : null,
+    !app.soloLectura ? h('button', { class: 'boton', type: 'button', disabled: !app.pila.length, onclick: () => app.deshacer(), title: 'Deshacer (Ctrl+Z)' }, icono('deshacer', { tam: 18 }), 'Deshacer') : null,
+    !app.soloLectura ? h('button', { class: 'boton primario', type: 'button', onclick: enviarAlEstudio }, 'Enviar al estudio') : null);
+}
+
+function marca() {
+  return h('a', { class: 'marca', href: '#/' },
+    h('span', { class: 'logo' }, icono('llave', { color: '#FFFFFF', tam: 20 })),
+    h('span', { class: 'nombre' }, 'PrintMyEscape ', h('span', {}, 'Creador')));
+}
+
+async function enviarAlEstudio() {
+  await app.guardarYa();
+  const v = validar(app.juego, { biblioteca: app.biblioteca, registro: app.registro, submit: true });
+  if (v.errores.length) {
+    app.aviso('Aún no se puede enviar: hay que corregir esto', { tipo: 'error', lista: v.errores, ms: 9000 });
+    app.navegar(app.rutaJuego('previa'));
+    return;
+  }
+  const nota = await app.dialogo((cerrar) => {
+    const ta = h('textarea', { rows: 4, id: 'nota-envio' });
+    return h('form', { class: 'dialogo', method: 'dialog', onsubmit: (e) => { e.preventDefault(); cerrar(ta.value.trim() || 'Juego listo para revisar.'); } },
+      h('h2', {}, 'Enviar al estudio'),
+      h('p', { class: 'tenue' }, 'El estudio recibe el juego para revisarlo y prepararlo. Mientras, ya no se puede editar aquí.'),
+      h('div', { class: 'campo' }, h('label', { for: 'nota-envio' }, 'Nota para el estudio (opcional)'), ta),
+      h('div', { class: 'botones' }, h('button', { class: 'boton', type: 'button', onclick: () => cerrar(null) }, 'Cancelar'), h('button', { class: 'boton primario', type: 'submit' }, 'Enviar')));
+  });
+  if (!nota) return;
+  try {
+    const g = { ...app.juego, status: 'enviado' };
+    const { rev } = await app.almacen.save(g.id, g, app.rev, 'Enviar al estudio');
+    app.juego = g;
+    app.rev = rev;
+    app.soloLectura = true;
+    const { url } = await app.almacen.submit(g.id, nota);
+    app.aviso(`Enviado al estudio: ${url}`, { tipo: 'bien', ms: 9000 });
+    repintar();
+  } catch (e) {
+    app.aviso(`No se pudo enviar: ${e.message}`, { tipo: 'error' });
   }
 }
+
+/* ---------------- Pantallas ---------------- */
+
+const VISTAS = { paginas: pintarPaginas, formulario: pintarFormulario, puzzles: pintarPuzzles, previa: pintarPrevia, revisar: pintarRevision };
+
+function repintar() {
+  pintarCabecera();
+  const principal = $('principal');
+  if (!app.almacen) return;
+  if (!app.juego) { pintarInicio(principal, app); return; }
+  const vista = VISTAS[app.ruta.vista] || pintarPaginas;
+  vista(principal, app);
+}
+app.repintar = repintar;
+
+/* ---------------- Entrada ---------------- */
+
+function salir() {
+  guardarSesion(CLAVE_TOKEN, null);
+  location.hash = '#/';
+  location.reload();
+}
+
+function pintarEntrada(mensaje = '') {
+  const repo = h('input', { id: 'repo', class: 'entrada', placeholder: 'estudio/juegos', value: leerSesion(CLAVE_REPO) || '', autocomplete: 'off', required: true });
+  const token = h('input', { id: 'token', class: 'entrada', type: 'password', autocomplete: 'off', required: true });
+  $('principal').replaceChildren(h('form', { class: 'entrada-caja', onsubmit: (e) => { e.preventDefault(); entrar(repo.value.trim(), token.value.trim()); } },
+    h('h1', {}, 'Entrar al creador'),
+    h('p', { class: 'tenue' }, 'El creador trabaja sobre vuestro repositorio privado de juegos en GitHub. Hace falta un token de acceso: se guarda solo en esta pestaña y se borra al cerrarla.'),
+    mensaje ? h('div', { class: 'mensaje error', role: 'alert' }, mensaje) : null,
+    h('div', { class: 'campo' }, h('label', { for: 'repo' }, 'Repositorio (propietario/nombre)'), repo),
+    h('div', { class: 'campo' }, h('label', { for: 'token' }, 'Token de acceso'), token,
+      h('span', { class: 'ayuda' }, '¿No tienes token? ', h('a', { href: './guia-token.html', target: '_blank', rel: 'noopener' }, 'Guía paso a paso para crearlo'), '.')),
+    h('button', { class: 'boton primario', type: 'submit' }, 'Entrar')));
+  pintarCabecera();
+}
+
+async function entrar(repoTexto, token) {
+  const m = /^([\w.-]+)\/([\w.-]+)$/.exec(repoTexto);
+  if (!m) return pintarEntrada('El repositorio se escribe como propietario/nombre, por ejemplo estudio/juegos.');
+  const almacen = crearAlmacenGitHub({ owner: m[1], repo: m[2], token });
+  try {
+    await almacen.list();
+  } catch (e) {
+    return pintarEntrada(e.code === 'auth' ? 'GitHub no acepta ese token: revisa que no haya caducado y que tenga acceso al repositorio.' : `No se pudo leer el repositorio: ${e.message}`);
+  }
+  guardarSesion(CLAVE_REPO, repoTexto);
+  guardarSesion(CLAVE_TOKEN, token);
+  await arrancar(almacen);
+}
+
+async function arrancar(almacen) {
+  app.almacen = almacen;
+  $('principal').replaceChildren(h('div', { class: 'inicio' }, h('p', { class: 'tenue' }, 'Cargando la biblioteca…')));
+  [app.registro, app.biblioteca] = await Promise.all([cargarRegistro(), cargarBiblioteca(almacen)]);
+  app.ops = crearOperaciones({ buscar: app.biblioteca.buscar, entradas: app.biblioteca.entradas });
+  if (app.biblioteca.errores.length) app.aviso('Parte de la biblioteca no se ha podido leer', { tipo: 'error', lista: app.biblioteca.errores });
+  await alCambiarRuta();
+}
+
+(async function inicio() {
+  if (PARAMS.get('almacen') === 'memoria') {
+    await arrancar(crearAlmacenMemoria(FUENTES_MEMORIA, { base: new URL('./biblioteca/', location.href).href, indice: '/__biblioteca' }));
+    return;
+  }
+  const token = leerSesion(CLAVE_TOKEN);
+  const repo = leerSesion(CLAVE_REPO);
+  if (token && repo) {
+    const m = /^([\w.-]+)\/([\w.-]+)$/.exec(repo);
+    if (m) {
+      const almacen = crearAlmacenGitHub({ owner: m[1], repo: m[2], token });
+      try {
+        await almacen.list();
+      } catch (e) {
+        if (e.code === 'auth') { guardarSesion(CLAVE_TOKEN, null); pintarEntrada('GitHub ya no acepta tu token (quizá ha caducado). Pega uno nuevo.'); return; }
+      }
+      await arrancar(almacen);
+      return;
+    }
+  }
+  pintarEntrada();
+})();
+
+export { app, TIPOS };

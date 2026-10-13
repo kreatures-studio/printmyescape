@@ -143,23 +143,23 @@ Advertencia conocida: el subsetter de pdf-lib rompe glifos de Caveat
 (ver `FONTS` en `tools/compose.js`); Caveat se incrusta completa. Si otra
 fuente sale con huecos en blanco, probar `subset: false` para ella.
 
-## Editor (M5)
+## Creador web (F4 de PLAN-CREADOR-2.md)
 
-- Servidor local: `node creator/serve.mjs --port 8080` → `http://localhost:8080/creator/index.html`.
-- Pruebas (Playwright; levantan el servidor solo):
-  `python3 tools/qa/creator-esqueleto.py` (lista de juegos y páginas),
-  `python3 tools/qa/creator-github.py` (entrada con token y almacén de GitHub con la API simulada),
-  `python3 tools/qa/creator-lienzo.py` (lienzo: mover, redimensionar, deshacer, guardar),
-  `python3 tools/qa/creator-kit.py` (panel del kit), `python3 tools/qa/creator-campos.py` (formulario y mecánicas),
-  `python3 tools/qa/creator-entrega.py` (validación con enlaces, vista previa, envío y sondeo de versiones).
-- Sin GitHub: `creator/index.html?almacen=memoria` usa el almacén en memoria.
-- Publicar: `python3 tools/build-creator.py` regenera `docs/creador/` (editor, motor, mecánicas, kit,
-  fuentes y los dos juegos de muestra del almacén en memoria; sin el PDF del artista ni las fotos). Las rutas
-  `../` de los ficheros copiados pasan a `./`, así `docs/creador/index.html` funciona servido desde `docs/`.
-  Prueba: `python3 tools/qa/creator-publicado.py` (8/8; sirve `docs/` con `creator/serve.mjs --raiz docs`).
-- Vista previa: compone en el navegador con el motor único (`tools/pme-compose-core.js`) y pdf-lib
-  (`creator/vendor/`); el PDF lleva la marca «VISTA PREVIA». El kit de la vista previa es el de
-  `assets/kit/manifest.json`; con `?kit=` se cambia (pruebas).
+- Servidor local: `node creator/serve.mjs --port 8080` → `http://localhost:8080/creator/index.html` (con GitHub) o
+  `…/creator/index.html?almacen=memoria` (demostración y pruebas: los dos juegos de muestra y la `biblioteca/` del
+  repositorio, cambios solo en la pestaña). `&guardar=<ms>` y `&sondeo=<ms>` cambian el guardado y el sondeo.
+- Vistas en `creator/vistas/` (inicio, páginas, formulario, puzzles, vista previa, revisar); la edición pasa por
+  `tools/game/operaciones.mjs` (las mismas operaciones que las herramientas MCP) y cada cambio se valida antes de
+  aceptarlo (`creator/validar.js`). Lienzo y vistas previas: el PDF del motor (`tools/pme-compose-core.js`) pintado con
+  pdf.js (`creator/vendor/pdfjs/`).
+- Pruebas (Playwright; levantan el servidor solas):
+  `python3 tools/qa/creator-f4.py` (recorrido del cliente con el juego de F3 y validador de Claude),
+  `python3 tools/qa/creator-github.py` (GitHub simulado: token, guardado, conflicto, subida a la biblioteca, envío),
+  `python3 tools/qa/creator-publicado.py` (la copia publicada).
+- Publicar: `python3 tools/build-creator.py` regenera `docs/creador/` (creador, vistas, motor, mecánicas, reglas,
+  fuentes y los dos game.json de muestra; sin biblioteca, fotos ni PDF del artista). Reescribe las rutas que salen de
+  `creator/` y falla si una ruta publicada no lleva a nada o si se fuera a publicar algo de `biblioteca/`.
+- Token: `creator/guia-token.html` (token de grano fino, Contents y Pull requests de lectura y escritura).
 
 ## Biblioteca de arte (creador v2, ver PLAN-CREADOR-2.md)
 

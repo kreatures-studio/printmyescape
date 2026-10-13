@@ -8,123 +8,46 @@ import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { migrarAV2 } from '../tools/game/v2.mjs';
-import { entradas, buscar, partirRef, rutaBiblioteca } from '../tools/biblioteca/indice.mjs';
+import { entradas, buscar, rutaBiblioteca, TIPOS } from '../tools/biblioteca/indice.mjs';
+import { crearOperaciones, claveDeTexto } from '../tools/game/operaciones.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const TIPOS_ELEMENTO = ['art', 'text', 'field', 'photo', 'puzzle'];
-const PAGINA_A4_MM = { w: 210, h: 297 };
-const PAGINA_ENTERA = { x: 0, y: 0, w: 100, h: 100 };
-
-/** Clave de i18n a partir de un texto: minúsculas, sin acentos, guiones; como las de los juegos migrados. */
-export function claveDeTexto(texto) {
-  return String(texto).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40).replace(/-+$/, '') || 'texto';
-}
+export { claveDeTexto };
 
 const fecha = () => new Date().toISOString().slice(0, 10);
 
 export function herramientasV2(ctx) {
   const { almacen, mutar, cargarCrudo, validar, ErrorHerramienta: E, esquema, ID, PAGINA, raiz } = ctx;
   const S = { type: 'string' };
+  // La lógica de edición es la misma que la del creador web (tools/game/operaciones.mjs); aquí, la biblioteca en disco.
+  const ops = crearOperaciones({ buscar, entradas });
 
-  /* ---- Ayudas ---- */
-  const paginaV2 = (g, id) => {
-    const p = g.pages.find((x) => x.id === id);
-    if (!p) throw new E('not-found', `no hay página «${id}» (hay: ${g.pages.map((x) => x.id).join(', ')})`);
-    return p;
-  };
-  const idNuevoDePagina = (g) => `p${Math.max(0, ...g.pages.map((p) => Number(p.id.slice(1)) || 0)) + 1}`;
-  /** Id libre para un elemento nuevo; «reservados»: ids que van a llegar en la misma petición (F3.3). */
-  const idNuevoDeElemento = (pagina, reservados = new Set()) => {
-    let n = pagina.elements.length + 1;
-    while (pagina.elements.some((e) => e.id === `${pagina.id}-e${n}`) || reservados.has(`${pagina.id}-e${n}`)) n++;
-    return `${pagina.id}-e${n}`;
-  };
-  /** Prepara la lista de elementos de un puzzle de contenido (ids libres aunque algunos vengan dados). */
-  function elementosDePuzzle(g, idPuzzle, elementos) {
-    const caja0 = { id: idPuzzle, elements: [] };
-    const reservados = new Set(elementos.map((el) => el.id).filter(Boolean));
-    return elementos.map((el) => {
-      const x = prepararElemento(g, caja0, el.id ? el : { ...el, id: idNuevoDeElemento(caja0, reservados) });
-      caja0.elements.push(x);
-      return x;
-    });
+  /** Copia a la carpeta del juego lo que pide una operación (fondos, fotos) si no está; devuelve los creados. */
+  function hacerCopias(id, copias, creados) {
+    for (const c of copias) {
+      const destino = path.join(almacen.carpeta(id), c.destino);
+      if (fs.existsSync(destino)) continue;
+      fs.mkdirSync(path.dirname(destino), { recursive: true });
+      fs.copyFileSync(path.join(rutaBiblioteca(), TIPOS[c.tipo], c.coleccion, c.rel), destino);
+      creados.push(destino);
+    }
   }
-  /** Campos que calcula el juego (mecánicas y puzzles de datos): no hace falta pedirlos. */
-  const derivados = (g) => new Set([...(g.mechanics || []).flatMap((m) => m.derives || []), ...(g.puzzles || []).flatMap((z) => z.derives || [])]);
-  function faltanCampos(g, campos, que) {
-    const calc = derivados(g);
-    const faltan = [...new Set(campos)].filter((c) => !(g.fields || {})[c] && !calc.has(c));
-    if (!faltan.length) return;
-    const secciones = entradas('seccion').filter((s) => faltan.some((c) => s.section.fields.includes(c)))
-      .map((s) => `${s.id}@${s.version}`);
-    const puzzles = entradas('puzzle').filter((z) => faltan.some((c) => (z.derives || []).includes(c)))
-      .map((z) => `${z.id}@${z.version}`);
-    throw new E('faltan-campos', `${que} usa campos que el juego no tiene: ${faltan.join(', ')}. Créalos con upsert_field`
-      + (secciones.length ? `, copia una sección de la biblioteca que los trae (${secciones.join(', ')})` : '')
-      + (puzzles.length ? `, o añade antes el puzzle que los calcula (${puzzles.join(', ')})` : ''), faltan);
+  /** mutar() con una operación que copia ficheros: los borra si el cambio no se guarda. */
+  async function mutarConFicheros(id, mensaje, operar) {
+    const creados = [];
+    try {
+      return await mutar(id, mensaje, (g) => { const { resultado, copias } = operar(g); hacerCopias(id, copias, creados); return resultado; }, { formato: 'v2' });
+    } catch (e) {
+      for (const f of creados) fs.rmSync(f, { force: true });
+      throw e;
+    }
   }
-  /** Guarda los textos {idioma: texto} de un elemento en i18n y devuelve la clave (sin pisar otra distinta). */
-  function guardarTextos(g, textos, claveDeseada) {
-    const idiomas = g.languages;
-    const falta = idiomas.filter((l) => typeof textos[l] !== 'string' || !textos[l].trim());
-    if (falta.length) throw new E('invalid', `faltan los textos en: ${falta.join(', ')} (el juego tiene ${idiomas.join(', ')})`);
-    const base = claveDeseada || claveDeTexto(textos[idiomas[0]]);
-    let clave = base, n = 2;
-    const libre = (k) => idiomas.every((l) => g.i18n[l][k] === undefined || g.i18n[l][k] === textos[l]);
-    while (!libre(clave)) clave = `${base}-${n++}`;
-    for (const l of idiomas) g.i18n[l][clave] = textos[l];
-    return clave;
-  }
-  /** Fija la versión del arte (id → id@versión) y completa w o h con la proporción de la pieza. */
-  function prepararArte(g, el) {
-    const pieza = buscar('arte', el.ref);
-    if (!pieza) throw new E('not-found', `no hay pieza de arte «${el.ref}» en la biblioteca (list_library tipo arte)`);
-    if (pieza.status === 'reexportar') throw new E('invalid', `la pieza «${el.ref}» está pendiente de reexportar: no se usa en juegos`);
-    el.ref = `${pieza.id}@${pieza.version}`;
-    const aspecto = (pieza.heightMm / PAGINA_A4_MM.h) / (pieza.widthMm / PAGINA_A4_MM.w); // h% / w% en A4
-    if (typeof el.w === 'number' && typeof el.h !== 'number') el.h = Math.round(el.w * aspecto * 100) / 100;
-    if (typeof el.h === 'number' && typeof el.w !== 'number') el.w = Math.round((el.h / aspecto) * 100) / 100;
-    if (el.angle === undefined) el.angle = 0;
-  }
-  /** Prepara un elemento nuevo: id, textos (texts → i18n), arte. */
-  function prepararElemento(g, pagina, el) {
-    if (!TIPOS_ELEMENTO.includes(el.kind)) throw new E('invalid', `kind debe ser ${TIPOS_ELEMENTO.join(' | ')}`);
-    const nuevo = structuredClone(el);
-    if (!nuevo.id) nuevo.id = idNuevoDeElemento(pagina);
-    if (pagina.elements.some((e) => e.id === nuevo.id)) throw new E('exists', `ya hay un elemento «${nuevo.id}» en ${pagina.id}`);
-    if (nuevo.kind === 'text' && nuevo.texts) { nuevo.key = guardarTextos(g, nuevo.texts, nuevo.key); delete nuevo.texts; }
-    if (nuevo.kind === 'text' && !nuevo.key) throw new E('invalid', 'un texto necesita «texts» ({idioma: texto}) o «key» de i18n');
-    if (nuevo.kind === 'art') prepararArte(g, nuevo);
-    if ((nuevo.kind === 'field' || nuevo.kind === 'photo')) faltanCampos(g, [nuevo.field], `el elemento ${nuevo.id}`);
-    return nuevo;
-  }
-  /** Copia de un puzzle del catálogo para el juego (con «from»), sin colocarlo. */
-  function puzzleDelCatalogo(g, ref, idJuego) {
-    const e = buscar('puzzle', ref);
-    if (!e) throw new E('not-found', `no hay puzzle «${ref}» en el catálogo (list_library tipo puzzle)`);
-    const { id: idBib, version, tags, origin, status, notes, coleccion, dir, ...resto } = structuredClone(e);
-    const nuevo = { id: idJuego || idBib.replace(/^puzzle-/, ''), from: `${idBib}@${version}`, ...resto };
-    if ((g.puzzles || []).some((z) => z.id === nuevo.id)) throw new E('exists', `ya hay un puzzle «${nuevo.id}» (usa puzzle_id para otro nombre)`);
-    return nuevo;
-  }
-  /** Copia un fichero de la biblioteca a la carpeta del juego si no está; devuelve si lo ha creado. */
   function copiarAlJuego(id, origen, rel) {
     const destino = path.join(almacen.carpeta(id), rel);
     if (fs.existsSync(destino)) return null;
     fs.mkdirSync(path.dirname(destino), { recursive: true });
     fs.copyFileSync(origen, destino);
     return destino;
-  }
-  /** mutar() que borra los ficheros copiados si el cambio no se guarda. */
-  async function mutarConFicheros(id, mensaje, cambiar) {
-    const creados = [];
-    try {
-      return await mutar(id, mensaje, (g) => cambiar(g, creados), { formato: 'v2' });
-    } catch (e) {
-      for (const f of creados) if (f) fs.rmSync(f, { force: true });
-      throw e;
-    }
   }
   function python(args) {
     const r = spawnSync('python3', args, { cwd: ROOT, encoding: 'utf8' });
@@ -193,182 +116,50 @@ export function herramientasV2(ctx) {
       name: 'insert_page',
       description: 'Añade una página: copiada de la biblioteca (from: «pagina-id@versión», con su fondo, elementos y textos) o en blanco (background: {kind: color|none|art|pdf, ...}; por defecto blanca). puzzles: puzzles del catálogo que van en esta página (p. ej. el que calcula sus campos), en el mismo cambio. position: número de orden (1 = primera); por defecto, al final.',
       schema: esquema({ id: ID, from: S, title: S, background: { type: 'object' }, position: { type: 'integer' }, puzzles: { type: 'array', description: 'refs del catálogo, «puzzle-x@versión»' } }, ['id']),
-      run: async ({ id, from, title, background, position, puzzles = [] }) => mutarConFicheros(id, `Página nueva en ${id}`, (g, creados) => {
-        const nueva = { id: idNuevoDePagina(g), title: title || '', background: background || { kind: 'color', value: '#FFFFFF' }, elements: [] };
-        g.puzzles = g.puzzles || [];
-        // Primero los puzzles: sus campos (needs) tienen que existir y sus derivados cuentan para la página.
-        for (const ref of puzzles) {
-          const z = puzzleDelCatalogo(g, ref);
-          faltanCampos(g, z.needs.map((n) => n.field), `el puzzle «${ref}»`);
-          g.puzzles.push(z);
-          nueva.elements.push({ id: `${nueva.id}-${z.id}`, kind: 'puzzle', puzzle: z.id, ...PAGINA_ENTERA });
-        }
-        if (from) {
-          const e = buscar('pagina', from);
-          if (!e) throw new E('not-found', `no hay página «${from}» en la biblioteca (list_library tipo pagina)`);
-          const faltaIdioma = g.languages.filter((l) => !e.i18n[l]);
-          if (faltaIdioma.length) throw new E('invalid', `la página «${from}» no tiene textos en ${faltaIdioma.join(', ')}`);
-          faltanCampos(g, e.fields, `la página «${from}»`);
-          nueva.from = `${e.id}@${e.version}`;
-          nueva.title = title || e.page.title || e.name;
-          const bloques = nueva.elements;
-          nueva.elements = [...structuredClone(e.page.elements).map((el) => ({ ...el, id: el.id.replace(/^p\d+-/, `${nueva.id}-`) })), ...bloques];
-          // Textos: misma clave si está libre o tiene el mismo texto; si no, una clave nueva.
-          for (const el of nueva.elements) {
-            if (el.kind !== 'text') continue;
-            el.key = guardarTextos(g, Object.fromEntries(g.languages.map((l) => [l, e.i18n[l][el.key]])), el.key);
-          }
-          const bg = e.page.background;
-          if (bg.kind === 'pdf') {
-            const rel = `fondos/${e.id}-v${e.version}.pdf`;
-            creados.push(copiarAlJuego(id, path.join(e.dir, bg.file), rel));
-            nueva.background = { kind: 'pdf', file: rel, page: bg.page };
-          } else {
-            nueva.background = structuredClone(bg);
-          }
-        }
-        if (nueva.background.kind === 'art') prepararArte(g, nueva.background);
-        const i = position ? Math.max(0, Math.min(g.pages.length, position - 1)) : g.pages.length;
-        g.pages.splice(i, 0, nueva);
-        return { page: nueva.id, title: nueva.title, from: nueva.from ?? null, elements: nueva.elements.length, position: i + 1,
-          puzzles: nueva.elements.filter((x) => x.kind === 'puzzle').map((x) => x.puzzle) };
-      }),
+      run: async ({ id, from, title, background, position, puzzles = [] }) => mutarConFicheros(id, `Página nueva en ${id}`,
+        (g) => ops.insertarPagina(g, { from, title, background, position, puzzles })),
     },
     {
       name: 'insert_section',
       description: 'Copia una sección del formulario de la biblioteca (from: «seccion-id@versión»): sus campos con sus definiciones y los valores de sus ejemplos (se juntan con los ejemplos del juego del mismo id). position: orden en el formulario (1 = primera); por defecto, al final.',
       schema: esquema({ id: ID, from: S, position: { type: 'integer' } }, ['id', 'from']),
-      run: async ({ id, from, position }) => mutarConFicheros(id, `Sección ${from} en ${id}`, (g, creados) => {
-        const e = buscar('seccion', from);
-        if (!e) throw new E('not-found', `no hay sección «${from}» en la biblioteca (list_library tipo seccion)`);
-        if (g.form.sections.some((s) => s.id === e.section.id)) throw new E('exists', `el formulario ya tiene una sección «${e.section.id}»`);
-        const distintos = Object.keys(e.fieldDefs).filter((c) => g.fields[c] && JSON.stringify(g.fields[c]) !== JSON.stringify(e.fieldDefs[c]));
-        if (distintos.length) throw new E('exists', `el juego ya tiene campos con el mismo nombre y otra definición: ${distintos.join(', ')}`);
-        Object.assign(g.fields, structuredClone(e.fieldDefs));
-        const seccion = { ...structuredClone(e.section), from: `${e.id}@${e.version}` };
-        const i = position ? Math.max(0, Math.min(g.form.sections.length, position - 1)) : g.form.sections.length;
-        g.form.sections.splice(i, 0, seccion);
-        g.examples = g.examples || [];
-        for (const ej of e.examples) {
-          let destino = g.examples.find((x) => x.id === ej.id);
-          if (!destino) { destino = { id: ej.id, values: {} }; g.examples.push(destino); }
-          for (const l of g.languages) destino.values[l] = { ...(destino.values[l] || {}), ...((ej.values || {})[l] || {}) };
-          // Las fotos de los ejemplos se copian a la carpeta del juego (fotos/).
-          for (const [campo, rel] of Object.entries(ej.photos || {})) {
-            const destinoRel = `fotos/${path.basename(rel)}`;
-            creados.push(copiarAlJuego(id, path.join(e.dir, rel), destinoRel));
-            destino.photos = { ...(destino.photos || {}), [campo]: destinoRel };
-          }
-        }
-        return { section: seccion.id, from: seccion.from, fields: seccion.fields, examples: e.examples.map((x) => x.id), position: i + 1 };
-      }),
+      run: async ({ id, from, position }) => mutarConFicheros(id, `Sección ${from} en ${id}`, (g) => ops.insertarSeccion(g, { from, position })),
     },
     {
       name: 'add_element',
       description: 'Añade un elemento a una página (kind art|text|field|photo|puzzle; x, y, w, h en % de la página). Texto: «texts» {idioma: texto} (crea la clave de i18n). Arte: «ref» de la biblioteca; con solo w (o h) se completa con la proporción de la pieza. index: posición en el orden de dibujo (0 = debajo de todo); por defecto, encima.',
       schema: esquema({ id: ID, page: PAGINA, element: { type: 'object' }, index: { type: 'integer' } }, ['id', 'page', 'element']),
-      run: async ({ id, page, element, index }) => mutar(id, `Elemento en ${page} de ${id}`, (g) => {
-        const p = paginaV2(g, page);
-        const nuevo = prepararElemento(g, p, element);
-        const i = index === undefined ? p.elements.length : Math.max(0, Math.min(p.elements.length, index));
-        p.elements.splice(i, 0, nuevo);
-        return nuevo;
-      }, { formato: 'v2' }),
+      run: async ({ id, page, element, index }) => mutar(id, `Elemento en ${page} de ${id}`, (g) => ops.anadirElemento(g, { page, element, index }), { formato: 'v2' }),
     },
     {
       name: 'update_element',
       description: 'Cambia propiedades de un elemento (changes: {x, y, size, color, fontFamily, ...}; texts para cambiar el texto en cada idioma; ref para otra pieza). No cambia su kind.',
       schema: esquema({ id: ID, page: PAGINA, element: { type: 'string', description: 'id del elemento' }, changes: { type: 'object' } }, ['id', 'page', 'element', 'changes']),
-      run: async ({ id, page, element, changes }) => mutar(id, `Cambiar ${element} en ${page}`, (g) => {
-        const p = paginaV2(g, page);
-        const el = p.elements.find((e) => e.id === element);
-        if (!el) throw new E('not-found', `no hay elemento «${element}» en ${page}`);
-        const { texts, kind, id: _id, ...resto } = changes;
-        if (kind && kind !== el.kind) throw new E('invalid', 'no se cambia el kind de un elemento: quítalo y añade otro');
-        Object.assign(el, resto);
-        for (const [k, v] of Object.entries(resto)) if (v === null) delete el[k];
-        if (texts) {
-          if (el.kind !== 'text') throw new E('invalid', 'texts solo vale para elementos de texto');
-          for (const l of g.languages) if (typeof texts[l] === 'string') g.i18n[l][el.key] = texts[l];
-        }
-        if (el.kind === 'art' && resto.ref) prepararArte(g, el);
-        return el;
-      }, { formato: 'v2' }),
+      run: async ({ id, page, element, changes }) => mutar(id, `Cambiar ${element} en ${page}`, (g) => ops.actualizarElemento(g, { page, element, changes }), { formato: 'v2' }),
     },
     {
       name: 'remove_element',
       description: 'Quita un elemento de una página.',
       schema: esquema({ id: ID, page: PAGINA, element: { type: 'string', description: 'id del elemento' } }, ['id', 'page', 'element']),
-      run: async ({ id, page, element }) => mutar(id, `Quitar ${element} de ${page}`, (g) => {
-        const p = paginaV2(g, page);
-        const antes = p.elements.length;
-        p.elements = p.elements.filter((e) => e.id !== element);
-        if (p.elements.length === antes) throw new E('not-found', `no hay elemento «${element}» en ${page}`);
-        return { removed: element };
-      }, { formato: 'v2' }),
+      run: async ({ id, page, element }) => mutar(id, `Quitar ${element} de ${page}`, (g) => ops.quitarElemento(g, { page, element }), { formato: 'v2' }),
     },
     {
       name: 'add_puzzle',
       description: 'Añade un puzzle y lo coloca en una página. Del catálogo (from: «puzzle-x@versión», de datos: ocupa la página entera y necesita sus campos) o de contenido (puzzle: {id, name, kind: "contenido", solution {idioma: texto}, hints?, difficulty?, minAge?, minutes?, page: {elements}} con elementos en % de su caja; los textos con «texts»). box: caja del puzzle de contenido en % de la página (por defecto, la página entera).',
       schema: esquema({ id: ID, page: PAGINA, from: S, puzzle: { type: 'object' }, box: { type: 'object' }, puzzle_id: S }, ['id', 'page']),
-      run: async ({ id, page, from, puzzle, box, puzzle_id }) => mutar(id, `Puzzle en ${page} de ${id}`, (g) => {
-        if (!from === !puzzle) throw new E('invalid', 'da «from» (catálogo) o «puzzle» (de contenido), uno de los dos');
-        const p = paginaV2(g, page);
-        g.puzzles = g.puzzles || [];
-        let nuevo, caja;
-        if (from) {
-          nuevo = puzzleDelCatalogo(g, from, puzzle_id);
-          faltanCampos(g, nuevo.needs.map((n) => n.field), `el puzzle «${from}»`);
-          caja = PAGINA_ENTERA;
-        } else {
-          if (puzzle.kind !== 'contenido') throw new E('invalid', 'un puzzle sin «from» es de contenido: kind "contenido"');
-          if (puzzle.mechanic) throw new E('invalid', 'un puzzle de contenido no lleva mecánica (las mecánicas vienen del catálogo)');
-          nuevo = structuredClone(puzzle);
-          const elementos = (nuevo.page && nuevo.page.elements) || [];
-          if (!elementos.length) throw new E('invalid', 'el puzzle de contenido necesita page.elements (lo que se dibuja)');
-          nuevo.page.elements = elementosDePuzzle(g, nuevo.id, elementos);
-          caja = box || PAGINA_ENTERA;
-        }
-        if (g.puzzles.some((z) => z.id === nuevo.id)) throw new E('exists', `ya hay un puzzle «${nuevo.id}» (usa puzzle_id para otro nombre)`);
-        g.puzzles.push(nuevo);
-        const bloque = { id: idNuevoDeElemento(p), kind: 'puzzle', puzzle: nuevo.id, ...caja };
-        p.elements.push(bloque);
-        return { puzzle: nuevo.id, from: nuevo.from ?? null, kind: nuevo.kind, page, element: bloque.id };
-      }, { formato: 'v2' }),
+      run: async ({ id, page, from, puzzle, box, puzzle_id }) => mutar(id, `Puzzle en ${page} de ${id}`, (g) => ops.anadirPuzzle(g, { page, from, puzzle, box, puzzle_id }), { formato: 'v2' }),
     },
     {
       name: 'update_puzzle',
       description: 'Cambia un puzzle del juego: ficha (name, difficulty, minAge, minutes), solution {idioma: texto}, hints [{idioma: texto}] y, en los de contenido, page.elements. Los de datos no cambian su mecánica ni sus parámetros (vienen del catálogo).',
       schema: esquema({ id: ID, puzzle: { type: 'string', description: 'id del puzzle en el juego' }, changes: { type: 'object' } }, ['id', 'puzzle', 'changes']),
-      run: async ({ id, puzzle, changes }) => mutar(id, `Cambiar puzzle ${puzzle}`, (g) => {
-        const z = (g.puzzles || []).find((x) => x.id === puzzle);
-        if (!z) throw new E('not-found', `no hay puzzle «${puzzle}» (hay: ${(g.puzzles || []).map((x) => x.id).join(', ') || 'ninguno'})`);
-        const permitidos = ['name', 'difficulty', 'minAge', 'minutes', 'solution', 'hints', 'examples', ...(z.kind === 'contenido' ? ['page'] : [])];
-        const otros = Object.keys(changes).filter((k) => !permitidos.includes(k));
-        if (otros.length) throw new E('invalid', `no se cambia ${otros.join(', ')} (se puede: ${permitidos.join(', ')})`);
-        for (const [k, v] of Object.entries(changes)) {
-          if (v === null) { delete z[k]; continue; }
-          if (k === 'page') {
-            z.page = { elements: elementosDePuzzle(g, z.id, v.elements || []) };
-          } else z[k] = structuredClone(v);
-        }
-        return z;
-      }, { formato: 'v2' }),
+      run: async ({ id, puzzle, changes }) => mutar(id, `Cambiar puzzle ${puzzle}`, (g) => ops.actualizarPuzzle(g, { puzzle, changes }), { formato: 'v2' }),
     },
     {
       name: 'remove_puzzle',
       description: 'Quita un puzzle del juego y sus bloques en las páginas. Se niega si alguna página usa campos que solo calcula ese puzzle.',
       schema: esquema({ id: ID, puzzle: { type: 'string', description: 'id del puzzle en el juego' } }, ['id', 'puzzle']),
-      run: async ({ id, puzzle }) => mutar(id, `Quitar puzzle ${puzzle}`, (g) => {
-        const antes = (g.puzzles || []).length;
-        g.puzzles = (g.puzzles || []).filter((x) => x.id !== puzzle);
-        if (g.puzzles.length === antes) throw new E('not-found', `no hay puzzle «${puzzle}»`);
-        let bloques = 0;
-        const quitar = (els) => els.filter((e) => { const fuera = e.kind === 'puzzle' && e.puzzle === puzzle; if (fuera) bloques++; return !fuera; });
-        for (const p of g.pages) p.elements = quitar(p.elements);
-        for (const z of g.puzzles) if (z.page && z.page.elements) z.page.elements = quitar(z.page.elements);
-        return { removed: puzzle, bloques };
-      }, { formato: 'v2' }),
+      run: async ({ id, puzzle }) => mutar(id, `Quitar puzzle ${puzzle}`, (g) => ops.quitarPuzzle(g, { puzzle }), { formato: 'v2' }),
     },
     {
       name: 'import_art',

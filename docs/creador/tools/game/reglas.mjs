@@ -5,6 +5,9 @@
 // globalThis.PMEMechanics y globalThis.PMETransforms (cargadas por quien llama).
 
 const LICENCIAS_KIT = new Set(['CC0-1.0']); // contrato 3.4: en fase 1 solo CC0
+// Arte de la biblioteca (F2): propio del estudio o CC0. Igual que LICENCIAS_ARTE de tools/biblioteca/reglas.mjs
+// (no se importa para que este módulo siga sin dependencias en el navegador; lo comprueba biblioteca-juego-test).
+export const LICENCIAS_BIBLIOTECA = new Set(['propia-estudio', 'CC0-1.0']);
 const TIPOS_KIT = new Set(['background', 'frame', 'photo-frame', 'decor', 'icon']);
 const TEXT_TYPES = new Set(['name', 'text', 'long']);
 
@@ -18,6 +21,17 @@ export function erroresKitDatos(m, existe = null) {
   const piezas = new Map();
   if (!m || !Array.isArray(m.pieces)) return { errores: ['kit: falta la lista «pieces»'], piezas };
   const hay = (ruta) => !existe || existe(ruta);
+  if (m.schema === 'pme-biblioteca/1') {
+    // Colección de arte de la biblioteca: ya la valida tools/biblioteca/validar.mjs; aquí, lo que necesita el juego.
+    if (m.tipo !== 'arte') return { errores: [`kit: la colección de la biblioteca es de «${m.tipo}», no de arte`], piezas };
+    for (const p of [...m.pieces].sort((a, b) => a.version - b.version)) {
+      const pieza = { ...p, deBiblioteca: true };
+      piezas.set(`${p.id}@${p.version}`, pieza);
+      piezas.set(p.id, pieza); // sin versión: la más alta
+      if (!p.file || !hay(p.file)) errores.push(`kit/${p.id}@${p.version}: no existe el fichero «${p.file}»`);
+    }
+    return { errores, piezas };
+  }
   for (const p of m.pieces) {
     const id = p.id || '(sin id)';
     if (!p.id) errores.push('kit: una pieza no tiene id');
@@ -165,7 +179,8 @@ export function reglasCruzadas(game, { submit = false, existe = null, codigos = 
     errs.push(`background: no existe el PDF «${game.background.file}»`);
   }
   if (kind === 'pdf') {
-    for (const p of pages) if (p.layers) errs.push(`template/${p.id}: las capas solo van con background «layers»`);
+    // F1.3b: una página con bgKind (juegos v2) dice ella misma su fondo y puede llevar piezas de arte.
+    for (const p of pages) if (p.layers && !p.bgKind) errs.push(`template/${p.id}: las capas solo van con background «layers»`);
   }
   if (kind === 'layers') {
     for (const p of pages) if (!Array.isArray(p.layers)) errs.push(`template/${p.id}: falta «layers» (fondo por capas; puede ser [])`);
@@ -177,10 +192,14 @@ export function reglasCruzadas(game, { submit = false, existe = null, codigos = 
     } else {
       errs.push(...kit.errores);
       for (const p of pages) {
-        for (const capa of p.layers || []) {
+        for (const capa of [...(p.layers || []), ...(p.topLayers || [])]) {
           const pieza = kit.piezas.get(capa.asset);
           if (!pieza) errs.push(`template/${p.id}: la pieza «${capa.asset}» no está en el kit`);
-          else if (!LICENCIAS_KIT.has(pieza.license)) errs.push(`template/${p.id}: la pieza «${capa.asset}» tiene una licencia no admitida («${pieza.license}»)`);
+          else if (pieza.deBiblioteca) {
+            if (!LICENCIAS_BIBLIOTECA.has(pieza.license)) errs.push(`template/${p.id}: la pieza «${capa.asset}» tiene una licencia no admitida («${pieza.license}»)`);
+            else if (!pieza.author) errs.push(`template/${p.id}: la pieza «${capa.asset}» necesita autor`);
+            else if (pieza.status === 'reexportar') errs.push(`template/${p.id}: la pieza «${capa.asset}» está pendiente de reexportar por el artista (no se usa en juegos)`);
+          } else if (!LICENCIAS_KIT.has(pieza.license)) errs.push(`template/${p.id}: la pieza «${capa.asset}» tiene una licencia no admitida («${pieza.license}»)`);
           else if (!pieza.source || !pieza.author) errs.push(`template/${p.id}: la pieza «${capa.asset}» necesita source y author`);
           for (const k of ['x', 'y', 'w', 'h']) {
             if (typeof capa[k] !== 'number') errs.push(`template/${p.id}: la capa «${capa.asset}» necesita ${k}`);
@@ -267,7 +286,91 @@ export function plantillaParaMotor(game) {
   const conocidos = new Set(lista.map((f) => f.id));
   for (const [id, c] of Object.entries(campos)) {
     if (conocidos.has(id)) continue;
+    conocidos.add(id);
     lista.push(c.cap ? { id, type: tipoMotor(c.type), maxLength: c.cap } : { id, type: tipoMotor(c.type) });
   }
+  // Los campos que calcula una mecánica (derives) también tienen hueco: sin estar en la lista, el motor no los dibuja.
+  for (const m of game.mechanics || []) {
+    for (const id of m.derives || []) {
+      if (conocidos.has(id)) continue;
+      conocidos.add(id);
+      lista.push({ id, type: 'text' });
+    }
+  }
   return { ...tpl, fields: lista };
+}
+
+/**
+ * Reglas propias de pme-game/2 (F1.5 de PLAN-CREADOR-2.md), además de las de reglasCruzadas sobre su forma v1:
+ * ids de elemento únicos en cada página, puzzles con id único y mecánica conocida, y cada bloque de puzzle
+ * apunta a un puzzle del juego.
+ */
+/* F1.5: las cajas de los elementos (en % de la página, o de la caja del puzzle) deben caber en ella.
+   Un texto, campo o foto fuera de la página es error; una pieza de arte puede sobresalir (aviso). */
+const TOL_CAJA = 0.01;
+function cajaFueraDe(e) {
+  if (![e.x, e.y, e.w, e.h].every((v) => typeof v === 'number')) return null;
+  if (e.x < -TOL_CAJA || e.y < -TOL_CAJA || e.x + e.w > 100 + TOL_CAJA || e.y + e.h > 100 + TOL_CAJA) {
+    return `la caja (${e.x}, ${e.y}, ${e.w}×${e.h}) sale de la página`;
+  }
+  return null;
+}
+/* Un puzzle de datos lleva coordenadas de la página de origen: su bloque ocupa la página entera. */
+const esPaginaEntera = (e) => [[e.x, 0], [e.y, 0], [e.w, 100], [e.h, 100]].every(([v, t]) => Math.abs(v - t) <= TOL_CAJA);
+/* Recorre los elementos de una página o de un puzzle: ids, puzzles citados y cajas.
+   «usos» cuenta dónde se coloca cada puzzle de datos (cada uno, una sola vez). */
+function elementosV2(elementos, ruta, puzzles, errs, avisos, visitados = new Set(), usos = new Map()) {
+  const ids = new Set();
+  for (const e of elementos || []) {
+    if (ids.has(e.id)) errs.push(`${ruta}: el elemento «${e.id}» está repetido`);
+    ids.add(e.id);
+    const fuera = cajaFueraDe(e);
+    if (fuera) {
+      if (e.kind === 'art') avisos.push(`${ruta}/${e.id}: la pieza de arte ${fuera} (puede sobresalir a propósito)`);
+      else errs.push(`${ruta}/${e.id}: ${fuera}`);
+    }
+    if (e.kind === 'puzzle') {
+      if (!puzzles.has(e.puzzle)) { errs.push(`${ruta}/${e.id}: el puzzle «${e.puzzle}» no existe en puzzles`); continue; }
+      if (visitados.has(e.puzzle)) { errs.push(`${ruta}/${e.id}: el puzzle «${e.puzzle}» se contiene a sí mismo`); continue; }
+      const pz = puzzles.get(e.puzzle);
+      if (pz.mechanic) {
+        if (visitados.size) errs.push(`${ruta}/${e.id}: el puzzle de datos «${pz.id}» va directamente en una página, no dentro de otro puzzle`);
+        else if (!esPaginaEntera(e)) errs.push(`${ruta}/${e.id}: el puzzle de datos «${pz.id}» ocupa la página entera (0, 0, 100×100): sus coordenadas son las de la página de origen`);
+        if (usos.has(pz.id)) errs.push(`${ruta}/${e.id}: el puzzle de datos «${pz.id}» ya está en ${usos.get(pz.id)} (va una sola vez)`);
+        else usos.set(pz.id, ruta);
+      }
+      if (pz.page && pz.page.elements) elementosV2(pz.page.elements, `puzzles/${pz.id}`, puzzles, errs, avisos, new Set([...visitados, e.puzzle]), usos);
+    }
+  }
+}
+/* Mapa de puzzles y sus errores propios (sin depender de la página donde se usan). */
+function puzzlesV2(game, errs) {
+  const puzzles = new Map();
+  for (const pz of game.puzzles || []) {
+    if (puzzles.has(pz.id)) errs.push(`puzzles/${pz.id}: id repetido`);
+    puzzles.set(pz.id, pz);
+    if (pz.mechanic && !(globalThis.PMEMechanics || {})[pz.mechanic]) errs.push(`puzzles/${pz.id}: la mecánica «${pz.mechanic}» no está en el catálogo`);
+    if (pz.kind === 'datos' && !pz.mechanic) errs.push(`puzzles/${pz.id}: un puzzle de datos necesita una mecánica del catálogo`);
+    if (pz.kind === 'contenido' && pz.mechanic) errs.push(`puzzles/${pz.id}: un puzzle de contenido no lleva mecánica`);
+  }
+  return puzzles;
+}
+export function reglasV2(game) {
+  const errs = [];
+  const puzzles = puzzlesV2(game, errs);
+  const paginas = new Set();
+  const usos = new Map();
+  for (const p of game.pages || []) {
+    if (paginas.has(p.id)) errs.push(`pages/${p.id}: la página está repetida`);
+    paginas.add(p.id);
+    elementosV2(p.elements, `pages/${p.id}`, puzzles, errs, [], new Set(), usos);
+  }
+  return errs;
+}
+/* Avisos v2 (no bloquean): piezas de arte que sobresalen de la página. */
+export function avisosV2(game) {
+  const errs = [], avisos = [];
+  const puzzles = puzzlesV2(game, errs);
+  for (const p of game.pages || []) elementosV2(p.elements, `pages/${p.id}`, puzzles, errs, avisos);
+  return avisos;
 }

@@ -226,10 +226,49 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
 
 ### F4 · Creador web
 
-- **F4.1** Biblioteca (empezar, duplicar, reutilizar). **F4.2** Diseñar página (elementos, subir imágenes ≤ 5 MB optimizadas).
-- **F4.3** Formulario (crear campos y secciones, vista del comprador). **F4.4** Revisión (cambios de Claude, notas).
-- **F4.5** Guía para crear el token de GitHub y entrar.
-- *Aceptación:* el cliente revisa y retoca el juego de F3 sin ayuda del equipo (revisión humana).
+El creador nuevo sustituye al editor de `creator/` (fuera `lienzo.js`, `kit.js`, `vista-previa.js` y sus pruebas).
+Sigue la maqueta aprobada («Creador de juegos PrintMyEscape»: inicio, página, campos y revisión). Base común:
+
+- **Misma lógica que Claude.** `tools/game/operaciones.mjs` (nuevo, sin dependencias de Node) tiene las operaciones de
+  edición v2 (insertar página o sección de la biblioteca, añadir, cambiar, mover y quitar elementos, puzzles); lo usan
+  las herramientas MCP (`mcp/herramientas-v2.mjs`, ahora envoltorios finos) y el creador. Cada cambio del creador se
+  valida en el navegador con las mismas reglas (`reglasV2` + `reglasCruzadas` sobre `aV1`, arte de la biblioteca) y,
+  si añade un error, se rechaza explicándolo: lo que guarda el creador siempre lo puede seguir editando Claude, y al
+  revés. Deshacer (Ctrl+Z), guardado solo, y aviso de versión nueva (sondeo): nunca pisa lo que Claude guardó.
+- **Almacenes.** GitHub (`store/github.js`): el juego en la rama `juego/<id>` (`games/<id>/`), la biblioteca en
+  `biblioteca/` de `main`; enviar al estudio abre el pull request. Memoria (`?almacen=memoria`) para pruebas y
+  demostración. El lienzo y las vistas previas son el PDF del motor pintado con pdf.js (copiado en `creator/vendor/`).
+- **F4.1 Biblioteca (hecho).** Inicio: empezar en blanco, duplicar (un juego antiguo v1 se copia ya en v2; los v1 se
+  abren en solo lectura), pedírselo a Claude, «Para revisar» y el material de la biblioteca. Una página de la
+  biblioteca entra con las secciones y puzzles que necesita (de su misma colección primero; si ningún sitio trae un
+  campo, se explica y no se añade).
+- **F4.2 Diseñar página (hecho).** Páginas (en blanco, de la biblioteca, duplicar, desde un PDF del artista); imágenes,
+  fondos, campos y páginas para insertar; lienzo con cajas para elegir, mover, cambiar el tamaño y teclado; propiedades
+  por tipo (letra del registro, tamaño en pt, color, alineación, mayúsculas o runas, varias líneas, capa del arte).
+  Subir imágenes: PNG, JPG o PDF de hasta 5 MB, optimizadas a 300 ppp (A3 como mucho), envueltas en PDF con miniatura,
+  a `biblioteca/arte/subidas` con autor humano, licencia y etiquetas (reglas de la biblioteca).
+- **F4.3 Formulario (hecho).** Secciones (ordenar arrastrando, nueva, reutilizar de la biblioteca), preguntas (texto en
+  cada idioma: un texto a medias no se guarda y se avisa; tipo, tope, mínimo y máximo, obligatoria, opciones y «Otro»,
+  ejemplos corto, normal y largo, fotos de ejemplo, código para el artista que se cambia en todo el juego), traer una
+  pregunta de la biblioteca, y la vista del comprador con el ejemplo elegido.
+- **Puzzles y soluciones (hecho).** Ficha, solución y pistas por idioma, textos de los puzzles de contenido, lo que
+  leen los de datos; añadir del catálogo (en página nueva; si tiene solución, con los huecos de sus respuestas en su
+  zona) o de contenido; quitar.
+- **F4.4 Revisión (hecho).** Cambios de Claude (`changes`), cada parte del juego (páginas, formulario, ejemplos,
+  puzzles) con su vista previa, marcar como revisada (`review.items`), cambios vistos (`review.changes`, el contador
+  de la cabecera) y notas para Claude (`notes`, que lee `read_notes`). Vista previa del juego entero con errores y
+  avisos enlazados a su página y descarga del PDF.
+- **F4.5 Guía del token (hecho).** `creator/guia-token.html`: token de grano fino solo para el repositorio de juegos,
+  Contents y Pull requests de lectura y escritura, con el enlace al formulario de GitHub ya relleno. El token vive en
+  sessionStorage y solo va en la cabecera Authorization; si caduca, el creador vuelve a pedirlo.
+- **Publicación.** `tools/build-creator.py` copia también las vistas y las fuentes del registro, reescribe las rutas
+  que salen de `creator/` y falla si algo de `biblioteca/` se fuera a publicar o si una ruta publicada no lleva a nada.
+- *Pruebas:* `tools/qa/creator-f4.py` 39/39 (el recorrido del cliente con el juego de F3, del inicio a la revisión, y
+  la ida y vuelta por el validador de Claude), `tools/qa/creator-github.py` 19/19 (API simulada: token, guardado,
+  conflicto con Claude, subida a main, juego nuevo, envío), `tools/qa/creator-publicado.py` 10/10; golden 96/96 y el
+  resto de suites sin cambios. Hallazgo: la página `ficha-cumpleanero` de la biblioteca pide los sospechosos
+  (`NOMBRE_1…8`, `APODO_1…8`) y ninguna sección de la biblioteca los trae; solo sirve para juegos con sospechosos.
+- *Aceptación:* el cliente revisa y retoca el juego de F3 sin ayuda del equipo (revisión humana, pendiente).
 
 ### F5 · Piloto
 

@@ -173,6 +173,25 @@
           }
         }
       }
+    },
+    "review": {
+      "type": "object",
+      "description": "Revisión del cliente en el creador (F4.4): cuántos cambios de Claude ha visto y qué partes ha marcado como revisadas.",
+      "additionalProperties": false,
+      "properties": {
+        "changes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Número de entradas de changes ya revisadas."
+        },
+        "items": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "description": "Partes revisadas: id de página, «formulario», «ejemplos»…"
+        }
+      }
     }
   },
   "$defs": {

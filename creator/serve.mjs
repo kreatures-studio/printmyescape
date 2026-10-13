@@ -34,6 +34,17 @@ export function servir(port = 8080, host = '127.0.0.1', raiz = ROOT) {
   const server = http.createServer((req, res) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); return res.end(); }
     if (req.url === '/' || req.url.startsWith('/?')) { res.writeHead(302, { Location: '/creator/index.html' }); return res.end(); }
+    // Índice de colecciones de la biblioteca para el almacén en memoria (solo en local; en Pages no hay biblioteca).
+    if (req.url === '/__biblioteca') {
+      const dir = path.join(raiz, 'biblioteca');
+      const indice = {};
+      for (const tipo of ['arte', 'paginas', 'secciones', 'puzzles']) {
+        const t = path.join(dir, tipo);
+        indice[tipo] = fs.existsSync(t) ? fs.readdirSync(t).filter((n) => fs.existsSync(path.join(t, n, 'manifest.json'))).sort() : [];
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+      return res.end(JSON.stringify(indice));
+    }
     const abs = rutaDe(req.url, raiz);
     if (!abs || !fs.existsSync(abs) || fs.statSync(abs).isDirectory()) { res.writeHead(404); return res.end('no encontrado'); }
     res.writeHead(200, { 'Content-Type': TIPOS[path.extname(abs).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-store' });

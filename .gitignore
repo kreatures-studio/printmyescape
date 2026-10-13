@@ -19,3 +19,4 @@ tools/qa/salida-tipos/
 
 # Dependencias del servidor MCP (raíz)
 node_modules/
+__pycache__/

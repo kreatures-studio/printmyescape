@@ -396,6 +396,17 @@ async function composeGame(deps) {
   const out = await PDFDocument.create();
   out.registerFontkit(fontkit);
   const bgDoc = bgBytes ? await PDFDocument.load(bgBytes) : null;
+  /* F1.3b: varios PDF de fondo. Cada página puede llevar su fichero (bgFile) y su página (bgPage);
+     sin ellos se usa el PDF único de siempre (bgBytes). deps.bgFiles: { [fichero]: bytes }. */
+  const bgDocs = {};
+  const docDe = async (file) => {
+    if (!bgDocs[file]) {
+      const b = (deps.bgFiles || {})[file];
+      if (!b) throw new Error(`falta el PDF de fondo «${file}»`);
+      bgDocs[file] = await PDFDocument.load(b);
+    }
+    return bgDocs[file];
+  };
   const artCache = {};
   const ff = {};
   for (const k of Object.keys(fonts)) {
@@ -406,10 +417,14 @@ async function composeGame(deps) {
      artista a OpenSans-Bold. OpenSans/Myriad Regular van en regular. */
   /* Textos manuscritos: Caveat ~1,65x mas estrecha que Segoe Script. */
   const SCRIPT_K = 1.65;
-  const isScriptFam = (family) => !family || /caveat|script|hand|myriad/i.test(family);
+  /* F1.4: con deps.fuentes (registro de assets/fonts/registro.json) el nombre se resuelve en el registro.
+     Sin él (demo del navegador), se usan las reglas de siempre. */
+  const isScriptFam = (family) => (deps.fuentes ? deps.fuentes.manuscrita(family)
+    : (!family || /caveat|script|hand|myriad/i.test(family)));
   const ptSize = (family, pct, PW) => (pct / 100) * PW * (isScriptFam(family) ? SCRIPT_K : 1);
   const pickFont = (family, size) => {
     void size;
+    if (deps.fuentes) return deps.fuentes.key(family);
     const f = family || '';
     if (/pigpen|runes/i.test(f)) return 'runes';
     if (/myriad/i.test(f)) return 'caveatBold';
@@ -606,18 +621,24 @@ async function composeGame(deps) {
   const n = template.pages.length;
   for (let pi = 0; pi < n; pi++) {
     let bg;
-    if (template.pages[pi].layers) {
-      /* Página por capas: hoja en blanco del tamaño de la plantilla, con sus piezas de arte. */
+    const tp = template.pages[pi];
+    /* bgKind: 'pdf' o 'blank'. Sin él, como siempre: una página con capas es en blanco y el resto, PDF. */
+    const kindPag = tp.bgKind || (tp.layers ? 'blank' : 'pdf');
+    if (kindPag === 'blank') {
+      /* Página en blanco del tamaño de la plantilla: color de fondo (bgColor) y/o piezas de arte. */
       const size = PAGE_SIZES[template.pageSize];
       if (!size) throw new Error(`tamaño de página desconocido: ${template.pageSize}`);
       bg = out.addPage(size);
-      await dibujarCapas(out, bg, template.pages[pi].layers, deps.assets, artCache, degrees);
+      if (tp.bgColor) bg.drawRectangle({ x: 0, y: 0, width: size[0], height: size[1], color: hex(tp.bgColor, rgb) });
     } else {
-      if (!bgDoc) throw new Error(`la página ${template.pages[pi].id} no tiene fondo (ni PDF ni capas)`);
-      const pages = await out.copyPages(bgDoc, [pi]);
+      const src = tp.bgFile ? await docDe(tp.bgFile) : bgDoc;
+      if (!src) throw new Error(`la página ${tp.id} no tiene fondo (ni PDF ni capas)`);
+      const pages = await out.copyPages(src, [tp.bgPage !== undefined ? tp.bgPage : pi]);
       bg = pages[0];
       out.addPage(bg);
     }
+    /* Piezas de arte bajo los textos (capas «bajo»). Con fondo PDF también van encima del PDF. */
+    if (tp.layers) await dibujarCapas(out, bg, tp.layers, deps.assets, artCache, degrees);
     const PW = bg.getWidth(), PH = bg.getHeight();
     /* slot.xEn: posición horizontal solo en inglés (p. ej. el nombre abre la línea
        en inglés y va tras "A" en español). */
@@ -773,6 +794,8 @@ async function composeGame(deps) {
     }
     /* Marcas de mecánicas sobre la página (capa «over», p. ej. casillas marcadas). */
     correrMecanicas(template.pages[pi].id, 'over', bg, PW, PH);
+    /* Piezas de arte por encima de los textos (capas «sobre», F1.3b). */
+    if (tp.topLayers) await dibujarCapas(out, bg, tp.topLayers, deps.assets, artCache, degrees);
     /* Nota cifrada (p10): igual que en Node. */
     tick((pi + 1) / n);
   }
@@ -805,11 +828,12 @@ async function composeGame(deps) {
 }
 
   /* ¿Cabe el texto en su hueco sin encogerse más del 15 %? Mismo ajuste que el PDF. */
-  function fieldFits(slot, text, fontMap, PW, PH) {
-    /* mismas reglas que pickFont / ptSize de composeGame (ámbitos distintos) */
+  function fieldFits(slot, text, fontMap, PW, PH, fuentes) {
+    /* mismas reglas que pickFont / ptSize de composeGame (ámbitos distintos); con fuentes, el registro */
     const fam = slot.fontFamily || 'caveat';
     let key = 'opensans';
-    if (/pigpen|runes/i.test(fam)) key = 'runes';
+    if (fuentes) key = fuentes.key(fam);
+    else if (/pigpen|runes/i.test(fam)) key = 'runes';
     else if (/myriad/i.test(fam)) key = 'caveatBold';
     else if (/caveat|script|hand/i.test(fam)) key = /bold|black/i.test(fam) ? 'caveatBold' : 'caveat';
     else if (/anton|display/i.test(fam)) key = 'anton';
@@ -818,7 +842,7 @@ async function composeGame(deps) {
     if (!font) return true;
     const bb = { x: (slot.x / 100) * PW, w: (slot.w / 100) * PW,
       yTop: PH - (slot.y / 100) * PH, h: (slot.h / 100) * PH };
-    const scale = /caveat|script|hand|myriad/i.test(fam) ? 1.65 : 1;
+    const scale = (fuentes ? fuentes.manuscrita(fam) : /caveat|script|hand|myriad/i.test(fam)) ? 1.65 : 1;
     const r = fit(font, text, bb, (slot.size / 100) * PW * scale,
       { single: !slot.wrap, targetHs: slot.xscale || 1, angle: slot.angle || 0,
         grow: (slot.w || 0) < 10 ? 2.5 : 1 });
