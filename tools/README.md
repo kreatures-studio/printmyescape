@@ -156,6 +156,11 @@ fuente sale con huecos en blanco, probar `subset: false` para ella.
   `python3 tools/qa/creator-f4.py` (recorrido del cliente con el juego de F3 y validador de Claude),
   `python3 tools/qa/creator-github.py` (GitHub simulado: token, guardado, conflicto, subida a la biblioteca, envío),
   `python3 tools/qa/creator-publicado.py` (la copia publicada).
+- Contra GitHub de verdad (escribe en el repositorio; no va en las pruebas de cada día):
+  `python3 tools/qa/creator-github-real.py --repo dueño/juegos --base <rama de prueba con biblioteca/> --token <token>`
+  crea un juego, guarda, copia una página de la biblioteca, sube una imagen, guarda por fuera y envía (cierra el pull
+  request y borra la rama al terminar). Con `--solo-lectura --juego <id>` solo lee. El creador acepta `?principal=<rama>`
+  para usar otra rama como principal (biblioteca y envíos); por defecto, la rama por defecto del repositorio.
 - Publicar: `python3 tools/build-creator.py` regenera `docs/creador/` (creador, vistas, motor, mecánicas, reglas,
   fuentes y los dos game.json de muestra; sin biblioteca, fotos ni PDF del artista). Reescribe las rutas que salen de
   `creator/` y falla si una ruta publicada no lleva a nada o si se fuera a publicar algo de `biblioteca/`.

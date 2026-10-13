@@ -1,7 +1,8 @@
 // Almacén del creador en GitHub (T5.2 de PLAN-CREADOR.md, ampliado en F4 de PLAN-CREADOR-2.md).
 //
 // Un juego es la rama `juego/<id>` del repositorio de juegos, con `games/<id>/game.json` y sus ficheros (fondos/,
-// fotos/). La biblioteca vive en `biblioteca/` de la rama principal (main) y es la misma para todos los juegos.
+// fotos/). La biblioteca vive en `biblioteca/` de la rama principal (la rama por defecto del repositorio, o la que se
+// indique en `principal`) y es la misma para todos los juegos. Los juegos nuevos salen de esa rama y se envían a ella.
 // rev = sha del game.json en su rama. save() nunca pisa una versión más nueva: si la rev no es la última, lanza
 // { code: 'conflict' } y el creador pide recargar. El token va solo en la cabecera Authorization, nunca en una URL.
 //
@@ -12,7 +13,6 @@
 // Errores: { code: 'auth' | 'not-found' | 'conflict' | 'exists' | 'http', status, message }.
 
 const PREFIJO = 'juego/';
-const PRINCIPAL = 'main';
 const RUTA = (id) => `games/${id}/game.json`;
 
 function error(code, message, status = 0) {
@@ -49,10 +49,11 @@ export function b64aTexto(b64) {
 const rutaUrl = (ruta) => ruta.split('/').map(encodeURIComponent).join('/');
 
 /**
- * Crea el almacén. opciones: { owner, repo, token, fetchFn?, api? }.
+ * Crea el almacén. opciones: { owner, repo, token, principal?, fetchFn?, api? }.
+ * principal: la rama de la biblioteca y de los envíos (si no se da, la rama por defecto del repositorio).
  * fetchFn y api se cambian en las pruebas (respuestas simuladas).
  */
-export function crearAlmacenGitHub({ owner, repo, token, fetchFn, api = 'https://api.github.com' }) {
+export function crearAlmacenGitHub({ owner, repo, token, principal = null, fetchFn, api = 'https://api.github.com' }) {
   const f = fetchFn || ((...a) => fetch(...a));
   const base = `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`;
   const rama = (id) => PREFIJO + id;
@@ -68,6 +69,15 @@ export function crearAlmacenGitHub({ owner, repo, token, fetchFn, api = 'https:/
     const data = res.status === 204 ? null : await res.json();
     if (!ok.includes(res.status)) throw error('http', (data && data.message) || `HTTP ${res.status}`, res.status);
     return data;
+  }
+  let ramaPrincipal = principal ? Promise.resolve(principal) : null;
+  /** La rama principal: la indicada o la rama por defecto del repositorio (se pregunta una vez). */
+  function PRINCIPAL() {
+    if (!ramaPrincipal) {
+      ramaPrincipal = req(base).then((r) => r.default_branch || 'main');
+      ramaPrincipal.catch(() => { ramaPrincipal = null; });
+    }
+    return ramaPrincipal;
   }
   async function raw(ruta, ref) {
     const res = await f(`${api}${base}/contents/${rutaUrl(ruta)}?ref=${encodeURIComponent(ref)}`, { headers: cabeceras('application/vnd.github.raw') });
@@ -132,8 +142,8 @@ export function crearAlmacenGitHub({ owner, repo, token, fetchFn, api = 'https:/
     /** Juego nuevo: rama juego/<id> desde main y su game.json. Lanza { code: 'exists' } si ya hay rama. */
     async create(id, game, mensaje) {
       try { await req(`${base}/git/ref/heads/${rutaUrl(rama(id))}`); throw error('exists', `ya existe el juego «${id}»`, 422); } catch (e) { if (e.code !== 'not-found') throw e; }
-      const principal = await req(`${base}/git/ref/heads/${PRINCIPAL}`);
-      await req(`${base}/git/refs`, { method: 'POST', ok: [201], body: { ref: `refs/heads/${rama(id)}`, sha: principal.object.sha } });
+      const cabeza = await req(`${base}/git/ref/heads/${rutaUrl(await PRINCIPAL())}`);
+      await req(`${base}/git/refs`, { method: 'POST', ok: [201], body: { ref: `refs/heads/${rama(id)}`, sha: cabeza.object.sha } });
       const d = await req(`${base}/contents/${RUTA(id)}`, {
         method: 'PUT', ok: [201],
         body: { message: mensaje || `Crear ${id}`, content: textoAb64(JSON.stringify(game, null, 2) + '\n'), branch: rama(id) },
@@ -156,17 +166,17 @@ export function crearAlmacenGitHub({ owner, repo, token, fetchFn, api = 'https:/
     /** Colecciones de un tipo de la biblioteca (nombres de carpeta bajo biblioteca/<tipoDir>/). */
     async colecciones(tipoDir) {
       try {
-        const lista = await req(`${base}/contents/biblioteca/${encodeURIComponent(tipoDir)}?ref=${PRINCIPAL}`);
+        const lista = await req(`${base}/contents/biblioteca/${encodeURIComponent(tipoDir)}?ref=${encodeURIComponent(await PRINCIPAL())}`);
         return lista.filter((x) => x.type === 'dir').map((x) => x.name).sort();
       } catch (e) { if (e.code === 'not-found') return []; throw e; }
     },
-    async leerBiblioteca(ruta) { return raw(normalizar(`biblioteca/${ruta}`), PRINCIPAL); },
-    async escribirBiblioteca(ruta, bytes, mensaje) { return escribir(normalizar(`biblioteca/${ruta}`), bytes, PRINCIPAL, mensaje || `Biblioteca: ${ruta}`); },
+    async leerBiblioteca(ruta) { return raw(normalizar(`biblioteca/${ruta}`), await PRINCIPAL()); },
+    async escribirBiblioteca(ruta, bytes, mensaje) { return escribir(normalizar(`biblioteca/${ruta}`), bytes, await PRINCIPAL(), mensaje || `Biblioteca: ${ruta}`); },
 
     /** Abre el pull request de la rama del juego hacia main. Si ya hay uno abierto, devuelve ese. */
     async submit(id, nota) {
       try {
-        const pr = await req(`${base}/pulls`, { method: 'POST', ok: [201], body: { title: `Enviar ${id} al estudio`, head: rama(id), base: PRINCIPAL, body: nota || '' } });
+        const pr = await req(`${base}/pulls`, { method: 'POST', ok: [201], body: { title: `Enviar ${id} al estudio`, head: rama(id), base: await PRINCIPAL(), body: nota || '' } });
         return { url: pr.html_url };
       } catch (e) {
         if (e.code === 'http' && e.status === 422) {

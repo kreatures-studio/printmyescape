@@ -100,6 +100,8 @@ class GitHubSimulado:
         if not path.startswith(base):
             return self.json(route, 404, {'message': 'Not Found'}, cors)
         resto = path[len(base):]
+        if resto == '':
+            return self.json(route, 200, {'full_name': REPO, 'default_branch': 'main', 'private': True}, cors)
         if resto == '/branches':
             return self.json(route, 200, [{'name': r} for r in self.ramas], cors)
         m = re.match(r'^/git/ref/heads/(.+)$', resto)
