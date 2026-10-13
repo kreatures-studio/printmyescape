@@ -24,6 +24,8 @@ const CLAVE_TOKEN = 'pme-token';
 const CLAVE_REPO = 'pme-repo';
 const PARAMS = new URLSearchParams(location.search);
 const GUARDAR_MS = Number(PARAMS.get('guardar')) || 2500;
+// Rama de la biblioteca y de los envíos (por defecto, la rama por defecto del repositorio de juegos).
+const PRINCIPAL = PARAMS.get('principal') || null;
 const SONDEO_MS = Number(PARAMS.get('sondeo')) || 20000;
 const MAX_DESHACER = 150;
 // Juegos del almacén en memoria (pruebas y demostración local).
@@ -323,7 +325,7 @@ function pintarEntrada(mensaje = '') {
 async function entrar(repoTexto, token) {
   const m = /^([\w.-]+)\/([\w.-]+)$/.exec(repoTexto);
   if (!m) return pintarEntrada('El repositorio se escribe como propietario/nombre, por ejemplo estudio/juegos.');
-  const almacen = crearAlmacenGitHub({ owner: m[1], repo: m[2], token });
+  const almacen = crearAlmacenGitHub({ owner: m[1], repo: m[2], token, principal: PRINCIPAL });
   try {
     await almacen.list();
   } catch (e) {
@@ -353,7 +355,7 @@ async function arrancar(almacen) {
   if (token && repo) {
     const m = /^([\w.-]+)\/([\w.-]+)$/.exec(repo);
     if (m) {
-      const almacen = crearAlmacenGitHub({ owner: m[1], repo: m[2], token });
+      const almacen = crearAlmacenGitHub({ owner: m[1], repo: m[2], token, principal: PRINCIPAL });
       try {
         await almacen.list();
       } catch (e) {

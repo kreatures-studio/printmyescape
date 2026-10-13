@@ -268,7 +268,23 @@ Sigue la maqueta aprobada («Creador de juegos PrintMyEscape»: inicio, página,
   conflicto con Claude, subida a main, juego nuevo, envío), `tools/qa/creator-publicado.py` 10/10; golden 96/96 y el
   resto de suites sin cambios. Hallazgo: la página `ficha-cumpleanero` de la biblioteca pide los sospechosos
   (`NOMBRE_1…8`, `APODO_1…8`) y ninguna sección de la biblioteca los trae; solo sirve para juegos con sospechosos.
-- *Aceptación:* el cliente revisa y retoca el juego de F3 sin ayuda del equipo (revisión humana, pendiente).
+- **Lo que faltaba de la maqueta (hecho, 13-10).** Cabida real en el formulario («en la página N caben X letras», con
+  `tools/game/cabida.mjs`, la medida de `limites.mjs` sin Node). Sugerencias de Claude (`suggestions`: pregunta,
+  página o elemento con el porqué; `write_change_summary` las escribe) con Aceptar y Descartar en el formulario, la
+  página y Revisar, y «A presupuestar» (`changes[].presupuestar`) en Revisar. Editar un puzzle de contenido por
+  dentro en el lienzo. La rama principal del almacén es la rama por defecto del repositorio (o `?principal=`).
+- **Biblioteca (13-10).** Secciones `sospechoso-1…8` (nombre, alias y foto, de final3): la página `ficha-cumpleanero`
+  ya entra en un juego nuevo con todo lo que necesita. Tableta v3 de la p16 corregida. El creador ofrece solo la última
+  versión de cada entrada.
+- **Arte corregido (13-10).** Páginas 8 (barquitos) y 16 (tablet) de `Final3-Clean.pdf` cambiadas por las del
+  artista; la p16 reordena los iconos (notificaciones 2, 1, 2, 1, 3, 3, 2; solución 213). El «2» inglés era «= 2»
+  en las p5, p6, p13 y p16. Ejemplos y demo regenerados (golden 96/96, paridad 96/96).
+- **GitHub real.** Lecturas probadas contra la API real (`tools/qa/creator-github-real.py --solo-lectura`, 5/5); las
+  escrituras, con la API simulada (19/19): desde la sesión de Claude la API no admite escrituras. Falta una pasada de
+  escritura con el token del estudio (`creator-github-real.py` sin `--solo-lectura`).
+- *Pruebas:* `creator-f4.py` 47/47, `creator-github.py` 19/19, `creator-publicado.py` 10/10, `mcp/test-v2.mjs` 47/47.
+- *Aceptación (hecha, 13-10):* el estudio, haciendo de cliente, revisó y retocó el juego de F3 sin ayuda: «las pruebas
+  han sido satisfactorias».
 
 ### F5 · Piloto
 

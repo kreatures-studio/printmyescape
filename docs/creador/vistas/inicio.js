@@ -12,7 +12,7 @@ const EJEMPLO_CLAUDE = '«Crea un escape room de 6 páginas sobre una misión se
 export function pintarInicio(raiz, app) {
   const ui = app.ui.inicio || (app.ui.inicio = { filtro: 'todos' });
   const juegos = app.juegos || [];
-  const paraRevisar = juegos.filter((j) => j.status === 'borrador' && (j.porRevisar > 0 || j.notasPendientes > 0));
+  const paraRevisar = juegos.filter((j) => j.status === 'borrador' && (j.porRevisar > 0 || j.notasPendientes > 0 || j.sugerencias > 0));
   const visibles = juegos.filter((j) => ui.filtro === 'todos' || j.status === ui.filtro);
 
   raiz.replaceChildren(h('div', { class: 'inicio' },
@@ -68,6 +68,7 @@ function tarjetaRevisar(app, j) {
       j.ultimoCambio ? h('div', {}, `«${j.ultimoCambio.text}»`) : null,
       h('div', { class: 'cifras' },
         j.porRevisar ? h('span', {}, h('strong', {}, String(j.porRevisar)), ` cambio${j.porRevisar === 1 ? '' : 's'} por revisar`) : null,
+        j.sugerencias ? h('span', {}, h('strong', {}, String(j.sugerencias)), ` sugerencia${j.sugerencias === 1 ? '' : 's'} de Claude`) : null,
         j.notasPendientes ? h('span', { style: { color: 'var(--aviso)' } }, h('strong', {}, String(j.notasPendientes)), ` nota${j.notasPendientes === 1 ? '' : 's'} tuya${j.notasPendientes === 1 ? '' : 's'} pendiente${j.notasPendientes === 1 ? '' : 's'}`) : null)),
     h('div', { class: 'filtros' },
       h('a', { class: 'boton claude', href: `#/juego/${encodeURIComponent(j.id)}/revisar` }, 'Revisar cambios'),
@@ -130,10 +131,10 @@ function pintarPortadas(raiz, app) {
 
 function material(app) {
   const bib = app.biblioteca;
-  const paginas = bib.entradas('pagina');
-  const secciones = bib.entradas('seccion');
-  const arte = bib.entradas('arte').filter((p) => p.status !== 'reexportar');
-  const puzzles = bib.entradas('puzzle');
+  const paginas = bib.actuales('pagina');
+  const secciones = bib.actuales('seccion');
+  const arte = bib.actuales('arte').filter((p) => p.status !== 'reexportar');
+  const puzzles = bib.actuales('puzzle');
   const miniaturas = h('div', { class: 'miniaturas' });
   arte.slice(0, 8).forEach((p) => { const img = h('img', { alt: p.name, loading: 'lazy' }); bib.miniatura(p).then((u) => { img.src = u; }, () => {}); miniaturas.append(img); });
   const cabeza = (titulo, cuenta) => h('div', { class: 'cabeza' }, h('strong', {}, titulo), h('span', { class: 'tenue' }, cuenta));
@@ -164,7 +165,7 @@ export function verBiblioteca(app, tipo = 'arte') {
   return app.dialogo((cerrar) => {
     const cuerpo = h('div', {});
     const pintar = () => {
-      const lista = bib.entradas(actual).filter((e) => !etiqueta || (e.tags || []).includes(etiqueta));
+      const lista = bib.actuales(actual).filter((e) => !etiqueta || (e.tags || []).includes(etiqueta));
       const contenido = actual === 'arte'
         ? h('div', { class: 'galeria', style: { gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' } }, lista.map((p) => {
           const img = h('img', { alt: '' });

@@ -1,7 +1,7 @@
 // Biblioteca en el navegador (F4): la misma vista que tools/biblioteca/indice.mjs, leída a través del almacén
 // (de GitHub: biblioteca/ en la rama principal del repositorio privado; nunca de la web publicada).
 //   const bib = await cargarBiblioteca(almacen);
-//   bib.entradas(tipo), bib.buscar(tipo, ref)           (tipo: arte | pagina | seccion | puzzle; ref «id@versión» o «id»)
+//   bib.entradas(tipo), bib.actuales(tipo), bib.buscar(tipo, ref)           (tipo: arte | pagina | seccion | puzzle; ref «id@versión» o «id»)
 //   bib.bytes(tipo, coleccion, rel), bib.bytesDePieza(pieza), bib.miniatura(pieza) → URL de la imagen
 //   bib.arteCombinado() → manifiesto de todo el arte (para el validador)
 
@@ -35,6 +35,15 @@ export async function cargarBiblioteca(almacen) {
   const bib = {
     errores,
     entradas: (tipo) => porTipo[tipo] || [],
+    /** La última versión de cada entrada (lo que se ofrece para insertar; las anteriores siguen para los juegos que las usan). */
+    actuales(tipo) {
+      const ultima = new Map();
+      for (const e of porTipo[tipo] || []) {
+        const k = `${e.coleccion}/${e.id}`;
+        if (!ultima.has(k) || e.version > ultima.get(k).version) ultima.set(k, e);
+      }
+      return [...ultima.values()];
+    },
     buscar(tipo, ref) {
       const { id, version } = partirRef(ref);
       const c = (porTipo[tipo] || []).filter((e) => e.id === id && (version === null || e.version === version));

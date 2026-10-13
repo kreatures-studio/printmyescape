@@ -122,7 +122,7 @@ async function quitar(app, z) {
 async function delCatalogo(app) {
   const g = app.juego;
   const usados = new Set((g.puzzles || []).map((z) => z.from).filter(Boolean));
-  const catalogo = app.biblioteca.entradas('puzzle');
+  const catalogo = app.biblioteca.actuales('puzzle');
   const elegido = await app.dialogo((cerrar) => h('div', { class: 'dialogo' },
     h('h2', {}, 'Añadir un puzzle del catálogo'),
     h('p', { class: 'tenue' }, 'Se añade en una página nueva, después de la última. Si lee preguntas que el juego no tiene, primero hay que traer su sección en el formulario.'),

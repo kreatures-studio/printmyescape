@@ -5,6 +5,7 @@
 import { aV1 } from './tools/game/v2.mjs';
 import { plantillaParaMotor } from './tools/game/reglas.mjs';
 import { cargarRegistro, fuentesDelMotor } from './fuentes.js';
+import { medirCabida } from './tools/game/cabida.mjs';
 
 const ficherosDelJuego = new Map(); // `${id}/${ruta}` → Promise<bytes>
 
@@ -93,4 +94,32 @@ export async function pintarPDF(bytes, canvas, anchoCss, numero = 1) {
   } finally {
     doc.destroy();
   }
+}
+
+/* ---------------- Cabida de los campos (formulario) ---------------- */
+
+let fuentesIncrustadas = null;
+async function mapaDeFuentes() {
+  if (!fuentesIncrustadas) {
+    fuentesIncrustadas = (async () => {
+      const { PDFDocument } = globalThis.PDFLib;
+      const doc = await PDFDocument.create();
+      doc.registerFontkit(globalThis.fontkit);
+      const map = {};
+      for (const [k, f] of Object.entries(await fuentesDelMotor())) map[k] = await doc.embedFont(f.bytes, { subset: f.subset });
+      return map;
+    })();
+  }
+  return fuentesIncrustadas;
+}
+
+/**
+ * Cuántas letras caben de un campo en cada página donde sale (las mismas medidas que el PDF: fieldFits del motor).
+ * Devuelve { capacidad, porPagina: { pid: n }, cap } o null si no es un campo de texto.
+ */
+export async function cabidaDe(juego, campo) {
+  const v1 = juego.schema === 'pme-game/2' ? aV1(juego) : juego;
+  const [fontMap, { resolver }] = await Promise.all([mapaDeFuentes(), cargarRegistro()]);
+  const r = medirCabida({ ...v1, template: plantillaParaMotor(v1) }, { fieldFits: globalThis.PMECompose.fieldFits, fontMap, fuentes: resolver, campos: [campo] });
+  return r[campo] || null;
 }
