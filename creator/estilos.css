@@ -192,6 +192,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .caja.seleccionada .chapa { display: block; }
 .caja.puzzle-datos { cursor: default; }
 .caja.sugerida { border: 1.5px dashed var(--morado); }
+.marco-puzzle { position: absolute; border: 2px solid var(--morado); background: rgba(67, 56, 168, .04); pointer-events: none; }
+.marco-puzzle .chapa { position: absolute; left: 0; top: -22px; padding: 1px 6px; border-radius: 4px; background: var(--morado); color: #FFFFFF; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.aviso-dentro { display: flex; gap: 10px; align-items: center; padding: 4px 6px 4px 12px; border-radius: 9px; background: var(--morado-claro); color: var(--morado-tinta); }
 .miniatura-pagina .sugerida-marca { font-size: 11px; color: var(--morado); font-weight: 600; }
 
 /* Propiedades */

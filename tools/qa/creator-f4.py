@@ -184,6 +184,35 @@ def main():
             rec('subir: y se pone en la página', len(subida) == 1, str([e.get('ref') for e in sub if e['kind'] == 'art'][-2:]))
             lienzo_listo(page)
 
+            # ---------------- Un puzzle de contenido, por dentro ----------------
+            page.goto(base + f'#/juego/{F3}/paginas/p3')
+            lienzo_listo(page)
+            bloque = next(e for e in juego(page)['pages'][2]['elements'] if e['kind'] == 'puzzle')
+            page.locator(f'.caja[data-elemento="{bloque["id"]}"]').focus()
+            page.keyboard.press('Enter')
+            page.click(f'[data-entrar="{bloque["id"]}"]')
+            page.wait_for_selector('.marco-puzzle')
+            pz = next(z for z in juego(page)['puzzles'] if z['id'] == bloque['puzzle'])
+            pieza = next(e for e in pz['page']['elements'] if e['kind'] == 'text')
+            rec('puzzle por dentro: se ven sus piezas para elegirlas', page.locator('.capa-cajas .caja').count() == len(pz['page']['elements']))
+            page.locator(f'.caja[data-elemento="{pieza["id"]}"]').focus()
+            page.keyboard.press('Enter')
+            page.locator(f'.caja[data-elemento="{pieza["id"]}"]').focus()
+            page.keyboard.press('ArrowDown')
+            page.wait_for_function(f"""window.__app && __app.juego.puzzles.find(z => z.id === '{pz['id']}').page.elements.find(e => e.id === '{pieza['id']}').y !== {pieza['y']}""")
+            pz2 = next(z for z in juego(page)['puzzles'] if z['id'] == pz['id'])
+            y2 = next(e for e in pz2['page']['elements'] if e['id'] == pieza['id'])['y']
+            rec('puzzle por dentro: una pieza se mueve dentro del puzzle (y la página no cambia)', abs(y2 - (pieza['y'] + 0.5)) < 1e-6
+                and juego(page)['pages'][2]['elements'] == g0['pages'][2]['elements'], f"{pieza['y']} → {y2}")
+            n_piezas = len(pz2['page']['elements'])
+            page.click('.barra-mesa .herramientas button:has-text("Texto fijo")')
+            page.wait_for_function(f"window.__app && __app.juego.puzzles.find(z => z.id === '{pz['id']}').page.elements.length === {n_piezas + 1}")
+            rec('puzzle por dentro: un texto nuevo va dentro del puzzle', True)
+            page.click('.aviso-dentro button:has-text("Salir del puzzle")')
+            page.wait_for_selector('.marco-puzzle', state='detached')
+            lienzo_listo(page)
+            rec('puzzle por dentro: salir vuelve a la página', page.locator(f'.caja[data-elemento="{bloque["id"]}"]').count() == 1)
+
             # ---------------- Formulario ----------------
             page.click('.nav a:has-text("Formulario")')
             page.wait_for_selector('.tarjeta-campo[data-campo=NOMBRE_CUMPLE]')

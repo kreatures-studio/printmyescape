@@ -18,6 +18,74 @@ const pt = (size) => Math.round((size || 0) * ANCHO_PAGINA_PT / 100 * 10) / 10;
 const desdePt = (p) => Math.round((p / ANCHO_PAGINA_PT) * 100 * 1000) / 1000;
 const redondear = (v) => Math.round(v * 100) / 100;
 
+const cajaCss = (c) => ({ left: `${c.x}%`, top: `${c.y}%`, width: `${c.w}%`, height: `${c.h}%` });
+
+/**
+ * Dónde se edita: la página o, «por dentro», un puzzle de contenido colocado en ella (ui.dentro). Tiene la forma de
+ * una página (id, elements, background…) más las operaciones sobre sus elementos; dentro de un puzzle los elementos
+ * están en % de la caja del puzzle (aPagina / aLocal convierten) y la letra se escala con su ancho (escala).
+ */
+function contexto(app, ui, pagina) {
+  const g = app.juego;
+  const base = { id: pagina.id, title: pagina.title, background: pagina.background, from: pagina.from, real: pagina };
+  const bloque = ui.dentro && ui.dentro.pagina === pagina.id ? pagina.elements.find((e) => e.id === ui.dentro.bloque && e.kind === 'puzzle') : null;
+  const z = bloque && (g.puzzles || []).find((x) => x.id === bloque.puzzle && x.kind !== 'datos' && x.page);
+  if (!z) {
+    ui.dentro = null;
+    return { ...base, elements: pagina.elements, caja: null, escala: 1,
+      aPagina: (e) => e, aLocal: (p) => p,
+      anadir: (copia, element, index) => app.ops.anadirElemento(copia, { page: pagina.id, element, index }),
+      actualizar: (copia, id, changes) => app.ops.actualizarElemento(copia, { page: pagina.id, element: id, changes }),
+      quitar: (copia, id) => app.ops.quitarElemento(copia, { page: pagina.id, element: id }),
+      mover: (copia, id, index) => app.ops.moverElemento(copia, { page: pagina.id, element: id, index: Math.min(index, copia.pages.find((x) => x.id === pagina.id).elements.length - 1) }) };
+  }
+  const B = { x: bloque.x, y: bloque.y, w: bloque.w, h: bloque.h };
+  // Cada cambio rehace la lista de elementos del puzzle con actualizarPuzzle (ids y textos se conservan).
+  const conElementos = (copia, fn) => {
+    const zz = copia.puzzles.find((x) => x.id === z.id);
+    const els = structuredClone(zz.page.elements);
+    const r = fn(els);
+    app.ops.actualizarPuzzle(copia, { puzzle: z.id, changes: { page: { elements: els } } });
+    return r;
+  };
+  return { ...base, elements: z.page.elements, caja: B, escala: B.w / 100, puzzle: z, bloque,
+    aPagina: (e) => ({ x: B.x + (e.x * B.w) / 100, y: B.y + (e.y * B.h) / 100, w: (e.w * B.w) / 100, h: (e.h * B.h) / 100 }),
+    aLocal: (p) => ({ x: ((p.x - B.x) / B.w) * 100, y: ((p.y - B.y) / B.h) * 100 }),
+    anadir(copia, element, index) {
+      const antes = new Set(copia.puzzles.find((x) => x.id === z.id).page.elements.map((e) => e.id));
+      conElementos(copia, (els) => { els.splice(index === undefined || index === null ? els.length : index, 0, element); });
+      return copia.puzzles.find((x) => x.id === z.id).page.elements.find((e) => !antes.has(e.id));
+    },
+    actualizar: (copia, id, changes) => conElementos(copia, (els) => {
+      const el = els.find((e) => e.id === id);
+      if (!el) throw new Error(`no hay pieza «${id}» en el puzzle`);
+      const { texts, ...resto } = changes;
+      Object.assign(el, resto);
+      for (const [k, v] of Object.entries(resto)) if (v === null) delete el[k];
+      if (texts) for (const l of copia.languages) if (typeof texts[l] === 'string') copia.i18n[l][el.key] = texts[l];
+      return el;
+    }),
+    quitar: (copia, id) => conElementos(copia, (els) => { els.splice(els.findIndex((e) => e.id === id), 1); return { removed: id }; }),
+    mover: (copia, id, index) => conElementos(copia, (els) => { const i = els.findIndex((e) => e.id === id); const [el] = els.splice(i, 1); els.splice(Math.min(index, els.length), 0, el); }),
+  };
+}
+
+function entrarEnPuzzle(app, ui, bloque) {
+  ui.dentro = { pagina: ui.pagina, bloque: bloque.id };
+  ui.sel = null;
+  app.repintar();
+}
+
+/** Propiedades cuando se está dentro de un puzzle sin pieza elegida. */
+function propiedadesPuzzle(app, ui, ctx) {
+  const z = ctx.puzzle;
+  return h('div', { style: { display: 'flex', flexDirection: 'column', gap: '14px' } },
+    h('div', { class: 'prop-cabeza' }, h('div', { class: 'tipo' }, 'Dentro del puzzle'), h('div', { class: 'nombre' }, z.name || z.id)),
+    h('div', { class: 'info claude' }, h('span', { style: { fontSize: '13px' } }, `Sus piezas se miden en % de la caja del puzzle: si mueves el puzzle en la página, se mueven con él. ${ctx.elements.length} pieza${ctx.elements.length === 1 ? '' : 's'}.`)),
+    h('p', { class: 'tenue', style: { fontSize: '13px', margin: 0 } }, 'Elige una pieza para cambiarla. Las imágenes, los textos y los campos que añadas ahora van dentro del puzzle.'),
+    h('button', { class: 'boton', type: 'button', 'data-salir-puzzle': '1', onclick: () => { ui.dentro = null; ui.sel = ctx.bloque.id; app.repintar(); } }, 'Salir del puzzle'));
+}
+
 export function pintarPaginas(raiz, app) {
   const g = app.juego;
   const ui = app.ui.paginas || (app.ui.paginas = { sel: null, lang: g.languages[0], ejemplo: (g.examples || [])[0] ? g.examples[0].id : null, pestana: 'imagenes', etiqueta: '', ancho: 560, menuPagina: false });
@@ -27,7 +95,8 @@ export function pintarPaginas(raiz, app) {
   if (!ui.pagina || !g.pages.some((p) => p.id === ui.pagina)) ui.pagina = g.pages[0] && g.pages[0].id;
   if (!g.languages.includes(ui.lang)) ui.lang = g.languages[0];
   if (ui.ejemplo && !(g.examples || []).some((e) => e.id === ui.ejemplo)) ui.ejemplo = (g.examples || [])[0] ? g.examples[0].id : null;
-  const pagina = g.pages.find((p) => p.id === ui.pagina);
+  const real = g.pages.find((p) => p.id === ui.pagina);
+  const pagina = real ? contexto(app, ui, real) : null;
   if (pagina && ui.sel && !pagina.elements.some((e) => e.id === ui.sel)) ui.sel = null;
 
   raiz.replaceChildren(h('div', { class: 'trabajo' },
@@ -276,15 +345,17 @@ function insertarPaginas(app, ui) {
 /* ---------------- Añadir elementos ---------------- */
 
 async function anadirArte(app, ui, pagina, pieza, punto = null) {
-  const w = Math.min(90, Math.max(5, (pieza.widthMm / 210) * 100));
-  const aspecto = (pieza.heightMm / 297) / (pieza.widthMm / 210);
+  // Dentro de un puzzle las medidas son % de su caja: la pieza conserva su tamaño real en la página.
+  const w = Math.min(90, Math.max(5, (pieza.widthMm / 210) * 100 / (pagina.caja ? pagina.caja.w / 100 : 1)));
+  const aspecto = (pieza.heightMm / 297) / (pieza.widthMm / 210) * (pagina.caja ? pagina.caja.w / pagina.caja.h : 1);
+  if (punto) punto = pagina.aLocal(punto);
   const hh = w * aspecto;
   const x = punto ? punto.x - w / 2 : 50 - w / 2;
   const y = punto ? punto.y - hh / 2 : 50 - hh / 2;
   // El arte nuevo va encima del resto del arte, pero debajo de los textos (banda baja del motor).
   const primerTexto = pagina.elements.findIndex((e) => e.kind === 'text' || e.kind === 'field' || e.kind === 'photo');
-  const el = await app.cambiar(`Imagen: ${pieza.name}`, (g) => app.ops.anadirElemento(g, { page: pagina.id,
-    element: { kind: 'art', ref: `${pieza.id}@${pieza.version}`, x: redondear(x), y: redondear(y), w: redondear(w) }, index: primerTexto >= 0 ? primerTexto : undefined }));
+  const el = await app.cambiar(`Imagen: ${pieza.name}`, (g) => pagina.anadir(g,
+    { kind: 'art', ref: `${pieza.id}@${pieza.version}`, x: redondear(x), y: redondear(y), w: redondear(w) }, primerTexto >= 0 ? primerTexto : undefined));
   if (el) { ui.sel = el.id; app.repintar(); }
 }
 
@@ -295,15 +366,16 @@ async function anadirCampo(app, ui, pagina, campo, punto = null) {
   const el = foto
     ? { kind: 'photo', field: campo, x: 35, y: 35, w: 30, h: 21, angle: 0 }
     : { kind: 'field', field: campo, x: 20, y: 45, w: 60, h: 5, size: 2.4, color: '#1B2420', fontFamily: 'Open Sans', angle: 0, ...(def && def.type === 'long' ? { wrap: true, h: 14 } : {}) };
-  if (punto) { el.x = redondear(Math.min(100 - el.w, Math.max(0, punto.x - el.w / 2))); el.y = redondear(Math.min(100 - el.h, Math.max(0, punto.y - el.h / 2))); }
-  const nuevo = await app.cambiar(`Campo ${campo}`, (copia) => app.ops.anadirElemento(copia, { page: pagina.id, element: el }));
+  if (punto) { punto = pagina.aLocal(punto); el.x = redondear(Math.min(100 - el.w, Math.max(0, punto.x - el.w / 2))); el.y = redondear(Math.min(100 - el.h, Math.max(0, punto.y - el.h / 2))); }
+  if (pagina.caja) el.size && (el.size = redondear(el.size / (pagina.caja.w / 100)));
+  const nuevo = await app.cambiar(`Campo ${campo}`, (copia) => pagina.anadir(copia, el));
   if (nuevo) { ui.sel = nuevo.id; app.repintar(); }
 }
 
 async function anadirTexto(app, ui, pagina) {
   const textos = Object.fromEntries(app.juego.languages.map((l) => [l, l === 'es' ? 'Texto nuevo' : l === 'en' ? 'New text' : 'Texto nuevo']));
-  const el = await app.cambiar('Texto fijo', (g) => app.ops.anadirElemento(g, { page: pagina.id,
-    element: { kind: 'text', texts: textos, x: 20, y: 10, w: 60, h: 6, size: 3, color: '#1B2420', fontFamily: 'Anton', angle: 0 } }));
+  const el = await app.cambiar('Texto fijo', (g) => pagina.anadir(g,
+    { kind: 'text', texts: textos, x: 20, y: 10, w: 60, h: 6, size: redondear(3 / (pagina.caja ? pagina.caja.w / 100 : 1)), color: '#1B2420', fontFamily: 'Anton', angle: 0 }));
   if (el) { ui.sel = el.id; app.repintar(); }
 }
 
@@ -324,12 +396,14 @@ function barraMesa(app, ui, pagina) {
   const g = app.juego;
   const ejemplos = (g.examples || []).map((e, i) => [e.id, ['Corto', 'Normal', 'Largo'][i] || `Ejemplo ${e.id}`]);
   return h('div', { class: 'barra-mesa' },
-    pagina && !app.soloLectura ? h('div', { class: 'herramientas', role: 'group', 'aria-label': 'Añadir a la página' },
+    pagina && pagina.caja ? h('div', { class: 'aviso-dentro', role: 'status' }, h('strong', {}, `Por dentro: «${pagina.puzzle.name || pagina.puzzle.id}»`),
+      h('button', { class: 'boton pequeno', type: 'button', onclick: () => { ui.dentro = null; ui.sel = pagina.bloque.id; app.repintar(); } }, 'Salir del puzzle')) : null,
+    pagina && !app.soloLectura ? h('div', { class: 'herramientas', role: 'group', 'aria-label': pagina.caja ? 'Añadir al puzzle' : 'Añadir a la página' },
       h('button', { class: 'boton pequeno', type: 'button', onclick: () => anadirTexto(app, ui, pagina) }, 'Texto fijo'),
       h('button', { class: 'boton pequeno', type: 'button', onclick: () => elegirCampo(app, ui, pagina, false) }, 'Campo'),
       h('button', { class: 'boton pequeno', type: 'button', onclick: () => elegirCampo(app, ui, pagina, true) }, 'Foto'),
       h('button', { class: 'boton pequeno', type: 'button', onclick: () => { ui.pestana = 'imagenes'; app.repintar(); } }, 'Imagen'),
-      h('button', { class: 'boton pequeno', type: 'button', onclick: () => { ui.pestana = 'fondos'; ui.sel = null; app.repintar(); } }, 'Fondo')) : null,
+      pagina.caja ? null : h('button', { class: 'boton pequeno', type: 'button', onclick: () => { ui.pestana = 'fondos'; ui.sel = null; app.repintar(); } }, 'Fondo')) : null,
     h('div', { class: 'relleno' }),
     g.languages.length > 1 ? h('div', { class: 'segmentado', role: 'group', 'aria-label': 'Idioma' }, g.languages.map((l) => h('button', { type: 'button', 'aria-pressed': ui.lang === l ? 'true' : 'false', onclick: () => { ui.lang = l; app.repintar(); } }, l.toUpperCase()))) : null,
     ejemplos.length ? h('div', { class: 'segmentado', role: 'group', 'aria-label': 'Ejemplo' }, ejemplos.map(([id, t]) => h('button', { type: 'button', 'aria-pressed': ui.ejemplo === id ? 'true' : 'false', onclick: () => { ui.ejemplo = id; app.repintar(); } }, t)),
@@ -366,11 +440,16 @@ function lienzo(app, ui, pagina) {
   const mio = ++turno;
   const t = setTimeout(() => { if (mio === turno) cargando.hidden = false; }, 250);
   componer({ juego: app.juego, almacen: app.almacen, biblioteca: app.biblioteca, lang: ui.lang, ejemplo: ui.ejemplo, paginas: [pagina.id] })
-    .then(async ({ bytes, warns }) => {
-      if (mio !== turno) return;
-      await pintarPDF(bytes, canvas, ancho);
-      ui.avisosMotor = warns;
-      caja.dataset.listo = '1';
+    .then(({ bytes, warns }) => {
+      if (mio !== turno) return null;
+      // Un mismo canvas no admite dos pintados a la vez: se pintan en cola y solo el último pedido.
+      ui.colaPintado = (ui.colaPintado || Promise.resolve()).catch(() => {}).then(async () => {
+        if (mio !== turno) return;
+        await pintarPDF(bytes, canvas, ancho);
+        ui.avisosMotor = warns;
+        caja.dataset.listo = '1';
+      });
+      return ui.colaPintado;
     })
     .catch((e) => { if (mio === turno) app.aviso(`No se pudo componer la página: ${e.message}`, { tipo: 'error' }); })
     .finally(() => { clearTimeout(t); if (mio === turno) cargando.hidden = true; });
@@ -380,17 +459,26 @@ function lienzo(app, ui, pagina) {
 function pintarCajas(app, ui, pagina, capa, ancho, alto) {
   const g = app.juego;
   const datos = new Set((g.puzzles || []).filter((z) => z.kind === 'datos').map((z) => z.id));
+  if (pagina.caja) {
+    const B = pagina.caja;
+    capa.append(h('div', { class: 'marco-puzzle', 'aria-hidden': 'true', style: { left: `${B.x}%`, top: `${B.y}%`, width: `${B.w}%`, height: `${B.h}%` } },
+      h('span', { class: 'chapa' }, `Dentro del puzzle «${pagina.puzzle.name || pagina.puzzle.id}»`)));
+  }
+  // Medidas del contenedor en píxeles (la página o la caja del puzzle): las cajas se arrastran en sus %.
+  const anchoC = pagina.caja ? ancho * pagina.caja.w / 100 : ancho;
+  const altoC = pagina.caja ? alto * pagina.caja.h / 100 : alto;
   for (const el of pagina.elements) {
     const esDatos = el.kind === 'puzzle' && datos.has(el.puzzle);
     const seleccionada = el.id === ui.sel;
     const sugerida = sugerenciasDe(g, { page: pagina.id, element: el.id }).length > 0;
     const div = h('div', { class: `caja ${el.kind}${seleccionada ? ' seleccionada' : ''}${esDatos ? ' puzzle-datos' : ''}${sugerida ? ' sugerida' : ''}`, 'data-elemento': el.id, tabindex: app.soloLectura ? null : '0',
       role: 'button', 'aria-label': `${NOMBRE_KIND[el.kind]}: ${etiquetaDe(app, el, ui.lang)}`, 'aria-pressed': seleccionada ? 'true' : 'false',
-      style: { left: `${el.x}%`, top: `${el.y}%`, width: `${el.w}%`, height: `${el.h}%`, transform: el.angle ? `rotate(${el.angle}deg)` : null, pointerEvents: esDatos && !seleccionada ? 'none' : null } },
+      style: { ...cajaCss(pagina.aPagina(el)), transform: el.angle ? `rotate(${el.angle}deg)` : null, pointerEvents: esDatos && !seleccionada ? 'none' : null } },
     h('span', { class: 'chapa' }, `${NOMBRE_KIND[el.kind]} · ${etiquetaDe(app, el, ui.lang)}`.slice(0, 48)),
     !app.soloLectura && !esDatos ? h('span', { class: 'asa', 'data-asa': '1', 'aria-hidden': 'true' }) : null);
     if (!app.soloLectura) {
-      div.addEventListener('pointerdown', (e) => arrastrar(app, ui, pagina, el, div, e, ancho, alto));
+      div.addEventListener('pointerdown', (e) => arrastrar(app, ui, pagina, el, div, e, anchoC, altoC));
+      if (el.kind === 'puzzle' && !esDatos) div.addEventListener('dblclick', () => entrarEnPuzzle(app, ui, el));
       div.addEventListener('keydown', (e) => teclado(app, ui, pagina, el, e));
     } else div.addEventListener('click', () => { ui.sel = el.id; app.repintar(); });
     capa.append(div);
@@ -425,18 +513,18 @@ function arrastrar(app, ui, pagina, el, div, e, ancho, alto) {
       let w = Math.max(1, inicio.w + dx), hh = el.kind === 'art' && !ev.shiftKey ? w * aspecto : Math.max(1, inicio.h + dy);
       if (dentro) { w = Math.min(w, 100 - inicio.x); hh = Math.min(hh, 100 - inicio.y); }
       cambio = { w: redondear(w), h: redondear(hh) };
-      div.style.width = `${cambio.w}%`; div.style.height = `${cambio.h}%`;
+      Object.assign(div.style, cajaCss(pagina.aPagina({ ...inicio, ...cambio })));
     } else {
       let x = inicio.x + dx, y = inicio.y + dy;
       if (dentro) { x = Math.min(Math.max(0, x), 100 - inicio.w); y = Math.min(Math.max(0, y), 100 - inicio.h); }
       cambio = { x: redondear(x), y: redondear(y) };
-      div.style.left = `${cambio.x}%`; div.style.top = `${cambio.y}%`;
+      Object.assign(div.style, cajaCss(pagina.aPagina({ ...inicio, ...cambio })));
     }
   };
   const soltar = () => {
     div.removeEventListener('pointermove', mover);
     div.removeEventListener('pointerup', soltar);
-    if (cambio) app.cambiar(asa ? 'Cambiar el tamaño' : 'Mover', (g) => app.ops.actualizarElemento(g, { page: pagina.id, element: el.id, changes: cambio }));
+    if (cambio) app.cambiar(asa ? 'Cambiar el tamaño' : 'Mover', (g) => pagina.actualizar(g, el.id, cambio));
   };
   div.addEventListener('pointermove', mover);
   div.addEventListener('pointerup', soltar);
@@ -452,17 +540,17 @@ function teclado(app, ui, pagina, el, e) {
     const [dx, dy] = flechas[e.key];
     let x = el.x + dx * paso, y = el.y + dy * paso;
     if (el.kind !== 'art') { x = Math.min(Math.max(0, x), 100 - el.w); y = Math.min(Math.max(0, y), 100 - el.h); }
-    app.cambiar('Mover', (g) => app.ops.actualizarElemento(g, { page: pagina.id, element: el.id, changes: { x: redondear(x), y: redondear(y) } }));
+    app.cambiar('Mover', (g) => pagina.actualizar(g, el.id, { x: redondear(x), y: redondear(y) }));
   } else if (e.key === 'Delete' || e.key === 'Backspace') {
     e.preventDefault();
     quitar(app, ui, pagina, el);
-  } else if (e.key === 'Escape') { ui.sel = null; app.repintar(); }
+  } else if (e.key === 'Escape') { if (!ui.sel && ui.dentro) ui.dentro = null; ui.sel = null; app.repintar(); }
 }
 
 async function quitar(app, ui, pagina, el) {
   const ok = el.kind === 'puzzle'
     ? await app.cambiar('Quitar el puzzle', (g) => app.ops.quitarPuzzle(g, { puzzle: el.puzzle }))
-    : await app.cambiar(`Quitar ${NOMBRE_KIND[el.kind].toLowerCase()}`, (g) => app.ops.quitarElemento(g, { page: pagina.id, element: el.id }));
+    : await app.cambiar(`Quitar ${NOMBRE_KIND[el.kind].toLowerCase()}`, (g) => pagina.quitar(g, el.id));
   if (ok) { ui.sel = null; app.repintar(); }
 }
 
@@ -470,8 +558,8 @@ async function quitar(app, ui, pagina, el) {
 
 function columnaPropiedades(app, ui, pagina) {
   const el = ui.sel ? pagina.elements.find((e) => e.id === ui.sel) : null;
-  const cambiarEl = (desc, changes) => app.cambiar(desc, (g) => app.ops.actualizarElemento(g, { page: pagina.id, element: el.id, changes }));
-  const contenido = el ? propiedadesElemento(app, ui, pagina, el, cambiarEl) : propiedadesPagina(app, ui, pagina);
+  const cambiarEl = (desc, changes) => app.cambiar(desc, (g) => pagina.actualizar(g, el.id, changes));
+  const contenido = el ? propiedadesElemento(app, ui, pagina, el, cambiarEl) : pagina.caja ? propiedadesPuzzle(app, ui, pagina) : propiedadesPagina(app, ui, pagina.real);
   return h('aside', { class: 'columna propiedades', 'aria-label': 'Propiedades' }, contenido, capas(app, ui, pagina));
 }
 
@@ -540,16 +628,17 @@ function propiedadesElemento(app, ui, pagina, el, cambiarEl) {
     const primerTexto = pagina.elements.findIndex((e) => e.kind === 'text' || e.kind === 'field' || e.kind === 'photo');
     const idx = pagina.elements.indexOf(el);
     const encima = primerTexto >= 0 && idx > primerTexto;
-    partes.push(h('div', { class: 'info' + (encima ? ' aviso' : '') }, h('strong', {}, encima ? 'Se imprime encima de los textos' : 'Se imprime debajo de los textos'),
+    if (!pagina.caja) partes.push(h('div', { class: 'info' + (encima ? ' aviso' : '') }, h('strong', {}, encima ? 'Se imprime encima de los textos' : 'Se imprime debajo de los textos'),
       h('span', { style: { fontSize: '13px' } }, 'El motor pone el arte en dos capas: la que va antes del primer texto queda debajo; la de después, encima de todos.')),
     ro ? null : h('button', { class: 'boton pequeno', type: 'button', onclick: () => app.cambiar(encima ? 'Llevar debajo de los textos' : 'Traer encima de los textos',
-      (copia) => app.ops.moverElemento(copia, { page: pagina.id, element: el.id, index: encima ? Math.max(0, primerTexto) : copia.pages.find((x) => x.id === pagina.id).elements.length - 1 })) },
+      (copia) => pagina.mover(copia, el.id, encima ? Math.max(0, primerTexto) : Infinity)) },
     encima ? 'Llevar debajo de los textos' : 'Traer encima de los textos'));
   }
   if (el.kind === 'puzzle') {
     const z = (g.puzzles || []).find((x) => x.id === el.puzzle);
     partes.push(h('div', { class: 'info claude' }, h('strong', {}, z ? (z.kind === 'datos' ? 'Puzzle con datos del comprador' : 'Puzzle de contenido') : 'Puzzle'),
       h('span', { style: { fontSize: '13px' } }, z && z.kind === 'datos' ? 'Ocupa la página entera: sus coordenadas son las de la página de la que salió.' : 'Se mueve y se cambia de tamaño como una caja.')),
+    z && z.kind !== 'datos' && !ro ? h('button', { class: 'boton pequeno claude', type: 'button', 'data-entrar': el.id, onclick: () => entrarEnPuzzle(app, ui, el) }, 'Editar por dentro') : null,
     h('a', { class: 'boton pequeno', href: app.rutaJuego('puzzles') }, 'Ficha, solución y pistas'));
   }
 
@@ -561,7 +650,7 @@ function propiedadesElemento(app, ui, pagina, el, cambiarEl) {
           app.registro.nombresDelCreador.some((n) => n.nombre === el.fontFamily) ? null : h('option', { value: el.fontFamily || '', selected: true }, `${el.fontFamily || '(por defecto)'} (de un juego antiguo)`),
           app.registro.nombresDelCreador.map((n) => h('option', { value: n.nombre, selected: n.nombre === el.fontFamily }, n.etiqueta)))),
       h('div', { class: 'rejilla-2' },
-        numero(`${pre}-tam`, 'Tamaño (pt)', pt(el.size), ro ? null : (v) => cambiarEl('Tamaño de letra', { size: desdePt(v) }), { paso: 0.5, min: 3, max: 200 }),
+        numero(`${pre}-tam`, 'Tamaño (pt)', pt(el.size * pagina.escala), ro ? null : (v) => cambiarEl('Tamaño de letra', { size: redondear(desdePt(v) / pagina.escala * 1000) / 1000 }), { paso: 0.5, min: 3, max: 200 }),
         numero(`${pre}-giro`, 'Giro (°)', el.angle || 0, ro ? null : (v) => cambiarEl('Giro', { angle: v }), { paso: 1, min: -180, max: 180 })),
       h('fieldset', { class: 'campo', style: { border: 0, margin: 0, padding: 0 } }, h('legend', { class: 'rotulo', style: { marginBottom: '8px' } }, 'Color'),
         h('div', { class: 'colores' }, COLORES.map(([n, c]) => h('button', { type: 'button', 'aria-label': n, disabled: ro, 'aria-pressed': color.toUpperCase() === c ? 'true' : 'false', style: { background: c }, onclick: () => cambiarEl('Color', { color: c }) })),
@@ -588,12 +677,12 @@ function propiedadesElemento(app, ui, pagina, el, cambiarEl) {
   const datos = el.kind === 'puzzle' && ((g.puzzles || []).find((x) => x.id === el.puzzle) || {}).kind === 'datos';
   if (!datos) {
     partes.push(h('div', { class: 'rejilla-2' },
-      numero(`${pre}-x`, 'X (%)', el.x, ro ? null : (v) => cambiarEl('Posición', { x: v })),
-      numero(`${pre}-y`, 'Y (%)', el.y, ro ? null : (v) => cambiarEl('Posición', { y: v })),
+      numero(`${pre}-x`, pagina.caja ? 'X (% del puzzle)' : 'X (%)', el.x, ro ? null : (v) => cambiarEl('Posición', { x: v })),
+      numero(`${pre}-y`, pagina.caja ? 'Y (% del puzzle)' : 'Y (%)', el.y, ro ? null : (v) => cambiarEl('Posición', { y: v })),
       numero(`${pre}-w`, 'Ancho (%)', el.w, ro ? null : (v) => cambiarEl('Tamaño', el.kind === 'art' ? { w: v, h: redondear(v * el.h / el.w) } : { w: v })),
       numero(`${pre}-h`, 'Alto (%)', el.h, ro ? null : (v) => cambiarEl('Tamaño', el.kind === 'art' ? { h: v, w: redondear(v * el.w / el.h) } : { h: v }))));
   }
-  if (!ro) partes.push(h('button', { class: 'boton pequeno peligro', type: 'button', onclick: () => quitar(app, ui, pagina, el) }, icono('basura', { tam: 16 }), el.kind === 'puzzle' ? 'Quitar el puzzle' : 'Quitar de la página'));
+  if (!ro) partes.push(h('button', { class: 'boton pequeno peligro', type: 'button', onclick: () => quitar(app, ui, pagina, el) }, icono('basura', { tam: 16 }), el.kind === 'puzzle' ? 'Quitar el puzzle' : pagina.caja ? 'Quitar del puzzle' : 'Quitar de la página'));
   return h('div', { style: { display: 'flex', flexDirection: 'column', gap: '14px' } }, partes);
 }
 
@@ -613,7 +702,7 @@ function cabida(app, ui, el) {
 function capas(app, ui, pagina) {
   const n = (k) => pagina.elements.filter((e) => k.includes(e.kind)).length;
   return h('div', { class: 'capas-resumen' },
-    h('strong', {}, 'Capas de esta página'),
+    h('strong', {}, pagina.caja ? 'Piezas del puzzle' : 'Capas de esta página'),
     h('div', { class: 'fila' }, h('span', {}, 'Textos y campos'), h('span', { class: 'tenue' }, String(n(['text', 'field'])))),
     h('div', { class: 'fila' }, h('span', {}, 'Fotos del comprador'), h('span', { class: 'tenue' }, String(n(['photo'])))),
     h('div', { class: 'fila' }, h('span', {}, 'Imágenes'), h('span', { class: 'tenue' }, String(n(['art'])))),
