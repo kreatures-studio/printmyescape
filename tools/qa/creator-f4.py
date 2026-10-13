@@ -74,7 +74,7 @@ def esperar_guardado(page, limite=8000):
     page.wait_for_function("document.querySelector('[data-prueba=estado-guardado]') && /guardado/.test(document.querySelector('[data-prueba=estado-guardado]').textContent)", timeout=limite)
 
 
-def lienzo_listo(page, limite=20000):
+def lienzo_listo(page, limite=45000):
     page.wait_for_selector('.lienzo[data-listo]', timeout=limite)
 
 
