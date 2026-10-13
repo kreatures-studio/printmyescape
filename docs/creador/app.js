@@ -309,7 +309,7 @@ function salir() {
 }
 
 function pintarEntrada(mensaje = '') {
-  const repo = h('input', { id: 'repo', class: 'entrada', placeholder: 'estudio/juegos', value: leerSesion(CLAVE_REPO) || '', autocomplete: 'off', required: true });
+  const repo = h('input', { id: 'repo', class: 'entrada', placeholder: 'estudio/juegos', value: leerSesion(CLAVE_REPO) || PARAMS.get('repo') || '', autocomplete: 'off', required: true });
   const token = h('input', { id: 'token', class: 'entrada', type: 'password', autocomplete: 'off', required: true });
   $('principal').replaceChildren(h('form', { class: 'entrada-caja', onsubmit: (e) => { e.preventDefault(); entrar(repo.value.trim(), token.value.trim()); } },
     h('h1', {}, 'Entrar al creador'),
