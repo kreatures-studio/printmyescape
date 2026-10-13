@@ -202,6 +202,16 @@ async function main() {
     const sinAutor = await llamar(cliente, 'import_art', { file: 'arte-nuevo/sello.pdf', coleccion: 'prueba', piece_id: 'objeto-sello-otro', categoria: 'objeto', nombre: 'X', etiquetas: ['a', 'b', 'c'], autor: 'por confirmar', origen: 'Prueba' });
     rec('import_art sin autor real se rechaza y no deja nada', !sinAutor.ok && !fs.existsSync(path.join(biblioteca, 'arte', 'prueba', 'piezas', 'objeto-sello-otro-v1.pdf')));
 
+    // Secciones infantiles (guardadas desde el ensayo F3.3): con «mision-escondite», el puzzle de tiras entra directo.
+    await ok(cliente, 'create_game', { id: 'prueba-tiras', name: 'Tiras', languages: ['es', 'en'], pages: 0 });
+    await ok(cliente, 'insert_section', { id: 'prueba-tiras', from: 'cumpleanero-infantil' });
+    await ok(cliente, 'insert_section', { id: 'prueba-tiras', from: 'mision-escondite' });
+    await ok(cliente, 'insert_page', { id: 'prueba-tiras', title: 'Tiras' });
+    await ok(cliente, 'add_element', { id: 'prueba-tiras', page: 'p1', element: { kind: 'field', field: 'TEST_LUGAR', x: 15, y: 40, w: 70, h: 6, size: 3, fontFamily: 'Anton', color: '#3B2A20' } });
+    await ok(cliente, 'add_element', { id: 'prueba-tiras', page: 'p1', element: { kind: 'field', field: 'TEST_RESULTADO', x: 15, y: 55, w: 70, h: 25, size: 2.5, fontFamily: 'Caveat', color: '#3B2A20', wrap: true } });
+    const tiras = await llamar(cliente, 'add_puzzle', { id: 'prueba-tiras', page: 'p1', from: 'puzzle-strips' });
+    rec('secciones infantiles de la biblioteca + puzzle de tiras', tiras.ok, tiras.ok ? '' : JSON.stringify(tiras.error).slice(0, 300));
+
     // Reglas: formato y estado
     rec('upsert_slot en un juego v2: solo-v1', (await llamar(cliente, 'upsert_slot', { id: ID, page: 'p1', slot: { field: 'EDAD', x: 1, y: 1, w: 5, h: 5 } })).error?.code === 'solo-v1');
     await ok(cliente, 'create_game', { id: 'prueba-v1', name: 'v1', pages: 1, format: 'v1' });

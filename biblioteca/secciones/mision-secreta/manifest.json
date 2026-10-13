@@ -1,0 +1,327 @@
+{
+  "schema": "pme-biblioteca/1",
+  "tipo": "seccion",
+  "pieces": [
+    {
+      "id": "cumpleanero-infantil",
+      "version": 1,
+      "name": "Cumpleañero infantil (agente secreto)",
+      "tags": [
+        "formulario",
+        "infantil",
+        "nombre",
+        "foto",
+        "espias"
+      ],
+      "origin": {
+        "game": "cumple-mision-secreta",
+        "version": "0.1.0",
+        "section": "agente"
+      },
+      "section": {
+        "id": "agente",
+        "title": {
+          "es": "El agente del cumpleaños",
+          "en": "The birthday agent"
+        },
+        "hint": {
+          "es": "Los datos de quien cumple años: salen en el expediente y en su carnet de agente.",
+          "en": "About the birthday child: shown on the mission file and on their agent ID card."
+        },
+        "nameField": "NOMBRE_CUMPLE",
+        "photoField": "FOTO_CUMPLE",
+        "fields": [
+          "NOMBRE_CUMPLE",
+          "B_ALIAS",
+          "EDAD",
+          "FOTO_CUMPLE",
+          "ESPECIALIDAD"
+        ]
+      },
+      "fieldDefs": {
+        "NOMBRE_CUMPLE": {
+          "type": "name",
+          "required": true,
+          "cap": 12,
+          "q": {
+            "es": "¿Cómo se llama el cumpleañero o la cumpleañera?",
+            "en": "What is the birthday child's name?"
+          },
+          "ej": {
+            "es": "Lucía",
+            "en": "Lucy"
+          },
+          "corta": {
+            "es": "Agente · Nombre",
+            "en": "Agent · Name"
+          }
+        },
+        "B_ALIAS": {
+          "type": "name",
+          "required": true,
+          "cap": 12,
+          "q": {
+            "es": "Su nombre en clave de agente",
+            "en": "Their secret agent code name"
+          },
+          "ej": {
+            "es": "Halcón, Rayo, Pantera…",
+            "en": "Falcon, Lightning, Panther…"
+          },
+          "corta": {
+            "es": "Agente · Nombre en clave",
+            "en": "Agent · Code name"
+          }
+        },
+        "EDAD": {
+          "type": "number",
+          "required": true,
+          "min": 6,
+          "max": 16,
+          "q": {
+            "es": "¿Cuántos años cumple?",
+            "en": "How old are they turning?"
+          },
+          "corta": {
+            "es": "Agente · Años",
+            "en": "Agent · Age"
+          }
+        },
+        "FOTO_CUMPLE": {
+          "type": "photo",
+          "required": true,
+          "q": {
+            "es": "Sube una foto suya (mejor de cara)",
+            "en": "Upload a photo of them (a face photo works best)"
+          },
+          "corta": {
+            "es": "Agente · Foto",
+            "en": "Agent · Photo"
+          }
+        },
+        "ESPECIALIDAD": {
+          "type": "text",
+          "required": true,
+          "cap": 18,
+          "q": {
+            "es": "¿Qué es lo que mejor se le da? (su «superpoder»)",
+            "en": "What are they best at? (their \"superpower\")"
+          },
+          "ej": {
+            "es": "Dibujar cómics, el fútbol, los acertijos…",
+            "en": "Drawing comics, football, riddles…"
+          },
+          "corta": {
+            "es": "Agente · Especialidad",
+            "en": "Agent · Speciality"
+          }
+        }
+      },
+      "examples": [
+        {
+          "id": "1",
+          "values": {
+            "es": {
+              "NOMBRE_CUMPLE": "Ana",
+              "B_ALIAS": "Rayo",
+              "EDAD": "9",
+              "ESPECIALIDAD": "Saltar"
+            },
+            "en": {
+              "NOMBRE_CUMPLE": "Ana",
+              "B_ALIAS": "Ray",
+              "EDAD": "9",
+              "ESPECIALIDAD": "Jumping"
+            }
+          },
+          "photos": {
+            "FOTO_CUMPLE": "fotos/retrato-CUMPLE.jpg"
+          }
+        },
+        {
+          "id": "2",
+          "values": {
+            "es": {
+              "NOMBRE_CUMPLE": "Lucía",
+              "B_ALIAS": "Halcón",
+              "EDAD": "10",
+              "ESPECIALIDAD": "Dibujar cómics"
+            },
+            "en": {
+              "NOMBRE_CUMPLE": "Lucy",
+              "B_ALIAS": "Falcon",
+              "EDAD": "10",
+              "ESPECIALIDAD": "Drawing comics"
+            }
+          },
+          "photos": {
+            "FOTO_CUMPLE": "fotos/retrato-CUMPLE.jpg"
+          }
+        },
+        {
+          "id": "3",
+          "values": {
+            "es": {
+              "NOMBRE_CUMPLE": "Maximiliano",
+              "B_ALIAS": "Superpantera",
+              "EDAD": "12",
+              "ESPECIALIDAD": "Resolver acertijos"
+            },
+            "en": {
+              "NOMBRE_CUMPLE": "Maximilian",
+              "B_ALIAS": "Superpanther",
+              "EDAD": "12",
+              "ESPECIALIDAD": "Solving riddles"
+            }
+          },
+          "photos": {
+            "FOTO_CUMPLE": "fotos/retrato-CUMPLE.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mision-escondite",
+      "version": 1,
+      "name": "La misión: quien la dirige, escondite y mensaje secreto",
+      "tags": [
+        "formulario",
+        "infantil",
+        "tesoro",
+        "tiras"
+      ],
+      "origin": {
+        "game": "cumple-mision-secreta",
+        "version": "0.1.0",
+        "section": "mision"
+      },
+      "section": {
+        "id": "mision",
+        "title": {
+          "es": "La misión",
+          "en": "The mission"
+        },
+        "hint": {
+          "es": "Quién la dirige, dónde estará el tesoro y el mensaje secreto del final.",
+          "en": "Who leads it, where the treasure will be and the secret message at the end."
+        },
+        "fields": [
+          "JEFE_MISION",
+          "TEST_LUGAR",
+          "TEST_RESULTADO"
+        ]
+      },
+      "fieldDefs": {
+        "JEFE_MISION": {
+          "type": "name",
+          "required": true,
+          "cap": 14,
+          "q": {
+            "es": "¿Quién dirigirá la misión? (el adulto que tendrá las soluciones)",
+            "en": "Who will lead the mission? (the adult who keeps the answers)"
+          },
+          "ej": {
+            "es": "Mamá, Papá, Tía Carmen…",
+            "en": "Mum, Dad, Aunt Carol…"
+          },
+          "corta": {
+            "es": "Misión · Quién la dirige",
+            "en": "Mission · Leader"
+          }
+        },
+        "TEST_LUGAR": {
+          "type": "text",
+          "required": true,
+          "cap": 26,
+          "q": {
+            "es": "¿Dónde esconderéis el tesoro? (el regalo, unas chuches…)",
+            "en": "Where will you hide the treasure? (the present, some sweets…)"
+          },
+          "desc": {
+            "es": "Los jugadores lo leerán al final. Escondedlo allí antes de empezar.",
+            "en": "The players will read it at the end. Hide it there before you start."
+          },
+          "ej": {
+            "es": "Dentro de la lavadora",
+            "en": "Inside the washing machine"
+          },
+          "corta": {
+            "es": "Misión · Escondite del tesoro",
+            "en": "Mission · Treasure hiding place"
+          }
+        },
+        "TEST_RESULTADO": {
+          "type": "long",
+          "required": true,
+          "cap": 180,
+          "q": {
+            "es": "Mensaje secreto para quien cumple años",
+            "en": "Secret message for the birthday child"
+          },
+          "desc": {
+            "es": "Lo leerán al juntar las tiras del documento final.",
+            "en": "They will read it when they put the strips of the final document together."
+          },
+          "ej": {
+            "es": "¡Feliz cumpleaños, agente! Misión cumplida: eres el mejor equipo.",
+            "en": "Happy birthday, agent! Mission accomplished: you are the best team."
+          },
+          "corta": {
+            "es": "Misión · Mensaje secreto",
+            "en": "Mission · Secret message"
+          }
+        }
+      },
+      "examples": [
+        {
+          "id": "1",
+          "values": {
+            "es": {
+              "JEFE_MISION": "Mamá",
+              "TEST_LUGAR": "En el horno",
+              "TEST_RESULTADO": "¡Bien hecho, agentes!"
+            },
+            "en": {
+              "JEFE_MISION": "Mum",
+              "TEST_LUGAR": "In the oven",
+              "TEST_RESULTADO": "Well done, agents!"
+            }
+          },
+          "photos": {}
+        },
+        {
+          "id": "2",
+          "values": {
+            "es": {
+              "JEFE_MISION": "Tía Carmen",
+              "TEST_LUGAR": "Dentro de la lavadora",
+              "TEST_RESULTADO": "¡Feliz cumpleaños, agente Halcón! Misión cumplida: sois el mejor equipo de la Agencia."
+            },
+            "en": {
+              "JEFE_MISION": "Aunt Carol",
+              "TEST_LUGAR": "Inside the washing machine",
+              "TEST_RESULTADO": "Happy birthday, Agent Falcon! Mission accomplished: you are the best team in the Agency."
+            }
+          },
+          "photos": {}
+        },
+        {
+          "id": "3",
+          "values": {
+            "es": {
+              "JEFE_MISION": "Abuela Rosario",
+              "TEST_LUGAR": "Debajo del sofá del salón",
+              "TEST_RESULTADO": "Querido agente Superpantera: doce años y ya eres el espía más listo de la familia. Hoy tus amigos y tú habéis resuelto la misión más difícil. ¡Te queremos mucho! ¡Feliz cumple!"
+            },
+            "en": {
+              "JEFE_MISION": "Grandma Rosie",
+              "TEST_LUGAR": "Under the living room sofa",
+              "TEST_RESULTADO": "Dear Agent Superpanther: twelve years old and already the smartest spy in the whole family. Today you and your friends solved the hardest mission. We love you lots. Happy birthday!"
+            }
+          },
+          "photos": {}
+        }
+      ]
+    }
+  ]
+}

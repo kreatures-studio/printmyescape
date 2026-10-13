@@ -219,8 +219,9 @@ Mismas reglas: validan antes de guardar y se niegan fuera de `borrador`.
   de órdenes con el arte de la biblioteca, avisos de caracteres que la fuente no tiene y de claves de texto sin usar,
   `set_texts` con `null`, ids libres en puzzles, y el skill documenta las dos bandas de arte, el orden de un puzzle con
   solución y las opciones de estilo del motor. Todo en `ensayos/f3/` (juego e `INFORME.md`, con la lista de qué
-  observar en la partida). *Pendiente:* la partida de prueba de una persona; guardar en la biblioteca una sección
-  infantil desde este juego.
+  observar en la partida). Del juego salieron dos secciones infantiles para la biblioteca (`mision-secreta`):
+  `cumpleanero-infantil` y `mision-escondite` (esta trae los campos del puzzle de tiras). *Pendiente:* la partida de
+  prueba de una persona.
 - *Aceptación:* validado sin errores, vista previa revisada por Claude, y una partida de prueba hecha por una persona.
 
 ### F4 · Creador web
