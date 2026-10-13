@@ -20,3 +20,6 @@ tools/qa/salida-tipos/
 # Dependencias del servidor MCP (raíz)
 node_modules/
 __pycache__/
+
+# Token de GitHub para tools/qa/github-escritura.mjs (nunca al repositorio)
+.pme-token
