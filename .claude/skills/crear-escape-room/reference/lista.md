@@ -9,6 +9,7 @@
        solapado, piezas en su sitio).
 7. [ ] Cada puzzle con ficha, campos que necesita, solución en cada idioma y pistas si hacen falta.
 8. [ ] Ningún `[FALTA ARTE: …]` sin su encargo en el resumen; ninguna regla de contenido incumplida.
-9. [ ] `write_change_summary` con qué se hizo y por qué; `sync push` hecho.
+9. [ ] `write_change_summary` con qué se hizo y por qué, `suggestions` (lo añadido sin pedirlo) y `presupuestar`;
+       `sync push` hecho.
 10. [ ] Resumen al cliente: arte que falta (encargos), mecánicas nuevas a presupuestar y que cada puzzle lo tiene
         que jugar una persona antes de venderlo.

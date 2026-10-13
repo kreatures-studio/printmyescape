@@ -176,6 +176,13 @@ async function main() {
     rec('write_change_summary: deja el resumen y marca la nota', resumen.pendientes === 0 && resumen.changes === 1);
     const notaRara = await llamar(cliente, 'write_change_summary', { id: ID, text: 'x', notes_done: ['n9'] });
     rec('write_change_summary con una nota que no existe se rechaza', !notaRara.ok && notaRara.error.code === 'not-found');
+    const conSug = await ok(cliente, 'write_change_summary', { id: ID, text: 'Título más visible.', presupuestar: ['Mensaje en morse: no está en el catálogo'],
+      suggestions: [{ page: 'p2', element: titulo.id, text: 'Lo he hecho más grande para que se lea de lejos.' }, { page: p2.page || 'p2', text: 'Página de la ficha.' }] });
+    const crudo = JSON.parse(fs.readFileSync(path.join(repo, 'games', ID, 'game.json'), 'utf8'));
+    rec('write_change_summary: sugerencias (con id) y «a presupuestar» en el juego', conSug.sugerencias === 2 && crudo.suggestions[0].id === 's1'
+      && crudo.suggestions[0].element === titulo.id && crudo.changes.at(-1).presupuestar[0].startsWith('Mensaje en morse'), JSON.stringify(crudo.suggestions));
+    const sugMala = await llamar(cliente, 'write_change_summary', { id: ID, text: 'x', suggestions: [{ field: 'NO_EXISTE', text: 'y' }] });
+    rec('una sugerencia de algo que no existe se rechaza', !sugMala.ok && sugMala.error.code === 'not-found');
 
     // Copiar el juego y guardar piezas en la biblioteca
     const copia = await ok(cliente, 'duplicate_game', { from: ID, id: `${ID}-copia`, name: 'Copia' });

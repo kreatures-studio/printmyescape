@@ -188,6 +188,9 @@ def main():
             page.click('.nav a:has-text("Formulario")')
             page.wait_for_selector('.tarjeta-campo[data-campo=NOMBRE_CUMPLE]')
             page.click('.tarjeta-campo[data-campo=NOMBRE_CUMPLE]')
+            page.wait_for_selector('[data-cabida=NOMBRE_CUMPLE][data-capacidad]')
+            cabida = page.inner_text('[data-cabida=NOMBRE_CUMPLE]')
+            rec('formulario: lo que cabe en cada página, medido como el PDF', 'En la página 1 caben 39 letras' in cabida and 'El tope (12) entra' in cabida, cabida.replace('\n', ' / ')[:140])
             page.fill('#campo-NOMBRE_CUMPLE-q-es', '¿Cómo se llama quien cumple años?')
             page.press('#campo-NOMBRE_CUMPLE-q-es', 'Tab')
             page.wait_for_function("document.querySelector('label[for=comprador-NOMBRE_CUMPLE]') && document.querySelector('label[for=comprador-NOMBRE_CUMPLE]').textContent.includes('quien cumple')")
@@ -257,6 +260,26 @@ def main():
             d.value.save_as(ruta_pdf)
             texto = subprocess.run(['pdftotext', '-raw', ruta_pdf, '-'], capture_output=True, text=True).stdout
             rec('vista previa: el PDF se descarga, con la marca y los cambios', open(ruta_pdf, 'rb').read(4) == b'%PDF' and 'VISTAPREVIA' in ''.join(texto.split()) and 'Bienvenidos' in texto)
+
+            # ---------------- Sugerencias de Claude y «a presupuestar» ----------------
+            lapiz = next(e['id'] for e in juego(page)['pages'][0]['elements'] if e['kind'] == 'art' and e['ref'].startswith('decoracion-lapiz-verde@'))
+            page.evaluate("""(lapiz) => window.__app.cambiar('Prueba: sugerencias de Claude', (g) => {
+                g.suggestions = [{ id: 's1', text: 'La especialidad da la pista de la prueba 3.', field: 'ESPECIALIDAD' },
+                                 { id: 's2', text: 'Un lápiz para decorar la ficha.', page: 'p1', element: lapiz }];
+                g.changes.push({ date: '2026-10-13', text: 'Sugerencias para la ficha.', presupuestar: ['Mensaje en código morse: no está en el catálogo.'] });
+            })""", lapiz)
+            page.click('.nav a.revisar')
+            page.wait_for_selector('[data-prueba=cifra-sugerencias]')
+            rec('revisar: las sugerencias de Claude y lo que hay que presupuestar', page.inner_text('[data-prueba=cifra-sugerencias] .valor') == '2'
+                and 'morse' in page.inner_text('[data-prueba=presupuestar]'))
+            page.click('[data-sugerencia=s2] button:has-text("Descartar")')
+            page.wait_for_function("window.__app && !(__app.juego.suggestions || []).some(s => s.id === 's2')")
+            rec('sugerencia descartada: se quita lo sugerido', not any(e['id'] == lapiz for e in juego(page)['pages'][0]['elements']))
+            page.goto(base + f'#/juego/{F3}/formulario/ESPECIALIDAD')
+            page.wait_for_selector('.tarjeta-campo[data-campo=ESPECIALIDAD] [data-sugerencia=s1]')
+            page.click('[data-sugerencia=s1] button:has-text("Aceptar")')
+            page.wait_for_function("window.__app && !__app.juego.suggestions")
+            rec('sugerencia aceptada: la pregunta se queda y el aviso desaparece', 'ESPECIALIDAD' in juego(page)['fields'] and page.locator('[data-sugerencia]').count() == 0)
 
             # ---------------- Revisar ----------------
             page.click('.nav a.revisar')

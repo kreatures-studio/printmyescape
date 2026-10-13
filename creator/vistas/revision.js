@@ -6,6 +6,7 @@ import { h, enIdioma, haceCuanto } from '../dom.js';
 import { componer, pintarPDF } from '../motor.js';
 import { paginaDe } from '../validar.js';
 import { selectoresVista, nombresDeEjemplos, listaY } from './comun.js';
+import { sugerenciasDe, cajaSugerencia } from './sugerencias.js';
 
 const OTRAS = [['formulario', 'Formulario'], ['ejemplos', 'Ejemplos'], ['puzzles', 'Puzzles y soluciones']];
 
@@ -48,6 +49,7 @@ function banda(app, items) {
       cifra(`${hechos} / ${items.length}`, 'revisados', 'cifra-revisados'),
       cifra(String(app.validacion.errores.length), 'errores'),
       cifra(String(app.validacion.avisos.length), 'avisos'),
+      cifra(String(sugerenciasDe(g).length), sugerenciasDe(g).length === 1 ? 'sugerencia' : 'sugerencias', 'cifra-sugerencias'),
       cifra(String(notasPend), notasPend === 1 ? 'nota para Claude' : 'notas para Claude')));
 }
 
@@ -66,6 +68,8 @@ function columnaCambios(app, ui, items) {
   }));
   queueMicrotask(() => miniaturas(app, ui, lista));
   const avisos = app.validacion.avisos;
+  const sugerencias = sugerenciasDe(g);
+  const presupuestar = (g.changes || []).flatMap((c) => (c.presupuestar || []).map((texto) => ({ texto, fecha: c.date })));
   return h('aside', { class: 'columna lateral ancha', 'aria-label': 'Cambios de Claude' },
     h('div', { class: 'etiqueta-seccion' }, `Partes del juego · ${items.length}`),
     lista,
@@ -75,6 +79,11 @@ function columnaCambios(app, ui, items) {
       primeraLinea(c.text) !== c.text ? h('div', { style: { whiteSpace: 'pre-wrap', fontSize: '13px', marginTop: '6px' } }, c.text) : null,
       (c.notes || []).length ? h('span', { class: 'pastilla verde', style: { alignSelf: 'flex-start' } }, `Atiende ${c.notes.length === 1 ? 'una nota' : `${c.notes.length} notas`}`) : null)))
       : h('span', { class: 'tenue', style: { fontSize: '13px' } }, 'Ninguno todavía.'),
+    sugerencias.length ? [h('div', { class: 'etiqueta-seccion' }, `Sugerencias de Claude · ${sugerencias.length}`),
+      sugerencias.map((s) => h('div', { style: { display: 'flex', flexDirection: 'column', gap: '4px' } }, cajaSugerencia(app, s, { compacta: true }),
+        h('a', { href: s.field ? app.rutaJuego('formulario', s.field) : app.rutaJuego('paginas', s.page), style: { fontSize: '13px', fontWeight: 600 } }, s.field ? 'Ver la pregunta' : 'Ver en la página')))] : null,
+    presupuestar.length ? [h('div', { class: 'etiqueta-seccion' }, `A presupuestar · ${presupuestar.length}`),
+      h('div', { class: 'lista-revision', 'data-prueba': 'presupuestar' }, presupuestar.map((x) => h('div', { class: 'mensaje' }, x.texto, h('span', { class: 'tenue', style: { display: 'block', fontSize: '12px' } }, x.fecha))))] : null,
     avisos.length ? [h('div', { class: 'etiqueta-seccion' }, `Avisos · ${avisos.length}`),
       avisos.slice(0, 5).map((m) => h('div', { class: 'mensaje' }, m))] : null);
 }

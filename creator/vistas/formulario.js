@@ -5,6 +5,8 @@
 import { h, icono, enIdioma } from '../dom.js';
 import { grupoIdiomas, nombresDeEjemplos, selectoresVista, dondeSale, listaY } from './comun.js';
 import { claveDeTexto } from '../../tools/game/operaciones.mjs';
+import { cabidaDe } from '../motor.js';
+import { sugerenciasDe, cajaSugerencia } from './sugerencias.js';
 
 const TIPOS = [['text', 'Texto corto'], ['long', 'Texto largo'], ['name', 'Nombre'], ['number', 'Número'], ['photo', 'Foto'], ['choice', 'Una opción'], ['multi', 'Varias opciones']];
 const NOMBRE_TIPO = Object.fromEntries(TIPOS);
@@ -190,7 +192,9 @@ function resumenCampo(g, c) {
 function tarjetaCampo(app, ui, c) {
   const g = app.juego;
   const d = g.fields[c] || {};
+  const sug = sugerenciasDe(g, { field: c }).length;
   return h('button', { type: 'button', class: 'tarjeta-campo', 'data-campo': c, 'aria-expanded': 'false', onclick: () => { ui.campo = c; app.repintar(); } },
+    sug ? h('span', { class: 'pastilla claude', style: { alignSelf: 'flex-start' } }, 'Sugerido por Claude') : null,
     h('span', { class: 'pregunta' }, enIdioma(d.q, ui.lang) || c),
     h('span', { class: 'resumen' }, resumenCampo(g, c)),
     h('code', { class: 'codigo' }, c));
@@ -206,6 +210,7 @@ function editorCampo(app, ui, s, c) {
     h('div', { style: { display: 'flex', justifyContent: 'space-between', gap: '10px', alignItems: 'flex-start' } },
       h('div', {}, h('div', { class: 'pregunta' }, enIdioma(d.q, ui.lang) || c), h('div', { class: 'resumen' }, resumenCampo(g, c))),
       h('button', { class: 'boton pequeno', type: 'button', 'aria-label': 'Cerrar la pregunta', onclick: () => { ui.campo = null; app.repintar(); } }, 'Cerrar')),
+    sugerenciasDe(g, { field: c }).map((s) => cajaSugerencia(app, s)),
     grupoIdiomas(app, { id: `${pre}-q`, rotulo: 'Pregunta', valor: d.q, obligatorio: true, alGuardar: (v) => cambiarDef('Pregunta', (dx) => { dx.q = v; }) }),
     grupoIdiomas(app, { id: `${pre}-desc`, rotulo: 'Ayuda bajo la pregunta (opcional)', valor: d.desc, alGuardar: (v) => cambiarDef('Ayuda de la pregunta', (dx) => { if (v) dx.desc = v; else delete dx.desc; }) }),
     d.type !== 'photo' ? grupoIdiomas(app, { id: `${pre}-ej`, rotulo: 'Respuesta de ejemplo, en cursiva (opcional)', valor: d.ej, alGuardar: (v) => cambiarDef('Respuesta de ejemplo', (dx) => { if (v) dx.ej = v; else delete dx.ej; }) }) : null,
@@ -243,11 +248,34 @@ function cabeInfo(g, c) {
   if (!CON_TOPE.has(d.type)) return null;
   const largos = (g.examples || []).flatMap((e) => Object.values(e.values || {}).map((v) => String((v || {})[c] || '').length));
   const maximo = largos.length ? Math.max(...largos) : 0;
-  const donde = dondeSale(g, c);
-  return h('div', { class: 'tenue', style: { fontSize: '13px', flex: '1 1 200px' } },
-    maximo ? `El ejemplo más largo tiene ${maximo} letras. ` : 'Aún no hay ejemplos. ',
-    donde.length ? 'Comprueba en la página con el ejemplo «Largo» que entra sin encoger: ' : null,
-    donde.map((p, i) => [i ? ', ' : '', h('a', { href: `#/juego/${encodeURIComponent(g.id)}/paginas/${p.id}` }, `página ${p.numero}`)]));
+  const caja = h('div', { class: 'info', 'data-cabida': c, style: { flex: '1 1 240px', fontSize: '13px', padding: '8px 10px' } }, h('span', { class: 'tenue' }, 'Midiendo lo que cabe…'));
+  medirCabida(g, c).then((r) => {
+    if (!caja.isConnected) return;
+    if (!r || r.capacidad === null) {
+      caja.replaceChildren(h('span', {}, 'No sale en ninguna página: el tope solo limita el formulario.'));
+      return;
+    }
+    // Como tools/game/limites.mjs: los nombres pueden llenar la caja; el resto deja un margen del 25 % (letras anchas).
+    const tope = d.type === 'name' ? r.capacidad : Math.floor(r.capacidad * 0.75);
+    const entra = !d.cap || d.cap <= tope;
+    const paginas = Object.entries(r.porPagina).map(([pid, n]) => {
+      const i = g.pages.findIndex((p) => p.id === pid);
+      return h('span', {}, h('a', { href: `#/juego/${encodeURIComponent(g.id)}/paginas/${pid}` }, `En la página ${i + 1}`), n >= 400 ? ' caben más de 400 letras.' : ` caben ${n} letras.`);
+    });
+    caja.className = `info${entra ? '' : ' aviso'}`;
+    caja.dataset.capacidad = String(r.capacidad);
+    caja.replaceChildren(...paginas,
+      h('strong', {}, !d.cap ? `Sin tope: conviene ponerlo en ${tope} como mucho.` : entra ? `El tope (${d.cap}) entra.` : `El tope (${d.cap}) no entra: bájalo a ${tope} o agranda el hueco.`),
+      maximo ? h('span', { class: 'tenue' }, `El ejemplo más largo tiene ${maximo} letras.`) : null);
+  }).catch((e) => { if (caja.isConnected) caja.replaceChildren(h('span', {}, `No se pudo medir: ${e.message}`)); });
+  return caja;
+}
+
+const cabidas = new Map();
+function medirCabida(g, c) {
+  const clave = JSON.stringify([c, g.fields[c], g.pages, g.puzzles, g.mechanics, g.languages]);
+  if (!cabidas.has(clave)) { cabidas.clear(); cabidas.set(clave, cabidaDe(g, c)); }
+  return cabidas.get(clave);
 }
 
 function editorOpciones(app, ui, c, d) {
@@ -441,6 +469,7 @@ async function traerCampo(app, ui, s) {
 /** Quita un campo de todo el juego (definición, secciones y ejemplos). No mira las páginas: eso se comprueba antes. */
 function borrarCampo(g, c) {
   delete g.fields[c];
+  if (g.suggestions) { g.suggestions = g.suggestions.filter((s) => s.field !== c); if (!g.suggestions.length) delete g.suggestions; }
   for (const s of g.form.sections) {
     s.fields = s.fields.filter((x) => x !== c);
     if (s.nameField === c) delete s.nameField;

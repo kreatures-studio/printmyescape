@@ -189,5 +189,6 @@ export function resumenDe(id, game) {
     paginas, cambios: cambios.length, porRevisar: Math.max(0, cambios.length - revisado),
     ultimoCambio: cambios.length ? cambios[cambios.length - 1] : null,
     notasPendientes: (game.notes || []).filter((n) => !n.done).length,
+    sugerencias: (game.suggestions || []).length,
   };
 }

@@ -372,5 +372,12 @@ export function avisosV2(game) {
   const errs = [], avisos = [];
   const puzzles = puzzlesV2(game, errs);
   for (const p of game.pages || []) elementosV2(p.elements, `pages/${p.id}`, puzzles, errs, avisos);
+  // Sugerencias de Claude que apuntan a algo que ya no está (se quitó sin descartarlas).
+  for (const s of game.suggestions || []) {
+    const p = s.page && (game.pages || []).find((x) => x.id === s.page);
+    if (s.field && !(game.fields || {})[s.field]) avisos.push(`suggestions/${s.id}: la pregunta «${s.field}» ya no existe`);
+    else if (s.page && !p) avisos.push(`suggestions/${s.id}: la página «${s.page}» ya no existe`);
+    else if (s.element && !p.elements.some((e) => e.id === s.element)) avisos.push(`suggestions/${s.id}: el elemento «${s.element}» ya no está en ${s.page}`);
+  }
   return avisos;
 }

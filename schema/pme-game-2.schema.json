@@ -170,6 +170,14 @@
             "items": {
               "type": "string"
             }
+          },
+          "presupuestar": {
+            "type": "array",
+            "description": "Lo que el encargo pide y no está en el catálogo (mecánicas nuevas, arte por encargar): el estudio lo presupuesta.",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         }
       }
@@ -191,6 +199,57 @@
           },
           "description": "Partes revisadas: id de página, «formulario», «ejemplos»…"
         }
+      }
+    },
+    "suggestions": {
+      "type": "array",
+      "description": "Sugerencias de Claude que el cliente acepta o descarta en el creador: una pregunta, una página o un elemento que Claude añadió por su cuenta, con el porqué.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Por qué lo sugiere."
+          },
+          "field": {
+            "$ref": "#/$defs/fieldId",
+            "description": "La pregunta sugerida."
+          },
+          "page": {
+            "type": "string",
+            "pattern": "^p\\d+$",
+            "description": "La página sugerida (sin element) o la página del elemento."
+          },
+          "element": {
+            "type": "string",
+            "description": "El elemento sugerido (con page)."
+          },
+          "date": {
+            "type": "string"
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "field"
+            ]
+          },
+          {
+            "required": [
+              "page"
+            ]
+          }
+        ]
       }
     }
   },

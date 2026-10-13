@@ -29,7 +29,7 @@ necesites:
    para proponer lo que ya existe. **No maquetes hasta que el cliente apruebe la estructura.**
 4. **Puzzles.** Del catálogo (`add_puzzle` con `from`) o de contenido (`add_puzzle` con `puzzle`, kind
    `contenido`). Si hace falta una mecánica que no existe, no la inventes: anótala como «mecánica nueva a
-   presupuestar» en el resumen.
+   presupuestar» en el resumen (`presupuestar` de `write_change_summary`).
 5. **Páginas.** Empieza en blanco (`create_game`) o desde otro juego (`duplicate_game`). Añade páginas
    (`insert_page`, de la biblioteca o en blanco) y elementos (`add_element`: arte, textos, campos, fotos). Si falta
    arte, deja un texto marcado `[FALTA ARTE: …]` donde iría y escribe el encargo para el artista en el resumen.
@@ -40,7 +40,10 @@ necesites:
 7. **Validar y mirar.** `validate_game` (draft) sin errores; `render_preview` de cada idioma y del ejemplo
    largo; **mira cada PNG** y corrige lo que no cabe, se solapa o no se lee.
 8. **Resumen y subida.** `write_change_summary` con qué hiciste y por qué (y las notas atendidas en
-   `notes_done`): es lo que el cliente lee en «Revisar». Después `sync` con `direction: push` y un mensaje claro.
+   `notes_done`): es lo que el cliente lee en «Revisar». Lo que añadiste sin que el cliente lo pidiera (una pregunta,
+   una página, un elemento) va en `suggestions` con el porqué: el cliente lo acepta o lo descarta en el creador. Lo
+   que hay que presupuestar (mecánicas nuevas, encargos de arte) va en `presupuestar`, una línea por cosa.
+   Después `sync` con `direction: push` y un mensaje claro.
    Solo si el cliente lo pide, `submit_to_studio` (con `validate_game` en modo submit sin errores).
 
 ## Cuando una herramienta se niega

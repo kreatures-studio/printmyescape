@@ -6,6 +6,7 @@
 import { h, icono, enIdioma } from '../dom.js';
 import { componer, pintarPDF, olvidarFichero } from '../motor.js';
 import { abrirSubida } from '../subir.js';
+import { sugerenciasDe, cajaSugerencia } from './sugerencias.js';
 import { claveDeTexto, PAGINA_ENTERA } from '../../tools/game/operaciones.mjs';
 
 const ANCHO_PAGINA_PT = 595.28; // A4: el tamaño de letra (size) es % del ancho de la página
@@ -44,8 +45,11 @@ function columnaPaginas(app, ui) {
   const g = app.juego;
   const lista = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } }, g.pages.map((p, i) => {
     const hoja = h('span', { class: 'hoja', 'data-miniatura': p.id });
-    return h('button', { type: 'button', class: 'miniatura-pagina', 'aria-current': p.id === ui.pagina ? 'true' : 'false', 'aria-label': `Página ${i + 1}: ${p.title || 'sin título'}`,
-      onclick: () => { ui.sel = null; app.navegar(app.rutaJuego('paginas', p.id)); } }, h('span', { class: 'num' }, String(i + 1)), hoja);
+    const sug = sugerenciasDe(g).filter((s) => s.page === p.id).length;
+    return h('button', { type: 'button', class: 'miniatura-pagina', 'aria-current': p.id === ui.pagina ? 'true' : 'false',
+      'aria-label': `Página ${i + 1}: ${p.title || 'sin título'}${sug ? ` (${sug} sugerencia${sug === 1 ? '' : 's'} de Claude)` : ''}`,
+      onclick: () => { ui.sel = null; app.navegar(app.rutaJuego('paginas', p.id)); } },
+    h('span', { class: 'num' }, String(i + 1), sug ? h('span', { class: 'sugerida-marca', title: 'Sugerencias de Claude', 'aria-hidden': 'true' }, ' ✦') : null), hoja);
   }));
   queueMicrotask(() => pintarMiniaturas(app, ui, lista));
   return h('aside', { class: 'columna paginas', 'aria-label': 'Páginas del juego' },
@@ -379,7 +383,8 @@ function pintarCajas(app, ui, pagina, capa, ancho, alto) {
   for (const el of pagina.elements) {
     const esDatos = el.kind === 'puzzle' && datos.has(el.puzzle);
     const seleccionada = el.id === ui.sel;
-    const div = h('div', { class: `caja ${el.kind}${seleccionada ? ' seleccionada' : ''}${esDatos ? ' puzzle-datos' : ''}`, 'data-elemento': el.id, tabindex: app.soloLectura ? null : '0',
+    const sugerida = sugerenciasDe(g, { page: pagina.id, element: el.id }).length > 0;
+    const div = h('div', { class: `caja ${el.kind}${seleccionada ? ' seleccionada' : ''}${esDatos ? ' puzzle-datos' : ''}${sugerida ? ' sugerida' : ''}`, 'data-elemento': el.id, tabindex: app.soloLectura ? null : '0',
       role: 'button', 'aria-label': `${NOMBRE_KIND[el.kind]}: ${etiquetaDe(app, el, ui.lang)}`, 'aria-pressed': seleccionada ? 'true' : 'false',
       style: { left: `${el.x}%`, top: `${el.y}%`, width: `${el.w}%`, height: `${el.h}%`, transform: el.angle ? `rotate(${el.angle}deg)` : null, pointerEvents: esDatos && !seleccionada ? 'none' : null } },
     h('span', { class: 'chapa' }, `${NOMBRE_KIND[el.kind]} · ${etiquetaDe(app, el, ui.lang)}`.slice(0, 48)),
@@ -489,6 +494,7 @@ function propiedadesPagina(app, ui, pagina) {
     h('div', { class: 'prop-cabeza' }, h('div', { class: 'tipo' }, `Página ${i + 1}`), h('div', { class: 'nombre' }, pagina.title || 'Sin título')),
     h('div', { class: 'campo' }, h('label', { for: 'pag-titulo' }, 'Título (para el estudio)'),
       h('input', { id: 'pag-titulo', value: pagina.title || '', disabled: ro, onchange: (e) => app.cambiar('Título de la página', (copia) => { copia.pages[i].title = e.target.value; }) })),
+    sugerenciasDe(g, { page: pagina.id }).map((s) => cajaSugerencia(app, s)),
     h('div', { class: 'info' }, h('strong', {}, 'Fondo'), h('span', {}, textoFondo)),
     pagina.from ? h('div', { class: 'info claude' }, h('strong', {}, 'Copiada de la biblioteca'), h('span', {}, pagina.from)) : null,
     ro ? null : h('div', { class: 'filtros' },
@@ -507,7 +513,8 @@ function propiedadesElemento(app, ui, pagina, el, cambiarEl) {
   const g = app.juego;
   const ro = app.soloLectura;
   const pre = `el-${el.id}`;
-  const partes = [h('div', { class: 'prop-cabeza' }, h('div', { class: 'tipo' }, NOMBRE_KIND[el.kind]), h('div', { class: 'nombre' }, etiquetaDe(app, el, ui.lang) || el.id))];
+  const partes = [h('div', { class: 'prop-cabeza' }, h('div', { class: 'tipo' }, NOMBRE_KIND[el.kind]), h('div', { class: 'nombre' }, etiquetaDe(app, el, ui.lang) || el.id)),
+    ...sugerenciasDe(g, { page: pagina.id, element: el.id }).map((s) => cajaSugerencia(app, s))];
 
   if (el.kind === 'text') {
     partes.push(...g.languages.map((l) => h('div', { class: 'campo' }, h('label', { for: `${pre}-t-${l}` }, `Texto (${l.toUpperCase()})`),

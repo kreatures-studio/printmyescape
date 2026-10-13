@@ -16,7 +16,9 @@ las herramientas (validan antes de guardar). `get_game` devuelve el juego entero
 | `puzzles` | Puzzles del juego (ver `puzzles.md`) | `add_puzzle`, `insert_page` con `puzzles` |
 | `examples` | Tres por idioma: corto, normal y largo | `set_example`, `insert_section` |
 | `solutions` | Soluciones que no van dentro de un puzzle | `set_solutions` |
-| `notes`, `changes` | Notas del cliente y resúmenes de cambios | `read_notes`, `write_change_summary` |
+| `notes`, `changes` | Notas del cliente y resúmenes de cambios (con `presupuestar`) | `read_notes`, `write_change_summary` |
+| `suggestions` | Lo que Claude sugiere y el cliente acepta o descarta en el creador | `write_change_summary` con `suggestions` |
+| `review` | Lo que el cliente ya revisó en el creador (no se toca) | — |
 
 ## Páginas y elementos
 

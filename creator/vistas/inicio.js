@@ -12,7 +12,7 @@ const EJEMPLO_CLAUDE = '«Crea un escape room de 6 páginas sobre una misión se
 export function pintarInicio(raiz, app) {
   const ui = app.ui.inicio || (app.ui.inicio = { filtro: 'todos' });
   const juegos = app.juegos || [];
-  const paraRevisar = juegos.filter((j) => j.status === 'borrador' && (j.porRevisar > 0 || j.notasPendientes > 0));
+  const paraRevisar = juegos.filter((j) => j.status === 'borrador' && (j.porRevisar > 0 || j.notasPendientes > 0 || j.sugerencias > 0));
   const visibles = juegos.filter((j) => ui.filtro === 'todos' || j.status === ui.filtro);
 
   raiz.replaceChildren(h('div', { class: 'inicio' },
@@ -68,6 +68,7 @@ function tarjetaRevisar(app, j) {
       j.ultimoCambio ? h('div', {}, `«${j.ultimoCambio.text}»`) : null,
       h('div', { class: 'cifras' },
         j.porRevisar ? h('span', {}, h('strong', {}, String(j.porRevisar)), ` cambio${j.porRevisar === 1 ? '' : 's'} por revisar`) : null,
+        j.sugerencias ? h('span', {}, h('strong', {}, String(j.sugerencias)), ` sugerencia${j.sugerencias === 1 ? '' : 's'} de Claude`) : null,
         j.notasPendientes ? h('span', { style: { color: 'var(--aviso)' } }, h('strong', {}, String(j.notasPendientes)), ` nota${j.notasPendientes === 1 ? '' : 's'} tuya${j.notasPendientes === 1 ? '' : 's'} pendiente${j.notasPendientes === 1 ? '' : 's'}`) : null)),
     h('div', { class: 'filtros' },
       h('a', { class: 'boton claude', href: `#/juego/${encodeURIComponent(j.id)}/revisar` }, 'Revisar cambios'),

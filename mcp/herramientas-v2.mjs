@@ -233,19 +233,42 @@ export function herramientasV2(ctx) {
     },
     {
       name: 'write_change_summary',
-      description: 'Deja un resumen de los cambios hechos (lo lee el cliente en la revisión) y marca como hechas las notas atendidas (ids de read_notes).',
-      schema: esquema({ id: ID, text: S, notes_done: { type: 'array' } }, ['id', 'text']),
-      run: async ({ id, text, notes_done = [] }) => mutar(id, `Resumen de cambios de ${id}`, (g) => {
+      description: 'Deja un resumen de los cambios hechos (lo lee el cliente en la revisión) y marca como hechas las notas atendidas (ids de read_notes). '
+        + 'suggestions: lo que añadiste por tu cuenta y el cliente debe aceptar o descartar en el creador ({ field } o { page } o { page, element }, con text: por qué). '
+        + 'presupuestar: lo que el encargo pide y no está en el catálogo (mecánicas nuevas, arte que encargar), para que el estudio lo presupueste.',
+      schema: esquema({ id: ID, text: S, notes_done: { type: 'array' },
+        suggestions: { type: 'array', items: { type: 'object', properties: { field: S, page: S, element: S, text: S }, required: ['text'] } },
+        presupuestar: { type: 'array', items: S } }, ['id', 'text']),
+      run: async ({ id, text, notes_done = [], suggestions = [], presupuestar = [] }) => mutar(id, `Resumen de cambios de ${id}`, (g) => {
         g.notes = (g.notes || []).map((n, i) => ({ ...n, id: n.id || `n${i + 1}` }));
         const ids = new Set(g.notes.map((n) => n.id));
         const desconocidas = notes_done.filter((n) => !ids.has(n));
         if (desconocidas.length) throw new E('not-found', `no hay notas ${desconocidas.join(', ')}`);
         for (const n of g.notes) if (notes_done.includes(n.id)) n.done = true;
+        // Sugerencias: cada una apunta a algo que existe (una pregunta, una página o un elemento de una página).
+        g.suggestions = g.suggestions || [];
+        let n = Math.max(0, ...g.suggestions.map((s) => Number(String(s.id).replace(/^s/, '')) || 0));
+        for (const s of suggestions) {
+          if (!s.text || !String(s.text).trim()) throw new E('invalid', 'cada sugerencia necesita text (por qué la sugieres)');
+          if (s.field) {
+            if (!g.fields[s.field]) throw new E('not-found', `no hay pregunta «${s.field}»`);
+          } else if (s.page) {
+            const p = g.pages.find((x) => x.id === s.page);
+            if (!p) throw new E('not-found', `no hay página «${s.page}»`);
+            if (s.element && !p.elements.some((e) => e.id === s.element)) throw new E('not-found', `no hay elemento «${s.element}» en ${s.page}`);
+          } else throw new E('invalid', 'una sugerencia lleva field, o page (y element si es un elemento)');
+          const nueva = { id: `s${++n}`, text: String(s.text).trim(), date: fecha() };
+          for (const k of ['field', 'page', 'element']) if (s[k]) nueva[k] = s[k];
+          g.suggestions.push(nueva);
+        }
+        if (!g.suggestions.length) delete g.suggestions;
         g.changes = g.changes || [];
         const cambio = { date: fecha(), text };
         if (notes_done.length) cambio.notes = notes_done;
+        const aPresupuestar = presupuestar.map((x) => String(x).trim()).filter(Boolean);
+        if (aPresupuestar.length) cambio.presupuestar = aPresupuestar;
         g.changes.push(cambio);
-        return { changes: g.changes.length, pendientes: g.notes.filter((n) => !n.done).length };
+        return { changes: g.changes.length, pendientes: g.notes.filter((x) => !x.done).length, sugerencias: (g.suggestions || []).length };
       }, { formato: 'v2' }),
     },
   ];
