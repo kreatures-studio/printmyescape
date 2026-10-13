@@ -29,7 +29,10 @@
 
   <section class="caja" aria-labelledby="atajo">
     <h2 id="atajo" style="margin:0">Atajo: el formulario de GitHub ya relleno</h2>
-    <p style="margin:0">Escribe de quién es el repositorio de juegos (la parte de antes de la barra: en <code>estudio/juegos</code> es <code>estudio</code>) y pulsa el botón. GitHub abre su formulario con el nombre, la caducidad y los permisos puestos; solo te faltará elegir el repositorio (paso 6).</p>
+    <p style="margin:0">Escribe de quién es el repositorio de juegos (la parte de antes de la barra: en <code>estudio/juegos</code> es <code>estudio</code>) y pulsa el botón. GitHub abre su formulario con el nombre, la caducidad y los permisos puestos.</p>
+    <div class="mensaje" role="note"><strong>Lo único que el enlace no puede rellenar es el repositorio.</strong> En «Repository access» elige
+      <strong>Only select repositories</strong> y marca solo el repositorio de juegos (por ejemplo <code>printmyescape-juegos</code>). Si
+      se queda en «All repositories», el token abre todos tus repositorios.</div>
     <div class="campo"><label for="propietario">Propietario del repositorio</label><input id="propietario" placeholder="estudio" autocomplete="off"></div>
     <a class="boton primario" id="ir" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="align-self:flex-start">Abrir el formulario de GitHub</a>
   </section>
@@ -42,7 +45,7 @@
       <li>Abajo del todo en la columna izquierda, <strong>Developer settings</strong> → <strong>Personal access tokens</strong> → <strong>Fine-grained tokens</strong> → <strong>Generate new token</strong>.</li>
       <li><strong>Token name</strong>: <code>Creador PrintMyEscape</code>. <strong>Expiration</strong>: 90 días es un buen equilibrio (cuando caduque, se crea otro igual).</li>
       <li><strong>Resource owner</strong>: el propietario del repositorio de juegos (tu cuenta o la organización del estudio). Si es una organización que pide aprobación, escribe para qué es; el token queda pendiente hasta que un administrador lo apruebe.</li>
-      <li><strong>Repository access</strong>: elige <strong>Only select repositories</strong> y, en la lista, <strong>solo</strong> el repositorio de juegos.</li>
+      <li><strong>Repository access</strong>: elige <strong>Only select repositories</strong> y, en la lista «Select repositories», <strong>solo</strong> el repositorio de juegos. No dejes «All repositories».</li>
       <li><strong>Permissions</strong> → <strong>Repository permissions</strong>: pon <strong>Contents</strong> en <em>Read and write</em> y <strong>Pull requests</strong> en <em>Read and write</em>. <em>Metadata</em> se pone sola en <em>Read-only</em>. No hace falta nada más.</li>
       <li>Pulsa <strong>Generate token</strong> y copia el token (empieza por <code>github_pat_</code>). GitHub solo lo enseña una vez.</li>
       <li>Vuelve al <a href="./index.html">creador</a>, escribe el repositorio como <code>propietario/nombre</code>, pega el token y pulsa <strong>Entrar</strong>.</li>
@@ -68,6 +71,13 @@
       <li>No lo compartas ni lo pegues en otros sitios. Si crees que alguien lo ha visto, anúlalo en <strong>Settings → Developer settings → Fine-grained tokens</strong> (botón <strong>Delete</strong>) y crea otro.</li>
       <li>Cada persona del equipo debería tener su propio token: así se sabe quién guardó cada cambio.</li>
     </ul>
+  </section>
+
+  <section aria-labelledby="comprobar">
+    <h2 id="comprobar">Comprobar a qué repositorios llega un token</h2>
+    <p>En GitHub: tu foto → <strong>Settings</strong> → <strong>Developer settings</strong> → <strong>Fine-grained tokens</strong> → el token
+      («Creador PrintMyEscape»). Su apartado <strong>Repository access</strong> dice a qué repositorios llega. Se puede cambiar sin crear
+      otro: <strong>Edit</strong>, elegir <strong>Only select repositories</strong>, marcar el de juegos y <strong>Update</strong>.</p>
   </section>
 
   <section aria-labelledby="problemas">
