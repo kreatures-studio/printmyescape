@@ -99,6 +99,7 @@ def solo_lectura(a):
             page.on('pageerror', lambda e: errores.append(f'pageerror: {e}'))
             page.on('console', lambda m: errores.append(m.text) if m.type == 'error' and 'status of 404' not in m.text else None)
             page.goto(url)
+            page.click('summary:has-text("Otro repositorio")')
             page.fill('#repo', a.repo)
             page.fill('#token', a.token)
             page.click('.entrada-caja button[type=submit]')
@@ -155,6 +156,7 @@ def main():
             page.on('console', lambda m: errores.append(m.text) if m.type == 'error' and not esperados.search(m.text) else None)
 
             page.goto(url)
+            page.click('summary:has-text("Otro repositorio")')
             page.fill('#repo', a.repo)
             page.fill('#token', a.token)
             page.click('.entrada-caja button[type=submit]')

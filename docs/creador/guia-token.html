@@ -67,7 +67,7 @@
   <section aria-labelledby="seguridad">
     <h2 id="seguridad">Seguridad</h2>
     <ul>
-      <li>El creador guarda el token <strong>solo en esta pestaña del navegador</strong>: al cerrarla se borra y hay que pegarlo otra vez. Nunca va en la dirección de la página ni se envía a nadie más que a GitHub.</li>
+      <li>El creador recuerda el token <strong>en ese navegador</strong> hasta que se pulsa «Salir». Solo se envía a GitHub. Si el estudio os da un enlace con el token, el creador lo guarda y lo quita de la dirección; no reenviéis ese enlace.</li>
       <li>No lo compartas ni lo pegues en otros sitios. Si crees que alguien lo ha visto, anúlalo en <strong>Settings → Developer settings → Fine-grained tokens</strong> (botón <strong>Delete</strong>) y crea otro.</li>
       <li>Cada persona del equipo debería tener su propio token: así se sabe quién guardó cada cambio.</li>
     </ul>
@@ -102,7 +102,7 @@
       ir.href = 'https://github.com/settings/personal-access-tokens/new?' + p.toString();
     }
     entrada.addEventListener('input', actualizar);
-    try { var repo = sessionStorage.getItem('pme-repo'); if (repo) entrada.value = repo.split('/')[0]; } catch (e) { /* sin sessionStorage */ }
+    try { var repo = localStorage.getItem('pme-repo') || sessionStorage.getItem('pme-repo') || 'kreatures-studio/printmyescape-juegos'; entrada.value = repo.split('/')[0]; } catch (e) { entrada.value = 'kreatures-studio'; }
     actualizar();
   })();
 </script>

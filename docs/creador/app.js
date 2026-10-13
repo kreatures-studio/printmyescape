@@ -31,8 +31,27 @@ const MAX_DESHACER = 150;
 // Juegos del almacén en memoria (pruebas y demostración local).
 const FUENTES_MEMORIA = ['./ensayos/f3/cumple-mision-secreta/game.json', './games/final3/game.json'];
 
-const leerSesion = (k) => { try { return sessionStorage.getItem(k); } catch { return null; } };
-const guardarSesion = (k, v) => { try { v === null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch { /* sin sessionStorage: se pedirá de nuevo */ } };
+// Repositorio de juegos del estudio (se puede cambiar con ?repo=dueño/nombre o desde la entrada).
+const REPO_POR_DEFECTO = 'kreatures-studio/printmyescape-juegos';
+// El token se recuerda en este navegador (localStorage) hasta pulsar «Salir»: el cliente lo pone una vez, o entra con
+// el enlace del estudio (…/creador/#token=…), que lo guarda y lo quita de la dirección. Nunca va en el código.
+const leerSesion = (k) => { try { return localStorage.getItem(k) ?? sessionStorage.getItem(k); } catch { return null; } };
+const guardarSesion = (k, v) => {
+  try { sessionStorage.removeItem(k); } catch { /* sin sessionStorage */ }
+  try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch { /* sin almacenamiento: se pedirá de nuevo */ }
+};
+/** Enlace del estudio: #token=… (y opcional &repo=…) se guarda y se borra de la dirección y del historial. */
+function enlaceConToken() {
+  const m = /^#token=([^&]+)(?:&repo=([^&]+))?/.exec(location.hash);
+  if (!m) return false;
+  guardarSesion(CLAVE_TOKEN, decodeURIComponent(m[1]));
+  if (m[2]) guardarSesion(CLAVE_REPO, decodeURIComponent(m[2]));
+  history.replaceState(null, '', location.pathname + location.search + '#/');
+  return true;
+}
+enlaceConToken();
+// Si el enlace se abre en una pestaña donde el creador ya estaba abierto, se entra de nuevo con el token nuevo.
+window.addEventListener('hashchange', () => { if (enlaceConToken()) location.reload(); });
 const $ = (id) => document.getElementById(id);
 /** replaceChildren sin los huecos (null/false), que el DOM escribiría como texto. */
 const poner = (el, ...hijos) => el.replaceChildren(...hijos.flat().filter((x) => x !== null && x !== undefined && x !== false));
@@ -190,6 +209,7 @@ app.navegar = (hash) => { if (location.hash === hash) repintar(); else location.
 app.rutaJuego = (vista, sub = null) => `#/juego/${encodeURIComponent(app.juego.id)}/${vista}${sub ? `/${encodeURIComponent(sub)}` : ''}`;
 
 async function alCambiarRuta() {
+  if (!app.almacen) return; // aún en la entrada
   const ruta = leerRuta();
   if (app.sucio && (!ruta.id || !app.juego || ruta.id !== app.juego.id)) await app.guardarYa();
   app.ruta = ruta;
@@ -226,7 +246,7 @@ function pintarCabecera() {
         h('a', { href: '#/', 'aria-current': app.ruta.vista === 'inicio' ? 'page' : null }, 'Biblioteca'),
         h('a', { href: './guia-token.html', target: '_blank', rel: 'noopener' }, 'Ayuda')),
       h('div', { class: 'relleno' }),
-      h('span', { class: 'repo-chip' }, app.almacen.tipo === 'memoria' ? 'Demostración (sin guardar en GitHub)' : `Repositorio ${leerSesion(CLAVE_REPO) || ''}`),
+      h('span', { class: 'repo-chip' }, app.almacen.tipo === 'memoria' ? 'Demostración (sin guardar en GitHub)' : `Repositorio ${leerSesion(CLAVE_REPO) || PARAMS.get('repo') || REPO_POR_DEFECTO}`),
       app.almacen.tipo === 'github' ? h('button', { class: 'boton pequeno', type: 'button', onclick: salir }, 'Salir') : null);
     return;
   }
@@ -309,22 +329,23 @@ function salir() {
 }
 
 function pintarEntrada(mensaje = '') {
-  const repo = h('input', { id: 'repo', class: 'entrada', placeholder: 'estudio/juegos', value: leerSesion(CLAVE_REPO) || PARAMS.get('repo') || '', autocomplete: 'off', required: true });
+  const repo = h('input', { id: 'repo', class: 'entrada', placeholder: REPO_POR_DEFECTO, value: leerSesion(CLAVE_REPO) || PARAMS.get('repo') || REPO_POR_DEFECTO, autocomplete: 'off', required: true });
   const token = h('input', { id: 'token', class: 'entrada', type: 'password', autocomplete: 'off', required: true });
   $('principal').replaceChildren(h('form', { class: 'entrada-caja', onsubmit: (e) => { e.preventDefault(); entrar(repo.value.trim(), token.value.trim()); } },
     h('h1', {}, 'Entrar al creador'),
-    h('p', { class: 'tenue' }, 'El creador trabaja sobre vuestro repositorio privado de juegos en GitHub. Hace falta un token de acceso: se guarda solo en esta pestaña y se borra al cerrarla.'),
+    h('p', { class: 'tenue' }, 'Pega el token de acceso que te ha dado el estudio. Este navegador lo recuerda: no hará falta volver a ponerlo hasta que pulses «Salir».'),
     mensaje ? h('div', { class: 'mensaje error', role: 'alert' }, mensaje) : null,
-    h('div', { class: 'campo' }, h('label', { for: 'repo' }, 'Repositorio (propietario/nombre)'), repo),
     h('div', { class: 'campo' }, h('label', { for: 'token' }, 'Token de acceso'), token,
       h('span', { class: 'ayuda' }, '¿No tienes token? ', h('a', { href: './guia-token.html', target: '_blank', rel: 'noopener' }, 'Guía paso a paso para crearlo'), '.')),
+    h('details', {}, h('summary', { class: 'tenue', style: { cursor: 'pointer' } }, 'Otro repositorio'),
+      h('div', { class: 'campo', style: { marginTop: '8px' } }, h('label', { for: 'repo' }, 'Repositorio (propietario/nombre)'), repo)),
     h('button', { class: 'boton primario', type: 'submit' }, 'Entrar')));
   pintarCabecera();
 }
 
 async function entrar(repoTexto, token) {
   const m = /^([\w.-]+)\/([\w.-]+)$/.exec(repoTexto);
-  if (!m) return pintarEntrada('El repositorio se escribe como propietario/nombre, por ejemplo estudio/juegos.');
+  if (!m) return pintarEntrada(`El repositorio se escribe como propietario/nombre, por ejemplo ${REPO_POR_DEFECTO}.`);
   const almacen = crearAlmacenGitHub({ owner: m[1], repo: m[2], token, principal: PRINCIPAL });
   try {
     await almacen.list();
@@ -351,7 +372,7 @@ async function arrancar(almacen) {
     return;
   }
   const token = leerSesion(CLAVE_TOKEN);
-  const repo = leerSesion(CLAVE_REPO);
+  const repo = leerSesion(CLAVE_REPO) || PARAMS.get('repo') || REPO_POR_DEFECTO;
   if (token && repo) {
     const m = /^([\w.-]+)\/([\w.-]+)$/.exec(repo);
     if (m) {

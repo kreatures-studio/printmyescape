@@ -88,6 +88,8 @@ def main():
                 and 'contents=write' in enlace and 'pull_requests=write' in enlace and 'target_name=kreatures-studio' in enlace, enlace[:140])
             guia.close()
 
+            page.click('summary:has-text("Otro repositorio")')
+
             page.fill('#repo', gh_mod.REPO)
             page.fill('#token', gh_mod.TOKEN)
             page.click('.entrada-caja button[type=submit]')
@@ -98,7 +100,7 @@ def main():
             page.click('.nav a:has-text("Vista previa")')
             page.wait_for_selector('.previa-paginas[data-listo]', timeout=60000)
             rec('con GitHub: vista previa entera sin errores', page.locator('.previa-paginas figure').count() == 6 and page.locator('.mensaje.error').count() == 0)
-            page.evaluate("sessionStorage.clear()")
+            page.evaluate("localStorage.clear(); sessionStorage.clear()")
 
             page.goto(base + '?almacen=memoria')
             page.wait_for_selector('.tarjeta-juego')

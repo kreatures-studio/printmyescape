@@ -3,8 +3,8 @@
 
 La API de GitHub se simula con page.route: un repositorio en memoria con la rama main (la biblioteca/ del repositorio)
 y la rama juego/cumple-mision-secreta (el juego del ensayo F3). No hay red ni token real. Comprueba:
-  - entrada: sin token no hay peticiones; el token va a sessionStorage (no a localStorage ni a ninguna URL) y solo
-    en la cabecera Authorization;
+  - entrada: sin token no hay peticiones; el repositorio viene puesto; el token se recuerda en localStorage (nunca
+    en una URL) y solo va en la cabecera Authorization; el enlace del estudio (#token=…) entra directo y se borra;
   - inicio: los juegos son las ramas juego/*; la biblioteca se lee de main;
   - editar: el lienzo se compone con el arte de la biblioteca; un cambio se guarda solo (PUT del game.json en su
     rama, sobre su sha);
@@ -194,6 +194,9 @@ def main():
             page.wait_for_selector('.entrada-caja')
             rec('sin token: se pide la entrada', page.is_visible('#token'))
             rec('sin token: ninguna petición a GitHub', len(gh.peticiones) == 0, str(len(gh.peticiones)))
+            rec('entrada: el repositorio de juegos del estudio viene puesto', page.input_value('#repo') == 'kreatures-studio/printmyescape-juegos', page.input_value('#repo'))
+
+            page.click('summary:has-text("Otro repositorio")')
 
             page.fill('#repo', REPO)
             page.fill('#token', TOKEN)
@@ -201,8 +204,7 @@ def main():
             page.wait_for_selector(f'.tarjeta-juego[data-juego={F3}]')
             rec('inicio: los juegos son las ramas juego/*', page.locator('.tarjeta-juego').count() == 1)
             rec('inicio: la biblioteca se lee de main', '43 piezas' in page.inner_text('.material'))
-            rec('el token va a sessionStorage', page.evaluate("sessionStorage.getItem('pme-token')") == TOKEN)
-            rec('el token no va a localStorage', page.evaluate("localStorage.getItem('pme-token')") is None)
+            rec('el token se recuerda en este navegador (localStorage)', page.evaluate("localStorage.getItem('pme-token')") == TOKEN)
             rec('el token solo va en Authorization', all(x['auth'] == f'Bearer {TOKEN}' for x in gh.peticiones) and not any(TOKEN in x['url'] for x in gh.peticiones) and TOKEN not in page.url)
 
             # ---- Editar y guardar ----
@@ -274,10 +276,11 @@ def main():
                 and 'solo lectura' in page.inner_text('[data-prueba=estado-guardado]'), str(gh.prs[:1]))
 
             # ---- Token caducado y salir ----
-            page.evaluate("sessionStorage.setItem('pme-token', 'caducado')")
+            page.evaluate("localStorage.setItem('pme-token', 'caducado')")
             page.reload()
             page.wait_for_selector('.entrada-caja .mensaje.error')
-            rec('token caducado: vuelve a la entrada con el aviso', 'token' in page.inner_text('.entrada-caja .mensaje.error') and page.evaluate("sessionStorage.getItem('pme-token')") is None)
+            rec('token caducado: vuelve a la entrada con el aviso', 'token' in page.inner_text('.entrada-caja .mensaje.error') and page.evaluate("localStorage.getItem('pme-token')") is None)
+            page.click('summary:has-text("Otro repositorio")')
             page.fill('#repo', REPO)
             page.fill('#token', TOKEN)
             page.click('.entrada-caja button[type=submit]')
@@ -286,7 +289,17 @@ def main():
             page.wait_for_selector('.cabecera button:has-text("Salir")')
             page.click('.cabecera button:has-text("Salir")')
             page.wait_for_selector('.entrada-caja')
-            rec('Salir borra el token y vuelve a la entrada', page.evaluate("sessionStorage.getItem('pme-token')") is None)
+            rec('Salir borra el token y vuelve a la entrada', page.evaluate("localStorage.getItem('pme-token')") is None)
+
+            # Enlace del estudio con el token: entra directo, lo recuerda y lo quita de la dirección.
+            n_antes = len(gh.peticiones)
+            page.goto(base.split('#')[0] + f'#token={TOKEN}&repo={urllib.parse.quote(REPO)}')
+            page.wait_for_selector(f'.tarjeta-juego[data-juego={F3}]')
+            rec('enlace con el token: entra directo y lo quita de la dirección', TOKEN not in page.url and page.evaluate("localStorage.getItem('pme-token')") == TOKEN
+                and not any(TOKEN in x['url'] for x in gh.peticiones[n_antes:]), page.url)
+            page.reload()
+            page.wait_for_selector(f'.tarjeta-juego[data-juego={F3}]')
+            rec('al volver, sigue dentro sin pedir nada', page.locator('.entrada-caja').count() == 0)
             b.close()
         rec('sin errores de consola ni excepciones', not errores, '; '.join(errores)[:300])
     finally:

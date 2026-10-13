@@ -23,3 +23,5 @@ __pycache__/
 
 # Token de GitHub para tools/qa/github-escritura.mjs (nunca al repositorio)
 .pme-token
+# Enlace del creador con el token (no se sube nunca)
+enlace-creador.txt
