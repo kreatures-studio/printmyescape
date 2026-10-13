@@ -130,10 +130,10 @@ function pintarPortadas(raiz, app) {
 
 function material(app) {
   const bib = app.biblioteca;
-  const paginas = bib.entradas('pagina');
-  const secciones = bib.entradas('seccion');
-  const arte = bib.entradas('arte').filter((p) => p.status !== 'reexportar');
-  const puzzles = bib.entradas('puzzle');
+  const paginas = bib.actuales('pagina');
+  const secciones = bib.actuales('seccion');
+  const arte = bib.actuales('arte').filter((p) => p.status !== 'reexportar');
+  const puzzles = bib.actuales('puzzle');
   const miniaturas = h('div', { class: 'miniaturas' });
   arte.slice(0, 8).forEach((p) => { const img = h('img', { alt: p.name, loading: 'lazy' }); bib.miniatura(p).then((u) => { img.src = u; }, () => {}); miniaturas.append(img); });
   const cabeza = (titulo, cuenta) => h('div', { class: 'cabeza' }, h('strong', {}, titulo), h('span', { class: 'tenue' }, cuenta));
@@ -164,7 +164,7 @@ export function verBiblioteca(app, tipo = 'arte') {
   return app.dialogo((cerrar) => {
     const cuerpo = h('div', {});
     const pintar = () => {
-      const lista = bib.entradas(actual).filter((e) => !etiqueta || (e.tags || []).includes(etiqueta));
+      const lista = bib.actuales(actual).filter((e) => !etiqueta || (e.tags || []).includes(etiqueta));
       const contenido = actual === 'arte'
         ? h('div', { class: 'galeria', style: { gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' } }, lista.map((p) => {
           const img = h('img', { alt: '' });

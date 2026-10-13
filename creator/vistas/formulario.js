@@ -59,7 +59,7 @@ function columnaSecciones(app, ui) {
     ondrop: (e) => { e.preventDefault(); if (arrastrada !== null && arrastrada !== i) moverSeccion(app, arrastrada, i); arrastrada = null; },
   }, h('span', {}, `${i + 1} · ${enIdioma(s.title, ui.lang) || s.id}`), h('span', { class: 'n' }, String(s.fields.length)))));
   const enJuego = new Set(secciones.map((s) => s.id));
-  const reutilizables = app.biblioteca.entradas('seccion').filter((e) => !enJuego.has(e.section.id));
+  const reutilizables = app.biblioteca.actuales('seccion').filter((e) => !enJuego.has(e.section.id));
   return h('aside', { class: 'columna lateral', 'aria-label': 'Secciones del formulario' },
     h('div', { class: 'etiqueta-seccion' }, app.soloLectura ? 'Secciones' : 'Secciones · arrastra para ordenar'),
     lista,
@@ -402,7 +402,7 @@ async function nuevoCampo(app, ui, s) {
 async function traerCampo(app, ui, s) {
   const g = app.juego;
   const opciones = [];
-  for (const e of app.biblioteca.entradas('seccion')) {
+  for (const e of app.biblioteca.actuales('seccion')) {
     for (const [c, d] of Object.entries(e.fieldDefs)) {
       if (!g.fields[c] && !(d.allowOther && g.fields[d.otherField])) opciones.push({ c, d, e });
     }

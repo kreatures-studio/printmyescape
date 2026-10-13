@@ -315,37 +315,43 @@ def main():
             page.click('#dialogo button[type=submit]')
             page.wait_for_url(re.compile(r'#/juego/prueba-en-blanco/paginas'))
             lienzo_listo(page)
-            # La página de la biblioteca necesita a los sospechosos, que ninguna sección trae: se explica y no se añade.
+            # La ficha del cumpleañero entra con lo que necesita: la sección del cumpleañero, los 8 sospechosos y el
+            # puzzle que calcula los apodos con su prefijo.
             page.click('.pestanas button:has-text("Páginas")')
             page.click('[data-pagina-bib^="ficha-cumpleanero@"]')
-            page.wait_for_selector('#dialogo[open]')
+            page.wait_for_selector('#dialogo button:has-text("Añadirlo todo")')
             explicacion = page.inner_text('#dialogo')
-            rec('biblioteca: una página que pide campos sin origen se explica y no se añade', 'Ninguna sección de la biblioteca trae' in explicacion and 'NOMBRE_1' in explicacion
-                and page.locator('#dialogo button:has-text("Añadirlo todo")').count() == 0, explicacion.split('\n')[0])
-            page.click('#dialogo button:has-text("Cancelar")')
-            rec('biblioteca: … y el juego sigue con una página', len(juego(page)['pages']) == 1)
-            # Formulario desde la biblioteca: las dos secciones de la misión secreta, con sus ejemplos.
-            page.click('.nav a:has-text("Formulario")')
-            page.wait_for_selector('[data-seccion-bib^="cumpleanero-infantil@"]')
-            page.click('[data-seccion-bib^="cumpleanero-infantil@"]')
-            page.wait_for_function("window.__app && __app.juego.form.sections.length === 1")
-            page.click('[data-seccion-bib^="mision-escondite@"]')
-            page.wait_for_function("window.__app && __app.juego.form.sections.length === 2")
+            page.click('#dialogo button:has-text("Añadirlo todo")')
+            page.wait_for_function("window.__app && __app.juego.pages.length === 2")
+            lienzo_listo(page)
             g = juego(page)
-            rec('biblioteca: secciones reutilizadas con sus preguntas y ejemplos', {'NOMBRE_CUMPLE', 'TEST_LUGAR'} <= set(g['fields']) and len(g['examples']) >= 3
-                and g['examples'][0]['values']['es'].get('NOMBRE_CUMPLE'), f"{len(g['fields'])} preguntas, {len(g['examples'])} ejemplos")
+            secs = [s['id'] for s in g['form']['sections']]
+            rec('biblioteca: una página de otro juego entra con las secciones y el puzzle que necesita', g['pages'][1]['from'].startswith('ficha-cumpleanero@')
+                and secs[:1] == ['victima'] and [f's{n}' for n in range(1, 9)] == secs[1:] and [z['from'] for z in g['puzzles']] == ['puzzle-prefix@1'],
+                f"{secs} · {[z['from'] for z in g['puzzles']]}")
+            rec('biblioteca: … con las fotos de ejemplo de las secciones copiadas al juego', g['examples'][0]['photos'].get('FOTO_1') == 'fotos/retrato-1.jpg',
+                str(g['examples'][0].get('photos'))[:120])
+            # Formulario desde la biblioteca: la sección de la misión (trae las preguntas del puzzle de tiras).
+            page.click('.nav a:has-text("Formulario")')
+            page.wait_for_selector('[data-seccion-bib^="mision-escondite@"]')
+            antes = len(g['form']['sections'])
+            page.click('[data-seccion-bib^="mision-escondite@"]')
+            page.wait_for_function(f"window.__app && __app.juego.form.sections.length === {antes + 1}")
+            g = juego(page)
+            rec('biblioteca: sección reutilizada con sus preguntas y ejemplos', {'TEST_LUGAR', 'TEST_RESULTADO'} <= set(g['fields'])
+                and g['examples'][0]['values']['es'].get('TEST_LUGAR'), f"{len(g['fields'])} preguntas, {len(g['examples'])} ejemplos")
             # Un puzzle del catálogo que ya tiene sus preguntas entra en una página nueva.
             page.click('.nav a:has-text("Puzzles y soluciones")')
             page.click('button:has-text("Del catálogo")')
             page.click('[data-puzzle-bib^="puzzle-strips@"]')
-            page.wait_for_function("window.__app && __app.juego.pages.length === 2")
+            page.wait_for_function("window.__app && __app.juego.pages.length === 3")
             g = juego(page)
-            rec('biblioteca: puzzle del catálogo en una página nueva, con los huecos de sus respuestas', g['puzzles'][0]['from'].startswith('puzzle-strips@')
-                and [e['kind'] for e in g['pages'][1]['elements']] == ['field', 'field', 'puzzle'], str([e.get('field', e['kind']) for e in g['pages'][1]['elements']]))
+            rec('biblioteca: puzzle del catálogo en una página nueva, con los huecos de sus respuestas', g['puzzles'][-1]['from'].startswith('puzzle-strips@')
+                and [e['kind'] for e in g['pages'][2]['elements']] == ['field', 'field', 'puzzle'], str([e.get('field', e['kind']) for e in g['pages'][2]['elements']]))
             lienzo_listo(page, 30000)
             page.click('.nav a:has-text("Vista previa")')
             page.wait_for_selector('.previa-paginas[data-listo]', timeout=60000)
-            rec('biblioteca: el juego nuevo se compone sin errores', page.locator('.previa-paginas figure').count() == 2 and page.locator('.mensaje.error').count() == 0,
+            rec('biblioteca: el juego nuevo se compone sin errores', page.locator('.previa-paginas figure').count() == 3 and page.locator('.mensaje.error').count() == 0,
                 ' | '.join(page.locator('.mensaje.error').all_inner_texts())[:200])
 
             b.close()

@@ -331,6 +331,998 @@
           }
         }
       ]
+    },
+    {
+      "id": "sospechoso-1",
+      "version": 1,
+      "name": "Sospechoso 1",
+      "tags": [
+        "formulario",
+        "nombre",
+        "foto",
+        "sospechoso"
+      ],
+      "origin": {
+        "game": "final3",
+        "version": "1.0.0",
+        "section": "s1"
+      },
+      "section": {
+        "id": "s1",
+        "title": {
+          "es": "Sospechoso 1",
+          "en": "Suspect 1"
+        },
+        "hint": {
+          "es": "Sus datos salen en todas sus páginas con la misma foto.",
+          "en": "Their details appear on all their pages with the same photo."
+        },
+        "nameField": "NOMBRE_1",
+        "photoField": "FOTO_1",
+        "fields": [
+          "NOMBRE_1",
+          "APODO_1",
+          "FOTO_1"
+        ]
+      },
+      "fieldDefs": {
+        "NOMBRE_1": {
+          "type": "name",
+          "required": true,
+          "q": {
+            "es": "Nombre",
+            "en": "Name"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S1 · Nombre",
+            "en": "S1 · Name"
+          }
+        },
+        "APODO_1": {
+          "type": "name",
+          "required": false,
+          "q": {
+            "es": "Alias (opcional)",
+            "en": "Alias (optional)"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S1 · Alias",
+            "en": "S1 · Alias"
+          }
+        },
+        "FOTO_1": {
+          "type": "photo",
+          "required": true,
+          "q": {
+            "es": "Sube su foto",
+            "en": "Upload their photo"
+          },
+          "corta": {
+            "es": "S1 · Foto",
+            "en": "S1 · Photo"
+          }
+        }
+      },
+      "examples": [
+        {
+          "id": "1",
+          "values": {
+            "es": {
+              "NOMBRE_1": "Celia",
+              "APODO_1": "El Mudo"
+            },
+            "en": {
+              "NOMBRE_1": "Chloe",
+              "APODO_1": "The Mute"
+            }
+          },
+          "photos": {
+            "FOTO_1": "fotos/retrato-1.jpg"
+          }
+        },
+        {
+          "id": "2",
+          "values": {
+            "es": {
+              "NOMBRE_1": "Ruth",
+              "APODO_1": "La Discreta"
+            },
+            "en": {
+              "NOMBRE_1": "Ruth",
+              "APODO_1": "The Discreet"
+            }
+          },
+          "photos": {
+            "FOTO_1": "fotos/retrato-1.jpg"
+          }
+        },
+        {
+          "id": "3",
+          "values": {
+            "es": {
+              "NOMBRE_1": "Isabel María",
+              "APODO_1": "La Presumida"
+            },
+            "en": {
+              "NOMBRE_1": "Isabel María",
+              "APODO_1": "The Nosy One"
+            }
+          },
+          "photos": {
+            "FOTO_1": "fotos/retrato-1.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sospechoso-2",
+      "version": 1,
+      "name": "Sospechoso 2",
+      "tags": [
+        "formulario",
+        "nombre",
+        "foto",
+        "sospechoso"
+      ],
+      "origin": {
+        "game": "final3",
+        "version": "1.0.0",
+        "section": "s2"
+      },
+      "section": {
+        "id": "s2",
+        "title": {
+          "es": "Sospechoso 2",
+          "en": "Suspect 2"
+        },
+        "hint": {
+          "es": "Sus datos salen en todas sus páginas con la misma foto.",
+          "en": "Their details appear on all their pages with the same photo."
+        },
+        "nameField": "NOMBRE_2",
+        "photoField": "FOTO_2",
+        "fields": [
+          "NOMBRE_2",
+          "APODO_2",
+          "FOTO_2"
+        ]
+      },
+      "fieldDefs": {
+        "NOMBRE_2": {
+          "type": "name",
+          "required": true,
+          "q": {
+            "es": "Nombre",
+            "en": "Name"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S2 · Nombre",
+            "en": "S2 · Name"
+          }
+        },
+        "APODO_2": {
+          "type": "name",
+          "required": false,
+          "q": {
+            "es": "Alias (opcional)",
+            "en": "Alias (optional)"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S2 · Alias",
+            "en": "S2 · Alias"
+          }
+        },
+        "FOTO_2": {
+          "type": "photo",
+          "required": true,
+          "q": {
+            "es": "Sube su foto",
+            "en": "Upload their photo"
+          },
+          "corta": {
+            "es": "S2 · Foto",
+            "en": "S2 · Photo"
+          }
+        }
+      },
+      "examples": [
+        {
+          "id": "1",
+          "values": {
+            "es": {
+              "NOMBRE_2": "Nuria",
+              "APODO_2": "La Oculta"
+            },
+            "en": {
+              "NOMBRE_2": "Nathan",
+              "APODO_2": "The Hidden"
+            }
+          },
+          "photos": {
+            "FOTO_2": "fotos/retrato-2.jpg"
+          }
+        },
+        {
+          "id": "2",
+          "values": {
+            "es": {
+              "NOMBRE_2": "Hugo",
+              "APODO_2": "El Gruñón"
+            },
+            "en": {
+              "NOMBRE_2": "Hugo",
+              "APODO_2": "The Grump"
+            }
+          },
+          "photos": {
+            "FOTO_2": "fotos/retrato-2.jpg"
+          }
+        },
+        {
+          "id": "3",
+          "values": {
+            "es": {
+              "NOMBRE_2": "Pedro Alonso",
+              "APODO_2": "La Discreta"
+            },
+            "en": {
+              "NOMBRE_2": "Pedro Alonso",
+              "APODO_2": "The Dreamer"
+            }
+          },
+          "photos": {
+            "FOTO_2": "fotos/retrato-2.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sospechoso-3",
+      "version": 1,
+      "name": "Sospechoso 3",
+      "tags": [
+        "formulario",
+        "nombre",
+        "foto",
+        "sospechoso"
+      ],
+      "origin": {
+        "game": "final3",
+        "version": "1.0.0",
+        "section": "s3"
+      },
+      "section": {
+        "id": "s3",
+        "title": {
+          "es": "Sospechoso 3",
+          "en": "Suspect 3"
+        },
+        "hint": {
+          "es": "Sus datos salen en todas sus páginas con la misma foto.",
+          "en": "Their details appear on all their pages with the same photo."
+        },
+        "nameField": "NOMBRE_3",
+        "photoField": "FOTO_3",
+        "fields": [
+          "NOMBRE_3",
+          "APODO_3",
+          "FOTO_3"
+        ]
+      },
+      "fieldDefs": {
+        "NOMBRE_3": {
+          "type": "name",
+          "required": true,
+          "q": {
+            "es": "Nombre",
+            "en": "Name"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S3 · Nombre",
+            "en": "S3 · Name"
+          }
+        },
+        "APODO_3": {
+          "type": "name",
+          "required": false,
+          "q": {
+            "es": "Alias (opcional)",
+            "en": "Alias (optional)"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S3 · Alias",
+            "en": "S3 · Alias"
+          }
+        },
+        "FOTO_3": {
+          "type": "photo",
+          "required": true,
+          "q": {
+            "es": "Sube su foto",
+            "en": "Upload their photo"
+          },
+          "corta": {
+            "es": "S3 · Foto",
+            "en": "S3 · Photo"
+          }
+        }
+      },
+      "examples": [
+        {
+          "id": "1",
+          "values": {
+            "es": {
+              "NOMBRE_3": "Adela",
+              "APODO_3": "La Curiosa"
+            },
+            "en": {
+              "NOMBRE_3": "Ruby",
+              "APODO_3": "The Curious"
+            }
+          },
+          "photos": {
+            "FOTO_3": "fotos/retrato-3.jpg"
+          }
+        },
+        {
+          "id": "2",
+          "values": {
+            "es": {
+              "NOMBRE_3": "Lucia",
+              "APODO_3": "La Cotilla"
+            },
+            "en": {
+              "NOMBRE_3": "Lucy",
+              "APODO_3": "The Gossip"
+            }
+          },
+          "photos": {
+            "FOTO_3": "fotos/retrato-3.jpg"
+          }
+        },
+        {
+          "id": "3",
+          "values": {
+            "es": {
+              "NOMBRE_3": "Rocío Vargas",
+              "APODO_3": "La Cotilla"
+            },
+            "en": {
+              "NOMBRE_3": "Rocío Vargas",
+              "APODO_3": "Miss Nosy"
+            }
+          },
+          "photos": {
+            "FOTO_3": "fotos/retrato-3.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sospechoso-4",
+      "version": 1,
+      "name": "Sospechoso 4",
+      "tags": [
+        "formulario",
+        "nombre",
+        "foto",
+        "sospechoso"
+      ],
+      "origin": {
+        "game": "final3",
+        "version": "1.0.0",
+        "section": "s4"
+      },
+      "section": {
+        "id": "s4",
+        "title": {
+          "es": "Sospechoso 4",
+          "en": "Suspect 4"
+        },
+        "hint": {
+          "es": "Sus datos salen en todas sus páginas con la misma foto.",
+          "en": "Their details appear on all their pages with the same photo."
+        },
+        "nameField": "NOMBRE_4",
+        "photoField": "FOTO_4",
+        "fields": [
+          "NOMBRE_4",
+          "APODO_4",
+          "FOTO_4"
+        ]
+      },
+      "fieldDefs": {
+        "NOMBRE_4": {
+          "type": "name",
+          "required": true,
+          "q": {
+            "es": "Nombre",
+            "en": "Name"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S4 · Nombre",
+            "en": "S4 · Name"
+          }
+        },
+        "APODO_4": {
+          "type": "name",
+          "required": false,
+          "q": {
+            "es": "Alias (opcional)",
+            "en": "Alias (optional)"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S4 · Alias",
+            "en": "S4 · Alias"
+          }
+        },
+        "FOTO_4": {
+          "type": "photo",
+          "required": true,
+          "q": {
+            "es": "Sube su foto",
+            "en": "Upload their photo"
+          },
+          "corta": {
+            "es": "S4 · Foto",
+            "en": "S4 · Photo"
+          }
+        }
+      },
+      "examples": [
+        {
+          "id": "1",
+          "values": {
+            "es": {
+              "NOMBRE_4": "Adam",
+              "APODO_4": "El Tranquilo"
+            },
+            "en": {
+              "NOMBRE_4": "Adam",
+              "APODO_4": "The Calm One"
+            }
+          },
+          "photos": {
+            "FOTO_4": "fotos/retrato-4.jpg"
+          }
+        },
+        {
+          "id": "2",
+          "values": {
+            "es": {
+              "NOMBRE_4": "Ivan",
+              "APODO_4": "El Bromista"
+            },
+            "en": {
+              "NOMBRE_4": "Ivan",
+              "APODO_4": "The Joker"
+            }
+          },
+          "photos": {
+            "FOTO_4": "fotos/retrato-4.jpg"
+          }
+        },
+        {
+          "id": "3",
+          "values": {
+            "es": {
+              "NOMBRE_4": "Lourdes Peña",
+              "APODO_4": "El Tranquilo"
+            },
+            "en": {
+              "NOMBRE_4": "Lourdes Peña",
+              "APODO_4": "The Tranquil"
+            }
+          },
+          "photos": {
+            "FOTO_4": "fotos/retrato-4.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sospechoso-5",
+      "version": 1,
+      "name": "Sospechoso 5",
+      "tags": [
+        "formulario",
+        "nombre",
+        "foto",
+        "sospechoso"
+      ],
+      "origin": {
+        "game": "final3",
+        "version": "1.0.0",
+        "section": "s5"
+      },
+      "section": {
+        "id": "s5",
+        "title": {
+          "es": "Sospechoso 5",
+          "en": "Suspect 5"
+        },
+        "hint": {
+          "es": "Sus datos salen en todas sus páginas con la misma foto.",
+          "en": "Their details appear on all their pages with the same photo."
+        },
+        "nameField": "NOMBRE_5",
+        "photoField": "FOTO_5",
+        "fields": [
+          "NOMBRE_5",
+          "APODO_5",
+          "FOTO_5"
+        ]
+      },
+      "fieldDefs": {
+        "NOMBRE_5": {
+          "type": "name",
+          "required": true,
+          "q": {
+            "es": "Nombre",
+            "en": "Name"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S5 · Nombre",
+            "en": "S5 · Name"
+          }
+        },
+        "APODO_5": {
+          "type": "name",
+          "required": false,
+          "q": {
+            "es": "Alias (opcional)",
+            "en": "Alias (optional)"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S5 · Alias",
+            "en": "S5 · Alias"
+          }
+        },
+        "FOTO_5": {
+          "type": "photo",
+          "required": true,
+          "q": {
+            "es": "Sube su foto",
+            "en": "Upload their photo"
+          },
+          "corta": {
+            "es": "S5 · Foto",
+            "en": "S5 · Photo"
+          }
+        }
+      },
+      "examples": [
+        {
+          "id": "1",
+          "values": {
+            "es": {
+              "NOMBRE_5": "Dani",
+              "APODO_5": "El Tecno"
+            },
+            "en": {
+              "NOMBRE_5": "Danny",
+              "APODO_5": "The Techie"
+            }
+          },
+          "photos": {
+            "FOTO_5": "fotos/retrato-5.jpg"
+          }
+        },
+        {
+          "id": "2",
+          "values": {
+            "es": {
+              "NOMBRE_5": "Sara",
+              "APODO_5": "La Pianista"
+            },
+            "en": {
+              "NOMBRE_5": "Sara",
+              "APODO_5": "The Pianist"
+            }
+          },
+          "photos": {
+            "FOTO_5": "fotos/retrato-5.jpg"
+          }
+        },
+        {
+          "id": "3",
+          "values": {
+            "es": {
+              "NOMBRE_5": "Óscar Medina",
+              "APODO_5": "El Pianista"
+            },
+            "en": {
+              "NOMBRE_5": "Óscar Medina",
+              "APODO_5": "The Pianist"
+            }
+          },
+          "photos": {
+            "FOTO_5": "fotos/retrato-5.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sospechoso-6",
+      "version": 1,
+      "name": "Sospechoso 6",
+      "tags": [
+        "formulario",
+        "nombre",
+        "foto",
+        "sospechoso"
+      ],
+      "origin": {
+        "game": "final3",
+        "version": "1.0.0",
+        "section": "s6"
+      },
+      "section": {
+        "id": "s6",
+        "title": {
+          "es": "Sospechoso 6",
+          "en": "Suspect 6"
+        },
+        "hint": {
+          "es": "Sus datos salen en todas sus páginas con la misma foto.",
+          "en": "Their details appear on all their pages with the same photo."
+        },
+        "nameField": "NOMBRE_6",
+        "photoField": "FOTO_6",
+        "fields": [
+          "NOMBRE_6",
+          "APODO_6",
+          "FOTO_6"
+        ]
+      },
+      "fieldDefs": {
+        "NOMBRE_6": {
+          "type": "name",
+          "required": true,
+          "q": {
+            "es": "Nombre",
+            "en": "Name"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S6 · Nombre",
+            "en": "S6 · Name"
+          }
+        },
+        "APODO_6": {
+          "type": "name",
+          "required": false,
+          "q": {
+            "es": "Alias (opcional)",
+            "en": "Alias (optional)"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S6 · Alias",
+            "en": "S6 · Alias"
+          }
+        },
+        "FOTO_6": {
+          "type": "photo",
+          "required": true,
+          "q": {
+            "es": "Sube su foto",
+            "en": "Upload their photo"
+          },
+          "corta": {
+            "es": "S6 · Foto",
+            "en": "S6 · Photo"
+          }
+        }
+      },
+      "examples": [
+        {
+          "id": "1",
+          "values": {
+            "es": {
+              "NOMBRE_6": "Pol",
+              "APODO_6": "El Chef"
+            },
+            "en": {
+              "NOMBRE_6": "Paul",
+              "APODO_6": "The Chef"
+            }
+          },
+          "photos": {
+            "FOTO_6": "fotos/retrato-6.jpg"
+          }
+        },
+        {
+          "id": "2",
+          "values": {
+            "es": {
+              "NOMBRE_6": "Ruben",
+              "APODO_6": "El Callado"
+            },
+            "en": {
+              "NOMBRE_6": "Rob",
+              "APODO_6": "The Quiet"
+            }
+          },
+          "photos": {
+            "FOTO_6": "fotos/retrato-6.jpg"
+          }
+        },
+        {
+          "id": "3",
+          "values": {
+            "es": {
+              "NOMBRE_6": "Raquel Soler",
+              "APODO_6": "El Cantarín"
+            },
+            "en": {
+              "NOMBRE_6": "Raquel Soler",
+              "APODO_6": "The Joker"
+            }
+          },
+          "photos": {
+            "FOTO_6": "fotos/retrato-6.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sospechoso-7",
+      "version": 1,
+      "name": "Sospechoso 7",
+      "tags": [
+        "formulario",
+        "nombre",
+        "foto",
+        "sospechoso"
+      ],
+      "origin": {
+        "game": "final3",
+        "version": "1.0.0",
+        "section": "s7"
+      },
+      "section": {
+        "id": "s7",
+        "title": {
+          "es": "Sospechoso 7",
+          "en": "Suspect 7"
+        },
+        "hint": {
+          "es": "Sus datos salen en todas sus páginas con la misma foto.",
+          "en": "Their details appear on all their pages with the same photo."
+        },
+        "nameField": "NOMBRE_7",
+        "photoField": "FOTO_7",
+        "fields": [
+          "NOMBRE_7",
+          "APODO_7",
+          "FOTO_7"
+        ]
+      },
+      "fieldDefs": {
+        "NOMBRE_7": {
+          "type": "name",
+          "required": true,
+          "q": {
+            "es": "Nombre",
+            "en": "Name"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S7 · Nombre",
+            "en": "S7 · Name"
+          }
+        },
+        "APODO_7": {
+          "type": "name",
+          "required": false,
+          "q": {
+            "es": "Alias (opcional)",
+            "en": "Alias (optional)"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S7 · Alias",
+            "en": "S7 · Alias"
+          }
+        },
+        "FOTO_7": {
+          "type": "photo",
+          "required": true,
+          "q": {
+            "es": "Sube su foto",
+            "en": "Upload their photo"
+          },
+          "corta": {
+            "es": "S7 · Foto",
+            "en": "S7 · Photo"
+          }
+        }
+      },
+      "examples": [
+        {
+          "id": "1",
+          "values": {
+            "es": {
+              "NOMBRE_7": "Marc",
+              "APODO_7": "El Soñador"
+            },
+            "en": {
+              "NOMBRE_7": "Mark",
+              "APODO_7": "The Dreamer"
+            }
+          },
+          "photos": {
+            "FOTO_7": "fotos/retrato-7.jpg"
+          }
+        },
+        {
+          "id": "2",
+          "values": {
+            "es": {
+              "NOMBRE_7": "Nora",
+              "APODO_7": "La Viajera"
+            },
+            "en": {
+              "NOMBRE_7": "Nora",
+              "APODO_7": "The Wanderer"
+            }
+          },
+          "photos": {
+            "FOTO_7": "fotos/retrato-7.jpg"
+          }
+        },
+        {
+          "id": "3",
+          "values": {
+            "es": {
+              "NOMBRE_7": "Pilar Montes",
+              "APODO_7": "El Madrugón"
+            },
+            "en": {
+              "NOMBRE_7": "Pilar Montes",
+              "APODO_7": "Early Riser"
+            }
+          },
+          "photos": {
+            "FOTO_7": "fotos/retrato-7.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sospechoso-8",
+      "version": 1,
+      "name": "Sospechoso 8",
+      "tags": [
+        "formulario",
+        "nombre",
+        "foto",
+        "sospechoso"
+      ],
+      "origin": {
+        "game": "final3",
+        "version": "1.0.0",
+        "section": "s8"
+      },
+      "section": {
+        "id": "s8",
+        "title": {
+          "es": "Sospechoso 8",
+          "en": "Suspect 8"
+        },
+        "hint": {
+          "es": "Sus datos salen en todas sus páginas con la misma foto.",
+          "en": "Their details appear on all their pages with the same photo."
+        },
+        "nameField": "NOMBRE_8",
+        "photoField": "FOTO_8",
+        "fields": [
+          "NOMBRE_8",
+          "APODO_8",
+          "FOTO_8"
+        ]
+      },
+      "fieldDefs": {
+        "NOMBRE_8": {
+          "type": "name",
+          "required": true,
+          "q": {
+            "es": "Nombre",
+            "en": "Name"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S8 · Nombre",
+            "en": "S8 · Name"
+          }
+        },
+        "APODO_8": {
+          "type": "name",
+          "required": false,
+          "q": {
+            "es": "Alias (opcional)",
+            "en": "Alias (optional)"
+          },
+          "cap": 12,
+          "corta": {
+            "es": "S8 · Alias",
+            "en": "S8 · Alias"
+          }
+        },
+        "FOTO_8": {
+          "type": "photo",
+          "required": true,
+          "q": {
+            "es": "Sube su foto",
+            "en": "Upload their photo"
+          },
+          "corta": {
+            "es": "S8 · Foto",
+            "en": "S8 · Photo"
+          }
+        }
+      },
+      "examples": [
+        {
+          "id": "1",
+          "values": {
+            "es": {
+              "NOMBRE_8": "Clau",
+              "APODO_8": "La Lista"
+            },
+            "en": {
+              "NOMBRE_8": "Clare",
+              "APODO_8": "The Smart"
+            }
+          },
+          "photos": {
+            "FOTO_8": "fotos/retrato-8.jpg"
+          }
+        },
+        {
+          "id": "2",
+          "values": {
+            "es": {
+              "NOMBRE_8": "Eva",
+              "APODO_8": "El Madrugón"
+            },
+            "en": {
+              "NOMBRE_8": "Eve",
+              "APODO_8": "Early Bird"
+            }
+          },
+          "photos": {
+            "FOTO_8": "fotos/retrato-8.jpg"
+          }
+        },
+        {
+          "id": "3",
+          "values": {
+            "es": {
+              "NOMBRE_8": "Elena Soler",
+              "APODO_8": "La Cariñosa"
+            },
+            "en": {
+              "NOMBRE_8": "Elena Soler",
+              "APODO_8": "The Chatty"
+            }
+          },
+          "photos": {
+            "FOTO_8": "fotos/retrato-8.jpg"
+          }
+        }
+      ]
     }
   ]
 }

@@ -98,7 +98,7 @@ async function insertarDeBiblioteca(app, ui, entrada) {
   const puzzles = [];
   for (const c of faltan) {
     if (puzzles.some((z) => (z.derives || []).includes(c))) continue;
-    const z = [...bib.entradas('puzzle')].sort(mismaColeccion).find((x) => (x.derives || []).includes(c) && !(g.puzzles || []).some((y) => y.from === `${x.id}@${x.version}`));
+    const z = [...bib.actuales('puzzle')].sort(mismaColeccion).find((x) => (x.derives || []).includes(c) && !(g.puzzles || []).some((y) => y.from === `${x.id}@${x.version}`));
     if (z) puzzles.push(z);
   }
   const quedan = faltan.filter((c) => !puzzles.some((z) => (z.derives || []).includes(c)));
@@ -106,7 +106,7 @@ async function insertarDeBiblioteca(app, ui, entrada) {
   // Una sección entra si trae alguno de los campos que faltan y ninguno que el juego (o otra sección elegida) ya tenga.
   const secciones = [];
   const cubiertos = new Set();
-  const candidatas = [...bib.entradas('seccion')].filter((s) => !g.form.sections.some((x) => x.id === s.section.id)).sort(mismaColeccion);
+  const candidatas = [...bib.actuales('seccion')].filter((s) => !g.form.sections.some((x) => x.id === s.section.id)).sort(mismaColeccion);
   for (const c of necesarios) {
     if (cubiertos.has(c)) continue;
     const s = candidatas.find((x) => x.fieldDefs[c] && !secciones.includes(x) && !Object.keys(x.fieldDefs).some((k) => cubiertos.has(k) || g.fields[k]));
@@ -195,7 +195,7 @@ function columnaInsertar(app, ui, pagina) {
 
 function insertarImagenes(app, ui, pagina) {
   const bib = app.biblioteca;
-  const piezas = bib.entradas('arte').filter((p) => p.status !== 'reexportar' && (!ui.etiqueta || (p.tags || []).includes(ui.etiqueta)));
+  const piezas = bib.actuales('arte').filter((p) => p.status !== 'reexportar' && (!ui.etiqueta || (p.tags || []).includes(ui.etiqueta)));
   const porColeccion = new Map();
   for (const p of piezas) { if (!porColeccion.has(p.coleccion)) porColeccion.set(p.coleccion, []); porColeccion.get(p.coleccion).push(p); }
   const orden = [...porColeccion.keys()].sort((a, b) => (a === 'subidas' ? -1 : b === 'subidas' ? 1 : a.localeCompare(b)));
@@ -220,7 +220,7 @@ function insertarImagenes(app, ui, pagina) {
 function insertarFondos(app, ui, pagina) {
   if (!pagina) return [];
   const bib = app.biblioteca;
-  const fondos = bib.entradas('arte').filter((p) => p.status !== 'reexportar' && ['fondo', 'papel'].includes(p.category));
+  const fondos = bib.actuales('arte').filter((p) => p.status !== 'reexportar' && ['fondo', 'papel'].includes(p.category));
   const fijar = (fondo, texto) => app.cambiar(texto, (g) => {
     const p = g.pages.find((x) => x.id === pagina.id);
     p.background = fondo;
@@ -261,7 +261,7 @@ function insertarCampos(app, ui, pagina) {
 
 function insertarPaginas(app, ui) {
   const bib = app.biblioteca;
-  const paginas = bib.entradas('pagina');
+  const paginas = bib.actuales('pagina');
   return [
     h('p', { class: 'tenue', style: { fontSize: '13px', margin: 0 } }, 'Páginas guardadas de otros juegos. Se copian después de la página abierta, con su fondo, textos y campos.'),
     paginas.length ? h('div', { class: 'lista-insertar' }, paginas.map((e) => h('button', { type: 'button', 'data-pagina-bib': `${e.id}@${e.version}`, onclick: () => insertarDeBiblioteca(app, ui, e) },

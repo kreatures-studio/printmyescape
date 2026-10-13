@@ -1179,6 +1179,30 @@
           16
         ]
       }
+    },
+    {
+      "id": "dispositivo-tableta-morada",
+      "version": 3,
+      "file": "piezas/dispositivo-tableta-morada-v3.pdf",
+      "thumb": "piezas/dispositivo-tableta-morada-v3.png",
+      "name": "Tableta morada con apps",
+      "category": "dispositivo",
+      "tags": [
+        "misterio",
+        "morado",
+        "pista"
+      ],
+      "widthMm": 148.4,
+      "heightMm": 200.0,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado (p16 corregida por el artista, 13-10-2026)",
+        "pages": [
+          16
+        ]
+      }
     }
   ]
 }
