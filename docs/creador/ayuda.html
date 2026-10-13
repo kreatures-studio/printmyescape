@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ayuda · Creador PrintMyEscape</title>
+<link rel="stylesheet" href="./estilos.css">
+<style>
+  .ayuda { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 40px; max-width: 1180px; margin: 0 auto; padding: 32px 24px 80px; }
+  .indice { position: sticky; top: 76px; align-self: start; display: flex; flex-direction: column; gap: 2px; }
+  .indice a { padding: 7px 10px; border-radius: 8px; color: var(--tinta); text-decoration: none; font-size: 14px; }
+  .indice a:hover { background: var(--hundido); }
+  .indice .grupo { margin: 14px 0 4px; padding: 0 10px; font-size: 12px; font-weight: 600; color: var(--tenue); text-transform: uppercase; letter-spacing: .06em; }
+  .contenido { min-width: 0; display: flex; flex-direction: column; gap: 48px; line-height: 1.6; }
+  .contenido h1 { font-size: 40px; line-height: 1.1; }
+  .contenido h2 { font-size: 28px; margin-bottom: 4px; scroll-margin-top: 80px; }
+  .contenido h3 { font-size: 19px; margin-top: 18px; }
+  .contenido p { margin: 8px 0; max-width: 72ch; }
+  .contenido ul, .contenido ol { margin: 8px 0; padding-left: 22px; max-width: 72ch; }
+  .contenido li { margin: 4px 0; }
+  .contenido code { background: var(--hundido); padding: 1px 6px; border-radius: 5px; font-size: 14px; }
+  .contenido pre { background: var(--tinta); color: #F2F0EB; padding: 14px 16px; border-radius: 10px; overflow-x: auto; font-size: 14px; margin: 10px 0; }
+  .contenido pre code { background: transparent; padding: 0; color: inherit; }
+  .entradilla { font-size: 18px; color: var(--tenue); max-width: 64ch; }
+  figure { margin: 14px 0; }
+  figure img { width: 100%; height: auto; display: block; border-radius: 12px; border: 1px solid var(--borde); box-shadow: 0 10px 30px rgba(27, 36, 32, .10); }
+  figcaption { font-size: 13px; color: var(--tenue); margin-top: 8px; }
+  .pasos { counter-reset: paso; list-style: none; padding: 0 !important; display: flex; flex-direction: column; gap: 12px; }
+  .pasos > li { counter-increment: paso; position: relative; padding: 14px 16px 14px 56px; background: var(--superficie); border: 1px solid var(--borde); border-radius: 12px; margin: 0; }
+  .pasos > li::before { content: counter(paso); position: absolute; left: 16px; top: 14px; width: 26px; height: 26px; border-radius: 50%; background: var(--verde); color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .nota-caja { padding: 14px 16px; border-radius: 12px; background: var(--verde-claro); color: var(--verde-tinta); max-width: 72ch; }
+  .nota-caja.claude { background: var(--morado-claro); color: var(--morado-tinta); }
+  .nota-caja.aviso { background: var(--aviso-fondo); color: var(--aviso-tinta); }
+  .tabla { width: 100%; border-collapse: collapse; font-size: 15px; max-width: 820px; }
+  .tabla th, .tabla td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--borde); vertical-align: top; }
+  .tabla th { font-weight: 600; color: var(--tenue); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+  .pedidos { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin: 12px 0; }
+  .pedidos div { padding: 12px 14px; border-radius: 10px; background: var(--superficie); border: 1px solid var(--morado-borde); color: var(--morado-tinta); font-style: italic; font-size: 15px; }
+  @media (max-width: 900px) {
+    .ayuda { grid-template-columns: 1fr; gap: 20px; padding: 24px 16px 60px; }
+    .indice { position: static; flex-direction: row; flex-wrap: wrap; }
+    .indice .grupo { width: 100%; }
+    .contenido h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+<header class="cabecera">
+  <a class="marca" href="./index.html"><span class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 7a4 4 0 11-3.5 6H8v3H5v-3H3v-3h8.5A4 4 0 0115 7z"/></svg></span><span class="nombre">PrintMyEscape <span>Creador</span></span></a>
+  <nav class="nav" aria-label="Principal"><a href="./index.html">Biblioteca</a><a href="./ayuda.html" aria-current="page">Ayuda</a></nav>
+</header>
+
+<div class="ayuda">
+  <nav class="indice" aria-label="Índice">
+    <span class="grupo">El creador</span>
+    <a href="#entrar">Entrar</a>
+    <a href="#inicio">Tus juegos</a>
+    <a href="#paginas">Diseñar una página</a>
+    <a href="#formulario">El formulario</a>
+    <a href="#puzzles">Puzzles y soluciones</a>
+    <a href="#previa">Vista previa</a>
+    <a href="#revisar">Revisar lo de Claude</a>
+    <a href="#enviar">Enviar al estudio</a>
+    <span class="grupo">Con Claude Code</span>
+    <a href="#claude">Qué hace Claude</a>
+    <a href="#instalar">Prepararlo (una vez)</a>
+    <a href="#pedir">Pedirle cosas</a>
+    <a href="#juntos">Creador y Claude, juntos</a>
+    <span class="grupo">Más</span>
+    <a href="#problemas">Si algo falla</a>
+  </nav>
+
+  <main class="contenido">
+    <section>
+      <h1>Cómo usar el creador</h1>
+      <p class="entradilla">El creador es donde se diseñan los escape rooms imprimibles: las páginas, las preguntas que contesta el comprador y los puzzles. Todo lo que hagas se guarda solo. Claude puede preparar juegos y cambios por ti, y tú los revisas aquí.</p>
+    </section>
+
+    <section id="entrar">
+      <h2>Entrar</h2>
+      <p>Abre el <strong>enlace que te ha dado el estudio</strong>. Entras directamente y el navegador te recuerda: la próxima vez basta con abrir el creador.</p>
+      <ul>
+        <li>Si te pide un <strong>token de acceso</strong>, pega el que te ha dado el estudio y pulsa <strong>Entrar</strong>.</li>
+        <li>Para cerrar la sesión en un ordenador compartido, en la pantalla de inicio pulsa <strong>Salir</strong>.</li>
+        <li>El enlace es personal: no lo reenvíes.</li>
+      </ul>
+    </section>
+
+    <section id="inicio">
+      <h2>Tus juegos</h2>
+      <p>La pantalla de inicio reúne todo:</p>
+      <ul>
+        <li><strong>Para revisar</strong>: los juegos que Claude ha creado o cambiado desde la última vez que los miraste.</li>
+        <li><strong>Tus juegos</strong>: <em>El regalo robado</em> (tu juego original) y <em>Misión Secreta: Operación Cumpleaños</em> (el que preparó Claude) ya están para usarlos como base.</li>
+        <li><strong>Material para reutilizar</strong>: las páginas, preguntas, imágenes y puzzles de la biblioteca, comunes a todos los juegos.</li>
+      </ul>
+      <figure><img src="ayuda/inicio.jpg" alt="Pantalla de inicio del creador con las tres formas de empezar y los juegos para revisar" loading="lazy"><figcaption>Empezar en blanco, duplicar un juego o pedírselo a Claude.</figcaption></figure>
+      <div class="nota-caja"><strong>Consejo:</strong> para hacer un juego nuevo parecido a uno que ya tienes, usa <strong>Duplicar un juego</strong>. Así el original no cambia y trabajas sobre una copia.</div>
+    </section>
+
+    <section id="paginas">
+      <h2>Diseñar una página</h2>
+      <p>En <strong>Páginas</strong> ves la página tal como se imprimirá, con el ejemplo que elijas arriba (corto, normal o largo) y en cada idioma.</p>
+      <figure><img src="ayuda/paginas.jpg" alt="Diseño de una página: lista de páginas, imágenes para insertar, la página y sus propiedades" loading="lazy"><figcaption>A la izquierda las páginas; luego lo que se puede insertar; en el centro la página; a la derecha, las propiedades de lo elegido.</figcaption></figure>
+      <h3>Lo básico</h3>
+      <ul>
+        <li><strong>Elegir</strong>: haz clic en un texto, una imagen o un hueco. Sus propiedades salen a la derecha.</li>
+        <li><strong>Mover</strong>: arrástralo, o usa las flechas del teclado (con Mayúsculas, más rápido). <strong>Tamaño</strong>: arrastra la esquina.</li>
+        <li><strong>Quitar</strong>: tecla Supr, o el botón rojo de las propiedades.</li>
+        <li><strong>Deshacer</strong>: el botón de arriba o Ctrl+Z.</li>
+      </ul>
+      <h3>Añadir</h3>
+      <ul>
+        <li><strong>Texto fijo</strong>: un texto que sale igual en todos los juegos (por ejemplo, un título). Se escribe en cada idioma.</li>
+        <li><strong>Campo</strong>: un hueco donde se imprime lo que escribe el comprador (su nombre, su edad…). <strong>Foto</strong>: el hueco de una foto del comprador.</li>
+        <li><strong>Imagen</strong>: una pieza de la biblioteca. Arrástrala a la página o púlsala para ponerla en el centro.</li>
+        <li><strong>Sube tus imágenes</strong>: PNG, JPG o el PDF del artista, de hasta 5 MB. Se guardan en la biblioteca para todos los juegos. Pide el autor: no se admiten imágenes hechas con inteligencia artificial.</li>
+        <li><strong>Fondo</strong>: un color, un papel de la biblioteca o una página del PDF del artista.</li>
+        <li><strong>Añadir página</strong> (abajo a la izquierda): en blanco, de la biblioteca (trae también las preguntas que necesita), duplicando la abierta o desde un PDF del artista.</li>
+      </ul>
+      <h3>Puzzles en la página</h3>
+      <p>Un puzzle de contenido (un mensaje cifrado, un acertijo) es una caja con sus piezas dentro. Elige el puzzle y pulsa <strong>Editar por dentro</strong> para mover y cambiar sus piezas; <strong>Salir del puzzle</strong> para volver a la página.</p>
+      <div class="nota-caja aviso"><strong>Si algo no se hace</strong>, el creador te dice por qué en un aviso rojo abajo a la derecha (por ejemplo, «un texto no puede salirse de la página»). Así el juego siempre queda bien para imprimir.</div>
+    </section>
+
+    <section id="formulario">
+      <h2>El formulario</h2>
+      <p>En <strong>Formulario</strong> están las preguntas que contesta el comprador, por pasos (secciones). A la derecha ves cómo lo verá él.</p>
+      <figure><img src="ayuda/formulario.jpg" alt="Editor de una pregunta del formulario con la vista del comprador al lado" loading="lazy"><figcaption>Cada pregunta: el texto en cada idioma, el tipo de respuesta, el tope de letras y los ejemplos.</figcaption></figure>
+      <ul>
+        <li><strong>Sección nueva</strong> o <strong>Reutilizar una sección</strong> de la biblioteca (trae sus preguntas con ejemplos).</li>
+        <li><strong>Pregunta nueva</strong>: escribe la pregunta y elige el tipo (texto corto, texto largo, nombre, número, foto, una opción o varias).</li>
+        <li><strong>Tope</strong>: cuántas letras puede escribir el comprador. El creador te dice cuántas caben en cada página donde sale («en la página 2 caben 47 letras») y si el tope entra.</li>
+        <li><strong>Ejemplos</strong>: tres respuestas (corta, normal y larga) para ver las páginas llenas. La larga debe llegar al tope.</li>
+        <li>Una pregunta escrita solo en un idioma no se guarda hasta que esté en todos: el creador te avisa.</li>
+      </ul>
+    </section>
+
+    <section id="puzzles">
+      <h2>Puzzles y soluciones</h2>
+      <p>Cada puzzle tiene su ficha: nombre, dificultad, edad mínima, minutos, la <strong>solución</strong> y las <strong>pistas</strong>, en cada idioma. La solución y las pistas son para quien dirige el juego y para el estudio.</p>
+      <figure><img src="ayuda/puzzles.jpg" alt="Ficha de un puzzle con su solución y pistas" loading="lazy"></figure>
+      <ul>
+        <li><strong>Del catálogo</strong>: puzzles que usan los datos del comprador (casillas, tiras recortables, runas…). Se añaden en una página nueva.</li>
+        <li><strong>Puzzle de contenido nuevo</strong>: un acertijo que no depende del comprador. Se crea con su enunciado y luego se completa en la página.</li>
+      </ul>
+    </section>
+
+    <section id="previa">
+      <h2>Vista previa</h2>
+      <p>El juego entero, página a página, como saldrá impreso. Arriba eliges el idioma y el ejemplo. <strong>Descargar el PDF</strong> te da el juego de prueba (con la marca «VISTA PREVIA»).</p>
+      <figure><img src="ayuda/previa.jpg" alt="Vista previa del juego entero" loading="lazy"></figure>
+      <p>Si hay algo que corregir, sale arriba con un enlace a su página. Marca <strong>Comprobar como para enviar al estudio</strong> para ver lo que faltaría antes de enviarlo.</p>
+    </section>
+
+    <section id="revisar">
+      <h2>Revisar lo que hizo Claude</h2>
+      <p>Cuando Claude crea o cambia un juego, en <strong>Revisar</strong> ves qué hizo, parte por parte.</p>
+      <figure><img src="ayuda/revisar.jpg" alt="Pantalla de revisión con los cambios de Claude, una sugerencia y la nota para Claude" loading="lazy"></figure>
+      <ul>
+        <li><strong>Marcar como revisada</strong> cada página, el formulario, los ejemplos y los puzzles. Pasa sola a la siguiente.</li>
+        <li><strong>Sugerido por Claude</strong>: algo que Claude añadió sin que se lo pidieras, con el porqué. <strong>Aceptar</strong> lo deja; <strong>Descartar</strong> lo quita.</li>
+        <li><strong>A presupuestar</strong>: lo que pediste y no se puede hacer con lo que hay (una mecánica nueva, un dibujo que encargar). Lo valora el estudio.</li>
+        <li><strong>Nota para Claude</strong>: escribe lo que quieres cambiar. Claude la lee la próxima vez que trabaje en el juego y te dice qué hizo.</li>
+        <li>Puedes cambiar tú mismo cualquier cosa con <strong>Editar la página</strong>.</li>
+      </ul>
+    </section>
+
+    <section id="enviar">
+      <h2>Enviar al estudio</h2>
+      <p>Cuando el juego esté listo, pulsa <strong>Enviar al estudio</strong> (arriba a la derecha). El creador comprueba que no falte nada: si falta algo, te lleva a la vista previa con la lista. El estudio recibe el juego para revisarlo y prepararlo; mientras tanto, ya no se edita aquí.</p>
+    </section>
+
+    <section id="claude">
+      <h2>Qué hace Claude</h2>
+      <p>Claude Code es un asistente que trabaja directamente sobre vuestro repositorio de juegos, con las mismas piezas y reglas que el creador. Le describes lo que quieres y él:</p>
+      <ul>
+        <li>crea un juego desde cero o a partir de otro, con la biblioteca: páginas, preguntas, ejemplos y puzzles;</li>
+        <li>propone la historia y los puzzles <strong>antes</strong> de maquetar, y espera tu visto bueno;</li>
+        <li>atiende las notas que le dejas en Revisar;</li>
+        <li>comprueba el juego y mira cada página antes de dártelo.</li>
+      </ul>
+      <div class="nota-caja claude">Claude no dibuja: el arte es de los artistas. Si falta una pieza, lo dice y deja el encargo para el artista.</div>
+    </section>
+
+    <section id="instalar">
+      <h2>Prepararlo (una vez)</h2>
+      <p>Hace falta una suscripción de Claude (Pro, Max, Team o Enterprise) y acceso al repositorio <code>kreatures-studio/printmyescape-juegos</code> en GitHub.</p>
+      <ol class="pasos">
+        <li><strong>Instala Claude Code.</strong> Lo más sencillo es la aplicación de escritorio de Claude (<a href="https://claude.ai/api/desktop/win32/x64/setup/latest/redirect" rel="noopener">Windows</a> · <a href="https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect" rel="noopener">Mac</a>): entra con tu cuenta y abre la pestaña <strong>Code</strong>. Si prefieres el terminal, en Windows abre PowerShell y escribe:
+          <pre><code>irm https://claude.ai/install.ps1 | iex</code></pre>
+          En Mac: <code>curl -fsSL https://claude.ai/install.sh | bash</code>. Más opciones en la <a href="https://code.claude.com/docs/en/overview" rel="noopener">documentación de Claude Code</a>.</li>
+        <li><strong>Instala Git y Node.js</strong> si no los tienes: <a href="https://git-scm.com/downloads/win" rel="noopener">Git para Windows</a> y <a href="https://nodejs.org/" rel="noopener">Node.js</a> (la versión LTS). Claude los usa para guardar los juegos y para sus herramientas.</li>
+        <li><strong>Descarga el repositorio de juegos</strong> en tu ordenador:
+          <pre><code>git clone https://github.com/kreatures-studio/printmyescape-juegos.git</code></pre>
+          La primera vez, Git te pide entrar en GitHub: hazlo con la cuenta que tiene acceso. (Con GitHub Desktop: <em>File → Clone repository</em>.)</li>
+        <li><strong>Instala las herramientas del juego</strong>, dentro de la carpeta descargada:
+          <pre><code>cd printmyescape-juegos
+npm install --prefix .pme</code></pre></li>
+        <li><strong>Abre Claude Code en esa carpeta.</strong> En la aplicación de escritorio, elige la carpeta <code>printmyescape-juegos</code>; en el terminal, escribe <code>claude</code> dentro de ella. La primera vez pregunta si confías en la carpeta y si activa el servidor <strong>printmyescape</strong>: acepta las dos cosas. Para comprobarlo, escribe <code>/mcp</code>: debe salir <em>printmyescape</em> conectado.</li>
+      </ol>
+    </section>
+
+    <section id="pedir">
+      <h2>Pedirle cosas</h2>
+      <p>Escríbele como se lo dirías a una persona del estudio. Por ejemplo:</p>
+      <div class="pedidos">
+        <div>Crea un escape room de 6 páginas sobre una misión secreta de cumpleaños, para niños de 9 a 12 años, en español e inglés.</div>
+        <div>Duplica «El regalo robado» como «El regalo robado · boda» y adapta los textos a una boda.</div>
+        <div>Atiende las notas de revisión de «Misión Secreta».</div>
+        <div>En la página 3 de «El regalo robado», pon el título más grande y en rojo.</div>
+      </div>
+      <p>Claude te enseña primero la estructura (historia, puzzles y qué datos pide al comprador) y no maqueta hasta que le digas que sí. Al terminar deja un resumen de lo que hizo y sube el juego.</p>
+    </section>
+
+    <section id="juntos">
+      <h2>Creador y Claude, juntos</h2>
+      <table class="tabla">
+        <thead><tr><th>Cuando…</th><th>…en el creador</th></tr></thead>
+        <tbody>
+          <tr><td>Claude crea un juego</td><td>Aparece en <strong>Para revisar</strong> y en <strong>Tus juegos</strong>.</td></tr>
+          <tr><td>Claude cambia un juego que tienes abierto</td><td>Sale el botón <strong>Hay cambios nuevos: recargar</strong>. Nada de lo tuyo se pierde sin avisar.</td></tr>
+          <tr><td>Le dejas una nota en Revisar</td><td>Claude la lee la próxima vez (pídele «atiende las notas de…») y la marca como hecha.</td></tr>
+          <tr><td>Cambias algo en el creador</td><td>Claude trabaja siempre sobre la última versión guardada.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="problemas">
+      <h2>Si algo falla</h2>
+      <ul>
+        <li><strong>«GitHub no acepta ese token»</strong>: el token ha caducado o se copió mal. Pide al estudio un enlace nuevo.</li>
+        <li><strong>«No se pudo leer el repositorio»</strong>: comprueba tu conexión y vuelve a intentarlo. Si sigue, avisa al estudio.</li>
+        <li><strong>«Hay una versión más nueva del juego»</strong>: alguien (o Claude) guardó a la vez. Pulsa <strong>recargar</strong>; si te faltan cambios tuyos, vuelve a hacerlos.</li>
+        <li><strong>Claude no ve el servidor printmyescape</strong>: escribe <code>/mcp</code>; si sale pendiente de aprobar, acéptalo. Si dice que faltan herramientas, repite <code>npm install --prefix .pme</code> en la carpeta del repositorio.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+</body>
+</html>

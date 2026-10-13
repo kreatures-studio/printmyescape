@@ -3,7 +3,7 @@
 
 Construye docs/creador/ (tools/build-creator.py) y sirve docs/ con creator/serve.mjs --raiz docs. Comprueba:
   - lo publicado no lleva la biblioteca (es del repositorio privado) ni fotos ni PDF de artista;
-  - sin token se pide la entrada, y la guía del token se abre con el enlace al formulario de GitHub ya relleno;
+  - sin token se pide la entrada, y la ayuda (creador y Claude Code) se abre con sus capturas;
   - con GitHub (API simulada, la de creator-github.py) el creador publicado compone una página con el arte de la
     biblioteca de main: motor, mecánicas, reglas y fuentes llegan por sus rutas publicadas;
   - en modo demostración (memoria, sin biblioteca) lista los dos juegos y el antiguo avisa de que falta el PDF del
@@ -53,7 +53,7 @@ def main():
     if r.returncode:
         return 1
     publicados = [os.path.relpath(os.path.join(d, n), os.path.join(ROOT, 'docs', 'creador')) for d, _, ns in os.walk(os.path.join(ROOT, 'docs', 'creador')) for n in ns]
-    privados = [x for x in publicados if x.startswith('biblioteca/') or '/fotos/' in x or x.endswith('.pdf') or x.endswith('.jpg')]
+    privados = [x for x in publicados if not x.startswith('ayuda/') and (x.startswith('biblioteca/') or '/fotos/' in x or x.endswith('.pdf') or x.endswith('.jpg'))]
     rec('lo publicado no lleva biblioteca, fotos ni PDF', not privados, str(privados[:5]))
     gh_mod = simulador()
     port = puerto_libre()
@@ -79,14 +79,14 @@ def main():
             page.wait_for_selector('.entrada-caja')
             rec('sin token: pide la entrada', page.is_visible('#token'))
             with page.context.expect_page() as nueva:
-                page.click('a:has-text("Guía paso a paso")')
-            guia = nueva.value
-            guia.wait_for_load_state()
-            guia.fill('#propietario', 'kreatures-studio')
-            enlace = guia.get_attribute('#ir', 'href')
-            rec('guía del token: enlace al formulario de GitHub con permisos y propietario', enlace.startswith('https://github.com/settings/personal-access-tokens/new?')
-                and 'contents=write' in enlace and 'pull_requests=write' in enlace and 'target_name=kreatures-studio' in enlace, enlace[:140])
-            guia.close()
+                page.click('a:has-text("Cómo usar el creador")')
+            ayuda = nueva.value
+            ayuda.wait_for_load_state()
+            ayuda.evaluate("Promise.all([...document.images].map(i => (i.loading = 'eager', i.complete ? 1 : new Promise(r => { i.onload = i.onerror = r; }))))")
+            rotas = ayuda.evaluate("[...document.images].filter(i => !i.naturalWidth).map(i => i.getAttribute('src'))")
+            rec('ayuda: se abre desde la entrada, con sus capturas y la parte de Claude Code', 'Cómo usar el creador' in ayuda.inner_text('h1')
+                and ayuda.locator('#instalar').count() == 1 and ayuda.locator('img').count() >= 6 and not rotas, str(rotas))
+            ayuda.close()
 
             page.click('summary:has-text("Otro repositorio")')
 

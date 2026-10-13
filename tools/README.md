@@ -164,7 +164,7 @@ fuente sale con huecos en blanco, probar `subset: false` para ella.
 - Publicar: `python3 tools/build-creator.py` regenera `docs/creador/` (creador, vistas, motor, mecánicas, reglas,
   fuentes y los dos game.json de muestra; sin biblioteca, fotos ni PDF del artista). Reescribe las rutas que salen de
   `creator/` y falla si una ruta publicada no lleva a nada o si se fuera a publicar algo de `biblioteca/`.
-- Token: `creator/guia-token.html` (token de grano fino, Contents y Pull requests de lectura y escritura).
+- Ayuda para el cliente: `creator/ayuda.html` (usar el creador y conectarlo con Claude Code; capturas en `creator/ayuda/`). Se entra con el enlace del estudio (`…/creador/#token=…`).
 
 ## Biblioteca de arte (creador v2, ver PLAN-CREADOR-2.md)
 

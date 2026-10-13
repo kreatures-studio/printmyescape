@@ -244,7 +244,7 @@ function pintarCabecera() {
     poner(cab, marca(),
       h('nav', { class: 'nav', 'aria-label': 'Principal' },
         h('a', { href: '#/', 'aria-current': app.ruta.vista === 'inicio' ? 'page' : null }, 'Biblioteca'),
-        h('a', { href: './guia-token.html', target: '_blank', rel: 'noopener' }, 'Ayuda')),
+        h('a', { href: './ayuda.html', target: '_blank', rel: 'noopener' }, 'Ayuda')),
       h('div', { class: 'relleno' }),
       h('span', { class: 'repo-chip' }, app.almacen.tipo === 'memoria' ? 'Demostración (sin guardar en GitHub)' : `Repositorio ${leerSesion(CLAVE_REPO) || PARAMS.get('repo') || REPO_POR_DEFECTO}`),
       app.almacen.tipo === 'github' ? h('button', { class: 'boton pequeno', type: 'button', onclick: salir }, 'Salir') : null);
@@ -266,7 +266,8 @@ function pintarCabecera() {
     app.novedades ? h('button', { class: 'boton contorno-claude', type: 'button', onclick: () => app.recargar() }, 'Hay cambios nuevos: recargar') : null,
     app.validacion.errores.length ? h('a', { class: 'pastilla error', href: app.rutaJuego('previa') }, `${app.validacion.errores.length} errores`) : null,
     !app.soloLectura ? h('button', { class: 'boton', type: 'button', disabled: !app.pila.length, onclick: () => app.deshacer(), title: 'Deshacer (Ctrl+Z)' }, icono('deshacer', { tam: 18 }), 'Deshacer') : null,
-    !app.soloLectura ? h('button', { class: 'boton primario', type: 'button', onclick: enviarAlEstudio }, 'Enviar al estudio') : null);
+    !app.soloLectura ? h('button', { class: 'boton primario', type: 'button', onclick: enviarAlEstudio }, 'Enviar al estudio') : null,
+    h('a', { class: 'boton-icono', href: './ayuda.html', target: '_blank', rel: 'noopener', 'aria-label': 'Ayuda', title: 'Ayuda', style: { fontWeight: 700, textDecoration: 'none', color: 'var(--tinta)' } }, '?'));
 }
 
 function marca() {
@@ -336,7 +337,7 @@ function pintarEntrada(mensaje = '') {
     h('p', { class: 'tenue' }, 'Pega el token de acceso que te ha dado el estudio. Este navegador lo recuerda: no hará falta volver a ponerlo hasta que pulses «Salir».'),
     mensaje ? h('div', { class: 'mensaje error', role: 'alert' }, mensaje) : null,
     h('div', { class: 'campo' }, h('label', { for: 'token' }, 'Token de acceso'), token,
-      h('span', { class: 'ayuda' }, '¿No tienes token? ', h('a', { href: './guia-token.html', target: '_blank', rel: 'noopener' }, 'Guía paso a paso para crearlo'), '.')),
+      h('span', { class: 'ayuda' }, '¿No lo tienes? Pídeselo al estudio. ', h('a', { href: './ayuda.html', target: '_blank', rel: 'noopener' }, 'Cómo usar el creador'), '.')),
     h('details', {}, h('summary', { class: 'tenue', style: { cursor: 'pointer' } }, 'Otro repositorio'),
       h('div', { class: 'campo', style: { marginTop: '8px' } }, h('label', { for: 'repo' }, 'Repositorio (propietario/nombre)'), repo)),
     h('button', { class: 'boton primario', type: 'submit' }, 'Entrar')));

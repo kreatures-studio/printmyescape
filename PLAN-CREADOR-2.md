@@ -258,7 +258,7 @@ Sigue la maqueta aprobada («Creador de juegos PrintMyEscape»: inicio, página,
   puzzles) con su vista previa, marcar como revisada (`review.items`), cambios vistos (`review.changes`, el contador
   de la cabecera) y notas para Claude (`notes`, que lee `read_notes`). Vista previa del juego entero con errores y
   avisos enlazados a su página y descarga del PDF.
-- **F4.5 Guía del token (hecho).** `creator/guia-token.html`: token de grano fino solo para el repositorio de juegos,
+- **F4.5 Guía del token (hecho; sustituida el 13-10 por `creator/ayuda.html`, cómo usar el creador y Claude Code, y por el enlace del estudio con el token).** Antes `creator/guia-token.html`: token de grano fino solo para el repositorio de juegos,
   Contents y Pull requests de lectura y escritura, con el enlace al formulario de GitHub ya relleno. El token vive en
   sessionStorage y solo va en la cabecera Authorization; si caduca, el creador vuelve a pedirlo.
 - **Publicación.** `tools/build-creator.py` copia también las vistas y las fuentes del registro, reescribe las rutas

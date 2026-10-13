@@ -92,11 +92,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .marca .nombre { font-family: var(--titular); font-weight: 700; font-size: 18px; }
 .marca .nombre span { font-weight: 600; color: var(--tenue); }
 .nav { display: flex; gap: 2px; flex-wrap: wrap; }
-.nav a { padding: 8px 14px; border-radius: 8px; color: var(--tinta); text-decoration: none; display: inline-flex; gap: 6px; align-items: center; }
+.nav a { padding: 8px 11px; border-radius: 8px; color: var(--tinta); text-decoration: none; display: inline-flex; gap: 6px; align-items: center; }
 .nav a[aria-current="page"] { background: var(--verde-claro); color: var(--verde); font-weight: 600; }
 .nav a.revisar[aria-current="page"] { background: var(--morado-claro); color: var(--morado-tinta); }
-.juego-titulo { display: flex; flex-direction: column; }
-.juego-titulo .nombre { font-family: var(--titular); font-weight: 700; font-size: 17px; }
+.juego-titulo { display: flex; flex-direction: column; min-width: 0; }
+.juego-titulo .nombre { font-family: var(--titular); font-weight: 700; font-size: 17px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .juego-titulo .estado { color: var(--tenue); font-size: 13px; }
 .relleno { flex: 1 1 40px; }
 .repo-chip { font-size: 13px; color: var(--tenue); padding: 6px 10px; border: 1px solid var(--borde); border-radius: 999px; background: var(--superficie-2); }
