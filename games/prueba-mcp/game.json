@@ -1,0 +1,50 @@
+{
+  "schema": "pme-game/1",
+  "id": "prueba-mcp",
+  "version": "0.1.0",
+  "status": "borrador",
+  "name": {
+    "es": "Prueba MCP",
+    "en": "Prueba MCP"
+  },
+  "languages": [
+    "es",
+    "en"
+  ],
+  "background": {
+    "kind": "layers"
+  },
+  "template": {
+    "id": "prueba-mcp",
+    "version": 1,
+    "name": "Prueba MCP",
+    "pageSize": "A4",
+    "fields": [],
+    "pages": [
+      {
+        "id": "p1",
+        "title": "Página 1",
+        "slots": [],
+        "layers": []
+      },
+      {
+        "id": "p2",
+        "title": "Página 2",
+        "slots": [],
+        "layers": []
+      }
+    ]
+  },
+  "texts": [],
+  "i18n": {
+    "es": {},
+    "en": {}
+  },
+  "fields": {},
+  "form": {
+    "sections": []
+  },
+  "mechanics": [],
+  "examples": [],
+  "solutions": []
+}

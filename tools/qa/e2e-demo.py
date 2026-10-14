@@ -283,9 +283,10 @@ with sync_playwright() as p:
 
     # ---------- F. límites de caracteres ----------
     b, pg, errs = open_demo(p)
-    lim = pg.evaluate("() => ({NOMBRE_CUMPLE: LIMITS.NOMBRE_CUMPLE, NOMBRE_1: LIMITS['NOMBRE_1'], NOMBRE_4_2: LIMITS['NOMBRE_4.2'], APODO_1: LIMITS.APODO_1, APODO_8: LIMITS.APODO_8, B_INFO: LIMITS.B_INFO})")
-    nombres = {k: v for k, v in lim.items() if k != 'B_INFO'}
-    rec('F1 límite de nombres y apodos = 12 (política)', all(v == 12 for v in nombres.values()) and lim['B_INFO'] == 200,
+    lim = pg.evaluate("() => ({NOMBRE_CUMPLE: LIMITS.NOMBRE_CUMPLE, NOMBRE_1: LIMITS['NOMBRE_1'], NOMBRE_4_2: LIMITS['NOMBRE_4.2'], APODO_1: LIMITS.APODO_1, APODO_8: LIMITS.APODO_8, B_INFO: LIMITS.B_INFO, B_NOTES: LIMITS.B_NOTES})")
+    nombres = {k: v for k, v in lim.items() if k not in ('B_INFO', 'B_NOTES')}
+    # notas e información importante: 180, el mismo límite y lo que de verdad cabe en sus huecos
+    rec('F1 límite de nombres y apodos = 12 (política)', all(v == 12 for v in nombres.values()) and lim['B_INFO'] == lim['B_NOTES'] == 180,
         json.dumps(lim))
     b.close()
 

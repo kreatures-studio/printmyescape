@@ -20,6 +20,8 @@ import base64, hashlib, io, json, os, re, socket, subprocess, sys, time, urllib.
 from playwright.sync_api import sync_playwright
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+# Piezas de arte de la colección (la última versión de cada una): lo que el inicio cuenta como material.
+PIEZAS = len({p['id'] for p in __import__('json').load(open(os.path.join(ROOT, 'biblioteca', 'arte', 'el-regalo-robado', 'manifest.json'), encoding='utf-8'))['pieces']})
 REPO = 'kreatures-studio/juegos-prueba'
 OWNER, NOMBRE = REPO.split('/')
 TOKEN = 'github_pat_prueba'
@@ -203,7 +205,7 @@ def main():
             page.click('.entrada-caja button[type=submit]')
             page.wait_for_selector(f'.tarjeta-juego[data-juego={F3}]')
             rec('inicio: los juegos son las ramas juego/*', page.locator('.tarjeta-juego').count() == 1)
-            rec('inicio: la biblioteca se lee de main', '43 piezas' in page.inner_text('.material'))
+            rec('inicio: la biblioteca se lee de main', f'{PIEZAS} piezas' in page.inner_text('.material'), page.inner_text('.material')[:120])
             rec('el token se recuerda en este navegador (localStorage)', page.evaluate("localStorage.getItem('pme-token')") == TOKEN)
             rec('el token solo va en Authorization', all(x['auth'] == f'Bearer {TOKEN}' for x in gh.peticiones) and not any(TOKEN in x['url'] for x in gh.peticiones) and TOKEN not in page.url)
 

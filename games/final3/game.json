@@ -973,7 +973,7 @@
       "field": "FAMA",
       "x": 42.06,
       "y": 19.29,
-      "w": 8.09,
+      "w": 27.5,
       "h": 2.36,
       "size": 2.02,
       "color": "#1D1D1B",
@@ -985,7 +985,7 @@
       "field": "DEBILIDAD_TEXTO",
       "x": 42.06,
       "y": 23.68,
-      "w": 27.94,
+      "w": 27.5,
       "h": 2.36,
       "size": 2.02,
       "color": "#1D1D1B",
@@ -997,7 +997,7 @@
       "field": "TALENTO",
       "x": 42.16,
       "y": 27.85,
-      "w": 12.13,
+      "w": 27.5,
       "h": 2.36,
       "size": 2.02,
       "color": "#1D1D1B",
@@ -1009,7 +1009,7 @@
       "field": "SOSPECHA",
       "x": 42.37,
       "y": 32.54,
-      "w": 13.89,
+      "w": 27.5,
       "h": 2.36,
       "size": 2.02,
       "color": "#1D1D1B",
@@ -5786,7 +5786,7 @@
     "es": "¿Por qué se le conoce?",
     "en": "What are they known for?"
    },
-   "cap": 24,
+   "cap": 33,
    "ej": {
     "es": "Por comer hamburguesas, por pillarse un pedo monumental cada vez que sale de fiesta…",
     "en": "For eating burgers, for getting wasted every time they go out…"
@@ -5803,7 +5803,7 @@
     "es": "Su mayor debilidad es",
     "en": "Their biggest weakness is"
    },
-   "cap": 38,
+   "cap": 33,
    "corta": {
     "es": "El cumpleañero · DEBILIDAD_TEXTO",
     "en": "The birthday person · DEBILIDAD_TEXTO"
@@ -5865,7 +5865,7 @@
     "es": "Su mayor talento es",
     "en": "Their greatest talent is"
    },
-   "cap": 15,
+   "cap": 33,
    "corta": {
     "es": "El cumpleañero · Talento",
     "en": "The birthday person · Talent"
@@ -5878,7 +5878,7 @@
     "es": "Si fuera sospechoso de algo, ¿de qué sería?",
     "en": "If they were a suspect, what would they be suspected of?"
    },
-   "cap": 17,
+   "cap": 33,
    "corta": {
     "es": "El cumpleañero · Sospecha",
     "en": "The birthday person · Suspicion"
@@ -5917,7 +5917,7 @@
     "es": "Información que sus amigos y familiares consideran importante sobre esta persona",
     "en": "Information that their friends and family consider important about this person"
    },
-   "cap": 200,
+   "cap": 180,
    "corta": {
     "es": "El cumpleañero · Info",
     "en": "The birthday person · Info"
@@ -5930,7 +5930,7 @@
     "es": "Notas y observaciones",
     "en": "Notes and observations"
    },
-   "cap": 200,
+   "cap": 180,
    "corta": {
     "es": "El cumpleañero · Notas",
     "en": "The birthday person · Notes"
@@ -6472,7 +6472,7 @@
     "es": "Imagina ahora el resultado que le darían, como si le estuviesen dando la noticia.",
     "en": "Now imagine the result they would be given, as if someone were breaking the news to them."
    },
-   "cap": 180,
+   "cap": 138,
    "desc": {
     "es": "Ejemplo: \"Su colección de monedas de Pokémon no se acepta en este club; consideramos que su uso del triángulo es de nivel muy básico, creemos que su capacidad granjera es nefasta para el programa\".",
     "en": "Example: \"Their Pokémon coin collection is not accepted in this club; we consider their use of the triangle very basic, and we believe their farming skills are dreadful for the programme.\""
@@ -6600,7 +6600,7 @@
     "es": "El nombre de una persona a la que le escribiría una postal",
     "en": "The name of a person they would send a postcard to"
    },
-   "cap": 28,
+   "cap": 27,
    "desc": {
     "es": "Real, dibujo animado, actor…",
     "en": "Real, cartoon, actor…"
@@ -6643,7 +6643,7 @@
     "es": "Una afición secreta que le daría vergüenza admitir",
     "en": "A secret hobby they would be embarrassed to admit"
    },
-   "cap": 50,
+   "cap": 47,
    "desc": {
     "es": "Ej.: cazar orcos, dormir en la calle…",
     "en": "E.g.: hunting orcs, sleeping rough…"
@@ -6660,7 +6660,7 @@
     "es": "Otra afición que le daría vergüenza admitir",
     "en": "Another hobby they would be embarrassed to admit"
    },
-   "cap": 50,
+   "cap": 47,
    "corta": {
     "es": "Sospechoso 7 · Afición 2",
     "en": "Suspect 7 · Hobby 2"
@@ -7362,7 +7362,7 @@
      "TALENTO": "Hacer malabares",
      "SOSPECHA": "Robo de las velas",
      "TEST_LUGAR": "Club de monedas antiguas",
-     "TEST_RESULTADO": "Su capacidad granjera es nefasta para el programa y su uso del triángulo es de nivel muy básico. Le aconsejamos seguir buscando esposa por otros medios, quizá en la tuna.",
+     "TEST_RESULTADO": "Su capacidad granjera es nefasta para el programa y su uso del triángulo es de nivel muy básico. Le aconsejamos seguir buscando esposa.",
      "NOMBRE_4.2": "Pedro Alonso",
      "MENSAJE_PERSONALIZADO": "Mañana a las nueve en la plaza, no faltes.",
      "BUSQUEDA_1": "magia-facil.es",
@@ -7394,8 +7394,8 @@
      "EDAD": "71",
      "DEBILIDAD": "Llegar tarde||Robar comida ajena||Otro: Roncar como un tractor en las siestas!!!",
      "OTRO": "Roncar como un tractor en las siestas!!!",
-     "B_INFO": "Le encanta cocinar para toda la familia los domingos, pero si le pides una receta siempre cambia algún ingrediente en secreto para que nadie la copie. Dice que es su toque personal. Nunca lo cuenta.",
-     "B_NOTES": "Tiene alergia a los frutos secos y no soporta el ruido de las bolsas de patatas. Pide siempre bizcocho de limón con mucha canela, y se pone nervioso con las sorpresas de última hora. Le gusta avisar.",
+     "B_INFO": "Le encanta cocinar para toda la familia los domingos, pero si le pides una receta siempre cambia algún ingrediente en secreto para que nadie la copie. Es su toque personal.",
+     "B_NOTES": "Tiene alergia a los frutos secos y no soporta el ruido de las bolsas de patatas. Pide siempre bizcocho de limón con mucha canela, y se pone nervioso con las sorpresas.",
      "APODO_1": "La Presumida",
      "APODO_2": "La Discreta",
      "S2_SECRET_LOVE": "Marta Lozano Bermúdez de la Peña Villalba Ortega Gómez Ruiz Pérez",
@@ -7425,7 +7425,7 @@
      "TALENTO": "Juggling clubs",
      "SOSPECHA": "Stealing the cake",
      "TEST_LUGAR": "Old coin club",
-     "TEST_RESULTADO": "Their farming skills are dreadful for the programme and their use of the triangle is very basic. We advise them to keep looking for a wife somewhere else, maybe in the band.",
+     "TEST_RESULTADO": "Their farming skills are dreadful for the programme and their use of the triangle is very basic. We advise them to find a wife elsewhere.",
      "NOMBRE_4.2": "Pedro Alonso",
      "MENSAJE_PERSONALIZADO": "Tomorrow at 9 in the square. Be on time.",
      "BUSQUEDA_1": "magic-shop.net",
@@ -7457,8 +7457,8 @@
      "EDAD": "71",
      "DEBILIDAD": "Being late||Stealing food from others||Other: Snoring like a tractor at naps!!!",
      "OTRO": "Snoring like a tractor at naps!!!",
-     "B_INFO": "Loves cooking for the whole family on Sundays, but if you ask for a recipe he always changes one ingredient in secret so nobody can copy it. He says that is his personal touch. Nobody knows how.",
-     "B_NOTES": "Allergic to nuts and cannot stand the noise of crisp packets. Always asks for lemon sponge with plenty of cinnamon, and gets nervous about last-minute surprises. He hates surprise parties too.",
+     "B_INFO": "Loves cooking for the whole family on Sundays, but if you ask for a recipe he always changes one ingredient in secret so nobody can copy it. He says that is his personal touch.",
+     "B_NOTES": "Allergic to nuts and cannot stand the noise of crisp packets. Always asks for lemon sponge with plenty of cinnamon, and gets nervous about last-minute surprises.",
      "APODO_1": "The Nosy One",
      "APODO_2": "The Dreamer",
      "APODO_3": "Miss Nosy",

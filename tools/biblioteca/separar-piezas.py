@@ -9,6 +9,7 @@ hoja), salen juntas. Aquí cada pieza se elige a mano con rectángulos de la pá
   fuera      trazos de otras piezas que están encima (cada trazo que cabe en uno de estos rectángulos se quita);
   sin_color  colores de relleno que no son de la pieza (p. ej. el texto cifrado dibujado sobre la nota);
   bloques    opcional: solo trazos de estos grupos del artista (índices de bloques de nivel 1, ver --bloques);
+  seqnos     opcional: solo estos trazos (números de orden de dibujo de get_drawings, o tramos [desde, hasta]);
   con_fondo  admite trazos muy grandes (más del 60 % de la página), que de otro modo se toman por el fondo.
 
 Uso:
@@ -76,6 +77,11 @@ def separar(page, p):
     bloques = bloques_de(page)
     elegidos = range(len(bloques)) if p.get('bloques') is None else p['bloques']
     trazos = [x for k in elegidos for x in bloques[k]]
+    if p.get('seqnos') is not None:
+        sel = set()
+        for v in p['seqnos']:
+            sel.update(range(v[0], v[1] + 1) if isinstance(v, list) else [v])
+        trazos = [x for x in trazos if x['seqno'] in sel]
     arte, guias, imagenes = [], [], []
     # Imágenes y degradados, en el orden de dibujo. Un degradado da una caja infinita en el registro: su caja visible
     # es la de get_image_info, que los lista en el mismo orden.

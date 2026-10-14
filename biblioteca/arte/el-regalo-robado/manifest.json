@@ -1203,6 +1203,343 @@
           16
         ]
       }
+    },
+    {
+      "id": "papel-sobre-correo-aereo",
+      "version": 1,
+      "file": "piezas/papel-sobre-correo-aereo-v1.pdf",
+      "thumb": "piezas/papel-sobre-correo-aereo-v1.png",
+      "name": "Sobre de correo aéreo",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "sobre",
+        "carta"
+      ],
+      "widthMm": 255.0,
+      "heightMm": 218.6,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "papel-hoja-kraft-carta",
+      "version": 1,
+      "file": "piezas/papel-hoja-kraft-carta-v1.pdf",
+      "thumb": "piezas/papel-hoja-kraft-carta-v1.png",
+      "name": "Hoja kraft de carta",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-largo"
+      ],
+      "widthMm": 186.1,
+      "heightMm": 236.2,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "puzzle-plano-casa-cuadricula",
+      "version": 2,
+      "file": "piezas/puzzle-plano-casa-cuadricula-v2.pdf",
+      "thumb": "piezas/puzzle-plano-casa-cuadricula-v2.png",
+      "name": "Plano de la casa con cuadrícula",
+      "category": "puzzle",
+      "tags": [
+        "misterio",
+        "plano",
+        "cuadricula"
+      ],
+      "widthMm": 197.2,
+      "heightMm": 170.8,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          3
+        ]
+      }
+    },
+    {
+      "id": "decoracion-lineas-cuaderno-verde",
+      "version": 1,
+      "file": "piezas/decoracion-lineas-cuaderno-verde-v1.pdf",
+      "thumb": "piezas/decoracion-lineas-cuaderno-verde-v1.png",
+      "name": "Líneas de cuaderno verdes",
+      "category": "decoracion",
+      "tags": [
+        "verde",
+        "lineas",
+        "texto-largo"
+      ],
+      "widthMm": 51.0,
+      "heightMm": 190.2,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          4
+        ]
+      }
+    },
+    {
+      "id": "ilustracion-perros-jugando-cartas",
+      "version": 2,
+      "file": "piezas/ilustracion-perros-jugando-cartas-v2.pdf",
+      "thumb": "piezas/ilustracion-perros-jugando-cartas-v2.png",
+      "name": "Perros jugando a las cartas",
+      "category": "ilustracion",
+      "tags": [
+        "cuadro",
+        "perros",
+        "pista"
+      ],
+      "widthMm": 182.1,
+      "heightMm": 164.2,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          7
+        ]
+      }
+    },
+    {
+      "id": "puzzle-maletin-cuadricula",
+      "version": 2,
+      "file": "piezas/puzzle-maletin-cuadricula-v2.pdf",
+      "thumb": "piezas/puzzle-maletin-cuadricula-v2.png",
+      "name": "Maletín de hundir la flota",
+      "category": "puzzle",
+      "tags": [
+        "hundir-la-flota",
+        "cuadricula",
+        "puzzle"
+      ],
+      "widthMm": 151.8,
+      "heightMm": 260.5,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          8
+        ]
+      }
+    },
+    {
+      "id": "papel-factura-verde",
+      "version": 1,
+      "file": "piezas/papel-factura-verde-v1.pdf",
+      "thumb": "piezas/papel-factura-verde-v1.png",
+      "name": "Factura verde",
+      "category": "papel",
+      "tags": [
+        "factura",
+        "verde",
+        "texto"
+      ],
+      "widthMm": 195.1,
+      "heightMm": 178.6,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          11
+        ]
+      }
+    },
+    {
+      "id": "papel-nota-kraft-clip-grande",
+      "version": 1,
+      "file": "piezas/papel-nota-kraft-clip-grande-v1.pdf",
+      "thumb": "piezas/papel-nota-kraft-clip-grande-v1.png",
+      "name": "Nota kraft con clip (grande)",
+      "category": "papel",
+      "tags": [
+        "misterio",
+        "kraft",
+        "texto-corto"
+      ],
+      "widthMm": 108.8,
+      "heightMm": 57.0,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          15
+        ]
+      }
+    },
+    {
+      "id": "puzzle-postal-sobres",
+      "version": 1,
+      "file": "piezas/puzzle-postal-sobres-v1.pdf",
+      "thumb": "piezas/puzzle-postal-sobres-v1.png",
+      "name": "Postal con iconos y sobres",
+      "category": "puzzle",
+      "tags": [
+        "postal",
+        "sobres",
+        "iconos",
+        "puzzle"
+      ],
+      "widthMm": 150.1,
+      "heightMm": 99.0,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          14
+        ]
+      }
+    },
+    {
+      "id": "objeto-lupa-grande",
+      "version": 1,
+      "file": "piezas/objeto-lupa-grande-v1.pdf",
+      "thumb": "piezas/objeto-lupa-grande-v1.png",
+      "name": "Lupa grande",
+      "category": "objeto",
+      "tags": [
+        "misterio",
+        "lupa",
+        "verde"
+      ],
+      "widthMm": 53.4,
+      "heightMm": 53.5,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "fondo-esquina-verde-claro",
+      "version": 1,
+      "file": "piezas/fondo-esquina-verde-claro-v1.pdf",
+      "thumb": "piezas/fondo-esquina-verde-claro-v1.png",
+      "name": "Esquina verde claro",
+      "category": "fondo",
+      "tags": [
+        "verde",
+        "fondo",
+        "claro"
+      ],
+      "widthMm": 210.0,
+      "heightMm": 297.0,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          4
+        ]
+      }
+    },
+    {
+      "id": "icono-vineta-calavera",
+      "version": 1,
+      "file": "piezas/icono-vineta-calavera-v1.pdf",
+      "thumb": "piezas/icono-vineta-calavera-v1.png",
+      "name": "Viñeta de calavera",
+      "category": "icono",
+      "tags": [
+        "misterio",
+        "lista",
+        "calavera"
+      ],
+      "widthMm": 4.0,
+      "heightMm": 4.1,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          4
+        ]
+      }
+    },
+    {
+      "id": "fondo-triangulo-salvia",
+      "version": 1,
+      "file": "piezas/fondo-triangulo-salvia-v1.pdf",
+      "thumb": "piezas/fondo-triangulo-salvia-v1.png",
+      "name": "Triángulo verde salvia",
+      "category": "fondo",
+      "tags": [
+        "verde",
+        "fondo",
+        "salvia"
+      ],
+      "widthMm": 210.0,
+      "heightMm": 265.8,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          12
+        ]
+      }
+    },
+    {
+      "id": "icono-bombilla-morada",
+      "version": 1,
+      "file": "piezas/icono-bombilla-morada-v1.pdf",
+      "thumb": "piezas/icono-bombilla-morada-v1.png",
+      "name": "Bombilla morada",
+      "category": "icono",
+      "tags": [
+        "idea",
+        "pista",
+        "morado"
+      ],
+      "widthMm": 28.5,
+      "heightMm": 38.4,
+      "zones": [],
+      "license": "propia-estudio",
+      "author": "Kreatures",
+      "origin": {
+        "game": "El regalo robado",
+        "pages": [
+          16
+        ]
+      }
     }
   ]
 }

@@ -43,10 +43,10 @@ async function fuentesIncrustadas() {
 }
 
 /** Capacidad y límite de cada campo de texto del juego (v1). Devuelve { [campo]: {...} }. */
-export async function medirLimites(game) {
+export async function medirLimites(game, { muestra = null } = {}) {
   const { fieldFits } = cargarMotor();
   const map = await fuentesIncrustadas();
-  const cabida = medirCabida(game, { fieldFits, fontMap: map });
+  const cabida = medirCabida(game, { fieldFits, fontMap: map, muestra });
   const out = {};
   for (const [id, campo] of Object.entries(game.fields || {})) {
     if (!TIPOS_TEXTO.includes(campo.type)) continue;

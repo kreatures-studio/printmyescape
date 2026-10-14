@@ -4,6 +4,7 @@
 //
 //   medirCabida(juegoV1, { fieldFits, fontMap, fuentes?, transforms?, mechanics?, campos? })
 //     → { [campo]: { capacidad, porPagina: { [página]: capacidad }, cap } }   (capacidad null si no tiene hueco)
+//   muestra: otro texto de medida (p. ej. letras sin espacios); por defecto, nombres o lorem ipsum.
 //
 // Los huecos de un campo son los suyos y los de los derivados de una mecánica que lo usa (APODO_n → APODO_n.PREF,
 // nombre y alias → la ficha): los demás campos de esa mecánica entran con una muestra de su tope, así el derivado se
@@ -51,7 +52,7 @@ export function huecosDe(game, id) {
   return huecos;
 }
 
-export function medirCabida(game, { fieldFits, fontMap, fuentes = null, transforms = globalThis.PMETransforms || {}, mechanics = globalThis.PMEMechanics || {}, campos = null }) {
+export function medirCabida(game, { fieldFits, fontMap, fuentes = null, transforms = globalThis.PMETransforms || {}, mechanics = globalThis.PMEMechanics || {}, campos = null, muestra = null }) {
   const out = {};
   const ids = campos || Object.keys(game.fields || {});
   for (const id of ids) {
@@ -59,7 +60,7 @@ export function medirCabida(game, { fieldFits, fontMap, fuentes = null, transfor
     if (!campo || !TIPOS_TEXTO.includes(campo.type)) continue;
     const huecos = huecosDe(game, id);
     if (!huecos.length) { out[id] = { capacidad: null, porPagina: {}, cap: campo.cap ?? null }; continue; }
-    const base = ((campo.type === 'name' ? MUESTRA.name : MUESTRA.text) + ' ').repeat(10);
+    const base = ((muestra || (campo.type === 'name' ? MUESTRA.name : MUESTRA.text)) + ' ').repeat(10);
     const medir = (lista) => {
       let capacidad = Infinity;
       for (const lang of game.languages) {

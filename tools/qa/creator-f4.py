@@ -20,6 +20,8 @@ import io, json, os, re, shutil, socket, subprocess, sys, tempfile, time, urllib
 from playwright.sync_api import sync_playwright
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+# Piezas de arte de la colección (la última versión de cada una): lo que el inicio cuenta como material.
+PIEZAS = len({p['id'] for p in __import__('json').load(open(os.path.join(ROOT, 'biblioteca', 'arte', 'el-regalo-robado', 'manifest.json'), encoding='utf-8'))['pieces']})
 F3 = 'cumple-mision-secreta'
 RES = []
 
@@ -113,7 +115,7 @@ def main():
             rec('inicio: lista los juegos del almacén', set(tarjetas) == {F3, 'final3'}, str(tarjetas))
             rec('inicio: el juego de Claude sale en «Para revisar»', page.locator(f'.para-revisar[data-juego={F3}]').count() == 1)
             rec('inicio: el juego antiguo se marca «Formato antiguo»', 'Formato antiguo' in page.inner_text('.tarjeta-juego[data-juego=final3]'))
-            rec('inicio: el material de la biblioteca (43 imágenes del artista)', '43 piezas' in page.inner_text('.material'), page.inner_text('.material .tarjeta-material:nth-child(3) .cabeza'))
+            rec(f'inicio: el material de la biblioteca ({PIEZAS} imágenes del artista)', f'{PIEZAS} piezas' in page.inner_text('.material'), page.inner_text('.material .tarjeta-material:nth-child(3) .cabeza'))
 
             # ---------------- Diseñar página ----------------
             page.goto(base + f'#/juego/{F3}/paginas/p1')

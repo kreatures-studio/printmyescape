@@ -101,13 +101,44 @@ def main():
         rec('pegar texto largo en APP_2 deja como máximo 10', len(inp.input_value()) <= 10, 'len=%d' % len(inp.input_value()))
 
         # 3b) Nuevos campos de texto: debilidad escrita, apodo del cumpleañero, respuesta del test
-        for fid, lim in (('DEBILIDAD_TEXTO', 38), ('B_ALIAS', 12), ('TEST_RESULTADO', 180)):
+        for fid in ('DEBILIDAD_TEXTO', 'B_ALIAS', 'TEST_RESULTADO'):
+            lim = pg.evaluate("(f) => LIMITS[f]", fid)
             inp = mount(pg, fid)
             inp.click(); inp.fill('')
             pg.evaluate("(a) => { var el = document.querySelector(a[0]); el.value = a[1].repeat(60); el.dispatchEvent(new Event('input', {bubbles: true})); }",
                         ['.test-mount [data-fid="%s"]' % fid, 'z '])
             pg.wait_for_timeout(100)
             rec('pegar texto largo en %s deja como máximo %d' % (fid, lim), len(inp.input_value()) <= lim, 'len=%d' % len(inp.input_value()))
+
+        # 3c) El contador no promete de más: cada campo de texto admite su límite entero, también con letras sin
+        #     espacios (lo que probó el cliente) y con palabras largas; y los campos parecidos tienen el mismo límite.
+        campos = pg.evaluate("""() => Object.keys(LIMITS).filter((f) => {
+            var q = Q[f] || {}; var tf = TPL.fields.find((x) => x.id === f) || {};
+            return !q.multi && !q.choice && (tf.type === 'text' || tf.type === 'long') && document.querySelector('[data-fid]') !== undefined;
+        })""")
+        muestras = {
+            'sin espacios': 'dkjasehflskedkjasehflskedjlfkjadbjksdbfkjadbabdakdbakjdbkadbajdjadnbakjfbwekjfheqljfh',
+            'palabras largas': 'Extraordinariamente desconsiderado con los electrodomesticos, incomprensiblemente despistado ',
+        }
+        cortos = []
+        for fid in campos:
+            lim = pg.evaluate("(f) => LIMITS[f]", fid)
+            try:
+                mount(pg, fid)
+            except Exception:
+                continue
+            for nombre, m in muestras.items():
+                texto = (m * (lim // len(m) + 2))[:lim + 20]
+                largo = pg.evaluate("""(a) => { var el = document.querySelector(a[0]); if (!el) return -1; el.value = ''; el.value = a[1];
+                    el.dispatchEvent(new Event('input', {bubbles: true})); return el.value.length; }""",
+                                    ['.test-mount [data-fid="%s"]' % fid, texto])
+                if largo != -1 and largo != lim:
+                    cortos.append('%s (%s): %d de %d' % (fid, nombre, largo, lim))
+        rec('todos los campos de texto admiten su límite entero (%d campos, sin espacios y con palabras largas)' % len(campos), not cortos, '; '.join(cortos[:8]))
+        iguales = pg.evaluate("() => [LIMITS.FAMA, LIMITS.DEBILIDAD_TEXTO, LIMITS.TALENTO, LIMITS.SOSPECHA]")
+        rec('fama, debilidad, talento y sospecha tienen el mismo límite', len(set(iguales)) == 1, str(iguales))
+        notas = pg.evaluate("() => [LIMITS.B_NOTES, LIMITS.B_INFO]")
+        rec('notas e información importante tienen el mismo límite', len(set(notas)) == 1, str(notas))
 
         # 4) Casillas de delitos: son fijas (4 + Otro), todas se pueden marcar
         mount(pg, 'DEBILIDAD')
@@ -139,7 +170,7 @@ def main():
             ans = pg.evaluate("() => answers")
             rec('borrador: APP_1 recortado a 10', len(ans.get('APP_1', '')) == 10, 'len=%d' % len(ans.get('APP_1', '')))
             rec('borrador: pista S1 recortada a 30', len(ans.get('S1_HIDEA', '')) <= 30, 'len=%d' % len(ans.get('S1_HIDEA', '')))
-            rec('borrador: nota recortada a lo que cabe', 0 < len(ans.get('NOTA_PERSONALIZADA', '')) < 200, 'len=%d' % len(ans.get('NOTA_PERSONALIZADA', '')))
+            rec('borrador: nota recortada a su límite', 0 < len(ans.get('NOTA_PERSONALIZADA', '')) <= 200, 'len=%d' % len(ans.get('NOTA_PERSONALIZADA', '')))
             kept = [x for x in (ans.get('DEBILIDAD', '') or '').split('||') if x and not x.startswith('Otro')]
             rec('borrador: casillas de delitos se conservan, "Otro" incluido', len(kept) == 3 and any(x.startswith('Otro') for x in ans.get('DEBILIDAD', '').split('||')), 'opciones=%s' % kept)
             bad2 = pg.evaluate("async () => await textProblems()")

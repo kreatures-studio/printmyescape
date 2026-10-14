@@ -31,16 +31,29 @@ function clampTarget(t, vertical) {
   if (x > HS_MAX) x = HS_MAX;
   return x;
 }
+/* Parte el texto en líneas de ancho maxW. Una palabra que no cabe sola en una línea (un enlace, un nombre muy
+   largo, letras sin espacios) se corta donde llegue: si no, ocuparía una sola línea y el hueco se llenaría con
+   muchos menos caracteres de los que admite. */
+const PALABRA_LARGA = 12;
 function wrap(font, text, size, maxW) {
   const lines = [];
+  const ancho = (s) => font.widthOfTextAtSize(s, size);
   for (const para of String(text).split('\n')) {
     const words = para.split(/\s+/).filter(Boolean);
     if (!words.length) { lines.push(''); continue; }
     let cur = '';
-    for (const w of words) {
+    for (let w of words) {
       const t = cur ? cur + ' ' + w : w;
-      if (font.widthOfTextAtSize(t, size) <= maxW || !cur) cur = t;
-      else { lines.push(cur); cur = w; }
+      if (ancho(t) <= maxW) { cur = t; continue; }
+      if (cur) { lines.push(cur); cur = ''; }
+      const letras = Array.from(w);
+      /* las palabras cortas (una hora, un código) no se parten: el ajuste encoge el texto como siempre */
+      while (letras.length >= PALABRA_LARGA && ancho(letras.join('')) > maxW) {
+        let k = 1;
+        while (k < letras.length - 1 && ancho(letras.slice(0, k + 1).join('')) <= maxW) k++;
+        lines.push(letras.splice(0, k).join(''));
+      }
+      cur = letras.join('');
     }
     lines.push(cur);
   }

@@ -290,6 +290,24 @@ Sigue la maqueta aprobada («Creador de juegos PrintMyEscape»: inicio, página,
 
 Un juego real de principio a fin, con prueba de juego, y la lista de piezas reutilizadas.
 
+- **Feedback del cliente sobre el formulario (hecho, 14-10).** «Pone 200 y solo deja 30»: el cliente escribía letras
+  sin espacios, y el motor no partía una palabra más ancha que la línea (una línea y el hueco «lleno»). Ahora `wrap`
+  parte las palabras de 12 letras o más que no caben (las cortas, como una hora, se siguen encogiendo; golden 96/96
+  sin cambios por esto). Los topes que no cabían de verdad se bajan a lo que cabe: `TEST_RESULTADO` 138,
+  `PERSONALIZADO_1/2` 47, `NOMBRE_DEST` 27; y los parecidos van iguales: fama, debilidad, talento y sospecha 33 (los
+  cuatro huecos de la ficha miden ya lo mismo, 27,5 % de ancho), notas e información importante 180. El ejemplo 3 se
+  recorta a esos topes. `limites-demo.py` comprueba que cada campo admite su tope entero sin espacios y con palabras
+  largas (29/29).
+- **Copia del original por piezas (hecho, 14-10).** `tools/biblioteca/regalo-por-piezas.py` compone «Regalo robado
+  (por piezas)» (`ensayos/f5/el-regalo-robado-piezas`, rama `juego/el-regalo-robado-piezas` del repositorio de juegos)
+  con las piezas de la biblioteca en el sitio del artista, localizadas en `Final3-Clean.pdf` por sus trazos. Lo que no
+  cuadraba de una página a otra (vídeo del cliente) se alinea: polaroid y nota de los sospechosos (p9-p16 salvo la
+  p13), las dos listas de ubicaciones, la cuadrícula de fichas de la p2 y el triángulo verde. Piezas nuevas separadas
+  del mismo PDF (`separar-piezas.py` admite `seqnos`): sobre de correo aéreo, hoja de carta, lupa grande, esquina
+  verde, líneas de cuaderno, viñeta, factura, nota con clip grande, triángulo salvia, bombilla morada y postal con
+  sobres; v2 del plano (con su papel), de los perros (con su fondo) y del maletín (el corregido). Prueba:
+  `tools/qa/regalo-piezas-test.py` 9/9.
+
 ## 4. Lo que no entra
 
 Dibujo libre, grupos de capas y recorte avanzado; botón de IA en la web; imágenes generadas con IA; edición
