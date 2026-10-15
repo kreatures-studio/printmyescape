@@ -179,6 +179,21 @@ def main():
         rec('sin errores de JavaScript', not errs, errs[:2])
         b.close()
 
+        # 7) En escritorio (1920×950 y 1440×800) ninguna pantalla obliga a desplazar la tarjeta: las cajas de texto
+        #    largo miden según su tope (feedback del cliente: «El cumpleañero», información y notas)
+        b = p.chromium.launch(args=['--no-sandbox'])
+        for vw, vh in ((1920, 950), (1440, 800)):
+            pg = b.new_page(viewport={'width': vw, 'height': vh})
+            pg.goto(URL); pg.wait_for_timeout(500)
+            pg.click('#langSwitch button[data-lang="es"]'); pg.wait_for_timeout(100)
+            con_barra = pg.evaluate("""() => { const out = []; for (let i = 0; i < SCREENS.length; i++) { const s = SCREENS[i];
+                if (s.landing || s.welcome) continue; idx = i; view = 'steps'; render();
+                const c = document.getElementById('card'); if (c.scrollHeight - c.clientHeight > 2) out.push((s.fields || []).map((f) => f.id).join('+')); }
+                return out; }""")
+            rec('sin barra en la tarjeta a %d×%d' % (vw, vh), not con_barra, ', '.join(con_barra))
+            pg.close()
+        b.close()
+
     ok = sum(1 for r in RES if r['ok'])
     with open(os.path.join(OUT, 'limites.json'), 'w', encoding='utf-8') as fh:
         json.dump(RES, fh, ensure_ascii=False, indent=1)

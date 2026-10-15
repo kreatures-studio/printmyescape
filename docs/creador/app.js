@@ -237,6 +237,13 @@ window.addEventListener('hashchange', alCambiarRuta);
 
 /* ---------------- Cabecera ---------------- */
 
+// Las columnas que se quedan fijas al desplazar (miniaturas, lienzo, propiedades) se colocan bajo la cabecera, que
+// cambia de alto si se parte en dos líneas: su alto real va a la variable --alto-cabecera.
+if (typeof ResizeObserver !== 'undefined') {
+  new ResizeObserver(([e]) => document.documentElement.style.setProperty('--alto-cabecera', `${Math.round(e.target.getBoundingClientRect().height)}px`))
+    .observe($('cabecera'));
+}
+
 function pintarCabecera() {
   const cab = $('cabecera');
   if (!app.almacen) { cab.replaceChildren(marca()); return; }

@@ -139,15 +139,17 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .lista-simple li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 8px; border-radius: 8px; background: var(--superficie-2); }
 
 /* ---- Espacio de trabajo (páginas, formulario, revisión) ---- */
-.trabajo { display: flex; flex-wrap: wrap; align-items: stretch; min-height: calc(100vh - 57px); }
+.trabajo { display: flex; flex-wrap: wrap; align-items: stretch; min-height: calc(100vh - var(--alto-cabecera, 61px)); }
 .columna { background: var(--superficie); padding: 16px; display: flex; flex-direction: column; gap: 14px; }
-.columna.paginas { flex: 0 0 170px; border-right: 1px solid var(--borde); padding: 16px 14px; }
-.columna.insertar { flex: 0 0 280px; background: var(--superficie-2); border-right: 1px solid var(--borde); max-height: calc(100vh - 57px); overflow: auto; position: sticky; top: 57px; }
+.columna.paginas { flex: 0 0 170px; border-right: 1px solid var(--borde); padding: 16px 14px; max-height: calc(100vh - var(--alto-cabecera, 61px)); overflow: auto; position: sticky; top: var(--alto-cabecera, 61px); overscroll-behavior: contain; }
+.columna.insertar { flex: 0 0 280px; background: var(--superficie-2); border-right: 1px solid var(--borde); max-height: calc(100vh - var(--alto-cabecera, 61px)); overflow: auto; position: sticky; top: var(--alto-cabecera, 61px); }
 .columna.lateral { flex: 0 0 270px; border-right: 1px solid var(--borde); }
 .columna.lateral.ancha { flex-basis: 320px; }
 .columna.propiedades.detalle { flex-basis: 340px; }
-.columna.propiedades { flex: 0 0 300px; border-left: 1px solid var(--borde); padding: 18px; max-height: calc(100vh - 57px); overflow: auto; position: sticky; top: 57px; }
+.columna.propiedades { flex: 0 0 300px; border-left: 1px solid var(--borde); padding: 18px; max-height: calc(100vh - var(--alto-cabecera, 61px)); overflow: auto; position: sticky; top: var(--alto-cabecera, 61px); }
 .mesa { flex: 1 1 460px; min-width: 0; background: var(--mesa); padding: 18px 24px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+/* Con el lienzo, cada columna se desplaza por su cuenta: al bajar por las miniaturas la página no se va */
+.trabajo > .mesa { position: sticky; top: var(--alto-cabecera, 61px); align-self: flex-start; height: calc(100vh - var(--alto-cabecera, 61px)); overflow: auto; overscroll-behavior: contain; }
 .barra-mesa { align-self: stretch; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .barra-mesa .herramientas { display: flex; gap: 6px; flex-wrap: wrap; }
 .miniatura-pagina { display: flex; gap: 8px; align-items: flex-start; border: 0; background: transparent; padding: 0; cursor: pointer; text-align: left; }
@@ -294,7 +296,8 @@ dialog.ancho { max-width: min(960px, calc(100vw - 32px)); }
   .tarjetas-3, .material { grid-template-columns: 1fr; }
   .columna.insertar, .columna.propiedades, .columna.lateral { position: static; max-height: none; flex: 1 1 100%; }
   .columna.lateral { border-right: 0; border-bottom: 1px solid var(--borde); }
-  .columna.paginas { flex: 1 1 100%; flex-direction: row; overflow-x: auto; }
+  .columna.paginas { flex: 1 1 100%; flex-direction: row; overflow-x: auto; position: static; max-height: none; }
+  .trabajo > .mesa { position: static; height: auto; overflow: visible; }
   .vista-comprador { flex: 1 1 100%; }
 }
 @media (max-width: 640px) {

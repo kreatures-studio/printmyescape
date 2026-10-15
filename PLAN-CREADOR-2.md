@@ -307,6 +307,11 @@ Un juego real de principio a fin, con prueba de juego, y la lista de piezas reut
   verde, líneas de cuaderno, viñeta, factura, nota con clip grande, triángulo salvia, bombilla morada y postal con
   sobres; v2 del plano (con su papel), de los perros (con su fondo) y del maletín (el corregido). Prueba:
   `tools/qa/regalo-piezas-test.py` 9/9.
+- **Más feedback (hecho, 15-10).** Formulario del comprador: las cajas de texto largo miden según su tope (unas 55
+  letras por línea; antes 216 px fijos) y la tarjeta tiene menos relleno: a 1920×950 y 1440×800 ninguna pantalla
+  necesita barra (`limites-demo.py` 31/31); en portátiles más bajos la tarjeta sigue desplazándose sola. El menú corta
+  con puntos los nombres largos. Creador: las miniaturas, el lienzo y las propiedades se desplazan cada uno por su
+  cuenta (al bajar por las páginas el lienzo ya no se va); la cabecera da su alto real (`--alto-cabecera`).
 
 ## 4. Lo que no entra
 

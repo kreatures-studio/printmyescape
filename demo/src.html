@@ -63,7 +63,7 @@
     width: min(94vw, 680px); background: #fffdf6;
     border: 3px solid var(--abyss); border-radius: 14px;
     box-shadow: 8px 8px 0 rgba(14,116,99,.25);
-    padding: 30px 30px 26px;
+    padding: 26px 30px 22px;
     background-image: linear-gradient(180deg, rgba(183,194,155,.2), rgba(183,194,155,0) 160px);
     animation: in .25s ease;
   }
@@ -79,7 +79,7 @@
   #desc { font-size: 14px; color: var(--muted); margin: 0 0 18px; line-height: 1.5; }
   #card ul { padding-left: 20px; margin: 0 0 14px; }
   #card li { margin-bottom: 6px; }
-  .field { margin-bottom: 20px; }
+  .field { margin-bottom: 16px; }
   .field:last-child { margin-bottom: 4px; }
   .field > label { display: block; font-size: 16px; font-weight: 900; margin-bottom: 2px; }
   .field > label .req { color: var(--danger); }
@@ -91,7 +91,7 @@
     padding: 10px 2px; outline: none;
   }
   .field input:focus, .field textarea:focus { border-bottom-color: var(--teal); }
-  /* tamaño fijo, pensado para que quepan los 200 caracteres sin barra de desplazamiento */
+  /* alto según el tope del campo (lo pone fieldControl): caben sus caracteres sin barra de desplazamiento */
   .field textarea { border: 2px solid var(--abyss); border-radius: 8px; padding: 12px; height: 216px; font-size: 16px; line-height: 1.5; resize: none; overflow-y: auto; }
   /* textos cortos (hasta 70 caracteres): caja de 3 líneas */
   .field textarea.short { height: 96px; }
@@ -168,7 +168,7 @@
   body.mobile #cnav { display: none; }
   /* ---- desktop: una pantalla, sin scroll (la tarjeta absorbe el sobrante) ---- */
   body:not(.mobile) { height: 100vh; height: 100dvh; overflow: hidden; }
-  body:not(.mobile) main { flex: 1 1 auto; min-height: 0; align-items: stretch; }
+  body:not(.mobile) main { flex: 1 1 auto; min-height: 0; align-items: stretch; padding: 20px 16px 22px; }
   body:not(.mobile) #drawer { align-self: stretch; max-height: none; }
   body:not(.mobile) #card { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
   #foot {
@@ -204,6 +204,9 @@
   }
   .secItem.done .dot { background: var(--teal); color: #fff; }
   .secItem .miss { margin-left: auto; font-size: 11px; color: var(--danger); white-space: nowrap; }
+  /* nombres largos (p. ej. el apodo del cumpleañero): se cortan con puntos, sin pisar el «faltan N» */
+  .secItem > span:nth-child(2) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .secItem .miss { flex: none; }
   /* ---- botones ---- */
   .btn-primary {
     font-size: 17px; font-weight: 900; letter-spacing: .02em; cursor: pointer; border: 0; border-radius: 10px;
@@ -889,6 +892,9 @@ function fieldControl(f) {
   } else if (f.type === 'long') {
     ctl = document.createElement('textarea');
     if (LIMITS[f.id] && LIMITS[f.id] <= 70) ctl.className = 'short';
+    /* alto a la medida del tope: unas 55 letras por línea y una línea de aire (entre 96 y 216 px); dos cajas
+       grandes en la misma pantalla ya no obligan a desplazar la tarjeta */
+    else if (LIMITS[f.id]) ctl.style.height = Math.max(96, Math.min(216, 24 * (Math.ceil(LIMITS[f.id] / 55) + 1) + 28)) + 'px';
     if (f.max) ctl.maxLength = f.max;
     ctl.value = answers[f.id] || '';
     ctl._good = ctl.value;
