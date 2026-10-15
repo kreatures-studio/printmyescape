@@ -10,6 +10,8 @@
 //   list(), load(id), latestRev(id), save(id, game, rev, msg), create(id, game, msg), history(id), submit(id, nota)
 //   leerFichero(id, ruta), existeFichero(id, ruta), escribirFichero(id, ruta, bytes, msg)   (carpeta del juego)
 //   colecciones(tipoDir), leerBiblioteca(ruta), escribirBiblioteca(ruta, bytes, msg)          (biblioteca/ en main)
+//   listarPresupuestos(), leerPresupuesto(id), guardarPresupuesto(p, msg), borrarPresupuesto(id),
+//   leerTarifas(), guardarTarifas(t)                                                         (presupuestos/ en main)
 // Errores: { code: 'auth' | 'not-found' | 'conflict' | 'exists' | 'http', status, message }.
 
 const PREFIJO = 'juego/';
@@ -172,6 +174,31 @@ export function crearAlmacenGitHub({ owner, repo, token, principal = null, fetch
     },
     async leerBiblioteca(ruta) { return raw(normalizar(`biblioteca/${ruta}`), await PRINCIPAL()); },
     async escribirBiblioteca(ruta, bytes, mensaje) { return escribir(normalizar(`biblioteca/${ruta}`), bytes, await PRINCIPAL(), mensaje || `Biblioteca: ${ruta}`); },
+
+    /* Presupuestos del estudio: presupuestos/<id>.json y presupuestos/tarifas.json en la rama principal. */
+    async listarPresupuestos() {
+      let lista;
+      try { lista = await req(`${base}/contents/presupuestos?ref=${encodeURIComponent(await PRINCIPAL())}`); } catch (e) { if (e.code === 'not-found') return []; throw e; }
+      const ids = lista.filter((x) => x.type === 'file' && /^P-.+\.json$/.test(x.name)).map((x) => x.name.slice(0, -5));
+      const todos = await Promise.all(ids.map(async (id) => { try { return JSON.parse(new TextDecoder().decode(await raw(`presupuestos/${id}.json`, await PRINCIPAL()))); } catch { return null; } }));
+      return todos.filter(Boolean);
+    },
+    async leerPresupuesto(id) { return JSON.parse(new TextDecoder().decode(await raw(`presupuestos/${id}.json`, await PRINCIPAL()))); },
+    async guardarPresupuesto(p, mensaje) {
+      return escribir(`presupuestos/${p.id}.json`, new TextEncoder().encode(JSON.stringify(p, null, 2) + '\n'), await PRINCIPAL(), mensaje || `Presupuesto ${p.id}`);
+    },
+    async borrarPresupuesto(id) {
+      const ref = await PRINCIPAL();
+      const sha = await shaDe(`presupuestos/${id}.json`, ref);
+      if (!sha) return;
+      await req(`${base}/contents/presupuestos/${encodeURIComponent(`${id}.json`)}`, { method: 'DELETE', body: { message: `Borrar el presupuesto ${id}`, sha, branch: ref } });
+    },
+    async leerTarifas() {
+      try { return JSON.parse(new TextDecoder().decode(await raw('presupuestos/tarifas.json', await PRINCIPAL()))); } catch (e) { if (e.code === 'not-found') return null; throw e; }
+    },
+    async guardarTarifas(t) {
+      return escribir('presupuestos/tarifas.json', new TextEncoder().encode(JSON.stringify(t, null, 2) + '\n'), await PRINCIPAL(), 'Presupuestos: tarifas');
+    },
 
     /** Abre el pull request de la rama del juego hacia main. Si ya hay uno abierto, devuelve ese. */
     async submit(id, nota) {

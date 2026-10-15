@@ -45,6 +45,16 @@
       "type": "array",
       "items": { "$ref": "#/$defs/example" }
     },
+    "theme": {
+      "description": "Tema de color (como en pme-game/2): cada color «from» pasa a su «to» al componer.",
+      "type": "object", "required": ["map"], "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" }, "preset": { "type": "string" },
+        "tolerance": { "type": "number", "minimum": 1, "maximum": 80 },
+        "map": { "type": "array", "items": { "type": "object", "required": ["from", "to"], "additionalProperties": false,
+          "properties": { "from": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }, "to": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" } } } }
+      }
+    },
     "solutions": {
       "type": "array",
       "items": { "$ref": "#/$defs/solution" }

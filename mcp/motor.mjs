@@ -92,6 +92,6 @@ export async function componerJuego(game, { dir, lang, example = null, watermark
   }
   return PC.composeGame({
     bgBytes, bgFiles, assets, fuentes: resolverFuentes(), fonts, template: deps.template, fixed: deps.fixed, i18n: deps.i18n, i18nAll: deps.i18nAll,
-    lang, values, photos, mechanics: deps.mechanics, fields: deps.fields, watermark,
+    lang, values, photos, mechanics: deps.mechanics, fields: deps.fields, theme: deps.theme, watermark,
   });
 }

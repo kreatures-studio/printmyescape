@@ -20,9 +20,11 @@ const normalizar = (ruta) => {
  * fuentes: rutas de game.json; biblioteca: { base: URL de la carpeta biblioteca/, indice: URL que devuelve
  * { arte: [colecciones], paginas: [...], secciones: [...], puzzles: [...] } } (o null: biblioteca vacía).
  */
-export function crearAlmacenMemoria(fuentes, biblioteca = null) {
+export function crearAlmacenMemoria(fuentes, biblioteca = null, { presupuestos: fuentesPresupuestos = [], tarifas: fuenteTarifas = null } = {}) {
   const juegos = new Map(); // id → { game, rev, historial, base, ficheros: Map ruta → bytes }
   const bibliotecaEscrita = new Map(); // ruta → bytes
+  const presupuestos = new Map(); // id → presupuesto
+  let tarifas = null;
   let indice = null;
   let cargado = null;
   let contador = 0;
@@ -37,6 +39,11 @@ export function crearAlmacenMemoria(fuentes, biblioteca = null) {
         const game = await res.json();
         juegos.set(game.id, { game, rev: nuevaRev(), historial: [], base: new URL(ruta, location.href), ficheros: new Map() });
       }
+      for (const ruta of fuentesPresupuestos) {
+        const res = await fetch(ruta);
+        if (res.ok) { const p = await res.json(); presupuestos.set(p.id, p); }
+      }
+      if (fuenteTarifas) { const res = await fetch(fuenteTarifas); if (res.ok) tarifas = await res.json(); }
       if (biblioteca) {
         const res = await fetch(biblioteca.indice);
         indice = res.ok ? await res.json() : {};
@@ -131,6 +138,17 @@ export function crearAlmacenMemoria(fuentes, biblioteca = null) {
       bibliotecaEscrita.set(normalizar(ruta), bytes);
       return { creado: true };
     },
+
+    async listarPresupuestos() { await cargar(); return [...presupuestos.values()].map((p) => structuredClone(p)); },
+    async leerPresupuesto(id) {
+      await cargar();
+      if (!presupuestos.has(id)) throw error('not-found', `no hay un presupuesto «${id}»`);
+      return structuredClone(presupuestos.get(id));
+    },
+    async guardarPresupuesto(p) { await cargar(); presupuestos.set(p.id, structuredClone(p)); return { creado: true }; },
+    async borrarPresupuesto(id) { await cargar(); presupuestos.delete(id); },
+    async leerTarifas() { await cargar(); return tarifas ? structuredClone(tarifas) : null; },
+    async guardarTarifas(t) { await cargar(); tarifas = structuredClone(t); return { creado: true }; },
 
     async submit(id) {
       await cargar();

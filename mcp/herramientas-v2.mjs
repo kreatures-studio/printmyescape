@@ -271,6 +271,24 @@ export function herramientasV2(ctx) {
         return { changes: g.changes.length, pendientes: g.notes.filter((x) => !x.done).length, sugerencias: (g.suggestions || []).length };
       }, { formato: 'v2' }),
     },
+    {
+      name: 'set_theme',
+      description: 'Tema de color del juego (cambio de paleta). theme: { name, preset?, tolerance? (ΔE, 22 por defecto), map: [{ from: "#RRGGBB", to: "#RRGGBB" }] }: '
+        + 'cada color «from» del juego (y los tonos cercanos) pasa a su «to» al componer: piezas de arte, PDF de fondo, textos y color de página. '
+        + 'Las piezas de la biblioteca no cambian. theme: null quita el tema. Los from salen de los colores del juego (los de sus elementos y piezas); '
+        + 'presets: fiesta, halloween, navidad, oceano, pastel, selva, espacio, detective (tools/game/paletas.mjs).',
+      schema: esquema({ id: ID, theme: { description: 'objeto con name, preset?, tolerance? y map; o null para quitarlo' } }, ['id', 'theme']),
+      run: async ({ id, theme }) => mutar(id, theme ? `Tema de color «${theme.name || 'nuevo'}» en ${id}` : `Quitar el tema de color de ${id}`, (g) => {
+        if (!theme) { delete g.theme; return { theme: null }; }
+        const map = (theme.map || []).map((m) => ({ from: String(m.from).toUpperCase(), to: String(m.to).toUpperCase() }));
+        if (!map.length) throw new E('invalid', 'el tema necesita al menos un color en map');
+        const t = { name: String(theme.name || ''), map };
+        if (theme.preset) t.preset = String(theme.preset);
+        if (theme.tolerance) t.tolerance = Number(theme.tolerance);
+        g.theme = t;
+        return { theme: t };
+      }, { formato: 'v2' }),
+    },
   ];
 }
 

@@ -89,7 +89,7 @@ async function fromGame(o) {
   const bgBytes = game.background.kind === 'pdf' ? bgFiles[game.background.file] : null;
   const assets = cargarKit(o.kit, { template: deps.template });
   return { bgBytes, bgFiles, assets, template: deps.template, fixed: deps.fixed, i18n: deps.i18n, i18nAll: deps.i18nAll,
-    mechanics: deps.mechanics, fields: deps.fields, values, photosPaths, resolvePhoto: (p) => path.resolve(gameDir, p) };
+    mechanics: deps.mechanics, fields: deps.fields, theme: deps.theme, values, photosPaths, resolvePhoto: (p) => path.resolve(gameDir, p) };
 }
 
 async function main() {
@@ -114,7 +114,7 @@ async function main() {
   const res = await composeGame({
     bgBytes: src.bgBytes, bgFiles: src.bgFiles, assets: src.assets, fuentes: resolverFuentes(),
     fonts, template: src.template, fixed: src.fixed, i18n: src.i18n, i18nAll: src.i18nAll, lang: o.lang,
-    values: src.values, photos, mechanics: src.mechanics || [], fields: src.fields || {},
+    values: src.values, photos, mechanics: src.mechanics || [], fields: src.fields || {}, theme: src.theme,
   });
   fs.writeFileSync(path.join(ROOT, o.out), res.bytes);
   const nFotos = Object.keys(src.photosPaths).length;

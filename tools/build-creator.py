@@ -35,7 +35,9 @@ EXCLUIDOS = {'creator/serve.mjs'}
 # Carpetas que nunca se publican (aunque algo las nombre).
 PRIVADAS = ('biblioteca/', 'games/', 'ensayos/')
 # Juegos de muestra del almacén en memoria: solo su game.json.
-MUESTRAS = {'games/final3/game.json', 'ensayos/f3/cumple-mision-secreta/game.json'}
+MUESTRAS = {'games/final3/game.json', 'ensayos/f3/cumple-mision-secreta/game.json',
+            # presupuestos de ejemplo del almacén en memoria (sobre el juego de Claude) y sus tarifas
+            'ensayos/f5/presupuestos/P-2026-001.json', 'ensayos/f5/presupuestos/P-2026-002.json', 'ensayos/f5/presupuestos/tarifas.json'}
 # Ficheros de código: en ellos se buscan y reescriben las rutas. Los JSON (juegos, kit) se copian tal cual:
 # sus rutas son datos del juego, relativas a su propia carpeta.
 CODIGO = ('.html', '.js', '.mjs')
@@ -164,7 +166,7 @@ def construir():
                 continue
             fichero = os.path.join(dirpath, n)
             for _, ref in re_rel.findall(codigo(open(fichero, encoding='utf-8').read())):
-                objetivo = os.path.normpath(os.path.join(dirpath, ref.split('?')[0]))
+                objetivo = os.path.normpath(os.path.join(dirpath, ref.split('?')[0].split('#')[0]))
                 if ref.endswith('/'):
                     continue
                 if not os.path.exists(objetivo):

@@ -62,7 +62,7 @@ export async function componer({ juego, almacen, biblioteca, lang, ejemplo = nul
   const res = await PC.composeGame({
     bgBytes, bgFiles, assets, fuentes: resolver, fonts: await fuentesDelMotor(),
     template: plantillaParaMotor(v1), fixed: v1.texts, i18n, i18nAll: v1.i18n, lang, values, photos,
-    mechanics: v1.mechanics || [], fields: v1.fields || {}, watermark,
+    mechanics: v1.mechanics || [], fields: v1.fields || {}, theme: v1.theme || null, watermark,
   });
   return { bytes: res.bytes, warns: res.warns || [] };
 }

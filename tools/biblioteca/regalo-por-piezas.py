@@ -199,8 +199,14 @@ def main():
         v2 = json.load(open(os.path.join(tmp, 'game.json'), encoding='utf-8'))
     juego_dir = os.path.join(ROOT, a.juego)
     fotos = {os.path.normpath(os.path.join(juego_dir, v)) for ex in v2.get('examples', []) for v in (ex.get('photos') or {}).values()}
-    g, informe, piezas = construir(v2, datetime.date.today().isoformat())
     out = os.path.join(ROOT, a.salida)
+    # La fecha del cambio es la de la primera vez: reconstruir el juego no lo cambia si nada más ha cambiado.
+    fecha = datetime.date.today().isoformat()
+    try:
+        fecha = json.load(open(os.path.join(out, 'game.json'), encoding='utf-8'))['changes'][0]['date']
+    except (OSError, KeyError, IndexError, ValueError):
+        pass
+    g, informe, piezas = construir(v2, fecha)
     os.makedirs(os.path.join(out, 'fotos'), exist_ok=True)
     for f in sorted(fotos):
         shutil.copyfile(f, os.path.join(out, 'fotos', os.path.basename(f)))

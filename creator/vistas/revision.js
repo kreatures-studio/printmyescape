@@ -7,6 +7,7 @@ import { componer, pintarPDF } from '../motor.js';
 import { paginaDe } from '../validar.js';
 import { selectoresVista, nombresDeEjemplos, listaY } from './comun.js';
 import { sugerenciasDe, cajaSugerencia } from './sugerencias.js';
+import { nuevo as nuevoPresupuesto } from './presupuestos.js';
 
 const OTRAS = [['formulario', 'Formulario'], ['ejemplos', 'Ejemplos'], ['puzzles', 'Puzzles y soluciones']];
 
@@ -77,7 +78,8 @@ function columnaCambios(app, ui, items) {
       sugerencias.map((s) => h('div', { style: { display: 'flex', flexDirection: 'column', gap: '4px' } }, cajaSugerencia(app, s, { compacta: true }),
         h('a', { href: s.field ? app.rutaJuego('formulario', s.field) : app.rutaJuego('paginas', s.page), style: { fontSize: '13px', fontWeight: 600 } }, s.field ? 'Ver la pregunta' : 'Ver en la página')))] : null,
     presupuestar.length ? [h('div', { class: 'etiqueta-seccion' }, `A presupuestar · ${presupuestar.length}`),
-      h('div', { class: 'lista-revision', 'data-prueba': 'presupuestar' }, presupuestar.map((x) => h('div', { class: 'mensaje' }, x.texto, h('span', { class: 'tenue', style: { display: 'block', fontSize: '12px' } }, x.fecha))))] : null,
+      h('div', { class: 'lista-revision', 'data-prueba': 'presupuestar' }, presupuestar.map((x) => h('div', { class: 'mensaje' }, x.texto, h('span', { class: 'tenue', style: { display: 'block', fontSize: '12px' } }, x.fecha)))),
+      h('button', { class: 'boton pequeno', type: 'button', 'data-presupuestar': '1', onclick: () => nuevoPresupuesto(app, { juego: g.id, empezar: 'presupuestar', titulo: `${enIdioma(g.name)}: cambios a presupuestar` }) }, 'Hacer un presupuesto con esto')] : null,
     h('div', { class: 'etiqueta-seccion' }, `Cambios de Claude · ${cambios.length}`),
     cambios.length ? h('div', { class: 'lista-revision', style: { gap: '8px' } }, cambios.slice(0, 8).map((c) => h('details', { class: 'cambio', open: c.i >= vistos && c.i === cambios[0].i ? true : null },
       h('summary', { style: { cursor: 'pointer' } }, h('span', { class: 'fecha' }, `${c.date}${c.i >= vistos ? ' · nuevo' : ''}`), h('br', {}), h('span', {}, primeraLinea(c.text))),

@@ -1,0 +1,243 @@
+{
+  "schema": "pme-tarifas/1",
+  "moneda": "EUR",
+  "iva": 21,
+  "gestion": 10,
+  "perfiles": {
+    "ilustracion": {
+      "nombre": "Ilustración",
+      "tarifa": 30
+    },
+    "diseno": {
+      "nombre": "Diseño y maquetación",
+      "tarifa": 28
+    },
+    "programacion": {
+      "nombre": "Programación",
+      "tarifa": 40
+    },
+    "pruebas": {
+      "nombre": "Pruebas de juego",
+      "tarifa": 25
+    }
+  },
+  "complejidad": {
+    "sencilla": 0.6,
+    "media": 1,
+    "compleja": 1.8
+  },
+  "conceptos": [
+    {
+      "id": "icono",
+      "seccion": "arte",
+      "perfil": "ilustracion",
+      "nombre": "Icono",
+      "unidad": "pieza",
+      "horas": 1.5,
+      "ayuda": "Icono de app, símbolo o viñeta: una forma sencilla, en los colores del juego."
+    },
+    {
+      "id": "objeto",
+      "seccion": "arte",
+      "perfil": "ilustracion",
+      "nombre": "Objeto o asset pequeño",
+      "unidad": "pieza",
+      "horas": 3,
+      "ayuda": "Lupa, regalo, sello, llave…: boceto, color y sombras."
+    },
+    {
+      "id": "papel",
+      "seccion": "arte",
+      "perfil": "ilustracion",
+      "nombre": "Papel, nota o etiqueta",
+      "unidad": "pieza",
+      "horas": 2,
+      "ayuda": "Nota kraft, papel rasgado, etiqueta con clip: textura y pliegues."
+    },
+    {
+      "id": "marco",
+      "seccion": "arte",
+      "perfil": "ilustracion",
+      "nombre": "Marco o ficha con hueco de foto",
+      "unidad": "pieza",
+      "horas": 3,
+      "ayuda": "Polaroid, ficha de sospechoso: con la zona útil marcada para la foto."
+    },
+    {
+      "id": "dispositivo",
+      "seccion": "arte",
+      "perfil": "ilustracion",
+      "nombre": "Dispositivo con pantalla",
+      "unidad": "pieza",
+      "horas": 7,
+      "ayuda": "Móvil, tableta, monitor: carcasa, pantalla y elementos de interfaz."
+    },
+    {
+      "id": "personaje",
+      "seccion": "arte",
+      "perfil": "ilustracion",
+      "nombre": "Personaje",
+      "unidad": "pieza",
+      "horas": 8,
+      "ayuda": "Retrato o figura de cuerpo entero, con expresión."
+    },
+    {
+      "id": "ilustracion",
+      "seccion": "arte",
+      "perfil": "ilustracion",
+      "nombre": "Ilustración o cuadro",
+      "unidad": "pieza",
+      "horas": 16,
+      "ayuda": "Escena con personajes y fondo (como el cuadro de los perros jugando a las cartas)."
+    },
+    {
+      "id": "fondo",
+      "seccion": "arte",
+      "perfil": "ilustracion",
+      "nombre": "Fondo de página completa",
+      "unidad": "pieza",
+      "horas": 6,
+      "ayuda": "Fondo o composición que ocupa la página."
+    },
+    {
+      "id": "variacion",
+      "seccion": "arte",
+      "perfil": "ilustracion",
+      "nombre": "Variación de una pieza existente",
+      "unidad": "pieza",
+      "horas": 1,
+      "ayuda": "Cambiar un detalle, la forma o el tamaño de una pieza de la biblioteca."
+    },
+    {
+      "id": "recolor",
+      "seccion": "arte",
+      "perfil": "ilustracion",
+      "nombre": "Revisión de pieza recoloreada",
+      "unidad": "pieza",
+      "horas": 0.25,
+      "ayuda": "Cambio de tema: el creador recolorea solo; la ilustradora revisa cada pieza y retoca lo que no quede bien."
+    },
+    {
+      "id": "pagina-nueva",
+      "seccion": "maquetacion",
+      "perfil": "diseno",
+      "nombre": "Página nueva",
+      "unidad": "página",
+      "horas": 2.5,
+      "ayuda": "Maquetada con piezas de la biblioteca, con sus textos y huecos."
+    },
+    {
+      "id": "pagina-ajuste",
+      "seccion": "maquetacion",
+      "perfil": "diseno",
+      "nombre": "Ajuste de una página existente",
+      "unidad": "página",
+      "horas": 0.75,
+      "ayuda": "Mover, cambiar o quitar elementos; revisar que todo cabe."
+    },
+    {
+      "id": "textos",
+      "seccion": "maquetacion",
+      "perfil": "diseno",
+      "nombre": "Textos de una página (ES/EN)",
+      "unidad": "página",
+      "horas": 1,
+      "ayuda": "Redacción y traducción, y comprobar que caben en sus huecos."
+    },
+    {
+      "id": "pregunta",
+      "seccion": "maquetacion",
+      "perfil": "diseno",
+      "nombre": "Pregunta del formulario",
+      "unidad": "pregunta",
+      "horas": 0.5,
+      "ayuda": "Pregunta nueva con su tope, ayuda y ejemplos."
+    },
+    {
+      "id": "tema",
+      "seccion": "maquetacion",
+      "perfil": "diseno",
+      "nombre": "Cambio de tema de color",
+      "unidad": "juego",
+      "horas": 3,
+      "ayuda": "Elegir la paleta, aplicarla en el creador y ajustar contrastes y legibilidad."
+    },
+    {
+      "id": "puzzle-catalogo",
+      "seccion": "programacion",
+      "perfil": "programacion",
+      "nombre": "Puzzle del catálogo",
+      "unidad": "puzzle",
+      "horas": 1,
+      "ayuda": "La mecánica ya existe: configurarla, conectarla al formulario y comprobar la solución."
+    },
+    {
+      "id": "puzzle-contenido",
+      "seccion": "programacion",
+      "perfil": "programacion",
+      "nombre": "Puzzle de contenido",
+      "unidad": "puzzle",
+      "horas": 2.5,
+      "ayuda": "Sin mecánica: textos, arte y solución montados en el creador."
+    },
+    {
+      "id": "mecanica-sencilla",
+      "seccion": "programacion",
+      "perfil": "programacion",
+      "nombre": "Mecánica nueva sencilla",
+      "unidad": "mecánica",
+      "horas": 6,
+      "ayuda": "Una regla nueva del motor: iniciales, prefijos, casillas marcadas…"
+    },
+    {
+      "id": "mecanica-compleja",
+      "seccion": "programacion",
+      "perfil": "programacion",
+      "nombre": "Mecánica nueva compleja",
+      "unidad": "mecánica",
+      "horas": 16,
+      "ayuda": "Tiras recortables, cifrados, cuadrículas: con su validación y pruebas."
+    },
+    {
+      "id": "campo-derivado",
+      "seccion": "programacion",
+      "perfil": "programacion",
+      "nombre": "Campo calculado",
+      "unidad": "campo",
+      "horas": 2,
+      "ayuda": "Un dato que sale de otros (una suma, una palabra cifrada…)."
+    },
+    {
+      "id": "prueba-puzzle",
+      "seccion": "pruebas",
+      "perfil": "pruebas",
+      "nombre": "Prueba de un puzzle",
+      "unidad": "puzzle",
+      "horas": 0.75,
+      "ayuda": "Imprimirlo y resolverlo en papel, con notas de lo que falla."
+    },
+    {
+      "id": "prueba-juego",
+      "seccion": "pruebas",
+      "perfil": "pruebas",
+      "nombre": "Prueba completa del juego",
+      "unidad": "juego",
+      "horas": 3,
+      "ayuda": "Una partida de principio a fin con el juego impreso."
+    },
+    {
+      "id": "otro",
+      "seccion": "otros",
+      "perfil": "diseno",
+      "nombre": "Otro trabajo",
+      "unidad": "hora",
+      "horas": 1,
+      "ayuda": "Cualquier otra tarea, por horas."
+    }
+  ],
+  "condiciones": "Validez del presupuesto: 30 días. Cada pieza de arte incluye boceto y dos rondas de cambios; los cambios adicionales se presupuestan aparte. Pago: 50 % al aceptar y 50 % a la entrega. Plazo orientativo: a convenir al aceptar. Las piezas de arte quedan en la biblioteca del estudio y el cliente tiene licencia de uso para este juego.",
+  "estudio": {
+    "nombre": "Kreatures Studio",
+    "datos": ""
+  }
+}

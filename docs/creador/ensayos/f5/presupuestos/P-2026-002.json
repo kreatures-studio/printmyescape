@@ -1,0 +1,121 @@
+{
+  "schema": "pme-presupuesto/1",
+  "id": "P-2026-002",
+  "fecha": "2026-10-15",
+  "validez": 30,
+  "estado": "borrador",
+  "titulo": "Misión Secreta: prueba nueva «El cuadro de la fiesta»",
+  "juego": "cumple-mision-secreta",
+  "cliente": {
+    "nombre": "Cliente de ejemplo",
+    "contacto": ""
+  },
+  "descripcion": "Añadir una cuarta prueba antes de la final: un cuadro de la fiesta de cumpleaños con cinco objetos escondidos; las iniciales de los objetos forman la contraseña, que sale del nombre del cumpleañero. Incluye la página nueva, sus textos en español e inglés, una pregunta más en el formulario y las pruebas en papel.",
+  "lineas": [
+    {
+      "id": "l1",
+      "seccion": "arte",
+      "concepto": "ilustracion",
+      "descripcion": "Cuadro de la fiesta de cumpleaños con cinco objetos escondidos (la pista de la prueba)",
+      "complejidad": "compleja",
+      "cantidad": 1,
+      "horas": 28.8,
+      "tarifa": 30
+    },
+    {
+      "id": "l2",
+      "seccion": "arte",
+      "concepto": "objeto",
+      "descripcion": "Tarta de cumpleaños con velas (premio de la prueba)",
+      "complejidad": "media",
+      "cantidad": 1,
+      "horas": 3,
+      "tarifa": 30
+    },
+    {
+      "id": "l3",
+      "seccion": "arte",
+      "concepto": "icono",
+      "descripcion": "Globo, confeti y gorro de fiesta, para marcar los objetos encontrados",
+      "complejidad": "sencilla",
+      "cantidad": 3,
+      "horas": 0.9,
+      "tarifa": 30
+    },
+    {
+      "id": "l4",
+      "seccion": "maquetacion",
+      "concepto": "pagina-nueva",
+      "descripcion": "Página «Prueba 3: el cuadro de la fiesta» con el cuadro, la tarta y la ficha de respuestas",
+      "complejidad": "media",
+      "cantidad": 1,
+      "horas": 2.5,
+      "tarifa": 28
+    },
+    {
+      "id": "l5",
+      "seccion": "maquetacion",
+      "concepto": "pagina-ajuste",
+      "descripcion": "Prueba final y hoja de quien dirige la misión: la nueva contraseña y la numeración de pruebas",
+      "complejidad": "media",
+      "cantidad": 2,
+      "horas": 0.75,
+      "tarifa": 28
+    },
+    {
+      "id": "l6",
+      "seccion": "maquetacion",
+      "concepto": "textos",
+      "descripcion": "Textos de la página nueva en español e inglés",
+      "complejidad": "media",
+      "cantidad": 1,
+      "horas": 1,
+      "tarifa": 28
+    },
+    {
+      "id": "l7",
+      "seccion": "maquetacion",
+      "concepto": "pregunta",
+      "descripcion": "Pregunta nueva del formulario: comida favorita del cumpleañero (sale en el cuadro)",
+      "complejidad": "media",
+      "cantidad": 1,
+      "horas": 0.5,
+      "tarifa": 28
+    },
+    {
+      "id": "l8",
+      "seccion": "programacion",
+      "concepto": "mecanica-sencilla",
+      "descripcion": "Contraseña con las iniciales del nombre del cumpleañero, escondidas en el cuadro",
+      "complejidad": "media",
+      "cantidad": 1,
+      "horas": 6,
+      "tarifa": 40
+    },
+    {
+      "id": "l9",
+      "seccion": "pruebas",
+      "concepto": "prueba-puzzle",
+      "descripcion": "Resolver la prueba nueva en papel con dos nombres distintos",
+      "complejidad": "media",
+      "cantidad": 2,
+      "horas": 0.75,
+      "tarifa": 25
+    },
+    {
+      "id": "l10",
+      "seccion": "pruebas",
+      "concepto": "prueba-juego",
+      "descripcion": "Partida completa con el juego impreso",
+      "complejidad": "sencilla",
+      "cantidad": 1,
+      "horas": 1.8,
+      "tarifa": 25
+    }
+  ],
+  "gestion": 10,
+  "descuento": 0,
+  "iva": 21,
+  "condiciones": "Validez del presupuesto: 30 días. Cada pieza de arte incluye boceto y dos rondas de cambios; los cambios adicionales se presupuestan aparte. Pago: 50 % al aceptar y 50 % a la entrega. Plazo orientativo: a convenir al aceptar. Las piezas de arte quedan en la biblioteca del estudio y el cliente tiene licencia de uso para este juego.",
+  "mostrarHoras": true
+}

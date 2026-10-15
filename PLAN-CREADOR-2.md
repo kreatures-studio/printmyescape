@@ -312,6 +312,20 @@ Un juego real de principio a fin, con prueba de juego, y la lista de piezas reut
   necesita barra (`limites-demo.py` 31/31); en portátiles más bajos la tarjeta sigue desplazándose sola. El menú corta
   con puntos los nombres largos. Creador: las miniaturas, el lienzo y las propiedades se desplazan cada uno por su
   cuenta (al bajar por las páginas el lienzo ya no se va); la cabecera da su alto real (`--alto-cabecera`).
+- **Presupuestos y tema de color (hecho, 15-10).** *Presupuestos* (`#/presupuestos`, junto a Biblioteca): líneas de
+  arte, maquetación, programación y pruebas con complejidad (sencilla ×0,6, media, compleja ×1,8), cantidad, horas y
+  €/h; gestión, descuento e IVA; descarga en PDF (pdf-lib, `tools/presupuesto/pdf.mjs`) y en Excel con fórmulas
+  (`tools/presupuesto/xlsx.mjs`, sin dependencias). Tarifas editables (de partida: ilustración 30 €/h, diseño 28,
+  programación 40, pruebas 25; ilustración media 16 h, icono 1,5 h, mecánica nueva 6/16 h…). Se empieza en blanco,
+  con lo «A presupuestar» de un juego (también desde Revisar) o con un cambio de tema (también desde Tema). Se guardan
+  en `presupuestos/` de la rama principal del repositorio de juegos. Ejemplos sobre el juego de Claude:
+  `ensayos/f5/presupuestos/` (`tools/presupuesto/ejemplos.mjs`). *Tema* (pestaña de cada juego): `game.theme`
+  `{ name, preset?, tolerance?, map: [{from, to}] }` en los dos esquemas; el motor recolorea al componer (trazos de las
+  piezas y del PDF de fondo, textos y color de página; en Lab, conservando sombras y luces; ni fotos, ni mapas de
+  bits, ni degradados). El creador saca la paleta del juego de sus páginas, ofrece 8 paletas de partida
+  (`tools/game/paletas.mjs`: los oscuros siguen oscuros y los claros, claros) y una vista previa. Claude: `set_theme`.
+  Pruebas: `tools/qa/presupuesto-tema-test.mjs` 21/21, `tools/qa/creator-presupuestos.py` 16/16, `mcp/test-v2.mjs`
+  50/50; golden y paridad 96/96 (sin tema, igual que antes).
 
 ## 4. Lo que no entra
 

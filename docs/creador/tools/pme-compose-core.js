@@ -359,14 +359,132 @@ const PAGE_SIZES = { A4: [595.276, 841.89] };
    (x, y = esquina superior izquierda) y angle en grados, alrededor del centro de la pieza.
    deps.assets: { [id de pieza]: { kind: 'pdf' | 'png', bytes } }. Las piezas PDF se incrustan
    como página (embedPdf); las PNG, como imagen (embedPng). */
-async function dibujarCapas(out, page, capas, assets, cache, degrees) {
+/* ---------------- Tema de color (cambio de paleta) ----------------
+   theme: { name, map: [{ from: '#RRGGBB', to: '#RRGGBB' }], tolerance? }. Cada color que se pinta (trazos de las
+   piezas y del PDF de fondo, textos, color de página) se compara con los «from» en Lab: si el más cercano está a
+   menos de `tolerance` (ΔE, 22 por defecto), pasa a su «to» conservando la diferencia (las sombras y luces de un
+   mismo color siguen siendo sombras y luces del color nuevo). Lo demás no cambia. Las piezas de la biblioteca no se
+   tocan: se recolorea la copia que entra en el PDF. Las imágenes de mapa de bits y los degradados no cambian. */
+function hexARgb(h) {
+  const n = parseInt(String(h).replace('#', ''), 16);
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+}
+function rgbAHex(c) {
+  return '#' + c.map((v) => Math.round(Math.max(0, Math.min(1, v)) * 255).toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+function rgbALab(c) {
+  const lin = c.map((v) => (v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+  const X = (lin[0] * 0.4124 + lin[1] * 0.3576 + lin[2] * 0.1805) / 0.95047;
+  const Y = lin[0] * 0.2126 + lin[1] * 0.7152 + lin[2] * 0.0722;
+  const Z = (lin[0] * 0.0193 + lin[1] * 0.1192 + lin[2] * 0.9505) / 1.08883;
+  const f = (t) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116);
+  return [116 * f(Y) - 16, 500 * (f(X) - f(Y)), 200 * (f(Y) - f(Z))];
+}
+function labARgb(L) {
+  const fy = (L[0] + 16) / 116, fx = fy + L[1] / 500, fz = fy - L[2] / 200;
+  const g = (t) => (t * t * t > 0.008856 ? t * t * t : (t - 16 / 116) / 7.787);
+  const X = g(fx) * 0.95047, Y = g(fy), Z = g(fz) * 1.08883;
+  const lin = [X * 3.2406 - Y * 1.5372 - Z * 0.4986, -X * 0.9689 + Y * 1.8758 + Z * 0.0415, X * 0.0557 - Y * 0.2040 + Z * 1.0570];
+  return lin.map((v) => Math.max(0, Math.min(1, v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - 0.055)));
+}
+/** Función de tema: rgb (0..1) → rgb nuevo, o null si el color no es de la paleta. Devuelve null si no hay tema. */
+function crearTema(theme) {
+  const pares = ((theme && theme.map) || []).filter((m) => /^#[0-9A-Fa-f]{6}$/.test(m.from) && /^#[0-9A-Fa-f]{6}$/.test(m.to) && m.from.toUpperCase() !== m.to.toUpperCase())
+    .map((m) => ({ de: rgbALab(hexARgb(m.from)), a: rgbALab(hexARgb(m.to)) }));
+  if (!pares.length) return null;
+  const tol = Number(theme.tolerance) > 0 ? Number(theme.tolerance) : 22;
+  const memo = new Map();
+  const rgbF = (c) => {
+    const clave = c.map((v) => Math.round(v * 1000)).join(',');
+    if (memo.has(clave)) return memo.get(clave);
+    const L = rgbALab(c);
+    let mejor = null, dm = Infinity;
+    for (const p of pares) {
+      const d = Math.hypot(L[0] - p.de[0], L[1] - p.de[1], L[2] - p.de[2]);
+      if (d < dm) { dm = d; mejor = p; }
+    }
+    const r = dm <= tol ? labARgb([mejor.a[0] + L[0] - mejor.de[0], mejor.a[1] + L[1] - mejor.de[1], mejor.a[2] + L[2] - mejor.de[2]]) : null;
+    memo.set(clave, r);
+    return r;
+  };
+  return { rgb: rgbF, hex: (h) => { if (!h) return h; const r = rgbF(hexARgb(h)); return r ? rgbAHex(r) : h; } };
+}
+const NUM = '(-?(?:\\d+\\.?\\d*|\\.\\d+))';
+const RE_COLOR = new RegExp(`(^|[\\s\\]\\[)(>])${NUM}\\s+${NUM}\\s+${NUM}(?:\\s+${NUM})?\\s+(rg|RG|sc|SC|scn|SCN|k|K)(?=[\\s\\[(/<]|$)`, 'g');
+/** Recolorea los operadores de color de un flujo de contenido (texto latin1). */
+function recolorearFlujo(texto, tema) {
+  return texto.replace(RE_COLOR, (todo, pre, a, b, c, d, op) => {
+    let rgb;
+    const cmyk = op === 'k' || op === 'K';
+    if (cmyk) { if (d === undefined) return todo; const k = +d; rgb = [(1 - a) * (1 - k), (1 - b) * (1 - k), (1 - c) * (1 - k)]; }
+    else { if (d !== undefined) return todo; rgb = [+a, +b, +c]; }
+    const n = tema.rgb(rgb);
+    if (!n) return todo;
+    const f = (v) => (Math.round(v * 10000) / 10000).toString();
+    const nuevoOp = cmyk ? (op === 'k' ? 'rg' : 'RG') : op;
+    return `${pre}${f(n[0])} ${f(n[1])} ${f(n[2])} ${nuevoOp}`;
+  });
+}
+function bytesALatin1(b) { let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return s; }
+function latin1ABytes(s) { const b = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i) & 255; return b; }
+/** Recolorea en su sitio una página de un PDFDocument (sus flujos y los formularios que use, a cualquier profundidad). */
+function recolorearPagina(doc, page, tema) {
+  const P = globalThis.PDFLib;
+  const ctx = doc.context;
+  const contenido = (obj) => {
+    if (obj instanceof P.PDFRawStream) return P.decodePDFRawStream(obj).decode();
+    if (obj && typeof obj.getContents === 'function') return obj.getContents();
+    return null;
+  };
+  const nuevoFlujo = (bytes, dictViejo) => {
+    const extra = {};
+    if (dictViejo) for (const [k, v] of dictViejo.entries()) { const n = k.asString(); if (!['/Filter', '/DecodeParms', '/Length'].includes(n)) extra[n.slice(1)] = v; }
+    return ctx.flateStream(bytes, extra);
+  };
+  const vistos = new Set();
+  const recursos = (res) => {
+    res = ctx.lookup(res);
+    if (!(res instanceof P.PDFDict)) return;
+    const xo = ctx.lookup(res.get(P.PDFName.of('XObject')));
+    if (!(xo instanceof P.PDFDict)) return;
+    for (const [, ref] of xo.entries()) {
+      if (!(ref instanceof P.PDFRef) || vistos.has(ref.toString())) continue;
+      vistos.add(ref.toString());
+      const s = ctx.lookup(ref);
+      if (!s || !s.dict || ctx.lookup(s.dict.get(P.PDFName.of('Subtype'))) !== P.PDFName.of('Form')) continue;
+      const bytes = contenido(s);
+      if (!bytes) continue;
+      ctx.assign(ref, nuevoFlujo(latin1ABytes(recolorearFlujo(bytesALatin1(bytes), tema)), s.dict));
+      recursos(s.dict.get(P.PDFName.of('Resources')));
+    }
+  };
+  const node = page.node;
+  const c = node.get(P.PDFName.of('Contents'));
+  const refs = c instanceof P.PDFArray ? c.asArray() : c ? [c] : [];
+  for (const r of refs) {
+    const s = ctx.lookup(r);
+    const bytes = contenido(s);
+    if (!bytes) continue;
+    const nuevo = nuevoFlujo(latin1ABytes(recolorearFlujo(bytesALatin1(bytes), tema)), null);
+    if (r instanceof P.PDFRef) ctx.assign(r, nuevo); else node.set(P.PDFName.of('Contents'), ctx.register(nuevo));
+  }
+  recursos(node.get(P.PDFName.of('Resources')) || (node.Resources && node.Resources()));
+}
+/** Copia recoloreada de un PDF (bytes) con el tema. */
+async function recolorearPdf(bytes, tema) {
+  const doc = await globalThis.PDFLib.PDFDocument.load(bytes);
+  for (const p of doc.getPages()) recolorearPagina(doc, p, tema);
+  return doc.save();
+}
+
+async function dibujarCapas(out, page, capas, assets, cache, degrees, tema) {
   const PW = page.getWidth(), PH = page.getHeight();
   for (const capa of capas || []) {
     const pieza = (assets || {})[capa.asset];
     if (!pieza) throw new Error(`falta el fichero de la pieza «${capa.asset}» del kit`);
     if (!cache[capa.asset]) {
       cache[capa.asset] = pieza.kind === 'pdf'
-        ? (await out.embedPdf(pieza.bytes))[0]
+        ? (await out.embedPdf(tema ? await recolorearPdf(pieza.bytes, tema) : pieza.bytes))[0]
         : await out.embedPng(pieza.bytes);
     }
     const emb = cache[capa.asset];
@@ -406,6 +524,9 @@ async function composeGame(deps) {
   const fixed = (deps.fixed || []).map((t) => (deps.lang === 'en' && t.en ? Object.assign({}, t, t.en) : t));
   const values = cleanValues(deps.values, deps.fields);
   const tick = onProgress || (() => {});
+  /* Tema de color (deps.theme): null si el juego no lo tiene. H: color de un texto o de la página, con el tema. */
+  const tema = crearTema(deps.theme);
+  const H = (c) => hex(tema ? tema.hex(c) : c, rgb);
   const out = await PDFDocument.create();
   out.registerFontkit(fontkit);
   const bgDoc = bgBytes ? await PDFDocument.load(bgBytes) : null;
@@ -610,7 +731,7 @@ async function composeGame(deps) {
       pen += (w.gap || 0) * laid.hs;
       const px = ccx + (pen - ccx) * c - (base - ccy) * s;
       const py = ccy + (pen - ccx) * s + (base - ccy) * c;
-      drawLine(bpg, degrees, ops, w.w, px, py, w.sz, w.f, hex(w.color, rgb), laid.hs, angle);
+      drawLine(bpg, degrees, ops, w.w, px, py, w.sz, w.f, H(w.color), laid.hs, angle);
       pen += w.nat * laid.hs;
     }
   };
@@ -642,16 +763,17 @@ async function composeGame(deps) {
       const size = PAGE_SIZES[template.pageSize];
       if (!size) throw new Error(`tamaño de página desconocido: ${template.pageSize}`);
       bg = out.addPage(size);
-      if (tp.bgColor) bg.drawRectangle({ x: 0, y: 0, width: size[0], height: size[1], color: hex(tp.bgColor, rgb) });
+      if (tp.bgColor) bg.drawRectangle({ x: 0, y: 0, width: size[0], height: size[1], color: H(tp.bgColor) });
     } else {
       const src = tp.bgFile ? await docDe(tp.bgFile) : bgDoc;
       if (!src) throw new Error(`la página ${tp.id} no tiene fondo (ni PDF ni capas)`);
       const pages = await out.copyPages(src, [tp.bgPage !== undefined ? tp.bgPage : pi]);
       bg = pages[0];
       out.addPage(bg);
+      if (tema) recolorearPagina(out, bg, tema);
     }
     /* Piezas de arte bajo los textos (capas «bajo»). Con fondo PDF también van encima del PDF. */
-    if (tp.layers) await dibujarCapas(out, bg, tp.layers, deps.assets, artCache, degrees);
+    if (tp.layers) await dibujarCapas(out, bg, tp.layers, deps.assets, artCache, degrees, tema);
     const PW = bg.getWidth(), PH = bg.getHeight();
     /* slot.xEn: posición horizontal solo en inglés (p. ej. el nombre abre la línea
        en inglés y va tras "A" en español). */
@@ -774,7 +896,7 @@ async function composeGame(deps) {
           });
         }
       }
-      if (drawFitted(bg, degrees, ops, font, str, fixedBox(f), size0, hex(f.color, rgb), f.align || 'left',
+      if (drawFitted(bg, degrees, ops, font, str, fixedBox(f), size0, H(f.color), f.align || 'left',
           { targetHs: (deps.lang === 'en' && f.xscaleEn !== undefined) ? f.xscaleEn : f.xscale,
             angle: f.angle || 0, lockSize: use, inline, vStart: colShift.has(f) || !!f.vStart,
             tight: !!f.tight,
@@ -793,7 +915,7 @@ async function composeGame(deps) {
         if (!val) continue;
         const font = ff[pickFont(s.fontFamily || 'caveat', s.size)];
         if (drawFitted(bg, degrees, ops, font, val, box(s), ptSize(s.fontFamily, s.size, PW),
-            hex(s.color || '#000000', rgb), s.align || 'left',
+            H(s.color || '#000000'), s.align || 'left',
             { single: !s.wrap, targetHs: s.xscale || 1, angle: s.angle || 0,
               grow: (s.w || 0) < 10 ? 2.5 : 1, baseY: baseOverride.get(s), vStart: colLeft.has(s), vTop: !!s.vTop, tight: !!s.tight,
               leading: s.leading ? (s.leading / 100) * PW : 0 })) {
@@ -808,7 +930,7 @@ async function composeGame(deps) {
     /* Marcas de mecánicas sobre la página (capa «over», p. ej. casillas marcadas). */
     correrMecanicas(template.pages[pi].id, 'over', bg, PW, PH);
     /* Piezas de arte por encima de los textos (capas «sobre», F1.3b). */
-    if (tp.topLayers) await dibujarCapas(out, bg, tp.topLayers, deps.assets, artCache, degrees);
+    if (tp.topLayers) await dibujarCapas(out, bg, tp.topLayers, deps.assets, artCache, degrees, tema);
     /* Nota cifrada (p10): igual que en Node. */
     tick((pi + 1) / n);
   }
@@ -861,5 +983,5 @@ async function composeGame(deps) {
         grow: (slot.w || 0) < 10 ? 2.5 : 1 });
     return !r.warn;
   }
-globalThis.PMECompose = { composeGame, fit, wrap, drawFitted, drawLine, drawPhoto, fieldFits };
+globalThis.PMECompose = { composeGame, fit, wrap, drawFitted, drawLine, drawPhoto, fieldFits, crearTema, recolorearPdf, rgbALab, labARgb, hexARgb, rgbAHex };
 })();

@@ -55,7 +55,7 @@ async function main() {
   try {
     const nombres = (await cliente.listTools()).tools.map((t) => t.name);
     const nuevas = ['list_library', 'duplicate_game', 'insert_page', 'insert_section', 'add_element', 'update_element', 'remove_element',
-      'add_puzzle', 'update_puzzle', 'remove_puzzle', 'import_art', 'create_vector_art', 'save_to_library', 'read_notes', 'write_change_summary'];
+      'add_puzzle', 'update_puzzle', 'remove_puzzle', 'import_art', 'create_vector_art', 'save_to_library', 'read_notes', 'write_change_summary', 'set_theme'];
     rec('el servidor anuncia las herramientas de §2.4 e insert_section', nuevas.every((n) => nombres.includes(n)), nuevas.filter((n) => !nombres.includes(n)).join(' '));
 
     // Biblioteca
@@ -183,6 +183,16 @@ async function main() {
       && crudo.suggestions[0].element === titulo.id && crudo.changes.at(-1).presupuestar[0].startsWith('Mensaje en morse'), JSON.stringify(crudo.suggestions));
     const sugMala = await llamar(cliente, 'write_change_summary', { id: ID, text: 'x', suggestions: [{ field: 'NO_EXISTE', text: 'y' }] });
     rec('una sugerencia de algo que no existe se rechaza', !sugMala.ok && sugMala.error.code === 'not-found');
+
+    // Tema de color
+    const tema = await ok(cliente, 'set_theme', { id: ID, theme: { name: 'Halloween', preset: 'halloween', map: [{ from: '#023a3a', to: '#3D1E4F' }] } });
+    const conTema = JSON.parse(fs.readFileSync(path.join(repo, 'games', ID, 'game.json'), 'utf8'));
+    rec('set_theme: guarda el tema (colores en mayúsculas) y el juego valida', tema.theme.map[0].from === '#023A3A' && conTema.theme.name === 'Halloween'
+      && (await ok(cliente, 'validate_game', { id: ID, mode: 'draft' })).errors.length === 0);
+    const temaMalo = await llamar(cliente, 'set_theme', { id: ID, theme: { name: 'x', map: [] } });
+    rec('set_theme sin colores se rechaza', !temaMalo.ok);
+    await ok(cliente, 'set_theme', { id: ID, theme: null });
+    rec('set_theme null quita el tema', !JSON.parse(fs.readFileSync(path.join(repo, 'games', ID, 'game.json'), 'utf8')).theme);
 
     // Copiar el juego y guardar piezas en la biblioteca
     const copia = await ok(cliente, 'duplicate_game', { from: ID, id: `${ID}-copia`, name: 'Copia' });

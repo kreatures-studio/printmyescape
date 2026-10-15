@@ -19,6 +19,8 @@ import { pintarFormulario } from './vistas/formulario.js';
 import { pintarPuzzles } from './vistas/puzzles.js';
 import { pintarPrevia } from './vistas/previa.js';
 import { pintarRevision } from './vistas/revision.js';
+import { pintarPresupuestos, guardarPresupuestoPendiente } from './vistas/presupuestos.js';
+import { pintarTema } from './vistas/tema.js';
 
 const CLAVE_TOKEN = 'pme-token';
 const CLAVE_REPO = 'pme-repo';
@@ -30,6 +32,8 @@ const SONDEO_MS = Number(PARAMS.get('sondeo')) || 20000;
 const MAX_DESHACER = 150;
 // Juegos del almacén en memoria (pruebas y demostración local).
 const FUENTES_MEMORIA = ['./ensayos/f3/cumple-mision-secreta/game.json', './games/final3/game.json'];
+// Presupuestos de ejemplo del almacén en memoria (sobre el juego de Claude) y sus tarifas.
+const PRESUPUESTOS_MEMORIA = { presupuestos: ['./ensayos/f5/presupuestos/P-2026-001.json', './ensayos/f5/presupuestos/P-2026-002.json'], tarifas: './ensayos/f5/presupuestos/tarifas.json' };
 
 // Repositorio de juegos del estudio (se puede cambiar con ?repo=dueño/nombre o desde la entrada).
 const REPO_POR_DEFECTO = 'kreatures-studio/printmyescape-juegos';
@@ -203,6 +207,7 @@ document.addEventListener('keydown', (e) => {
 function leerRuta() {
   const partes = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
   if (partes[0] === 'juego' && partes[1]) return { vista: partes[2] || 'paginas', id: partes[1], sub: partes[3] || null };
+  if (partes[0] === 'presupuestos') return { vista: 'presupuestos', sub: partes[1] || null };
   return { vista: 'inicio' };
 }
 app.navegar = (hash) => { if (location.hash === hash) repintar(); else location.hash = hash; };
@@ -212,6 +217,7 @@ async function alCambiarRuta() {
   if (!app.almacen) return; // aún en la entrada
   const ruta = leerRuta();
   if (app.sucio && (!ruta.id || !app.juego || ruta.id !== app.juego.id)) await app.guardarYa();
+  if (app.ruta.vista === 'presupuestos' && app.ruta.sub && app.ruta.sub !== ruta.sub) await guardarPresupuestoPendiente(app);
   app.ruta = ruta;
   if (ruta.id && (!app.juego || app.juego.id !== ruta.id)) {
     try {
@@ -251,6 +257,7 @@ function pintarCabecera() {
     poner(cab, marca(),
       h('nav', { class: 'nav', 'aria-label': 'Principal' },
         h('a', { href: '#/', 'aria-current': app.ruta.vista === 'inicio' ? 'page' : null }, 'Biblioteca'),
+        h('a', { href: '#/presupuestos', 'aria-current': app.ruta.vista === 'presupuestos' ? 'page' : null }, 'Presupuestos'),
         h('a', { href: './ayuda.html', target: '_blank', rel: 'noopener' }, 'Ayuda')),
       h('div', { class: 'relleno' }),
       h('span', { class: 'repo-chip' }, app.almacen.tipo === 'memoria' ? 'Demostración (sin guardar en GitHub)' : `Repositorio ${leerSesion(CLAVE_REPO) || PARAMS.get('repo') || REPO_POR_DEFECTO}`),
@@ -267,7 +274,7 @@ function pintarCabecera() {
     h('a', { href: '#/', class: 'boton-icono', 'aria-label': 'Volver a la biblioteca', style: { background: 'var(--verde)', borderColor: 'var(--verde)' } }, icono('atras', { color: '#FFFFFF', tam: 18 })),
     h('div', { class: 'juego-titulo' }, h('span', { class: 'nombre' }, enIdioma(g.name)), h('span', { class: 'estado', 'data-prueba': 'estado-guardado' }, estado)),
     h('nav', { class: 'nav', 'aria-label': 'Partes del juego' },
-      enlace('paginas', 'Páginas'), enlace('formulario', 'Formulario'), enlace('puzzles', 'Puzzles y soluciones'), enlace('previa', 'Vista previa'),
+      enlace('paginas', 'Páginas'), enlace('formulario', 'Formulario'), enlace('puzzles', 'Puzzles y soluciones'), enlace('tema', 'Tema'), enlace('previa', 'Vista previa'),
       enlace('revisar', 'Revisar', porRevisar ? h('span', { class: 'contador' }, String(porRevisar)) : null, 'revisar')),
     h('div', { class: 'relleno' }),
     app.novedades ? h('button', { class: 'boton contorno-claude', type: 'button', onclick: () => app.recargar() }, 'Hay cambios nuevos: recargar') : null,
@@ -316,13 +323,13 @@ async function enviarAlEstudio() {
 
 /* ---------------- Pantallas ---------------- */
 
-const VISTAS = { paginas: pintarPaginas, formulario: pintarFormulario, puzzles: pintarPuzzles, previa: pintarPrevia, revisar: pintarRevision };
+const VISTAS = { paginas: pintarPaginas, formulario: pintarFormulario, puzzles: pintarPuzzles, tema: pintarTema, previa: pintarPrevia, revisar: pintarRevision };
 
 function repintar() {
   pintarCabecera();
   const principal = $('principal');
   if (!app.almacen) return;
-  if (!app.juego) { pintarInicio(principal, app); return; }
+  if (!app.juego) { if (app.ruta.vista === 'presupuestos') pintarPresupuestos(principal, app); else pintarInicio(principal, app); return; }
   const vista = VISTAS[app.ruta.vista] || pintarPaginas;
   vista(principal, app);
 }
@@ -376,7 +383,7 @@ async function arrancar(almacen) {
 
 (async function inicio() {
   if (PARAMS.get('almacen') === 'memoria') {
-    await arrancar(crearAlmacenMemoria(FUENTES_MEMORIA, { base: new URL('./biblioteca/', location.href).href, indice: '/__biblioteca' }));
+    await arrancar(crearAlmacenMemoria(FUENTES_MEMORIA, { base: new URL('./biblioteca/', location.href).href, indice: '/__biblioteca' }, PRESUPUESTOS_MEMORIA));
     return;
   }
   const token = leerSesion(CLAVE_TOKEN);

@@ -251,6 +251,50 @@
           }
         ]
       }
+    },
+    "theme": {
+      "type": "object",
+      "description": "Tema de color: cada color de la paleta original («from») pasa a otro («to») al componer (piezas, PDF de fondo, textos y color de página). Las piezas de la biblioteca no cambian.",
+      "required": [
+        "map"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "preset": {
+          "type": "string",
+          "description": "Paleta de partida (id de la lista del creador)."
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 80,
+          "description": "ΔE (Lab) máximo para tomar un color por uno de la paleta. Por defecto, 22."
+        },
+        "map": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^#[0-9A-Fa-f]{6}$"
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^#[0-9A-Fa-f]{6}$"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "$defs": {

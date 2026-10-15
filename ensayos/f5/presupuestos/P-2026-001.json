@@ -1,0 +1,61 @@
+{
+  "schema": "pme-presupuesto/1",
+  "id": "P-2026-001",
+  "fecha": "2026-10-15",
+  "validez": 30,
+  "estado": "borrador",
+  "titulo": "Misión Secreta: cambio de tema «Fiesta»",
+  "juego": "cumple-mision-secreta",
+  "cliente": {
+    "nombre": "Cliente de ejemplo",
+    "contacto": ""
+  },
+  "descripcion": "Cambiar los colores de todo el juego (verde y kraft) por la paleta «Fiesta» (rosa, amarillo y turquesa), sin cambiar textos, puzzles ni formulario. El creador recolorea las piezas al componer; la ilustradora revisa cada una y retoca lo que no quede bien, y se comprueba el contraste de los textos en papel.",
+  "lineas": [
+    {
+      "id": "l1",
+      "seccion": "maquetacion",
+      "concepto": "tema",
+      "descripcion": "Paleta «Fiesta» aplicada a todo el juego",
+      "complejidad": "media",
+      "cantidad": 1,
+      "horas": 3,
+      "tarifa": 28
+    },
+    {
+      "id": "l2",
+      "seccion": "arte",
+      "concepto": "recolor",
+      "descripcion": "19 piezas de arte del juego: revisar y retocar las que no queden bien",
+      "complejidad": "media",
+      "cantidad": 19,
+      "horas": 0.25,
+      "tarifa": 30
+    },
+    {
+      "id": "l3",
+      "seccion": "maquetacion",
+      "concepto": "pagina-ajuste",
+      "descripcion": "Repaso de cada página: contraste de textos y huecos",
+      "complejidad": "sencilla",
+      "cantidad": 6,
+      "horas": 0.45,
+      "tarifa": 28
+    },
+    {
+      "id": "l4",
+      "seccion": "pruebas",
+      "concepto": "prueba-juego",
+      "descripcion": "Imprimir y comprobar colores en papel",
+      "complejidad": "sencilla",
+      "cantidad": 1,
+      "horas": 1.8,
+      "tarifa": 25
+    }
+  ],
+  "gestion": 10,
+  "descuento": 0,
+  "iva": 21,
+  "condiciones": "Validez del presupuesto: 30 días. Cada pieza de arte incluye boceto y dos rondas de cambios; los cambios adicionales se presupuestan aparte. Pago: 50 % al aceptar y 50 % a la entrega. Plazo orientativo: a convenir al aceptar. Las piezas de arte quedan en la biblioteca del estudio y el cliente tiene licencia de uso para este juego.",
+  "mostrarHoras": false
+}

@@ -47,7 +47,7 @@
 <body>
 <header class="cabecera">
   <a class="marca" href="./index.html"><span class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 7a4 4 0 11-3.5 6H8v3H5v-3H3v-3h8.5A4 4 0 0115 7z"/></svg></span><span class="nombre">PrintMyEscape <span>Creador</span></span></a>
-  <nav class="nav" aria-label="Principal"><a href="./index.html">Biblioteca</a><a href="./ayuda.html" aria-current="page">Ayuda</a></nav>
+  <nav class="nav" aria-label="Principal"><a href="./index.html">Biblioteca</a><a href="./index.html#/presupuestos">Presupuestos</a><a href="./ayuda.html" aria-current="page">Ayuda</a></nav>
 </header>
 
 <div class="ayuda">
@@ -58,9 +58,11 @@
     <a href="#paginas">Diseñar una página</a>
     <a href="#formulario">El formulario</a>
     <a href="#puzzles">Puzzles y soluciones</a>
+    <a href="#tema">Tema de color</a>
     <a href="#previa">Vista previa</a>
     <a href="#revisar">Revisar lo de Claude</a>
     <a href="#enviar">Enviar al estudio</a>
+    <a href="#presupuestos">Presupuestos</a>
     <span class="grupo">Con Claude Code</span>
     <a href="#claude">Qué hace Claude</a>
     <a href="#instalar">Prepararlo (una vez)</a>
@@ -146,6 +148,19 @@
       </ul>
     </section>
 
+    <section id="tema">
+      <h2>Tema de color</h2>
+      <p>En <strong>Tema</strong> cambias los colores de todo el juego de una vez: las piezas de arte, el fondo del artista, los textos y el color de las páginas. Sirve para hacer una versión de Halloween, de Navidad o con los colores favoritos del cumpleañero sin volver a dibujar nada.</p>
+      <figure><img src="ayuda/tema.jpg" alt="Pantalla Tema: paletas de partida, colores del juego y vista previa con el tema" loading="lazy"></figure>
+      <ol>
+        <li>El creador mira las páginas y saca los <strong>colores del juego</strong>, con cuánto se usa cada uno.</li>
+        <li>Elige una <strong>paleta de partida</strong> (Fiesta, Halloween, Navidad, Océano…): reparte sus colores sobre los del juego, de oscuro a claro, para que los textos sigan leyéndose.</li>
+        <li>Cambia el color que quieras con su muestra, o vuelve al <strong>Original</strong>. El <strong>alcance</strong> dice cuánto tiene que parecerse un color para cambiar con él (las sombras y luces cambian con su color).</li>
+        <li>Mira las primeras páginas a la derecha y pulsa <strong>Aplicar el tema al juego</strong>. Se ve también en Páginas y en la Vista previa, y en el PDF del comprador.</li>
+      </ol>
+      <p>Las piezas de la biblioteca no cambian: el color se cambia al componer, y <strong>Quitar el tema</strong> deja el juego como estaba. Las fotos, las imágenes de mapa de bits (como las pantallas de los dispositivos) y los degradados no cambian. <strong>Presupuestar este cambio</strong> abre un presupuesto con el trabajo de revisar cada pieza.</p>
+    </section>
+
     <section id="previa">
       <h2>Vista previa</h2>
       <p>El juego entero, página a página, como saldrá impreso. Arriba eliges el idioma y el ejemplo. <strong>Descargar el PDF</strong> te da el juego de prueba (con la marca «VISTA PREVIA»).</p>
@@ -169,6 +184,19 @@
     <section id="enviar">
       <h2>Enviar al estudio</h2>
       <p>Cuando el juego esté listo, pulsa <strong>Enviar al estudio</strong> (arriba a la derecha). El creador comprueba que no falte nada: si falta algo, te lleva a la vista previa con la lista. El estudio recibe el juego para revisarlo y prepararlo; mientras tanto, ya no se edita aquí.</p>
+    </section>
+
+    <section id="presupuestos">
+      <h2>Presupuestos</h2>
+      <p>En <strong>Presupuestos</strong> (arriba, junto a Biblioteca) el estudio prepara lo que cuesta un juego o un cambio, y lo descarga en <strong>PDF</strong> para enviarlo o en <strong>Excel</strong> para seguir con las cuentas.</p>
+      <figure><img src="ayuda/presupuestos.jpg" alt="Editor de un presupuesto con líneas de arte, maquetación, programación y pruebas, y los totales" loading="lazy"></figure>
+      <ul>
+        <li>Cada <strong>línea</strong> es un concepto (un icono, una ilustración como el cuadro, una página nueva, un puzzle, una mecánica nueva, una prueba de juego…), con su <strong>complejidad</strong>, la cantidad, las horas por unidad y la tarifa por hora. El precio es horas × tarifa; todo se puede cambiar en la línea.</li>
+        <li>Las <strong>tarifas</strong> (botón Tarifas) son las horas de cada concepto y lo que cuesta la hora de ilustración, maquetación, programación y pruebas. Las de partida son una referencia: ajustadlas a las vuestras. Un presupuesto ya hecho no cambia aunque cambien las tarifas.</li>
+        <li>Se puede empezar en blanco, con lo <strong>«A presupuestar»</strong> que dejó Claude en un juego (también desde Revisar) o con un <strong>cambio de tema</strong> (también desde Tema).</li>
+        <li>Abajo: coordinación y gestión, descuento e IVA, y las condiciones (rondas de cambios, pago, plazo). <strong>Mostrar las horas en el PDF</strong> si queréis que el cliente las vea.</li>
+      </ul>
+      <p>Se guardan en el repositorio de juegos (carpeta <code>presupuestos</code>), así el estudio y el cliente ven los mismos.</p>
     </section>
 
     <section id="claude">
