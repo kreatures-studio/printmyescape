@@ -1,6 +1,6 @@
 ---
 name: crear-escape-room
-description: Crea o cambia un juego de escape room imprimible en el repositorio de juegos del estudio, desde cero o a partir de otro, con la biblioteca (arte, páginas, secciones y puzzles), el formulario del comprador, ejemplos, validación y vista previa. Usar cuando el cliente pide un juego nuevo, un cambio en uno existente o atender sus notas de revisión.
+description: Crea o cambia un juego de escape room imprimible en el repositorio de juegos del estudio, desde cero o a partir de otro, con la biblioteca (arte, páginas, secciones y puzzles), el formulario del comprador, ejemplos, validación y vista previa. Usar cuando el cliente pide un juego nuevo, un cambio en uno existente o atender sus notas de revisión, y cuando el estudio pide un presupuesto (de un juego, una prueba nueva, un cambio de tema o arte).
 ---
 
 # Crear un escape room
@@ -17,6 +17,7 @@ necesites:
 - `reference/mecanicas.md` — las mecánicas que existen (generado del motor).
 - `reference/reglas-contenido.md` — lo que no se hace nunca.
 - `reference/lista.md` — comprobación antes de dar el trabajo por terminado.
+- `reference/presupuestos.md` — tarifas del estudio y cómo se hace un presupuesto con las herramientas.
 
 ## Flujo
 
@@ -45,6 +46,14 @@ necesites:
    que hay que presupuestar (mecánicas nuevas, encargos de arte) va en `presupuestar`, una línea por cosa.
    Después `sync` con `direction: push` y un mensaje claro.
    Solo si el cliente lo pide, `submit_to_studio` (con `validate_game` en modo submit sin errores).
+
+## Presupuestos
+
+Cuando el estudio pide un presupuesto («¿cuánto costaría…?», «hazme un presupuesto para…»), lee
+`reference/presupuestos.md`. En corto: `sync_budgets` pull; `get_rates` para elegir conceptos y complejidades (no
+inventes precios: salen de las tarifas); `create_budget` con una línea por cosa, cada una con su complejidad y, si
+hay juego, `anclas` que digan en qué página va (y en qué pieza, si ya existe); `export_budget` y **mira el PDF**;
+`sync_budgets` push. Resume al estudio el total y las suposiciones (lo que diste por hecho al elegir complejidades).
 
 ## Cuando una herramienta se niega
 

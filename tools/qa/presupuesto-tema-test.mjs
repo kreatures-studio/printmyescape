@@ -23,22 +23,29 @@ const rec = (nombre, ok, detalle = '') => { RES.push(!!ok); console.log(`${ok ? 
 const tf = completarTarifas(null);
 // ---- Cálculo
 const p = presupuestoNuevo(tf, 'P-2026-007', { titulo: 'Prueba' });
-p.lineas = [lineaDe(tf, 'ilustracion'), lineaDe(tf, 'icono', { cantidad: 3, complejidad: 'sencilla' }), lineaDe(tf, 'mecanica-sencilla')];
+p.lineas = [lineaDe(tf, 'prop', { complejidad: 'muy-compleja' }), lineaDe(tf, 'prop', { cantidad: 3, complejidad: 'sencilla' }), lineaDe(tf, 'programacion-puzzle', { complejidad: 'compleja' })];
+p.gestion = 10;
 let t = totales(p);
-rec('ilustración media: 16 h × 30 €', t.lineas[0].importe === 480, String(t.lineas[0].importe));
-rec('3 iconos sencillos: 3 × 0,9 h × 30 €', t.lineas[1].importe === 81, String(t.lineas[1].importe));
-rec('base, gestión 10 %, IVA 21 %', t.base === 801 && t.gestion === 80.1 && t.iva === 185.03 && t.total === 1066.13, JSON.stringify([t.base, t.gestion, t.iva, t.total]));
+rec('tarifas de la tabla: prop muy alta 2,5 h × 30 € = 75 €', t.lineas[0].importe === 75, String(t.lineas[0].importe));
+rec('3 props de complejidad baja: 3 × 0,5 h × 30 €', t.lineas[1].importe === 45, String(t.lineas[1].importe));
+rec('programación de un puzzle complejo: 3 h × 50 €', t.lineas[2].importe === 150, String(t.lineas[2].importe));
+rec('base, gestión 10 %, IVA 21 %', t.base === 270 && t.gestion === 27 && t.iva === 62.37 && t.total === 359.37, JSON.stringify([t.base, t.gestion, t.iva, t.total]));
 p.descuento = 5; t = totales(p);
-rec('descuento sobre base + gestión', t.descuento === 44.06 && t.imponible === 837.04, JSON.stringify([t.descuento, t.imponible]));
-rec('complejidad compleja: horas × 1,8', conComplejidad(tf, p.lineas[0], 'compleja').horas === 28.8);
+rec('descuento sobre base + gestión', t.descuento === 14.85 && t.imponible === 282.15, JSON.stringify([t.descuento, t.imponible]));
+rec('cambiar la complejidad cambia las horas a las de ese nivel', conComplejidad(tf, p.lineas[0], 'media').horas === 1 && conComplejidad(tf, p.lineas[2], 'sencilla').horas === 1);
+const precios = (id) => ['sencilla', 'media', 'compleja', 'muy-compleja'].map((n) => lineaDe(tf, id, { complejidad: n })).map((l) => l.horas * l.tarifa);
+rec('tabla completa: props, game design y programación por puzzle', precios('prop').join() === '15,30,60,75' && precios('gamedesign-puzzle').join() === '60,105,210,210'
+  && precios('programacion-puzzle').join() === '50,100,150,150' && lineaDe(tf, 'maquetacion').horas * lineaDe(tf, 'maquetacion').tarifa === 150
+  && lineaDe(tf, 'gamedesign-testing').horas * 30 === 90 && lineaDe(tf, 'programacion-ajustes').horas * 50 === 50, [precios('prop'), precios('gamedesign-puzzle'), precios('programacion-puzzle')].join(' | '));
 rec('siguiente número del año', siguienteId(['P-2026-001', 'P-2026-009', 'P-2025-050'], new Date('2026-05-01')) === 'P-2026-010');
-rec('concepto desde una nota de Claude', conceptoParaTexto('Mecánica nueva: tiras recortables con cifrado') === 'mecanica-compleja'
-  && conceptoParaTexto('Encargar una ilustración del salón') === 'ilustracion' && conceptoParaTexto('Algo raro') === 'otro');
+rec('concepto desde una nota de Claude', conceptoParaTexto('Mecánica nueva: tiras recortables con cifrado') === 'programacion-puzzle'
+  && conceptoParaTexto('Encargar una ilustración del salón') === 'prop' && conceptoParaTexto('Algo raro') === 'otro');
 rec('importe con formato español', euros(1234.5) === '1.234,50 €' && euros(-3) === '-3,00 €');
 rec('errores: falta el título', erroresDe({ ...p, titulo: '' }).length === 1);
 const juego = JSON.parse(fs.readFileSync(path.join(ROOT, 'ensayos/f3/cumple-mision-secreta/game.json'), 'utf8'));
 const lt = lineasCambioDeTema(tf, juego, 'Fiesta');
-rec('cambio de tema: tema, piezas, páginas y prueba', lt.length === 4 && lt[1].concepto === 'recolor' && lt[1].cantidad > 5 && lt[2].cantidad === juego.pages.length);
+rec('cambio de tema: ajustes, retoque de cada pieza (señalada) y testing', lt.length === 3 && lt[0].concepto === 'programacion-ajustes' && lt[1].concepto === 'prop'
+  && lt[1].complejidad === 'sencilla' && lt[1].cantidad > 5 && lt[1].anclas.length > 5 && lt[2].concepto === 'gamedesign-testing');
 rec('lo «A presupuestar» de un juego, una línea por nota', lineasDesdeJuego(tf, { changes: [{ presupuestar: ['Mecánica nueva de dados', 'Dibujar un dragón'] }] }).length === 2);
 
 // ---- Excel y PDF
@@ -56,7 +63,7 @@ wb2 = openpyxl.load_workbook(sys.argv[1], data_only=True); ws2 = wb2['Presupuest
 total = [r for r in ws2.iter_rows(values_only=True) if r[8] == 'TOTAL'][0][9]
 print(len(f), total, wb.sheetnames)`, path.join(tmp, 'p.xlsx')]).toString().trim();
 } catch (e) { leido = `error ${e.message}`; }
-rec('Excel: se abre, con fórmulas y el total calculado', /^\d+ 2011\.81 \['Presupuesto', 'Tarifas'\]$/.test(leido) && Number(leido.split(' ')[0]) >= 30, leido);
+rec('Excel: se abre, con fórmulas y el total calculado', /^\d+ 798\.6 \['Presupuesto', 'Tarifas'\]$/.test(leido) && Number(leido.split(' ')[0]) >= 30, leido);
 globalThis.PDFLib = require('pdf-lib');
 const fontkit = require('@pdf-lib/fontkit');
 const fuente = (f) => fs.readFileSync(path.join(ROOT, 'assets/fonts', f));
@@ -64,7 +71,7 @@ const pdf = await presupuestoPdf(ej, tf, { PDFLib: globalThis.PDFLib, fontkit, f
 const doc = await globalThis.PDFLib.PDFDocument.load(pdf);
 fs.writeFileSync(path.join(tmp, 'p.pdf'), pdf);
 const texto = execFileSync('pdftotext', [path.join(tmp, 'p.pdf'), '-']).toString();
-rec('PDF: número, conceptos y total', doc.getPageCount() >= 1 && texto.includes('P-2026-002') && texto.includes('Ilustración o cuadro') && texto.includes('2.011,81 €'), `${doc.getPageCount()} páginas`);
+rec('PDF: número, conceptos y total', doc.getPageCount() >= 1 && texto.includes('P-2026-002') && texto.includes('Prop · complejidad muy alta') && texto.includes('Game design de un puzzle medio') && texto.includes('798,60 €'), `${doc.getPageCount()} páginas`);
 fs.rmSync(tmp, { recursive: true, force: true });
 
 // ---- Paletas

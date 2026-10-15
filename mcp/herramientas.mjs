@@ -11,6 +11,7 @@ import { crearAlmacenFs } from './store-fs.mjs';
 import { cargarMotor, componerJuego, manifiestoDelKit, arteDisponible } from './motor.mjs';
 import { aV1 } from '../tools/game/v2.mjs';
 import { herramientasV2 } from './herramientas-v2.mjs';
+import { herramientasPresupuestos } from './herramientas-presupuestos.mjs';
 
 /* Un juego pme-game/2 se compone y se miden sus límites en su forma v1 equivalente (aV1). Se edita con las
    herramientas de herramientas-v2.mjs (F3.1) y con las de campos, formulario, textos, ejemplos y soluciones,
@@ -387,6 +388,7 @@ export function crearHerramientas({ raiz }) {
       },
     },
     ...herramientasV2({ almacen, mutar, cargarCrudo, validar, ErrorHerramienta, esquema, ID, PAGINA, raiz }),
+    ...herramientasPresupuestos({ raiz, almacen, cargarCrudo, ErrorHerramienta, esquema }),
   ];
 
   return { herramientas, almacen, comprobarArgs };

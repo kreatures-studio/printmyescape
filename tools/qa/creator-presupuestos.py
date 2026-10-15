@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Pruebas del creador: presupuestos y tema de color (Chromium + Playwright, almacén en memoria).
 
-  - Presupuestos: la lista trae los dos de ejemplo; el editor da el total del ejemplo; PDF y Excel se descargan y se
-    leen (pdftotext, openpyxl); añadir una línea cambia el total y se guarda; un presupuesto nuevo «con lo A
-    presupuestar» de un juego y otro «con un cambio de tema» traen sus líneas; las tarifas se guardan y los
-    presupuestos nuevos usan la tarifa cambiada.
+  - Presupuestos: la lista trae los dos de ejemplo; el editor da el total del ejemplo y, al lado, el escape con cada
+    línea señalada; PDF y Excel se descargan y se leen (pdftotext, openpyxl); añadir una línea, cambiar su complejidad
+    y señalarla en una página cambia el total y la marca, y se guarda; «Como lo verá el cliente» enseña el PDF; un
+    presupuesto nuevo «con un cambio de tema» trae sus líneas; las tarifas se guardan y los presupuestos nuevos usan
+    la tarifa cambiada.
   - Tema: el creador saca la paleta del juego, una paleta de partida la reparte, la vista previa se compone, aplicar
     guarda game.theme (válido) y la vista previa del juego sale con los colores nuevos; quitar el tema lo deja como
     estaba.
@@ -42,40 +43,61 @@ def main():
             app = lambda expr: pg.evaluate(f"async () => {{ const {{ app }} = await import('./app.js'); return {expr}; }}")
 
             # ---- Presupuestos
-            pg.goto(base + '#/presupuestos'); pg.wait_for_selector('tr[data-presupuesto]')
-            rec('lista: los dos presupuestos de ejemplo', pg.locator('tr[data-presupuesto]').count() == 2)
+            pg.goto(base + '#/presupuestos'); pg.wait_for_selector('[data-presupuesto]')
+            rec('lista: los dos presupuestos de ejemplo, en tarjetas con su reparto', pg.locator('a.tarjeta-presupuesto').count() == 2)
             pg.click('a:has-text("P-2026-002")'); pg.wait_for_selector('[data-prueba=total-presupuesto]')
-            rec('editor: el total del ejemplo', pg.inner_text('[data-prueba=total-presupuesto]') == '2.011,81 €', pg.inner_text('[data-prueba=total-presupuesto]'))
+            rec('editor: el total del ejemplo (tarifas nuevas)', pg.inner_text('[data-prueba=total-presupuesto]') == '798,60 €', pg.inner_text('[data-prueba=total-presupuesto]'))
+            pg.wait_for_selector('[data-paginas-escape][data-listo]', timeout=180000)
+            hojas = pg.locator('.hoja-escape').count(); marcas = pg.locator('.chapa.marca').count()
+            rec('al lado, el escape con cada línea señalada en su página', hojas >= 6 and marcas >= 4, f'{hojas} páginas · {marcas} marcas')
+            pg.locator('.chapa.marca').first.click(); pg.wait_for_timeout(300)
+            rec('pulsar una marca selecciona su línea', pg.locator('article.tarjeta-linea.sel').count() == 1)
             with pg.expect_download() as d: pg.click('[data-pdf]')
             pdf = os.path.join(tmp, 'p.pdf'); d.value.save_as(pdf)
             texto = subprocess.run(['pdftotext', pdf, '-'], capture_output=True, text=True).stdout
-            rec('PDF descargado: número, concepto y total', 'P-2026-002' in texto and 'Ilustración o cuadro' in texto and '2.011,81 €' in texto and d.value.suggested_filename.endswith('.pdf'), d.value.suggested_filename)
+            rec('PDF descargado: número, conceptos, total y «Dónde va cada cosa»', 'P-2026-002' in texto and 'Prop · complejidad muy alta' in texto and '798,60 €' in texto
+                and 'DÓNDE VA CADA COSA' in texto.upper() and d.value.suggested_filename.endswith('.pdf'), d.value.suggested_filename)
             with pg.expect_download() as d: pg.click('[data-excel]')
             xlsx = os.path.join(tmp, 'p.xlsx'); d.value.save_as(xlsx)
             r = subprocess.run([sys.executable, '-c', "import openpyxl,sys; ws=openpyxl.load_workbook(sys.argv[1], data_only=True)['Presupuesto']; print([x for x in ws.iter_rows(values_only=True) if x[8]=='TOTAL'][0][9])", xlsx], capture_output=True, text=True)
-            rec('Excel descargado: se abre y da el mismo total', r.stdout.strip() == '2011.81', r.stdout.strip() or r.stderr[-200:])
-            pg.select_option('#pres-nuevo-concepto', 'icono'); pg.click('[data-anadir-linea]')
-            pg.wait_for_function("document.querySelectorAll('tr[data-linea]').length === 11")
+            rec('Excel descargado: se abre y da el mismo total', r.stdout.strip() == '798.6', r.stdout.strip() or r.stderr[-200:])
+            pg.select_option('#pres-nuevo-concepto', 'prop'); pg.click('[data-anadir-linea]')
+            pg.wait_for_function("document.querySelectorAll('article.tarjeta-linea').length === 10")
             total = pg.inner_text('[data-prueba=total-presupuesto]')
-            rec('añadir un icono suma 45 € + gestión + IVA', total == '2.071,70 €', total)
+            rec('añadir un prop de complejidad media suma 30 € + IVA', total == '834,90 €', total)
+            nueva = pg.locator('article.tarjeta-linea.sel')
+            nueva.locator('.niveles button:has-text("alta")').first.click(); pg.wait_for_timeout(200)
+            total = pg.inner_text('[data-prueba=total-presupuesto]')
+            rec('pasarlo a complejidad alta: 2 h × 30 € (total 871,20 €)', total == '871,20 €', total)
+            antes = pg.locator('.chapa.marca').count()
+            pg.locator('article.tarjeta-linea.sel [data-senalar]').click()
+            pg.locator('.hoja-escape[data-pagina=p3]').click(position={'x': 60, 'y': 80}); pg.wait_for_timeout(300)
+            anclas = pg.evaluate("async () => { const { app } = await import('./app.js'); const p = app.ui.presupuestos.actual; return p.lineas[p.lineas.length - 1].anclas || []; }")
+            rec('«Señalar en el escape» y pulsar una página pone la marca de la línea', pg.locator('.chapa.marca').count() == antes + 1 and len(anclas) == 1 and anclas[0]['pagina'] == 'p3', str(anclas))
             pg.click('[data-guardar]'); pg.wait_for_function("document.querySelector('[data-prueba=estado-presupuesto]').textContent === 'Guardado'")
             guardado = pg.evaluate("async () => (await (await import('./app.js')).app.almacen.leerPresupuesto('P-2026-002')).lineas.length")
-            rec('se guarda en el almacén', guardado == 11, str(guardado))
+            rec('se guarda en el almacén', guardado == 10, str(guardado))
+            pg.click('[data-vista-cliente]'); pg.wait_for_selector('[data-vista-cliente-paginas][data-listo]', timeout=120000)
+            n = int(pg.get_attribute('[data-vista-cliente-paginas]', 'data-listo'))
+            rec('«Como lo verá el cliente» enseña el PDF', n >= 2, f'{n} páginas')
+            pg.keyboard.press('Escape')
 
-            pg.goto(base + '#/presupuestos/tarifas'); pg.wait_for_selector('[data-tarifa=ilustracion]')
-            pg.fill('[data-tarifa=ilustracion]', '35'); pg.press('[data-tarifa=ilustracion]', 'Tab')
+            pg.goto(base + '#/presupuestos/tarifas'); pg.wait_for_selector('[data-tarifa=arte]')
+            pg.fill('[data-tarifa=arte]', '35'); pg.press('[data-tarifa=arte]', 'Tab')
             pg.click('[data-guardar-tarifas]'); pg.wait_for_timeout(200)
-            t = pg.evaluate("async () => (await (await import('./app.js')).app.almacen.leerTarifas()).perfiles.ilustracion.tarifa")
-            rec('tarifas: la hora de ilustración se guarda', t == 35, str(t))
+            t = pg.evaluate("async () => (await (await import('./app.js')).app.almacen.leerTarifas()).perfiles.arte.tarifa")
+            rec('tarifas: la hora de arte se guarda', t == 35, str(t))
 
-            pg.goto(base + '#/presupuestos'); pg.wait_for_selector('tr[data-presupuesto]')
+            pg.goto(base + '#/presupuestos'); pg.wait_for_selector('[data-presupuesto]')
             pg.click('button:has-text("Nuevo presupuesto")')
             pg.fill('#pres-titulo', 'Cambio de tema'); pg.select_option('#pres-juego', 'cumple-mision-secreta'); pg.select_option('#pres-empezar', 'tema')
             pg.click('.dialogo button[type=submit]'); pg.wait_for_selector('[data-prueba=total-presupuesto]')
-            lineas = pg.locator('tr[data-linea]').count()
-            rec('nuevo con un cambio de tema: P-2026-003 con sus líneas', 'P-2026-003' in pg.inner_text('h1') and lineas == 4, f'{lineas} líneas')
-            tarifa = pg.locator('tr[data-linea] input[aria-label="Tarifa por hora"]').first.input_value()
+            lineas = pg.locator('article.tarjeta-linea').count()
+            rec('nuevo con un cambio de tema: P-2026-003 con sus líneas', 'P-2026-003' in pg.inner_text('h1') and lineas == 3, f'{lineas} líneas')
+            tarifa = pg.locator('section[data-seccion=arte] article.tarjeta-linea input[aria-label="Tarifa por hora"]').first.input_value()
             rec('las líneas nuevas usan la tarifa cambiada (35 €/h)', tarifa == '35', tarifa)
+            alto = pg.evaluate("document.querySelector('.barra-presupuesto').getBoundingClientRect().height")
+            rec('la barra del presupuesto cabe en una línea', alto < 70, str(alto))
 
             # ---- Tema
             pg.set_viewport_size({'width': 1360, 'height': 900})

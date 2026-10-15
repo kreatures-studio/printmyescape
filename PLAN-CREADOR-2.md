@@ -326,6 +326,18 @@ Un juego real de principio a fin, con prueba de juego, y la lista de piezas reut
   (`tools/game/paletas.mjs`: los oscuros siguen oscuros y los claros, claros) y una vista previa. Claude: `set_theme`.
   Pruebas: `tools/qa/presupuesto-tema-test.mjs` 21/21, `tools/qa/creator-presupuestos.py` 16/16, `mcp/test-v2.mjs`
   50/50; golden y paridad 96/96 (sin tema, igual que antes).
+- **Presupuestos con las tarifas del estudio, visuales y desde Claude (hecho, 15-10).** Tarifas `pme-tarifas/2`
+  (la tabla del estudio): perfiles arte, maquetación y game design 30 €/h, programación 50 €/h; conceptos con horas
+  por nivel: prop 0,5/1/2/2,5 h (baja…muy alta), maquetación 5 h por escape, game design por puzzle 2/3,5/7 h y testing
+  3 h, programación por puzzle 1/2/3 h y ajustes 1 h; gestión 0 % de partida. Líneas con `anclas`
+  (`[{pagina, elemento?, x?, y?}]`): el editor (tarjetas por sección, botones de complejidad, reparto del total) tiene
+  al lado las páginas del escape compuestas con un número donde va cada línea («Señalar en el escape»; pulsar una
+  pieza la ancla a ella), y «Como lo verá el cliente». El PDF lleva el reparto, miniaturas de las piezas, «Va en:
+  página…» y el anexo «Dónde va cada cosa» con las páginas y los números. Claude: `list_budgets`, `get_budget`,
+  `get_rates`, `set_rates`, `create_budget` (blanco, «A presupuestar» o tema), `update_budget`, `export_budget` (PDF
+  con anexo y Excel en `salidas/presupuestos/`) y `sync_budgets` (pull/push a la rama principal sin cambiar de rama,
+  con guarda por `actualizado`); skill: `reference/presupuestos.md`. Pruebas: `mcp/test-presupuestos.mjs` 20/20,
+  `tools/qa/presupuesto-tema-test.mjs` 23/23, `tools/qa/creator-presupuestos.py` 22/22.
 
 ## 4. Lo que no entra
 

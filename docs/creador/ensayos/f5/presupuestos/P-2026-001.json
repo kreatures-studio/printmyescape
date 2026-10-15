@@ -10,52 +10,103 @@
     "nombre": "Cliente de ejemplo",
     "contacto": ""
   },
-  "descripcion": "Cambiar los colores de todo el juego (verde y kraft) por la paleta «Fiesta» (rosa, amarillo y turquesa), sin cambiar textos, puzzles ni formulario. El creador recolorea las piezas al componer; la ilustradora revisa cada una y retoca lo que no quede bien, y se comprueba el contraste de los textos en papel.",
+  "descripcion": "Cambiar los colores de todo el juego (verde y kraft) por la paleta «Fiesta» (rosa, amarillo y turquesa), sin cambiar textos, puzzles ni formulario. El creador recolorea las piezas al componer; se revisa cada una y se retoca lo que no quede bien, y se comprueba el contraste de los textos en papel.",
   "lineas": [
     {
       "id": "l1",
-      "seccion": "maquetacion",
-      "concepto": "tema",
-      "descripcion": "Paleta «Fiesta» aplicada a todo el juego",
-      "complejidad": "media",
+      "seccion": "programacion",
+      "concepto": "programacion-ajustes",
+      "descripcion": "Aplicar la paleta «Fiesta» a todo el juego y ajustar contrastes",
       "cantidad": 1,
-      "horas": 3,
-      "tarifa": 28
+      "horas": 1,
+      "tarifa": 50
     },
     {
       "id": "l2",
       "seccion": "arte",
-      "concepto": "recolor",
-      "descripcion": "19 piezas de arte del juego: revisar y retocar las que no queden bien",
-      "complejidad": "media",
+      "concepto": "prop",
+      "descripcion": "Revisar y retocar las 19 piezas recoloreadas",
       "cantidad": 19,
-      "horas": 0.25,
-      "tarifa": 30
+      "horas": 0.5,
+      "tarifa": 30,
+      "complejidad": "sencilla",
+      "anclas": [
+        {
+          "pagina": "p1",
+          "elemento": "p1-e1"
+        },
+        {
+          "pagina": "p1",
+          "elemento": "p1-e2"
+        },
+        {
+          "pagina": "p1",
+          "elemento": "p1-e3"
+        },
+        {
+          "pagina": "p1",
+          "elemento": "p1-e4"
+        },
+        {
+          "pagina": "p1",
+          "elemento": "p1-e5"
+        },
+        {
+          "pagina": "p1",
+          "elemento": "p1-e6"
+        },
+        {
+          "pagina": "p1",
+          "elemento": "p1-e7"
+        },
+        {
+          "pagina": "p2",
+          "elemento": "p2-e1"
+        },
+        {
+          "pagina": "p2",
+          "elemento": "p2-e2"
+        },
+        {
+          "pagina": "p2",
+          "elemento": "p2-e3"
+        },
+        {
+          "pagina": "p2",
+          "elemento": "p2-e10"
+        },
+        {
+          "pagina": "p5",
+          "elemento": "p5-e1"
+        },
+        {
+          "pagina": "p5",
+          "elemento": "p5-e3"
+        },
+        {
+          "pagina": "p6",
+          "elemento": "p6-e2"
+        },
+        {
+          "pagina": "p6",
+          "elemento": "p6-e7"
+        }
+      ]
     },
     {
       "id": "l3",
-      "seccion": "maquetacion",
-      "concepto": "pagina-ajuste",
-      "descripcion": "Repaso de cada página: contraste de textos y huecos",
-      "complejidad": "sencilla",
-      "cantidad": 6,
-      "horas": 0.45,
-      "tarifa": 28
-    },
-    {
-      "id": "l4",
-      "seccion": "pruebas",
-      "concepto": "prueba-juego",
-      "descripcion": "Imprimir y comprobar colores en papel",
-      "complejidad": "sencilla",
+      "seccion": "gamedesign",
+      "concepto": "gamedesign-testing",
+      "descripcion": "Imprimir y comprobar colores y legibilidad en papel",
       "cantidad": 1,
-      "horas": 1.8,
-      "tarifa": 25
+      "horas": 3,
+      "tarifa": 30
     }
   ],
-  "gestion": 10,
+  "gestion": 0,
   "descuento": 0,
   "iva": 21,
-  "condiciones": "Validez del presupuesto: 30 días. Cada pieza de arte incluye boceto y dos rondas de cambios; los cambios adicionales se presupuestan aparte. Pago: 50 % al aceptar y 50 % a la entrega. Plazo orientativo: a convenir al aceptar. Las piezas de arte quedan en la biblioteca del estudio y el cliente tiene licencia de uso para este juego.",
-  "mostrarHoras": false
+  "condiciones": "Validez del presupuesto: 30 días. Cada prop incluye boceto y dos rondas de cambios; los cambios adicionales se presupuestan aparte. Pago: 50 % al aceptar y 50 % a la entrega. Plazo orientativo: a convenir al aceptar. Las piezas de arte quedan en la biblioteca del estudio y el cliente tiene licencia de uso para este juego.",
+  "mostrarHoras": false,
+  "actualizado": "2026-10-15T12:00:00.000Z"
 }

@@ -1,7 +1,7 @@
 // Presupuesto en Excel (.xlsx) sin dependencias: el libro se escribe a mano (SpreadsheetML) y se empaqueta en un ZIP
 // sin comprimir. Las cuentas van como fórmulas (precio por unidad, importe, subtotales, gestión, descuento, IVA y
 // total), con su valor ya calculado para los visores que no recalculan. Funciona en el navegador y en Node.
-import { SECCIONES, ESTADOS, totales, conceptoDe } from './calculo.mjs';
+import { SECCIONES, ESTADOS, totales, conceptoDe, nivelTexto } from './calculo.mjs';
 
 /* ---------------- ZIP (método 0, sin comprimir) ---------------- */
 const TABLA_CRC = (() => {
@@ -99,7 +99,7 @@ export function presupuestoXlsx(p, tarifas) {
       const n = r + 1;
       const c = conceptoDe(tarifas, l.concepto);
       fila([
-        [0, s.nombre], [1, c ? c.nombre : l.concepto], [2, l.descripcion || '', 8], [3, l.complejidad || 'media'],
+        [0, s.nombre], [1, c ? c.nombre : l.concepto], [2, l.descripcion || '', 8], [3, nivelTexto(c, l.complejidad) || '—'],
         [4, Number(l.cantidad) || 0], [5, Number(l.horas) || 0, 5], [6, Number(l.tarifa) || 0, 4],
         [7, { f: `F${n}*G${n}`, v: l.precioUnidad }, 4], [8, { f: `E${n}*F${n}`, v: l.horasTotal }, 5], [9, { f: `E${n}*H${n}`, v: l.importe }, 4],
       ]);
@@ -141,13 +141,14 @@ ${fusiones.length ? `<mergeCells count="${fusiones.length}">${fusiones.join('')}
   fila2([[0, 'Perfil', 3], [1, '€/h', 3]]);
   for (const [, pf] of Object.entries(tarifas.perfiles)) fila2([[0, pf.nombre], [1, Number(pf.tarifa) || 0, 4]]);
   fila2([]);
-  fila2([[0, 'Complejidad', 3], [1, 'Multiplica las horas', 3]]);
-  for (const [k, v] of Object.entries(tarifas.complejidad)) fila2([[0, k], [1, Number(v) || 0, 5]]);
-  fila2([]);
-  fila2([[0, 'Concepto', 3], [1, 'Unidad', 3], [2, 'Horas (media)', 3], [3, 'Qué incluye', 3]]);
-  for (const c of tarifas.conceptos) fila2([[0, c.nombre], [1, c.unidad], [2, Number(c.horas) || 0, 5], [3, c.ayuda || '', 8]]);
+  fila2([[0, 'Concepto', 3], [1, 'Unidad', 3], [2, 'Horas', 3], [3, 'Baja · sencillo', 3], [4, 'Media · medio', 3], [5, 'Alta · complejo', 3], [6, 'Muy alta', 3], [7, 'Qué incluye', 3]]);
+  for (const c of tarifas.conceptos) {
+    const nv = c.niveles || {};
+    fila2([[0, c.nombre], [1, c.unidad], [2, c.niveles ? '' : Number(c.horas) || 0, 5],
+      [3, nv.sencilla ?? '', 5], [4, nv.media ?? '', 5], [5, nv.compleja ?? '', 5], [6, nv['muy-compleja'] ?? '', 5], [7, c.ayuda || '', 8]]);
+  }
   const hoja2 = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols><col min="1" max="1" width="40" customWidth="1"/><col min="2" max="2" width="20" customWidth="1"/><col min="3" max="3" width="14" customWidth="1"/><col min="4" max="4" width="80" customWidth="1"/></cols><sheetData>${f2.join('')}</sheetData></worksheet>`;
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols><col min="1" max="1" width="32" customWidth="1"/><col min="2" max="2" width="12" customWidth="1"/><col min="3" max="7" width="13" customWidth="1"/><col min="8" max="8" width="80" customWidth="1"/></cols><sheetData>${f2.join('')}</sheetData></worksheet>`;
   const libro = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
 <sheets><sheet name="Presupuesto" sheetId="1" r:id="rId1"/><sheet name="Tarifas" sheetId="2" r:id="rId2"/></sheets><calcPr calcId="191029" fullCalcOnLoad="1"/></workbook>`;
