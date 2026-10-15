@@ -19,7 +19,7 @@ las herramientas (validan antes de guardar). `get_game` devuelve el juego entero
 | `notes`, `changes` | Notas del cliente y resúmenes de cambios (con `presupuestar`) | `read_notes`, `write_change_summary` |
 | `suggestions` | Lo que Claude sugiere y el cliente acepta o descarta en el creador | `write_change_summary` con `suggestions` |
 | `review` | Lo que el cliente ya revisó en el creador (no se toca) | — |
-| `theme` | Tema de color: cada color `from` del juego pasa a su `to` al componer (piezas, PDF de fondo, textos, color de página), sin tocar la biblioteca. En el creador, pestaña Tema | `set_theme` (null lo quita) |
+| `theme` | Tema de color: cada color `from` del juego pasa a su `to` al componer (piezas, PDF de fondo, textos, color de página), sin tocar la biblioteca. `palette` recuerda de dónde salió la paleta (armonía con `rule` y `base`, o importada de Adobe Color). En el creador, pestaña Tema | `color_palette` (armonía o paleta de Adobe Color: .ase, CSS, XML o códigos) y `set_theme` con `palette` (reparte sobre los colores del juego) o `map`; null lo quita |
 
 ## Páginas y elementos
 

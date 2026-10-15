@@ -49,8 +49,10 @@ export function paletaDeMuestras(muestras, { max = 8, umbral = 14, minimo = 0.00
 /** Reparte una paleta nueva sobre la del juego, por luminosidad y sin que los textos pierdan contraste: los colores
  *  muy oscuros del juego (textos, contornos) van al más oscuro de la paleta; los muy claros (papeles, fondos), al más
  *  claro; y los intermedios se reparten por orden de luminosidad entre los demás colores de la paleta, del más
- *  oscuro al más claro. Devuelve el map de game.theme: [{ from, to }]. */
-export function asignarPaleta(origen, colores) {
+ *  oscuro al más claro. Devuelve el map de game.theme: [{ from, to }].
+ *  Con `tintaYPapel`, los tres últimos colores son tinta, papel de color y papel (los de una armonía): ver asignarConPapeles. */
+export function asignarPaleta(origen, colores, { tintaYPapel = false } = {}) {
+  if (tintaYPapel && colores.length >= 4) return asignarConPapeles(origen, colores);
   const de = [...origen].map((o) => (typeof o === 'string' ? o : o.hex)).map((hex) => ({ hex, L: lab(hex)[0] })).sort((a, b) => a.L - b.L);
   const a = colores.map((c) => ({ hex: c.toUpperCase(), L: lab(c)[0] })).sort((x, y) => x.L - y.L);
   if (!de.length || !a.length) return [];
@@ -68,4 +70,23 @@ export function asignarPaleta(origen, colores) {
     out.push({ from: o.hex, to: medios[k].hex });
   });
   return origen.map((x) => (typeof x === 'string' ? x : x.hex)).map((from) => out.find((m) => m.from === from));
+}
+
+/** Reparto con papeles: los oscuros del juego (textos, contornos) van a la tinta; los claros, al papel; los papeles de
+ *  color del juego (claros y poco saturados, como el kraft), al papel de color; y el resto, por luminosidad, a los
+ *  colores de la armonía. Así los papeles no se vuelven del color más chillón aunque sea el más claro. */
+function asignarConPapeles(origen, colores) {
+  const n = colores.length;
+  const [tinta, papelColor, papel] = colores.slice(n - 3).map((c) => c.toUpperCase());
+  const principales = colores.slice(0, n - 3).map((c) => ({ hex: c.toUpperCase(), L: lab(c)[0] })).sort((x, y) => x.L - y.L);
+  const lista = [...origen].map((o) => (typeof o === 'string' ? o : o.hex)).map((hex) => { const [L, a, b] = lab(hex); return { hex, L, croma: Math.hypot(a, b) }; });
+  const intermedios = lista.filter((o) => !(o.L < 28) && !(o.L > 88) && !(o.L > 65 && o.croma < 30)).sort((x, y) => x.L - y.L);
+  return lista.map((o) => {
+    if (o.L < 28) return { from: o.hex, to: tinta };
+    if (o.L > 88) return { from: o.hex, to: papel };
+    if (o.L > 65 && o.croma < 30) return { from: o.hex, to: papelColor };
+    const i = intermedios.indexOf(o);
+    const k = intermedios.length === 1 ? Math.floor((principales.length - 1) / 2) : Math.round((i * (principales.length - 1)) / (intermedios.length - 1));
+    return { from: o.hex, to: principales[k].hex };
+  });
 }

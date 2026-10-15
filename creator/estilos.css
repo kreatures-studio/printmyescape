@@ -406,6 +406,39 @@ dialog.ancho { max-width: min(960px, calc(100vw - 32px)); }
 .tema-fila input[type="color"] { width: 46px; height: 36px; padding: 2px; border: 1px solid var(--borde); border-radius: 8px; background: #FFFFFF; cursor: pointer; }
 .tema-fila .cifra { width: 44px; font-size: 13px; }
 .botones-columna { display: flex; flex-direction: column; gap: 8px; }
+.columna.lateral.tema-lateral { flex-basis: 344px; }
+.pestanas.tres { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.panel-paleta { display: flex; flex-direction: column; gap: 10px; }
+.panel-armonias, .panel-adobe { display: flex; flex-direction: column; gap: 12px; }
+.rueda { position: relative; margin: 2px auto; border-radius: 50%; touch-action: none; user-select: none; box-shadow: 0 0 0 1px rgba(27, 36, 32, .12), 0 6px 18px rgba(27, 36, 32, .14); }
+.rueda-blanco, .rueda-luz { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
+.rueda-blanco { background: radial-gradient(closest-side, #FFFFFF 0%, rgba(255, 255, 255, .55) 45%, rgba(255, 255, 255, 0) 100%); }
+.rueda-luz { background: #000000; }
+.rueda svg { position: absolute; inset: 0; pointer-events: none; }
+.marcador { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; padding: 0; border-radius: 50%; border: 2px solid #FFFFFF; box-shadow: 0 0 0 1px rgba(0, 0, 0, .35), 0 2px 6px rgba(0, 0, 0, .3); cursor: grab; }
+.marcador.base { width: 30px; height: 30px; margin: -15px 0 0 -15px; border-width: 3px; z-index: 1; }
+.marcador.arrastrando { cursor: grabbing; transform: scale(1.12); }
+.marcador:focus-visible { outline: 3px solid var(--verde); outline-offset: 2px; }
+.fila-luz { flex-direction: row; align-items: center; gap: 10px; }
+.fila-luz input { flex: 1; }
+.armonia-muestras { display: flex; gap: 4px; }
+.muestra-armonia { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; align-items: stretch; }
+.muestra-armonia span { height: 40px; border-radius: 7px; border: 1px solid rgba(27, 36, 32, .12); }
+.muestra-armonia code { font-size: 10.5px; color: var(--tenue); text-align: center; letter-spacing: -.2px; }
+.muestra-armonia.extra { flex: .8; }
+.muestra-armonia:nth-child(6) { margin-left: 8px; }
+.casilla-tema { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; line-height: 1.35; cursor: pointer; }
+.casilla-tema input { margin-top: 2px; accent-color: var(--verde); }
+.pasos-adobe { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.pasos-adobe .boton { display: inline-flex; gap: 6px; align-items: center; text-decoration: none; }
+.zona-soltar { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 16px 12px; border: 2px dashed var(--borde); border-radius: 12px; background: var(--superficie-2); text-align: center; cursor: pointer; font-size: 14px; }
+.zona-soltar:hover, .zona-soltar.encima, .zona-soltar:focus-visible { border-color: var(--verde); background: var(--verde-claro); outline: none; }
+.panel-adobe textarea { font-family: ui-monospace, monospace; font-size: 13px; resize: vertical; }
+.panel-adobe .campo .boton { align-self: flex-start; }
+.importada { display: flex; flex-direction: column; gap: 10px; }
+.franja-mesa { display: inline-flex; height: 18px; width: 150px; border-radius: 5px; overflow: hidden; box-shadow: 0 0 0 1px rgba(27, 36, 32, .12); }
+.franja-mesa span { flex: 1; }
+[data-descargar-ase] { align-self: flex-start; display: inline-flex; gap: 6px; align-items: center; }
 .tema-previa { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; width: 100%; justify-items: center; }
 .tema-previa figure { margin: 0; display: flex; flex-direction: column; gap: 6px; align-items: center; }
 .tema-previa canvas { box-shadow: var(--sombra); background: #FFFFFF; }

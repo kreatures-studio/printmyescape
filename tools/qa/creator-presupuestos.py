@@ -9,6 +9,8 @@
   - Tema: el creador saca la paleta del juego, una paleta de partida la reparte, la vista previa se compone, aplicar
     guarda game.theme (válido) y la vista previa del juego sale con los colores nuevos; quitar el tema lo deja como
     estaba.
+  - Armonías: la rueda de color (arrastrar, reglas) da la paleta nueva, se guarda en game.theme.palette y se vuelve
+    a abrir igual; la paleta se descarga en .ase. Adobe Color: importar un .ase, pegar códigos, avisar con un enlace.
   - La cabecera de un juego, con «Tema», cabe en una línea a 1360 px.
 Uso (desde la raíz del repo):  python3 tools/qa/creator-presupuestos.py
 """
@@ -121,6 +123,41 @@ def main():
             pg.goto(base + '#/juego/cumple-mision-secreta/tema'); pg.wait_for_selector('[data-quitar-tema]')
             pg.click('[data-quitar-tema]'); pg.wait_for_timeout(300)
             rec('quitar el tema', app("app.juego.theme === undefined"))
+
+            # ---- Armonías (rueda de color) y Adobe Color
+            pg.click('[data-pestana-tema=armonias]'); pg.wait_for_selector('.rueda [data-marcador="2"]')
+            rec('armonías: rueda con 5 puntos y 8 colores (con tinta y papeles)', pg.locator('.rueda .marcador').count() == 5 and pg.locator('.armonia-muestras .muestra-armonia').count() == 8)
+            caja = pg.locator('.rueda').bounding_box(); m = pg.locator('[data-marcador="2"]').bounding_box()
+            pg.mouse.move(m['x'] + m['width'] / 2, m['y'] + m['height'] / 2); pg.mouse.down()
+            pg.mouse.move(caja['x'] + caja['width'] * 0.2, caja['y'] + caja['height'] * 0.75, steps=6); pg.mouse.up(); pg.wait_for_timeout(300)
+            pal = app("app.ui.tema.borrador.palette")
+            rec('arrastrar el color base usa la armonía como paleta nueva', pal and pal['source'] == 'armonia' and pal['rule'] == 'complementario' and len(pal['colors']) == 8, str(pal))
+            pg.select_option('#tema-regla', 'triada'); pg.wait_for_timeout(300)
+            regla = app("app.ui.tema.borrador.palette.rule"); nombre = app("app.ui.tema.borrador.name")
+            rec('cambiar la regla (tríada) cambia la paleta y el nombre', regla == 'triada' and nombre == 'Armonía · Tríada', f'{regla} · {nombre}')
+            pg.wait_for_selector('.tema-previa[data-listo]', timeout=180000)
+            pg.click('[data-aplicar-tema]'); pg.wait_for_timeout(500)
+            guardado = app("app.juego.theme && app.juego.theme.palette && app.juego.theme.palette.rule")
+            rec('aplicar guarda la armonía en el juego y sigue válido', guardado == 'triada' and app("app.validacion.errores.length") == 0, str(guardado))
+            pg.goto(base + '#/juego/cumple-mision-secreta/paginas'); pg.wait_for_timeout(300)
+            pg.evaluate("async () => { const { app } = await import('./app.js'); app.ui.tema = null; }")
+            pg.goto(base + '#/juego/cumple-mision-secreta/tema'); pg.wait_for_selector('.rueda')
+            rec('al volver, se abre en Armonías con la tríada', pg.locator('[data-pestana-tema=armonias][aria-selected=true]').count() == 1 and pg.input_value('#tema-regla') == 'triada')
+            with pg.expect_download() as d: pg.click('[data-descargar-ase]')
+            ase = os.path.join(tmp, 'p.ase'); d.value.save_as(ase)
+            leido = subprocess.run(['node', '--input-type=module', '-e', f"import fs from 'node:fs'; import {{ coloresDeAse }} from '{ROOT}/tools/game/armonias.mjs'; console.log(coloresDeAse(fs.readFileSync('{ase}')).length)"], capture_output=True, text=True).stdout.strip()
+            rec('descargar la paleta nueva en .ase (para Illustrator o Photoshop)', d.value.suggested_filename.endswith('.ase') and leido.isdigit() and int(leido) >= 5, f'{d.value.suggested_filename} · {leido} colores')
+
+            pg.click('[data-pestana-tema=adobe]'); pg.wait_for_selector('.zona-soltar')
+            rec('Adobe Color: enlace a la rueda de Adobe', pg.get_attribute('.pasos-adobe a', 'href') == 'https://color.adobe.com/es/create/color-wheel')
+            subprocess.run(['node', '--input-type=module', '-e', f"import fs from 'node:fs'; import {{ aseDeColores }} from '{ROOT}/tools/game/armonias.mjs'; fs.writeFileSync('{tmp}/Mi paleta.ase', aseDeColores(['#264653', '#2A9D8F', '#E9C46A', '#F4A261', '#E76F51']))"], check=True)
+            pg.set_input_files('[data-importar-paleta]', os.path.join(tmp, 'Mi paleta.ase')); pg.wait_for_timeout(500)
+            b2 = app("({ name: app.ui.tema.borrador.name, colors: app.ui.tema.borrador.palette && app.ui.tema.borrador.palette.colors })")
+            rec('importar un .ase de Adobe Color: sus colores (y tinta y papeles, que le faltaban)', b2['name'] == 'Mi paleta' and b2['colors'][:5] == ['#264653', '#2A9D8F', '#E9C46A', '#F4A261', '#E76F51'] and len(b2['colors']) == 8, str(b2))
+            pg.fill('#tema-pegar', 'https://color.adobe.com/es/Mi-paleta-color-theme-123/'); pg.click('[data-leer-pegado]'); pg.wait_for_timeout(200)
+            rec('un enlace de Adobe Color explica que hay que descargar o copiar los códigos', 'Descargar' in pg.inner_text('.panel-adobe .mensaje'))
+            pg.fill('#tema-pegar', '#1D3557 #457B9D #A8DADC #F1FAEE #E63946'); pg.click('[data-leer-pegado]'); pg.wait_for_timeout(300)
+            rec('pegar los códigos de Adobe Color', app("app.ui.tema.borrador.palette.colors.slice(0, 5).join()") == '#1D3557,#457B9D,#A8DADC,#F1FAEE,#E63946')
             b.close()
     finally:
         srv.terminate()

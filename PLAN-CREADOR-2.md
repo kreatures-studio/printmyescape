@@ -338,6 +338,18 @@ Un juego real de principio a fin, con prueba de juego, y la lista de piezas reut
   con anexo y Excel en `salidas/presupuestos/`) y `sync_budgets` (pull/push a la rama principal sin cambiar de rama,
   con guarda por `actualizado`); skill: `reference/presupuestos.md`. Pruebas: `mcp/test-presupuestos.mjs` 20/20,
   `tools/qa/presupuesto-tema-test.mjs` 23/23, `tools/qa/creator-presupuestos.py` 22/22.
+- **Tema: armonías de color y Adobe Color (hecho, 15-10).** La pestaña Tema elige la paleta nueva en tres pestañas:
+  *Paletas* (las de partida), *Armonías* (rueda de color RYB como la de Adobe Color, con reglas análogo,
+  monocromático, tríada, complementario, complementario dividido, doble complementario, cuadrado, compuesto, matices y
+  personalizado; puntos arrastrables, luz y «tinta y papel»: un oscuro y dos claros del tono para que se lea al
+  imprimir) y *Adobe Color* (enlace a su rueda; importar .ase, CSS, SCSS, LESS, XML, códigos pegados o una imagen de
+  referencia; los enlaces de Adobe Color no se pueden leer desde el creador). Con tinta y papel, el reparto manda los
+  papeles del juego (claros y poco saturados, como el kraft) al papel de color y no al color más chillón.
+  `game.theme.palette` ({ source, rule?, base?, colors, inkPaper? }, en los dos esquemas) recuerda de dónde salió.
+  La paleta nueva se descarga en .ase para Illustrator o Photoshop. `tools/game/armonias.mjs` (sin dependencias).
+  Claude: `color_palette` (armonía, o .ase/CSS/XML/códigos de Adobe Color) y `set_theme` con `palette` (el servidor
+  saca los colores del juego con pdftoppm y reparte como el creador). Pruebas: `presupuesto-tema-test.mjs` 28/28,
+  `creator-presupuestos.py` 32/32, `mcp/test-v2.mjs` 56/56.
 
 ## 4. Lo que no entra
 

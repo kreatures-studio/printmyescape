@@ -55,7 +55,7 @@ async function main() {
   try {
     const nombres = (await cliente.listTools()).tools.map((t) => t.name);
     const nuevas = ['list_library', 'duplicate_game', 'insert_page', 'insert_section', 'add_element', 'update_element', 'remove_element',
-      'add_puzzle', 'update_puzzle', 'remove_puzzle', 'import_art', 'create_vector_art', 'save_to_library', 'read_notes', 'write_change_summary', 'set_theme'];
+      'add_puzzle', 'update_puzzle', 'remove_puzzle', 'import_art', 'create_vector_art', 'save_to_library', 'read_notes', 'write_change_summary', 'set_theme', 'color_palette'];
     rec('el servidor anuncia las herramientas de §2.4 e insert_section', nuevas.every((n) => nombres.includes(n)), nuevas.filter((n) => !nombres.includes(n)).join(' '));
 
     // Biblioteca
@@ -191,6 +191,23 @@ async function main() {
       && (await ok(cliente, 'validate_game', { id: ID, mode: 'draft' })).errors.length === 0);
     const temaMalo = await llamar(cliente, 'set_theme', { id: ID, theme: { name: 'x', map: [] } });
     rec('set_theme sin colores se rechaza', !temaMalo.ok);
+    // Armonías y Adobe Color: color_palette da la paleta y set_theme la reparte sobre los colores del juego.
+    const arm = await ok(cliente, 'color_palette', { harmony: { rule: 'triada', base: '#E63946' } });
+    rec('color_palette: armonía (5 colores + tinta y dos papeles)', arm.colors.length === 8 && arm.palette.source === 'armonia' && arm.palette.rule === 'triada', arm.colors.join(' '));
+    fs.writeFileSync(path.join(repo, 'adobe.css'), '.color-theme-1-hex { color: #1D3557; }\n.color-theme-2-hex { color: #457B9D; }\n.color-theme-3-hex { color: #A8DADC; }\n.color-theme-4-hex { color: #F1FAEE; }\n.color-theme-5-hex { color: #E63946; }\n');
+    const impCss = await ok(cliente, 'color_palette', { file: 'adobe.css' });
+    rec('color_palette: CSS exportado de Adobe Color (ya tiene oscuro y claro: sin tinta ni papel)', impCss.colors.join() === '#1D3557,#457B9D,#A8DADC,#F1FAEE,#E63946', impCss.colors.join(' '));
+    const { aseDeColores } = await import('../tools/game/armonias.mjs');
+    fs.writeFileSync(path.join(repo, 'adobe.ase'), aseDeColores(['#2B2D6E', '#C2185B', '#F7B32B']));
+    const ase = await ok(cliente, 'color_palette', { file: 'adobe.ase' });
+    rec('color_palette: .ase de Adobe (le faltan claros: añade tinta y papeles)', ase.colors.length === 6 && ase.colors[0] === '#2B2D6E', ase.colors.join(' '));
+    const enlace = await llamar(cliente, 'color_palette', { text: 'https://color.adobe.com/es/Mi-paleta-color-theme-123/' });
+    rec('color_palette: un enlace de Adobe Color pide el .ase o los códigos', !enlace.ok && /\.ase/.test(enlace.error.message));
+    const conPaleta = await ok(cliente, 'set_theme', { id: ID, theme: { name: 'Armonía · Tríada', palette: arm.palette } });
+    rec('set_theme con palette: mira los colores del juego y los reparte', conPaleta.theme.map.length >= 1 && conPaleta.origen.length >= 1 && conPaleta.theme.palette.rule === 'triada'
+      && conPaleta.theme.map.every((m) => arm.colors.includes(m.to)), JSON.stringify(conPaleta.theme.map));
+    const val = await ok(cliente, 'validate_game', { id: ID, mode: 'draft' });
+    rec('el juego con la paleta guardada valida', val.errors.length === 0, val.errors.join(' | '));
     await ok(cliente, 'set_theme', { id: ID, theme: null });
     rec('set_theme null quita el tema', !JSON.parse(fs.readFileSync(path.join(repo, 'games', ID, 'game.json'), 'utf8')).theme);
 

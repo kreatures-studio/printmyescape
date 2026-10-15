@@ -14,6 +14,7 @@ import {
 import { presupuestoPdf } from '../presupuesto/pdf.mjs';
 import { presupuestoXlsx } from '../presupuesto/xlsx.mjs';
 import { PALETAS, paletaDeMuestras, asignarPaleta, lab } from '../game/paletas.mjs';
+import { REGLAS, armonia, hexARueda, ruedaAHex, coloresDeTexto, coloresDeAse, aseDeColores } from '../game/armonias.mjs';
 
 const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -102,10 +103,25 @@ const temaVerde = PC.crearTema({ map: [{ from: '#00645A', to: '#C2185B' }] });
 const despues = await colores(await PC.recolorearPdf(pieza, temaVerde));
 rec('pieza recoloreada: el verde de la polaroid cambia y la pieza original no', !!verde && antes.includes(verde) && !despues.includes(verde) && /0\.7\d* 0\.[01]\d* 0\.3\d* rg/.test(despues), verde || 'sin verde');
 
+// ---- Armonías y Adobe Color
+rec('rueda de los pintores: el complementario del rojo es verde y el del azul, amarillo anaranjado', (() => {
+  const [, , , verde] = armonia('complementario', '#FF0000', { tintaYPapel: false }); const hv = hexARueda(verde).h;
+  const [, , , naranja] = armonia('complementario', '#0000FF', { tintaYPapel: false });
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(naranja.slice(i, i + 2), 16));
+  return Math.abs(hv - 180) < 1 && r > 200 && g > 120 && g < 230 && b < 40;
+})());
+rec('cada regla da 5 colores (+3 de tinta y papeles), con el base en el centro', REGLAS.every((r) => { const c = armonia(r.id, '#2EC4B6'); return c.length === 8 && c[2] === '#2EC4B6' && lab(c[5])[0] < 25 && lab(c[7])[0] > 95; }));
+rec('ida y vuelta de la rueda', ['#C2185B', '#2EC4B6', '#F7B32B', '#4B3FA6'].every((h) => ruedaAHex(hexARueda(h)) === h));
+rec('Adobe Color: CSS, SCSS, XML y rgba()', coloresDeTexto('.c1 { color: #1D3557; }\n$c2: #e94560;\n<color name="x" rgb="0F3460" r="15"/>').join() === '#1D3557,#E94560,#0F3460'
+  && coloresDeTexto('rgba(26, 43, 60, 1)').join() === '#1A2B3C' && coloresDeTexto('https://color.adobe.com/es/x-color-theme-1/').length === 0);
+const ase = aseDeColores(['#2B2D6E', '#C2185B'], 'Fiesta');
+rec('.ase: se escribe y se lee (RGB)', String.fromCharCode(...ase.slice(0, 4)) === 'ASEF' && coloresDeAse(ase).map((c) => c.hex).join() === '#2B2D6E,#C2185B');
+
 // ---- Componer con tema (CLI)
 const dir = fs.mkdtempSync(path.join(ROOT, 'salidas', 'tema-'));
 fs.cpSync(path.join(ROOT, 'ensayos/f3/cumple-mision-secreta/fotos'), path.join(dir, 'fotos'), { recursive: true });
-fs.writeFileSync(path.join(dir, 'game.json'), JSON.stringify({ ...juego, theme: { name: 'Fiesta', preset: 'fiesta', map: asignarPaleta(['#021E23', '#00645A', '#DEC3A5'], PALETAS[0].colores) } }));
+fs.writeFileSync(path.join(dir, 'game.json'), JSON.stringify({ ...juego, theme: { name: 'Fiesta', preset: 'fiesta', map: asignarPaleta(['#021E23', '#00645A', '#DEC3A5'], PALETAS[0].colores),
+  palette: { source: 'armonia', rule: 'triada', base: '#E63946', colors: armonia('triada', '#E63946') } } }));
 let salida = '';
 try {
   salida = execFileSync('node', ['tools/compose.js', '--game', path.relative(ROOT, dir), '--kit', 'biblioteca/arte/el-regalo-robado/manifest.json', '--example', '1', '--lang', 'es', '--out', path.relative(ROOT, path.join(dir, 't.pdf'))], { cwd: ROOT }).toString();

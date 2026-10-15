@@ -37,6 +37,8 @@ const TRAZOS = {
   arriba: 'M12 19V5M6 11l6-6 6 6',
   abajo: 'M12 5v14M6 13l6 6 6-6',
   llave: 'M15 7a4 4 0 11-3.5 6H8v3H5v-3H3v-3h8.5A4 4 0 0115 7z',
+  externo: 'M14 4h6v6M20 4l-9 9M18 14v6H4V6h6',
+  descargar: 'M12 4v12M7 11l5 5 5-5M5 20h14',
 };
 export function icono(nombre, { color = 'currentColor', tam = 20 } = {}) {
   return h('svg', { width: tam, height: tam, viewBox: '0 0 24 24', fill: 'none', stroke: color, 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true' },

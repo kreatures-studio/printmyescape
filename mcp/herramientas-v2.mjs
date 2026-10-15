@@ -273,21 +273,38 @@ export function herramientasV2(ctx) {
     },
     {
       name: 'set_theme',
-      description: 'Tema de color del juego (cambio de paleta). theme: { name, preset?, tolerance? (ΔE, 22 por defecto), map: [{ from: "#RRGGBB", to: "#RRGGBB" }] }: '
+      description: 'Tema de color del juego (cambio de paleta). theme: { name, preset?, tolerance? (ΔE, 22 por defecto), map?: [{ from: "#RRGGBB", to: "#RRGGBB" }], palette? }: '
         + 'cada color «from» del juego (y los tonos cercanos) pasa a su «to» al componer: piezas de arte, PDF de fondo, textos y color de página. '
-        + 'Las piezas de la biblioteca no cambian. theme: null quita el tema. Los from salen de los colores del juego (los de sus elementos y piezas); '
+        + 'Las piezas de la biblioteca no cambian. theme: null quita el tema. Lo normal es dar palette (de color_palette: una armonía o una paleta '
+        + 'de Adobe Color) sin map: el servidor mira los colores del juego y los reparte como el creador (oscuros a la tinta, claros a los papeles). '
+        + 'Con map, cada color a mano. Devuelve también los colores del juego (origen). '
         + 'presets: fiesta, halloween, navidad, oceano, pastel, selva, espacio, detective (tools/game/paletas.mjs).',
-      schema: esquema({ id: ID, theme: { description: 'objeto con name, preset?, tolerance? y map; o null para quitarlo' } }, ['id', 'theme']),
-      run: async ({ id, theme }) => mutar(id, theme ? `Tema de color «${theme.name || 'nuevo'}» en ${id}` : `Quitar el tema de color de ${id}`, (g) => {
-        if (!theme) { delete g.theme; return { theme: null }; }
-        const map = (theme.map || []).map((m) => ({ from: String(m.from).toUpperCase(), to: String(m.to).toUpperCase() }));
-        if (!map.length) throw new E('invalid', 'el tema necesita al menos un color en map');
-        const t = { name: String(theme.name || ''), map };
-        if (theme.preset) t.preset = String(theme.preset);
-        if (theme.tolerance) t.tolerance = Number(theme.tolerance);
-        g.theme = t;
-        return { theme: t };
-      }, { formato: 'v2' }),
+      schema: esquema({ id: ID, theme: { description: 'objeto con name, preset?, tolerance?, map? y palette? ({ source, rule?, base?, colors }); o null para quitarlo' } }, ['id', 'theme']),
+      run: async ({ id, theme }) => {
+        let origen = null;
+        let map = theme ? (theme.map || []).map((m) => ({ from: String(m.from).toUpperCase(), to: String(m.to).toUpperCase() })) : [];
+        const pal = theme && theme.palette;
+        if (pal && (!Array.isArray(pal.colors) || !pal.colors.length || !pal.colors.every((c) => /^#[0-9A-Fa-f]{6}$/.test(c)))) throw new E('invalid', 'palette.colors: una lista de colores #RRGGBB');
+        if (theme && !map.length && pal) {
+          const { mapaDePaleta } = await import('./tema.mjs');
+          ({ origen, map } = await mapaDePaleta(await cargarCrudo(id), almacen.carpeta(id), pal.colors, { tintaYPapel: !!pal.inkPaper }));
+        }
+        return mutar(id, theme ? `Tema de color «${theme.name || 'nuevo'}» en ${id}` : `Quitar el tema de color de ${id}`, (g) => {
+          if (!theme) { delete g.theme; return { theme: null }; }
+          if (!map.length) throw new E('invalid', 'el tema necesita map o palette (color_palette)');
+          const t = { name: String(theme.name || ''), map };
+          if (theme.preset) t.preset = String(theme.preset);
+          if (theme.tolerance) t.tolerance = Number(theme.tolerance);
+          if (pal) {
+            t.palette = { source: pal.source || 'importada', colors: pal.colors.map((c) => c.toUpperCase()) };
+            if (pal.rule) t.palette.rule = pal.rule;
+            if (pal.base) t.palette.base = String(pal.base).toUpperCase();
+            if (pal.inkPaper) t.palette.inkPaper = true;
+          }
+          g.theme = t;
+          return origen ? { theme: t, origen } : { theme: t };
+        }, { formato: 'v2' });
+      },
     },
   ];
 }

@@ -47,6 +47,15 @@ necesites:
    Después `sync` con `direction: push` y un mensaje claro.
    Solo si el cliente lo pide, `submit_to_studio` (con `validate_game` en modo submit sin errores).
 
+## Tema de color
+
+Para cambiar los colores de un juego («hazlo en tonos de Halloween», «usa esta paleta de Adobe Color»):
+`color_palette` con `harmony` (`rule` y `base`: análogo, tríada, complementario…) o con la paleta que dé el estudio
+(`file`: el .ase, CSS o XML descargado de Adobe Color, guardado en el repositorio; o `text` con los códigos). Un enlace
+de Adobe Color no trae los colores: pide el .ase o los códigos. Después `set_theme` con `name` y la `palette` que
+devuelve (sin `map`): el servidor reparte la paleta sobre los colores del juego como el creador. `render_preview` y
+**mira** que los textos se lean. El estudio puede ajustarlo después en la pestaña Tema.
+
 ## Presupuestos
 
 Cuando el estudio pide un presupuesto («¿cuánto costaría…?», «hazme un presupuesto para…»), lee
