@@ -284,9 +284,12 @@ with sync_playwright() as p:
     # ---------- F. límites de caracteres ----------
     b, pg, errs = open_demo(p)
     lim = pg.evaluate("() => ({NOMBRE_CUMPLE: LIMITS.NOMBRE_CUMPLE, NOMBRE_1: LIMITS['NOMBRE_1'], NOMBRE_4_2: LIMITS['NOMBRE_4.2'], APODO_1: LIMITS.APODO_1, APODO_8: LIMITS.APODO_8, B_INFO: LIMITS.B_INFO, B_NOTES: LIMITS.B_NOTES})")
+    # NOMBRE_4.2 es el nombre de otra persona (real, inventada, un actor…): en el juego por piezas va con los otros
+    # nombres de ese tipo (24, como la postal y el amor secreto); en el original, con los de los sospechosos (12).
+    otra = lim.pop('NOMBRE_4_2')
     nombres = {k: v for k, v in lim.items() if k not in ('B_INFO', 'B_NOTES')}
     # notas e información importante: 180, el mismo límite y lo que de verdad cabe en sus huecos
-    rec('F1 límite de nombres y apodos = 12 (política)', all(v == 12 for v in nombres.values()) and lim['B_INFO'] == lim['B_NOTES'] == 180,
+    rec('F1 límite de nombres y apodos = 12 (política)', all(v == 12 for v in nombres.values()) and otra in (12, 24) and lim['B_INFO'] == lim['B_NOTES'] == 180,
         json.dumps(lim))
     b.close()
 

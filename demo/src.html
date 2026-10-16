@@ -1557,6 +1557,24 @@ function finish() {
   $('stepcount').textContent = t('end');
   setNav(true, t('finish'), true);
 }
+/* Juegos por piezas: las piezas de arte (id → { kind, bytes }) y los PDF de fondo por página, decodificados una vez. */
+var DEMO_ASSETS = null, DEMO_BGFILES = null;
+function demoAssets() {
+  if (!DEMO_ASSETS) {
+    DEMO_ASSETS = {};
+    var A = PME_DEMO_DATA.assets || {};
+    Object.keys(A).forEach(function (k) { DEMO_ASSETS[k] = { kind: A[k].kind, bytes: b64ToBytes(A[k].b64) }; });
+  }
+  return DEMO_ASSETS;
+}
+function demoBgFiles() {
+  if (!DEMO_BGFILES) {
+    DEMO_BGFILES = {};
+    var B = PME_DEMO_DATA.bgFiles || {};
+    Object.keys(B).forEach(function (k) { DEMO_BGFILES[k] = b64ToBytes(B[k]); });
+  }
+  return DEMO_BGFILES;
+}
 function b64ToBytes(b64) {
   var bin = atob(b64), len = bin.length, out = new Uint8Array(len);
   for (var i = 0; i < len; i++) out[i] = bin.charCodeAt(i);
@@ -1811,7 +1829,8 @@ function generatePDFNow() {
       Object.keys(answers).forEach(function (kk) { vals[kk] = answers[kk]; });
       var bar = $('progress').firstElementChild;
       PMECompose.composeGame({
-        bgBytes: b64ToBytes(PME_DEMO_DATA.bg), fonts: fonts,
+        bgBytes: PME_DEMO_DATA.bg ? b64ToBytes(PME_DEMO_DATA.bg) : null, fonts: fonts,
+        assets: demoAssets(), bgFiles: demoBgFiles(),
         template: TPL, fixed: PME_DEMO_DATA.texts,
         i18n: PME_DEMO_DATA.i18n[lang], i18nAll: PME_DEMO_DATA.i18n, lang: lang,
         values: vals, photos: ph,

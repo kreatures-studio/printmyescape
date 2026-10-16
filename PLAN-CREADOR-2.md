@@ -351,6 +351,15 @@ Un juego real de principio a fin, con prueba de juego, y la lista de piezas reut
   saca los colores del juego con pdftoppm y reparte como el creador). Pruebas: `presupuesto-tema-test.mjs` 28/28,
   `creator-presupuestos.py` 32/32, `mcp/test-v2.mjs` 56/56.
 
+- **Formulario publicado: Regalo robado (por piezas), con topes revisados (hecho, 16-10).** `docs/index.html` se monta
+  ahora desde `demo/el-regalo-robado-piezas` (copia de la rama `juego/el-regalo-robado-piezas`, maquetada por las
+  artistas en el creador): `build-demo.py` admite juegos por piezas (mete las piezas de arte que usan sus páginas y los
+  PDF de fondo por página). `demo/index.html` sigue siendo el original (pruebas). Topes: todos caben con texto normal
+  (los avisos con «wwww…» no cuentan: sin espacios y con la letra más ancha); nombres de otra persona 24 (con quien
+  se esconde, destinatario de la postal, amor secreto), sitios que dan vergüenza 20 (lugar, tienda, web), mensajes
+  cortos 42 (confesión, postal); los ejemplos de las preguntas y de la ayuda caben en su tope. Pruebas: e2e-demo
+  30/30 y limites-demo 31/31 en las dos demos.
+
 ## 4. Lo que no entra
 
 Dibujo libre, grupos de capas y recorte avanzado; botón de IA en la web; imágenes generadas con IA; edición

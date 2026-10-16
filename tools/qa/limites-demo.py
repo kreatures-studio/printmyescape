@@ -67,13 +67,15 @@ def main():
             val = type_into(pg, inp, 'x' * (lim + 15) if fid != 'APP_1' else 'abcdefghijklmnopqrstu')
             rec('%s se corta en %d caracteres' % (fid, lim), len(val) == lim, 'len=%d' % len(val))
 
-        # 2) Nota (200) y postal (50): se escriben enteras, con texto de 200 y 50 caracteres
+        # 2) Nota (200) y postal (su tope): se escriben enteras, con texto de 200 y 50 caracteres
         inp = mount(pg, 'NOTA_PERSONALIZADA')
         val = type_into(pg, inp, ('Palabra larga sin fin ' * 12)[:200])
         rec('nota: se admiten 200 caracteres', len(val) == 200, 'len=%d' % len(val))
+        # (la postal admite su tope: 50 en el original; 42 en el juego por piezas, como el otro mensaje corto)
+        tope = pg.evaluate("() => LIMITS.TEXTO_POSTAL")
         inp = mount(pg, 'TEXTO_POSTAL')
-        val = type_into(pg, inp, ('Te echo de menos, nos vemos el sábado en el parque ' * 2)[:50])
-        rec('postal: se admiten 50 caracteres', len(val) == 50, 'len=%d' % len(val))
+        val = type_into(pg, inp, ('Te echo de menos, nos vemos el sábado en el parque ' * 2)[:tope])
+        rec('postal: se admite su tope entero (%d caracteres)' % tope, len(val) == tope and tope in (42, 50), 'len=%d' % len(val))
 
         # 2b) Edad: por encima del máximo se pone el máximo; por debajo del mínimo, el mínimo (con aviso)
         inp = mount(pg, 'EDAD')

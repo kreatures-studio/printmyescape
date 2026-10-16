@@ -3,7 +3,8 @@
 """Ensambla demo/index.html autocontenida (doble clic, sin servidor):
 inserta pdf-lib + fontkit + motor (tools/pme-compose-core.js) + fuentes + fondo + plantilla + ejemplo.
 Uso: python3 tools/build-demo.py [--game games/final3] [--out demo/index.html] [--final]
-El juego (game.json, pme-game/1) trae plantilla, textos, idiomas, fondo, ejemplos y fotos de muestra.
+El juego (game.json, pme-game/1 o /2) trae plantilla, textos, idiomas, fondo, ejemplos y fotos de muestra. Si sus
+páginas son piezas de arte (juegos por piezas), las piezas que usa van dentro, sacadas de la biblioteca.
 """
 import argparse
 import base64
@@ -27,6 +28,26 @@ def sample_photos(game, gdir):
             continue
         out[f['id']] = b64(os.path.normpath(os.path.join(gdir, photos[f['id']])))
     return out
+
+
+def piezas_de_arte(game):
+    """Piezas de arte que usan las capas de las páginas: id → {kind, b64}, de la biblioteca (tools/biblioteca/indice.mjs)."""
+    usadas = sorted({c['asset'] for p in game['template']['pages'] for c in (p.get('layers') or []) + (p.get('topLayers') or [])})
+    if not usadas:
+        return {}
+    import subprocess
+    js = ("import { arteCombinado } from './tools/biblioteca/indice.mjs';"
+          "import { createRequire } from 'node:module';"
+          "const { indicePiezas } = createRequire(import.meta.url)('./tools/game/kit.cjs');"
+          "const piezas = indicePiezas(arteCombinado()); const out = {};"
+          "for (const id of JSON.parse(process.argv[1])) { const p = piezas.get(id);"
+          "  if (!p) { console.error('falta la pieza ' + id); process.exit(1); } out[id] = p.file; }"
+          "console.log(JSON.stringify(out));")
+    r = subprocess.run(['node', '--input-type=module', '-e', js, json.dumps(usadas)], capture_output=True, text=True, cwd=ROOT)
+    if r.returncode != 0:
+        raise SystemExit('piezas de arte: ' + r.stderr.strip())
+    rutas = json.loads(r.stdout)
+    return {i: {'kind': 'pdf' if f.lower().endswith('.pdf') else 'png', 'b64': b64(f)} for i, f in rutas.items()}
 
 
 def main():
@@ -76,11 +97,17 @@ def main():
     }
     if game.get('schema') != 'pme-game/1':
         raise SystemExit('%s: no es un juego pme-game/1' % args.game)
-    if game['background'].get('kind') != 'pdf':
-        raise SystemExit('%s: el fondo debe ser un PDF' % args.game)
+    kind = game['background'].get('kind')
+    if kind not in ('pdf', 'layers'):
+        raise SystemExit('%s: el fondo debe ser un PDF o páginas con piezas de arte (layers)' % args.game)
     data = {'game': game, 'template': game['template'], 'texts': game['texts'], 'i18n': game['i18n'],
-            'fonts': fonts, 'bg': b64(os.path.normpath(os.path.join(gdir, game['background']['file']))),
-            'samplePhotos': sample_photos(game, gdir)}
+            'fonts': fonts, 'samplePhotos': sample_photos(game, gdir)}
+    if kind == 'pdf':
+        data['bg'] = b64(os.path.normpath(os.path.join(gdir, game['background']['file'])))
+    # Juegos por piezas (v2): las piezas de arte que usan sus páginas, de la biblioteca, y los PDF de fondo por página.
+    data['assets'] = piezas_de_arte(game)
+    bg_files = sorted({p['bgFile'] for p in game['template']['pages'] if p.get('bgFile')})
+    data['bgFiles'] = {f: b64(os.path.normpath(os.path.join(gdir, f))) for f in bg_files}
     if 'var DEMO_CONTROL = true;' not in html:
         raise SystemExit('demo/src.html: no encuentro "var DEMO_CONTROL = true;"')
     html = html.replace('var DEMO_CONTROL = true;',
