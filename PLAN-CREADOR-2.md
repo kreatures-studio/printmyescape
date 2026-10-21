@@ -360,6 +360,17 @@ Un juego real de principio a fin, con prueba de juego, y la lista de piezas reut
   cortos 42 (confesión, postal); los ejemplos de las preguntas y de la ayuda caben en su tope. Pruebas: e2e-demo
   30/30 y limites-demo 31/31 en las dos demos.
 
+- **Feedback del editor de personalización (hecho, 21-10).** En el juego (`tools/juegos/feedback-editor-21-10.cjs`,
+  aplicado a la rama del juego y a `demo/el-regalo-robado-piezas`): enunciados y ayudas con punto final, ayudas y
+  ejemplos nuevos para todos los públicos (fama, campos largos, amor secreto sin runas, tienda y producto, webs,
+  postal, aficiones, apps), frases a medias pasadas a pregunta, y el lugar del test en la misma pantalla que su
+  resultado. `form.sections[].screenBreaks` (los dos esquemas; casilla «Empieza pantalla nueva» en el creador): el
+  formulario empieza pantalla en esos campos. En el formulario, la bienvenida tiene una barra con Idioma, País y
+  Formato de papel: idioma y país detectados del navegador, A4 o US Letter según el país (datos de CLDR) hasta que el
+  cliente elige el formato a mano; se guarda en el borrador, sale en la revisión y el PDF se genera en ese formato
+  (US Letter: cada página A4 entera y centrada). El tercer punto de «Antes de empezar» sigue igual (pendiente).
+  Pruebas: `tools/qa/preferencias-demo.py` 11/11, e2e-demo 30/30 y limites-demo 31/31 en las dos demos.
+
 ## 4. Lo que no entra
 
 Dibujo libre, grupos de capas y recorte avanzado; botón de IA en la web; imágenes generadas con IA; edición

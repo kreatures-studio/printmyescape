@@ -224,7 +224,15 @@ function editorCampo(app, ui, s, c) {
         h('div', { class: 'campo', style: { width: '110px' } }, h('label', { for: `${pre}-min` }, 'Mínimo'), h('input', { id: `${pre}-min`, type: 'number', value: d.min ?? '', disabled: ro, onchange: (e) => cambiarDef('Mínimo', (dx) => { if (e.target.value === '') delete dx.min; else dx.min = Number(e.target.value); }) })),
         h('div', { class: 'campo', style: { width: '110px' } }, h('label', { for: `${pre}-max` }, 'Máximo'), h('input', { id: `${pre}-max`, type: 'number', value: d.max ?? '', disabled: ro, onchange: (e) => cambiarDef('Máximo', (dx) => { if (e.target.value === '') delete dx.max; else dx.max = Number(e.target.value); }) }))] : null,
       cabeInfo(g, c),
-      h('label', { class: 'casilla' }, h('input', { type: 'checkbox', checked: !!d.required, disabled: ro, onchange: (e) => cambiarDef('Obligatoria', (dx) => { dx.required = e.target.checked; }) }), 'Obligatoria')),
+      h('label', { class: 'casilla' }, h('input', { type: 'checkbox', checked: !!d.required, disabled: ro, onchange: (e) => cambiarDef('Obligatoria', (dx) => { dx.required = e.target.checked; }) }), 'Obligatoria'),
+      s.fields.indexOf(c) > 0 && d.type !== 'photo' ? h('label', { class: 'casilla', title: 'En el formulario del comprador, esta pregunta empieza pantalla: las de antes quedan en otra. Sirve para juntar en una pantalla preguntas que van juntas.' },
+        h('input', { type: 'checkbox', 'data-pantalla-nueva': c, checked: (s.screenBreaks || []).includes(c), disabled: ro,
+          onchange: (e) => app.cambiar('Pantalla nueva en el formulario', (copia) => {
+            const sx = copia.form.sections.find((x) => x.id === s.id);
+            const lista = (sx.screenBreaks || []).filter((x) => x !== c);
+            if (e.target.checked) lista.push(c);
+            if (lista.length) sx.screenBreaks = sx.fields.filter((x) => lista.includes(x)); else delete sx.screenBreaks;
+          }) }), 'Empieza pantalla nueva') : null),
     d.options ? editorOpciones(app, ui, c, d) : null,
     d.type === 'multi' ? h('label', { class: 'casilla' }, h('input', { type: 'checkbox', checked: !!d.allowOther, disabled: ro, onchange: (e) => alternarOtro(app, s, c, e.target.checked) }),
       'Permitir «Otro» (el comprador escribe su respuesta)', d.otherField ? h('code', { class: 'tenue' }, ` → ${d.otherField}`) : null) : null,
@@ -474,6 +482,7 @@ function borrarCampo(g, c) {
     s.fields = s.fields.filter((x) => x !== c);
     if (s.nameField === c) delete s.nameField;
     if (s.photoField === c) delete s.photoField;
+    if (s.screenBreaks) { s.screenBreaks = s.screenBreaks.filter((x) => x !== c); if (!s.screenBreaks.length) delete s.screenBreaks; }
   }
   for (const ej of g.examples || []) {
     for (const l of Object.keys(ej.values || {})) delete ej.values[l][c];
@@ -511,6 +520,7 @@ async function renombrar(app, ui, viejo, nuevo) {
       s.fields = s.fields.map((x) => (x === viejo ? nuevo : x));
       if (s.nameField === viejo) s.nameField = nuevo;
       if (s.photoField === viejo) s.photoField = nuevo;
+      if (s.screenBreaks) s.screenBreaks = s.screenBreaks.map((x) => (x === viejo ? nuevo : x));
     }
     const enElementos = (els) => { for (const e of els || []) if (e.field === viejo) e.field = nuevo; };
     for (const p of g.pages) enElementos(p.elements);

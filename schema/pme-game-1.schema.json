@@ -257,6 +257,7 @@
         "hint": { "$ref": "#/$defs/i18n" },
         "nameField": { "$ref": "#/$defs/fieldId" },
         "photoField": { "$ref": "#/$defs/fieldId" },
+        "screenBreaks": {"type": "array", "items": {"$ref": "#/$defs/fieldId"}, "description": "Campos que empiezan una pantalla nueva del formulario (para juntar preguntas relacionadas en la misma pantalla)."},
         "fields": {
           "type": "array",
           "minItems": 1,

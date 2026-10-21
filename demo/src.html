@@ -351,6 +351,15 @@
   .demo-banner { font-size: 11px; font-weight: 900; letter-spacing: .07em; text-transform: uppercase; color: #7e3b00; background: #fdf0e6; border: 2px dashed #d35400; border-radius: 8px; padding: 8px 12px; text-align: center; }
   .welcome-list { margin: 0; padding-left: 20px; font-size: 15px; line-height: 1.6; }
   .welcome-list li { margin-bottom: 8px; }
+  .prefs-bar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 4px 0 14px; padding: 12px 14px;
+    background: rgba(18, 61, 58, .06); border: 1px solid rgba(18, 61, 58, .18); border-radius: 10px; }
+  .prefs-bar .pref { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .prefs-bar label { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; opacity: .8; }
+  .prefs-bar select { width: 100%; min-width: 0; padding: 7px 8px; font: inherit; font-size: 15px; border: 1px solid rgba(18, 61, 58, .35);
+    border-radius: 8px; background: #fff; color: inherit; }
+  .prefs-bar .pref-note { font-size: 12px; opacity: .75; }
+  .review-prefs { margin: 0 0 10px; font-size: 14px; opacity: .85; }
+  @media (max-width: 640px) { .prefs-bar { grid-template-columns: 1fr; } }
   .checkline { display: flex; gap: 12px; align-items: center; background: rgba(14,116,99,.08); border-radius: 10px; padding: 14px; cursor: pointer; font-size: 16px; font-weight: 800; }
   .checkline:hover { background: rgba(14,116,99,.14); }
   .checkline input { width: 22px; height: 22px; accent-color: var(--teal); flex: none; margin: 0; }
@@ -485,10 +494,10 @@ var UI = {
   exampleLabel: B('Ejemplo:', 'Example:'),
   uploadPhoto: B('Pulsa para subir una foto', 'Click to upload a photo'),
   changePhoto: B('Pulsa para cambiar la foto', 'Click to change the photo'),
-  photoHintSaved: B('JPG, PNG o WebP · máx. 10 MB · mín. 600 px · se guarda en este equipo',
-                    'JPG, PNG or WebP · max 10 MB · min 600 px · saved on this device'),
-  photoHintSession: B('JPG, PNG o WebP · máx. 10 MB · mín. 600 px · solo vive en esta sesión',
-                      'JPG, PNG or WebP · max 10 MB · min 600 px · kept only in this session'),
+  photoHintSaved: B('JPG, PNG o WebP · máx. 10 MB · mín. 600 px · se guarda en este equipo.',
+                    'JPG, PNG or WebP · max 10 MB · min 600 px · saved on this device.'),
+  photoHintSession: B('JPG, PNG o WebP · máx. 10 MB · mín. 600 px · solo vive en esta sesión.',
+                      'JPG, PNG or WebP · max 10 MB · min 600 px · kept only in this session.'),
   removePhoto: B('Quitar foto', 'Remove photo'),
   photoAlt: B('Foto subida', 'Uploaded photo'),
   menuRevision: B('Revisión final', 'Final review'),
@@ -517,7 +526,7 @@ var UI = {
   errSuffix: B(' — haz una captura y avísanos.', ' — take a screenshot and let us know.'),
   lenBanner: B('Estos textos no caben en su hueco: %1. Acórtalos antes de generar el PDF.',
                'These texts do not fit: %1. Shorten them before generating the PDF.'),
-  tooLong: B('No cabe en su hueco: acórtalo', 'Does not fit: shorten it'),
+  tooLong: B('No cabe en su hueco: acórtalo.', 'Does not fit: shorten it.'),
   fullField: B('Ya no cabe más texto en este hueco.', 'No more text fits in this box.'),
   fullPills: B('No cabe otra opción: quita una antes.', 'No room for another option: remove one first.'),
   generating: B('Componiendo PDF…', 'Composing PDF…'),
@@ -561,6 +570,15 @@ var UI = {
   welcomeB3: B('Al final revisaremos todo junto y <b>generarás el PDF</b> aquí mismo, sin subir nada a internet.',
                'At the end we review everything together and you <b>generate the PDF</b> right here, without uploading anything to the internet.'),
   understand: B('Comprendo cómo funciona', 'I understand how it works'),
+  prefsHead: B('Tus preferencias', 'Your preferences'),
+  prefLang: B('Idioma', 'Language'),
+  prefCountry: B('País', 'Country'),
+  prefPaper: B('Formato de papel', 'Paper size'),
+  paperA4: B('A4', 'A4'),
+  paperLetter: B('US Letter', 'US Letter'),
+  paperSuggested: B('Sugerido para %1.', 'Suggested for %1.'),
+  paperChosen: B('Elegido por ti.', 'Chosen by you.'),
+  paperReview: B('Formato de papel: %1 · País: %2', 'Paper size: %1 · Country: %2'),
   errCheck: B('Marca "Comprendo cómo funciona" para continuar.', 'Tick "I understand how it works" to continue.'),
   /* portada */
   langHead: B('Idioma del juego', 'Game language'),
@@ -618,7 +636,8 @@ function formFromGame(game) {
     out.Q[id] = q;
   });
   game.form.sections.forEach(function (s) {
-    var sec = { id: s.id, title: s.title, fields: s.fields, nameField: s.nameField, photoField: s.photoField };
+    var sec = { id: s.id, title: s.title, fields: s.fields, nameField: s.nameField, photoField: s.photoField,
+      screenBreaks: s.screenBreaks || [] };
     if (s.hint) sec.hint = s.hint;
     out.SECDEF.push(sec);
   });
@@ -654,6 +673,51 @@ function translateOptions(q, v, to) {
   return q.choice ? one(String(v || '')) : String(v || '').split('||').map(one).join('||');
 }
 
+/* ---------- preferencias: idioma, país y formato de papel ---------- */
+/* País y formato salen del navegador al empezar (idioma con región, o zona horaria) y se pueden cambiar. El formato
+   sigue al país (A4, o US Letter donde se usa) hasta que el cliente lo elige a mano; desde ahí se respeta. */
+var PAISES = ('AD AE AF AG AI AL AM AO AR AS AT AU AW AZ BA BB BD BE BF BG BH BI BJ BM BN BO BR BS BT BW BY BZ CA CD CF CG ' +
+  'CH CI CL CM CN CO CR CU CV CY CZ DE DJ DK DM DO DZ EC EE EG ER ES ET FI FJ FM FO FR GA GB GD GE GH GI GL GM GN GQ GR ' +
+  'GT GU GW GY HK HN HR HT HU ID IE IL IN IQ IR IS IT JM JO JP KE KG KH KI KM KN KR KW KY KZ LA LB LC LI LK LR LS LT LU ' +
+  'LV LY MA MC MD ME MG MH MK ML MM MN MO MR MT MU MV MW MX MY MZ NA NE NG NI NL NO NP NR NZ OM PA PE PG PH PK PL PR PS ' +
+  'PT PW PY QA RO RS RU RW SA SB SC SD SE SG SI SK SL SM SN SO SR SS ST SV SY SZ TD TG TH TJ TL TM TN TO TR TT TV TW TZ ' +
+  'UA UG US UY UZ VA VC VE VG VI VN VU WS YE ZA ZM ZW').split(' ');
+/* Donde se usa US Letter (datos de papel de CLDR). */
+var PAISES_LETTER = ['US', 'CA', 'MX', 'CL', 'CO', 'CR', 'GT', 'NI', 'PA', 'PH', 'PR', 'SV', 'VE', 'BZ'];
+var ZONAS = { 'Europe/Madrid': 'ES', 'Atlantic/Canary': 'ES', 'Africa/Ceuta': 'ES', 'Europe/London': 'GB', 'Europe/Dublin': 'IE',
+  'Europe/Lisbon': 'PT', 'Europe/Paris': 'FR', 'Europe/Berlin': 'DE', 'Europe/Rome': 'IT', 'Europe/Amsterdam': 'NL',
+  'Europe/Brussels': 'BE', 'Europe/Zurich': 'CH', 'Europe/Vienna': 'AT', 'America/Mexico_City': 'MX', 'America/Monterrey': 'MX',
+  'America/Tijuana': 'MX', 'America/Cancun': 'MX', 'America/Bogota': 'CO', 'America/Lima': 'PE', 'America/Santiago': 'CL',
+  'America/Argentina/Buenos_Aires': 'AR', 'America/Caracas': 'VE', 'America/Montevideo': 'UY', 'America/Guatemala': 'GT',
+  'America/Costa_Rica': 'CR', 'America/Panama': 'PA', 'America/El_Salvador': 'SV', 'America/Managua': 'NI', 'America/Puerto_Rico': 'PR',
+  'America/Toronto': 'CA', 'America/Vancouver': 'CA', 'America/Montreal': 'CA', 'America/Edmonton': 'CA', 'America/Winnipeg': 'CA',
+  'America/Halifax': 'CA', 'America/New_York': 'US', 'America/Chicago': 'US', 'America/Denver': 'US', 'America/Phoenix': 'US',
+  'America/Los_Angeles': 'US', 'America/Anchorage': 'US', 'Pacific/Honolulu': 'US', 'America/Detroit': 'US', 'Asia/Manila': 'PH',
+  'Australia/Sydney': 'AU', 'Australia/Melbourne': 'AU', 'Pacific/Auckland': 'NZ' };
+function detectarIdioma() {
+  var ls = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || 'es'];
+  for (var i = 0; i < ls.length; i++) { var l = String(ls[i]).slice(0, 2).toLowerCase(); if (l === 'es' || l === 'en') return l; }
+  return 'en';
+}
+function detectarPais() {
+  var ls = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ''];
+  for (var i = 0; i < ls.length; i++) {
+    var m = /^[a-z]{2,3}[-_]([A-Za-z]{2})\b/.exec(String(ls[i]));
+    if (m && PAISES.indexOf(m[1].toUpperCase()) >= 0) return m[1].toUpperCase();
+  }
+  try { var z = Intl.DateTimeFormat().resolvedOptions().timeZone; if (ZONAS[z]) return ZONAS[z]; } catch (e) {}
+  return String(ls[0] || '').slice(0, 2).toLowerCase() === 'en' ? 'US' : 'ES';
+}
+function papelPara(pais) { return PAISES_LETTER.indexOf(pais) >= 0 ? 'letter' : 'a4'; }
+var PREFS = { country: null, paper: null, paperManual: false };
+function prefsIniciales() {
+  if (!PREFS.country) PREFS.country = detectarPais();
+  if (!PREFS.paper || !PREFS.paperManual) PREFS.paper = papelPara(PREFS.country);
+}
+function nombrePais(code) {
+  try { return new Intl.DisplayNames([LANG || 'es'], { type: 'region' }).of(code) || code; } catch (e) { return code; }
+}
+
 /* ---------- estado ---------- */
 var idx = 0, secPos = 0, answers = {}, multiOther = {}, view = 'steps';
 var photos = {}, idbOK = false, idbDB = null;
@@ -666,8 +730,12 @@ var photos = {}, idbOK = false, idbDB = null;
     if (d0.lang === 'es' || d0.lang === 'en') LANG = d0.lang;
     else if (Object.keys(answers).some(function (k) { return !!answers[k]; })) LANG = 'es';
     if (typeof d0.idx === 'number') idx = d0.idx;
+    if (d0.prefs) { PREFS.country = d0.prefs.country || null; PREFS.paper = d0.prefs.paper || null; PREFS.paperManual = !!d0.prefs.paperManual; }
   } catch (e) {}
 })();
+/* La versión final no tiene pantalla de demostración: el idioma sale del navegador y se cambia en la barra. */
+if (!LANG && !DEMO_CONTROL) LANG = detectarIdioma();
+prefsIniciales();
 
 /* ---------- fotos en IndexedDB (persisten recargas) ---------- */
 var idb = {
@@ -745,7 +813,9 @@ SECDEF.forEach(function (sec) {
   fs.forEach(function (f) {
     /* Foto sola; resto en grupos que quepan sin scroll (long=2, multi=3, resto 1; máx 4) */
     var fw = f.type === 'photo' ? 99 : (f.type === 'long' ? 2 : (f.type === 'multi' ? 3 : 1));
-    if (f.type === 'photo' || w + fw > 4) { if (cur.length) chunks.push(cur); cur = []; w = 0; }
+    /* el juego puede pedir pantalla nueva en un campo (screenBreaks): junta preguntas relacionadas */
+    var corte = (sec.screenBreaks || []).indexOf(f.id) >= 0;
+    if (f.type === 'photo' || corte || w + fw > 4) { if (cur.length) chunks.push(cur); cur = []; w = 0; }
     if (f.type === 'photo') { chunks.push([f]); }
     else { cur.push(f); w += fw; }
   });
@@ -768,7 +838,7 @@ function secDef(id) {
 }
 function saveDraft() {
   var when = new Date();
-  store.set(DRAFT_KEY, JSON.stringify({ idx: idx, lang: LANG, answers: answers, multiOther: multiOther, savedAt: when.getTime() }));
+  store.set(DRAFT_KEY, JSON.stringify({ idx: idx, lang: LANG, answers: answers, multiOther: multiOther, prefs: PREFS, savedAt: when.getTime() }));
   updateDraftInfo(when.getTime());
 }
 function updateDraftInfo(ts) {
@@ -1067,13 +1137,69 @@ function langCardsNode() {
 }
 function welcomeNode() {
   var root = el('div', 'landing welcome-block');
-  if (!DEMO_CONTROL) root.appendChild(langCardsNode());
-  if (!LANG) { root.appendChild(el('div', 'ex-note', 'Elige un idioma para continuar · Choose a language to continue')); return root; }
+  if (!LANG) { root.appendChild(langCardsNode()); root.appendChild(el('div', 'ex-note', 'Elige un idioma para continuar · Choose a language to continue')); return root; }
   var ul = el('ul', 'welcome-list');
   [UI.welcomeB1, UI.welcomeB2, UI.welcomeB3].forEach(function (b) { var li = el('li'); li.innerHTML = pick(b); ul.appendChild(li); });
   root.appendChild(ul);
+  root.appendChild(prefsNode());
   root.appendChild(checkControl(INTRO_FIELD));
   return root;
+}
+/* Barra de preferencias: idioma, país y formato de papel. */
+function prefsNode() {
+  var bar = el('div', 'prefs-bar');
+  bar.setAttribute('role', 'group');
+  bar.setAttribute('aria-label', t('prefsHead'));
+  var celda = function (id, etiqueta, ctl, nota) {
+    var c = el('div', 'pref');
+    var lb = el('label', null, etiqueta); lb.setAttribute('for', id);
+    ctl.id = id;
+    c.appendChild(lb); c.appendChild(ctl);
+    if (nota) c.appendChild(el('span', 'pref-note', nota));
+    return c;
+  };
+  var sl = document.createElement('select');
+  [['es', 'Español'], ['en', 'English']].forEach(function (o) {
+    var op = document.createElement('option'); op.value = o[0]; op.textContent = o[1]; op.selected = LANG === o[0]; sl.appendChild(op);
+  });
+  sl.onchange = function () { setLang(sl.value); };
+  var sp = document.createElement('select');
+  PAISES.map(function (c) { return [c, nombrePais(c)]; })
+    .sort(function (a, b) { return a[1].localeCompare(b[1], LANG || 'es'); })
+    .forEach(function (o) {
+      var op = document.createElement('option'); op.value = o[0]; op.textContent = o[1]; op.selected = PREFS.country === o[0]; sp.appendChild(op);
+    });
+  sp.onchange = function () {
+    PREFS.country = sp.value;
+    if (!PREFS.paperManual) PREFS.paper = papelPara(PREFS.country);
+    saveDraft(); render();
+  };
+  var sf = document.createElement('select');
+  [['a4', t('paperA4')], ['letter', t('paperLetter')]].forEach(function (o) {
+    var op = document.createElement('option'); op.value = o[0]; op.textContent = o[1]; op.selected = PREFS.paper === o[0]; sf.appendChild(op);
+  });
+  sf.onchange = function () { PREFS.paper = sf.value; PREFS.paperManual = true; saveDraft(); render(); };
+  bar.appendChild(celda('pref-lang', t('prefLang'), sl));
+  bar.appendChild(celda('pref-country', t('prefCountry'), sp));
+  bar.appendChild(celda('pref-paper', t('prefPaper'), sf,
+    PREFS.paperManual ? t('paperChosen') : fmt(t('paperSuggested'), nombrePais(PREFS.country))));
+  return bar;
+}
+/* El PDF compuesto (A4) en US Letter: cada página, entera y centrada en la hoja (vectorial, sin perder calidad). */
+function aCarta(bytes) {
+  var P = PDFLib;
+  return P.PDFDocument.load(bytes).then(function (src) {
+    return P.PDFDocument.create().then(function (out) {
+      return out.embedPdf(src, src.getPageIndices()).then(function (embs) {
+        embs.forEach(function (e) {
+          var W = 612, H = 792, k = Math.min(W / e.width, H / e.height);
+          var pg = out.addPage([W, H]);
+          pg.drawPage(e, { x: (W - e.width * k) / 2, y: (H - e.height * k) / 2, width: e.width * k, height: e.height * k });
+        });
+        return out.save();
+      });
+    });
+  });
 }
 function welcomeIndex() {
   for (var i = 0; i < SCREENS.length; i++) if (SCREENS[i].welcome) return i;
@@ -1421,6 +1547,8 @@ function renderReview(A, fromMobile) {
   tools.appendChild(cb);
   tools.appendChild(el('span', null, t('onlyMissing')));
   A.appendChild(tools);
+  /* idioma, país y formato elegidos en la bienvenida (el PDF sale en ese formato) */
+  A.appendChild(el('p', 'review-prefs', fmt(t('paperReview'), PREFS.paper === 'letter' ? t('paperLetter') : t('paperA4'), nombrePais(PREFS.country))));
   var dw = el('div'); dw.id = 'dupwarn'; A.appendChild(dw);
   function refreshDup() {
     var d = dupNames();
@@ -1838,11 +1966,14 @@ function generatePDFNow() {
         theme: PME_DEMO_DATA.game.theme || null,
         onProgress: function (pr) { bar.style.width = Math.round(pr * 100) + '%'; }
       }).then(function (res) {
+        if (PREFS.paper !== 'letter') return res;
+        return aCarta(res.bytes).then(function (b) { return { bytes: b, warns: res.warns }; });
+      }).then(function (res) {
         var blob = new Blob([res.bytes], { type: 'application/pdf' });
         var a = $('pdflink');
         try { if (a.href && a.href.indexOf('blob:') === 0) URL.revokeObjectURL(a.href); } catch (x) {}
         a.href = URL.createObjectURL(blob);
-        a.download = 'escape-personalizado-' + lang + '.pdf';
+        a.download = 'escape-personalizado-' + lang + (PREFS.paper === 'letter' ? '-letter' : '') + '.pdf';
         $('dl').style.display = 'flex';
         var pv = $('pdfprev');
         watermarkPdf(res.bytes, lang).then(function (wb) {

@@ -385,21 +385,21 @@
         "en": "What are they known for?"
       },
       "cap": 30,
-      "ej": {
-        "es": "Por comer hamburguesas",
-        "en": "For eating burgers"
-      },
       "corta": {
         "es": "El cumpleañero · Fama",
         "en": "The birthday person · Known for"
+      },
+      "desc": {
+        "es": "Ejemplos: Por comer hamburguesas. Por decir siempre «yo no fui».",
+        "en": "Examples: For eating burgers. For saying \"it wasn't me\"."
       }
     },
     "DEBILIDAD_TEXTO": {
       "type": "text",
       "required": true,
       "q": {
-        "es": "Su mayor debilidad es",
-        "en": "Their biggest weakness is"
+        "es": "¿Cuál es su mayor debilidad?",
+        "en": "What is their biggest weakness?"
       },
       "cap": 30,
       "corta": {
@@ -460,8 +460,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Su mayor talento es",
-        "en": "Their greatest talent is"
+        "es": "¿Cuál es su mayor talento?",
+        "en": "What is their greatest talent?"
       },
       "cap": 30,
       "corta": {
@@ -512,13 +512,17 @@
       "type": "long",
       "required": true,
       "q": {
-        "es": "Información que sus amigos y familiares consideran importante sobre esta persona",
-        "en": "Information that their friends and family consider important about this person"
+        "es": "Información que sus amigos y familiares consideran importante sobre esta persona.",
+        "en": "Information that their friends and family consider important about this person."
       },
       "cap": 180,
       "corta": {
         "es": "El cumpleañero · Info",
         "en": "The birthday person · Info"
+      },
+      "desc": {
+        "es": "Añade una anécdota o un detalle divertido para personalizar la historia. Esta información es decorativa y no afecta a los puzles ni a su resolución.",
+        "en": "Add an anecdote or a funny detail to personalise the story. This information is decorative and does not affect the puzzles or how they are solved."
       }
     },
     "B_NOTES": {
@@ -532,6 +536,10 @@
       "corta": {
         "es": "El cumpleañero · Notas",
         "en": "The birthday person · Notes"
+      },
+      "desc": {
+        "es": "Puedes incluir manías, costumbres o curiosidades que hagan gracia. Estos detalles son decorativos y no afectan a los puzles ni a su resolución.",
+        "en": "You can include quirks, habits or curiosities that are fun. These details are decorative and do not affect the puzzles or how they are solved."
       }
     },
     "NOMBRE_1": {
@@ -564,8 +572,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Escribe un lugar donde se escondería esta persona si robase algo",
-        "en": "Write a place where this person would hide if they stole something"
+        "es": "Escribe un lugar donde se escondería esta persona si robase algo.",
+        "en": "Write a place where this person would hide if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -577,8 +585,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
-        "en": "Now write another possible hiding place for this person if they stole something"
+        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo.",
+        "en": "Now write another possible hiding place for this person if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -628,8 +636,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Escribe un lugar donde se escondería esta persona si robase algo",
-        "en": "Write a place where this person would hide if they stole something"
+        "es": "Escribe un lugar donde se escondería esta persona si robase algo.",
+        "en": "Write a place where this person would hide if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -641,8 +649,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
-        "en": "Now write another possible hiding place for this person if they stole something"
+        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo.",
+        "en": "Now write another possible hiding place for this person if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -692,8 +700,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Escribe un lugar donde se escondería esta persona si robase algo",
-        "en": "Write a place where this person would hide if they stole something"
+        "es": "Escribe un lugar donde se escondería esta persona si robase algo.",
+        "en": "Write a place where this person would hide if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -705,8 +713,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
-        "en": "Now write another possible hiding place for this person if they stole something"
+        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo.",
+        "en": "Now write another possible hiding place for this person if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -756,8 +764,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Escribe un lugar donde se escondería esta persona si robase algo",
-        "en": "Write a place where this person would hide if they stole something"
+        "es": "Escribe un lugar donde se escondería esta persona si robase algo.",
+        "en": "Write a place where this person would hide if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -769,8 +777,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
-        "en": "Now write another possible hiding place for this person if they stole something"
+        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo.",
+        "en": "Now write another possible hiding place for this person if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -820,8 +828,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Escribe un lugar donde se escondería esta persona si robase algo",
-        "en": "Write a place where this person would hide if they stole something"
+        "es": "Escribe un lugar donde se escondería esta persona si robase algo.",
+        "en": "Write a place where this person would hide if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -833,8 +841,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
-        "en": "Now write another possible hiding place for this person if they stole something"
+        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo.",
+        "en": "Now write another possible hiding place for this person if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -884,8 +892,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Escribe un lugar donde se escondería esta persona si robase algo",
-        "en": "Write a place where this person would hide if they stole something"
+        "es": "Escribe un lugar donde se escondería esta persona si robase algo.",
+        "en": "Write a place where this person would hide if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -897,8 +905,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
-        "en": "Now write another possible hiding place for this person if they stole something"
+        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo.",
+        "en": "Now write another possible hiding place for this person if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -948,8 +956,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Escribe un lugar donde se escondería esta persona si robase algo",
-        "en": "Write a place where this person would hide if they stole something"
+        "es": "Escribe un lugar donde se escondería esta persona si robase algo.",
+        "en": "Write a place where this person would hide if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -961,8 +969,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
-        "en": "Now write another possible hiding place for this person if they stole something"
+        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo.",
+        "en": "Now write another possible hiding place for this person if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -1012,8 +1020,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Escribe un lugar donde se escondería esta persona si robase algo",
-        "en": "Write a place where this person would hide if they stole something"
+        "es": "Escribe un lugar donde se escondería esta persona si robase algo.",
+        "en": "Write a place where this person would hide if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -1025,8 +1033,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo",
-        "en": "Now write another possible hiding place for this person if they stole something"
+        "es": "Ahora escribe otro posible lugar donde se escondería esta persona si robase algo.",
+        "en": "Now write another possible hiding place for this person if they stole something."
       },
       "cap": 30,
       "corta": {
@@ -1050,13 +1058,13 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Imagina un sitio que le da vergüenza ir, que no le diría a nadie y que es un sitio al que va a por un tipo de resultado",
-        "en": "Imagine a place they are embarrassed to go to, that they would never tell anyone about, and that they go to for one particular kind of result"
+        "es": "Imagina un sitio al que le da vergüenza ir, que no le diría a nadie y al que va a por un tipo de resultado.",
+        "en": "Imagine a place they are embarrassed to go to, that they would never tell anyone about, and that they go to for one particular kind of result."
       },
       "cap": 20,
       "desc": {
-        "es": "Ej.: club de monedas, la Tuna, granjero busca esposa.",
-        "en": "E.g.: coin club, the folk group, farmer seeks wife."
+        "es": "Ejemplos: Club de monedas, la Tuna o Granjero busca novia.",
+        "en": "Examples: Coin club, the folk group or Farmer seeks wife."
       },
       "corta": {
         "es": "Sospechoso 1 · Lugar del test",
@@ -1084,13 +1092,13 @@
       "type": "long",
       "required": true,
       "q": {
-        "es": "Pon el nombre de una persona a la que esta persona le daría vergüenza declarar su amor más prohibido, puede ser una persona real, un amor platónico, un dibujo animado...",
-        "en": "Write the name of a person this person would be embarrassed to confess their most forbidden love to. It can be a real person, a secret crush, a cartoon character..."
+        "es": "Escribe el nombre de alguien por quien esta persona sentiría un amor secreto que le daría vergüenza confesar.",
+        "en": "Write the name of someone this person would secretly be in love with and would be embarrassed to confess."
       },
       "cap": 24,
       "desc": {
-        "es": "Se codifica en runas en su nota.",
-        "en": "It is encoded in runes in their note."
+        "es": "Puede ser una persona real, un amor platónico o un personaje de dibujos animados.",
+        "en": "It can be a real person, a platonic love or a cartoon character."
       },
       "corta": {
         "es": "Sospechoso 2 · Amor prohibido",
@@ -1101,13 +1109,13 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Una tienda en la que le daría vergüenza comprar algo",
-        "en": "A shop where they would be embarrassed to buy something"
+        "es": "Una tienda en la que le daría vergüenza comprar algo.",
+        "en": "A shop where they would be embarrassed to buy something."
       },
       "cap": 20,
       "desc": {
-        "es": "Ejemplo: Vibradores SL, Dulces gordos shop, batamanta 3000.",
-        "en": "Example: Vibradores SL, Dulces gordos shop, batamanta 3000."
+        "es": "Ejemplos: Club del Peluche, Moda de Cuento o Todo Karaoke.",
+        "en": "Examples: Teddy Bear Club, Fairy Tale Fashion or All Karaoke."
       },
       "corta": {
         "es": "Sospechoso 3 · Empresa",
@@ -1118,13 +1126,13 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "El producto que compraría",
-        "en": "The product they would buy"
+        "es": "El producto que compraría.",
+        "en": "The product they would buy."
       },
       "cap": 16,
       "desc": {
-        "es": "Ejemplo: black vibrator, gocholón, batamanta 2400",
-        "en": "Example: black vibrator, gocholón, batamanta 2400"
+        "es": "Ejemplos: Oso con chupete, Pijama de hada o Micro de ducha.",
+        "en": "Examples: Teddy with dummy, Fairy pyjamas or Shower mic."
       },
       "corta": {
         "es": "Sospechoso 3 · Concepto",
@@ -1135,8 +1143,8 @@
       "type": "name",
       "required": true,
       "q": {
-        "es": "Pon el nombre de una persona con la que se escondería para hablar con ella",
-        "en": "Write the name of a person they would hide with to talk to them"
+        "es": "Pon el nombre de una persona con la que se escondería para hablar con ella.",
+        "en": "Write the name of a person they would hide with to talk to them."
       },
       "cap": 24,
       "desc": {
@@ -1152,8 +1160,8 @@
       "type": "long",
       "required": true,
       "q": {
-        "es": "Escribe un mensaje que le confesaría este sospechoso a esa persona",
-        "en": "Write a message this suspect would confess to that person"
+        "es": "Escribe un mensaje que le confesaría este sospechoso a esa persona.",
+        "en": "Write a message this suspect would confess to that person."
       },
       "cap": 42,
       "corta": {
@@ -1165,13 +1173,13 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Escribe un sitio web donde le daría vergüenza que le pillasen mirando:",
-        "en": "Write a website where they would be embarrassed to be caught looking at"
+        "es": "Escribe un sitio web donde le daría vergüenza que le pillasen mirando.",
+        "en": "Write a website where they would be embarrassed to be caught browsing."
       },
       "cap": 20,
       "desc": {
-        "es": "Ej.: pornhub, tarotistas.com, kebabs4ever.",
-        "en": "E.g.: pornhub, tarotistas.com, kebabs4ever."
+        "es": "Ejemplos inventados: fansdelasiesta.com, clubdelpeluche.es o Reyes del Karaoke.",
+        "en": "Made-up examples: siestafans.com, teddyclub.co.uk or Karaoke Kings."
       },
       "corta": {
         "es": "Sospechoso 5 · Búsqueda 1",
@@ -1182,8 +1190,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Escribe otro sitio web donde le daría vergüenza que le pillasen mirando",
-        "en": "Write another website where they would be embarrassed to be caught looking at"
+        "es": "Escribe otro sitio web donde le daría vergüenza que le pillasen mirando.",
+        "en": "Write another website where they would be embarrassed to be caught browsing."
       },
       "cap": 20,
       "corta": {
@@ -1195,13 +1203,13 @@
       "type": "name",
       "required": true,
       "q": {
-        "es": "El nombre de una persona a la que le escribiría una postal",
-        "en": "The name of a person they would send a postcard to"
+        "es": "El nombre de una persona a la que le escribiría una postal.",
+        "en": "The name of a person they would send a postcard to."
       },
       "cap": 24,
       "desc": {
-        "es": "Real, dibujo animado, actor…",
-        "en": "Real, cartoon, actor…"
+        "es": "Puede ser una persona real, un dibujo animado, un actor o actriz.",
+        "en": "It can be a real person, a cartoon character, an actor or an actress."
       },
       "corta": {
         "es": "Sospechoso 6 · Postal para",
@@ -1212,8 +1220,8 @@
       "type": "long",
       "required": true,
       "q": {
-        "es": "Lo que le escribiría en esa postal",
-        "en": "What they would write on that postcard"
+        "es": "Lo que le escribiría en esa postal.",
+        "en": "What they would write on that postcard."
       },
       "cap": 42,
       "corta": {
@@ -1225,8 +1233,8 @@
       "type": "long",
       "required": true,
       "q": {
-        "es": "Una nota que no quiere que vea nadie",
-        "en": "A note they do not want anyone to see"
+        "es": "Una nota que no quiere que vea nadie.",
+        "en": "A note they do not want anyone to see."
       },
       "cap": 200,
       "corta": {
@@ -1238,13 +1246,13 @@
       "type": "long",
       "required": true,
       "q": {
-        "es": "Una afición secreta que le daría vergüenza admitir",
-        "en": "A secret hobby they would be embarrassed to admit"
+        "es": "Una afición secreta que le daría vergüenza admitir.",
+        "en": "A secret hobby they would be embarrassed to admit."
       },
       "cap": 47,
       "desc": {
-        "es": "Ej.: cazar orcos, dormir en la calle…",
-        "en": "E.g.: hunting orcs, sleeping rough…"
+        "es": "Ejemplos: Ensayar discursos de agradecimiento, inventar coreografías frente al espejo o celebrar cumpleaños de sus peluches.",
+        "en": "Examples: Rehearsing thank-you speeches, making up dance routines in front of the mirror or throwing birthday parties for their teddies."
       },
       "corta": {
         "es": "Sospechoso 7 · Afición 1",
@@ -1255,8 +1263,8 @@
       "type": "long",
       "required": true,
       "q": {
-        "es": "Otra afición que le daría vergüenza admitir",
-        "en": "Another hobby they would be embarrassed to admit"
+        "es": "Otra afición que le daría vergüenza admitir.",
+        "en": "Another hobby they would be embarrassed to admit."
       },
       "cap": 47,
       "corta": {
@@ -1268,21 +1276,25 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Escribe el nombre de una aplicación que puede tener en su tablet o smartphone que le dé vergüenza admitir, puede ser real o no: tinder, lácteos4my.",
-        "en": "Write the name of an app they might have on their tablet or smartphone that they are embarrassed to admit to. It can be real or not: tinder, lácteos4my."
+        "es": "Escribe el nombre de una aplicación que podría tener en su tableta o móvil y que le dé vergüenza admitir.",
+        "en": "Write the name of an app they might have on their tablet or phone and would be embarrassed to admit to."
       },
       "cap": 10,
       "corta": {
         "es": "Sospechoso 8 · App 1",
         "en": "Suspect 8 · App 1"
+      },
+      "desc": {
+        "es": "Puede ser una aplicación real o inventada.",
+        "en": "It can be a real or a made-up app."
       }
     },
     "APP_2": {
       "type": "text",
       "required": true,
       "q": {
-        "es": "Segunda app que le da vergüenza admitir",
-        "en": "Second app they are embarrassed to admit to"
+        "es": "Escribe el nombre de otra aplicación que le dé vergüenza admitir.",
+        "en": "Write the name of another app they would be embarrassed to admit to."
       },
       "cap": 10,
       "corta": {
@@ -1294,8 +1306,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Tercera app que le da vergüenza admitir",
-        "en": "Third app they are embarrassed to admit to"
+        "es": "Escribe el nombre de una tercera aplicación que le dé vergüenza admitir.",
+        "en": "Write the name of a third app they would be embarrassed to admit to."
       },
       "cap": 10,
       "corta": {
@@ -1307,8 +1319,8 @@
       "type": "text",
       "required": true,
       "q": {
-        "es": "Cuarta app que le da vergüenza admitir",
-        "en": "Fourth app they are embarrassed to admit to"
+        "es": "Escribe el nombre de una cuarta aplicación que le dé vergüenza admitir.",
+        "en": "Write the name of a fourth app they would be embarrassed to admit to."
       },
       "cap": 10,
       "corta": {
@@ -1356,6 +1368,9 @@
           "DEBILIDAD",
           "B_INFO",
           "B_NOTES"
+        ],
+        "screenBreaks": [
+          "B_NOTES"
         ]
       },
       {
@@ -1378,6 +1393,9 @@
           "S1_HIDEB",
           "TEST_LUGAR",
           "TEST_RESULTADO"
+        ],
+        "screenBreaks": [
+          "TEST_LUGAR"
         ]
       },
       {
@@ -1699,8 +1717,8 @@
           "APODO_2": "La Oculta",
           "S2_SECRET_LOVE": "Carmen Ruiz",
           "APODO_3": "La Curiosa",
-          "Nombre_Empresa": "Vibradores 2000",
-          "CONCEPTO": "Vibrador XL",
+          "Nombre_Empresa": "Club del Peluche",
+          "CONCEPTO": "Oso con chupete",
           "APODO_4": "El Tranquilo",
           "APODO_5": "El Tecno",
           "APODO_6": "El Chef",
@@ -1711,7 +1729,7 @@
           "PERSONALIZADO_1": "Cazar orcos",
           "PERSONALIZADO_2": "Dormir en la calle",
           "APODO_8": "La Lista",
-          "APP_1": "tinder",
+          "APP_1": "Horóscopo",
           "APP_2": "lácteos4my",
           "APP_3": "Banco",
           "APP_4": "Notas"
@@ -1767,14 +1785,14 @@
           "APODO_7": "The Dreamer",
           "APODO_8": "The Smart",
           "S2_SECRET_LOVE": "Rose Brown",
-          "Nombre_Empresa": "Vibrators 2000",
-          "CONCEPTO": "XL vibrator",
+          "Nombre_Empresa": "Teddy Bear Club",
+          "CONCEPTO": "Teddy with dummy",
           "NOMBRE_DEST": "Her grandma",
           "TEXTO_POSTAL": "Memories of the party",
           "NOTA_PERSONALIZADA": "Do not look: suspect list",
           "PERSONALIZADO_1": "Hunting orcs",
           "PERSONALIZADO_2": "Sleeping rough",
-          "APP_1": "Tinder",
+          "APP_1": "Horoscope",
           "APP_2": "Duolingo",
           "APP_3": "Banking",
           "APP_4": "Notes"

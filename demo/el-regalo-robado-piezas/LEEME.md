@@ -1,6 +1,6 @@
 # Regalo robado (por piezas) — el juego del formulario publicado
 
-Copia del juego tal como está en el repositorio de juegos (rama `juego/el-regalo-robado-piezas`, commit `ef9fcb9`):
+Copia del juego tal como está en el repositorio de juegos (rama `juego/el-regalo-robado-piezas`, rama `juego/el-regalo-robado-piezas`):
 la maquetación de las artistas en el creador más los topes revisados el 16-10. Es el juego de
 `docs/index.html` (https://kreatures-studio.github.io/printmyescape/):
 

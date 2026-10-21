@@ -98,6 +98,9 @@ export function reglasCruzadas(game, { submit = false, existe = null, codigos = 
       if (s[key] && !fields[s[key]]) errs.push(`form/${s.id}: ${key} «${s[key]}» no existe en fields`);
       else if (s[key] && !(s.fields || []).includes(s[key])) errs.push(`form/${s.id}: ${key} «${s[key]}» no está entre los campos de la sección`);
     }
+    for (const id of s.screenBreaks || []) {
+      if (!(s.fields || []).includes(id)) errs.push(`form/${s.id}: screenBreaks «${id}» no está entre los campos de la sección`);
+    }
   }
 
   // Otro (multi): el campo de texto que guarda la respuesta «Otro» debe existir.

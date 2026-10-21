@@ -624,6 +624,13 @@
           "type": "string",
           "pattern": "^[a-z0-9-]+@[0-9]+$",
           "description": "Origen en la biblioteca (id@versión), cuando se copió de ella."
+        },
+        "screenBreaks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fieldId"
+          },
+          "description": "Campos que empiezan una pantalla nueva del formulario (para juntar preguntas relacionadas en la misma pantalla)."
         }
       }
     },
