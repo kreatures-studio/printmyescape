@@ -1729,7 +1729,13 @@ var store = {
     delete this.mem[k];
   }
 };
-var DRAFT_KEY = 'pme-demo-draft-v3';
+/* Pedido de la tienda (enlace del correo de compra: ?pedido=1001&firma=…&lang=es). Cada pedido guarda su borrador y
+   sus fotos aparte, para que dos pedidos en el mismo equipo no se mezclen. La firma la comprobará el servidor (fase 2). */
+var URLQ = (function () { try { return new URLSearchParams(window.location.search); } catch (e) { return { get: function () { return null; } }; } })();
+var PEDIDO = String(URLQ.get('pedido') || '').replace(/[^0-9A-Za-z-]/g, '').slice(0, 24) || null;
+var FIRMA = /^[0-9a-f]{16,128}$/i.test(URLQ.get('firma') || '') ? URLQ.get('firma').toLowerCase() : null;
+var LANG_URL = (URLQ.get('lang') || '').slice(0, 2).toLowerCase();
+var DRAFT_KEY = 'pme-demo-draft-v3' + (PEDIDO ? '-pedido-' + PEDIDO : '');
 /* Pantalla de demostración (idioma y punto de partida) delante de la bienvenida.
    tools/build-demo.py --final la desactiva: la versión final empieza en la bienvenida. */
 var DEMO_CONTROL = true;
@@ -1747,6 +1753,13 @@ function fmt(s) {
   return String(s).replace(/%(\d)/g, function (m, n) { return a[+n] !== undefined ? a[+n] : m; });
 }
 function t(k) { return pick(UI[k]); }
+/* La versión para clientes (--final) no habla de demostración. */
+function textosFinales() {
+  if (DEMO_CONTROL) return;
+  UI.brandSub = B('Tu escape room personalizado', 'Your custom escape room');
+  UI.footer = B('© 2026 Kreatures Studio · PrintMyEscape — Todo se procesa en tu equipo: tus fotos no salen de él',
+                '© 2026 Kreatures Studio · PrintMyEscape — Everything is processed on your device: your photos never leave it');
+}
 /* Antes de elegir idioma, los textos de la portada aparecen en los dos idiomas. */
 function tl(k) { return LANG ? pick(UI[k]) : (UI[k].es + ' · ' + UI[k].en); }
 function otherTagFor(l) { return l === 'en' ? 'Other' : 'Otro'; }
@@ -1763,6 +1776,7 @@ var UI = {
   footer: B('© 2026 Kreatures Studio · PrintMyEscape — Demo técnica: todo se procesa en tu equipo',
             '© 2026 Kreatures Studio · PrintMyEscape — Technical demo: everything is processed on your device'),
   draft: B('Borrador', 'Draft'),
+  orderTag: B('Pedido #%1', 'Order #%1'),
   requiredWord: B('obligatorios', 'required'),
   stepOf: B('Pantalla %1 de %2', 'Screen %1 of %2'),
   revision: B('Revisión', 'Review'),
@@ -2015,7 +2029,9 @@ var photos = {}, idbOK = false, idbDB = null;
     if (d0.prefs) { PREFS.country = d0.prefs.country || null; PREFS.paper = d0.prefs.paper || null; PREFS.paperManual = !!d0.prefs.paperManual; }
   } catch (e) {}
 })();
-/* La versión final no tiene pantalla de demostración: el idioma sale del navegador y se cambia en la barra. */
+/* La versión final no tiene pantalla de demostración: el idioma sale del enlace del pedido o del navegador, y se
+   cambia en la barra. */
+if (!LANG && (LANG_URL === 'es' || LANG_URL === 'en')) LANG = LANG_URL;
 if (!LANG && !DEMO_CONTROL) LANG = detectarIdioma();
 prefsIniciales();
 
@@ -2024,7 +2040,7 @@ var idb = {
   open: function (cb) {
     if (!window.indexedDB) { cb(false); return; }
     try {
-      var rq = window.indexedDB.open('pme-demo', 1);
+      var rq = window.indexedDB.open('pme-demo' + (PEDIDO ? '-pedido-' + PEDIDO : ''), 1);
       rq.onupgradeneeded = function () { rq.result.createObjectStore('photos'); };
       rq.onsuccess = function () { idbDB = rq.result; idbOK = true; cb(true); };
       rq.onerror = function () { cb(false); };
@@ -2129,7 +2145,8 @@ function updateDraftInfo(ts) {
   var date = ts ? new Date(ts) : null;
   var loc = LANG === 'en' ? 'en-GB' : 'es-ES';
   var when = date ? (date.toLocaleDateString(loc) + ' ' + date.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })) : '';
-  $('draftinfo').textContent = (LANG ? t('draft') + ' ' + when + ' · ' + n + '/' + total + ' ' + t('requiredWord') : '');
+  $('draftinfo').textContent = (PEDIDO ? fmt(t('orderTag'), PEDIDO) + ' · ' : '') +
+    (LANG ? t('draft') + ' ' + when + ' · ' + n + '/' + total + ' ' + t('requiredWord') : '');
 }
 function secIndex(id) {
   for (var i = 0; i < SECTIONS.length; i++) if (SECTIONS[i].id === id) return i;
@@ -2580,7 +2597,8 @@ function applyStatic() {
     b.classList.toggle('on', on);
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
-  document.title = LANG === 'en' ? 'PrintMyEscape · Personalization demo' : 'PrintMyEscape · Demo personalización';
+  document.title = DEMO_CONTROL ? (LANG === 'en' ? 'PrintMyEscape · Personalization demo' : 'PrintMyEscape · Demo personalización')
+    : (LANG === 'en' ? 'PrintMyEscape · Your escape room' : 'PrintMyEscape · Tu escape room') + (PEDIDO ? ' · #' + PEDIDO : '');
 }
 
 /* ---------- ejemplos: rellenan el formulario entero y llevan a la revisión ---------- */
@@ -3486,6 +3504,7 @@ $('filepick').onchange = function (e) {
 };
 
 /* ---------- arranque ---------- */
+textosFinales();
 formFonts().then(function (m) { _fitMap = m; if (trimStored()) { saveDraft(); render(); } }, function () {});
 try {
   applyStatic();
