@@ -889,9 +889,10 @@
             },
             "transform": {
               "enum": [
-                "runes"
+                "runes",
+                "frase"
               ],
-              "description": "Transformación del valor del hueco (mechanics/runes.js)."
+              "description": "Transformación del valor del hueco (mechanics/runes.js, mechanics/frase.js)."
             },
             "params": {
               "type": "object",

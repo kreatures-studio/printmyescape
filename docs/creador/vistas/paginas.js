@@ -7,6 +7,7 @@ import { h, icono, enIdioma } from '../dom.js';
 import { componer, pintarPDF, olvidarFichero } from '../motor.js';
 import { abrirSubida } from '../subir.js';
 import { sugerenciasDe, cajaSugerencia } from './sugerencias.js';
+import { grupoIdiomas } from './comun.js';
 import { claveDeTexto, PAGINA_ENTERA } from '../tools/game/operaciones.mjs';
 
 const ANCHO_PAGINA_PT = 595.28; // A4: el tamaño de letra (size) es % del ancho de la página
@@ -659,13 +660,26 @@ function propiedadesElemento(app, ui, pagina, el, cambiarEl) {
         h('select', { id: `${pre}-alin`, disabled: ro, onchange: (e) => cambiarEl('Alineación', { align: e.target.value === 'left' ? null : e.target.value }) },
           [['left', 'A la izquierda'], ['center', 'Centrado'], ['right', 'A la derecha']].map(([v, t]) => h('option', { value: v, selected: (el.align || 'left') === v }, t)))));
     if (el.kind === 'field') {
-      const modo = el.transform === 'runes' ? 'runes' : el.upper ? 'upper' : 'tal';
+      const modo = el.transform === 'runes' ? 'runes' : el.transform === 'frase' ? 'frase' : el.upper ? 'upper' : 'tal';
+      const vacio = Object.fromEntries(g.languages.map((l) => [l, '']));
       partes.push(h('div', { class: 'campo' }, h('label', { for: `${pre}-transf` }, 'Se imprime'),
         h('select', { id: `${pre}-transf`, disabled: ro, onchange: (e) => {
           const v = e.target.value;
-          cambiarEl('Cómo se imprime', v === 'runes' ? { transform: 'runes', upper: null, fontFamily: 'Pigpen' } : v === 'upper' ? { upper: true, transform: null } : { upper: null, transform: null });
-        } }, [['tal', 'Tal cual'], ['upper', 'En mayúsculas'], ['runes', 'En runas']].map(([v, t]) => h('option', { value: v, selected: modo === v }, t)))),
+          cambiarEl('Cómo se imprime', v === 'runes' ? { transform: 'runes', upper: null, fontFamily: 'Pigpen', params: { prefix: vacio } }
+            : v === 'frase' ? { transform: 'frase', upper: null, params: { text: Object.fromEntries(g.languages.map((l) => [l, '{}'])) } }
+            : v === 'upper' ? { upper: true, transform: null, params: null } : { upper: null, transform: null, params: null });
+        } }, [['tal', 'Tal cual'], ['upper', 'En mayúsculas'], ['runes', 'En runas'], ['frase', 'Dentro de una frase']].map(([v, t]) => h('option', { value: v, selected: modo === v }, t)))),
+      modo === 'runes' ? grupoIdiomas(app, { id: `${pre}-runas`, rotulo: 'Mensaje cifrado delante del valor', valor: (el.params || {}).prefix,
+        ayuda: 'Se cifra junto con el valor (solo letras: sin acentos ni signos). Deja un espacio al final.',
+        alGuardar: (v) => cambiarEl('Mensaje cifrado', { params: { ...(el.params || {}), prefix: v ? Object.fromEntries(Object.entries(v).map(([l, t]) => [l, t.endsWith(' ') ? t : `${t} `])) : vacio } }) }) : null,
+      modo === 'frase' ? grupoIdiomas(app, { id: `${pre}-frase`, rotulo: 'Frase', valor: (el.params || {}).text, obligatorio: true,
+        ayuda: 'Escribe {} donde va la respuesta del comprador. Por ejemplo: ¡Alguien ha robado el regalo de {}!',
+        alGuardar: (v) => { if (Object.values(v).every((t) => t.includes('{}'))) cambiarEl('Frase', { params: { ...(el.params || {}), text: v } }); else app.aviso('La frase tiene que llevar {} donde va la respuesta, en todos los idiomas.', { tipo: 'error' }); } }) : null,
       h('label', { class: 'casilla' }, h('input', { type: 'checkbox', checked: !!el.wrap, disabled: ro, onchange: (e) => cambiarEl('Varias líneas', { wrap: e.target.checked || null }) }), 'Puede ocupar varias líneas'),
+      el.wrap ? h('div', { class: 'rejilla-2' },
+        numero(`${pre}-interlineado`, 'Interlineado (pt, 0 = automático)', el.leading ? pt(el.leading * pagina.escala) : 0,
+          ro ? null : (v) => cambiarEl('Interlineado', { leading: v > 0 ? redondear(desdePt(v) / pagina.escala * 1000) / 1000 : null }), { paso: 0.5, min: 0, max: 200 }),
+        h('label', { class: 'casilla', style: { alignSelf: 'end' } }, h('input', { type: 'checkbox', checked: !!el.even, disabled: ro, onchange: (e) => cambiarEl('Letra igual en todas las líneas', { even: e.target.checked ? 1 : null }) }), 'Misma anchura de letra en todas las líneas')) : null,
       h('label', { class: 'casilla' }, h('input', { type: 'checkbox', checked: !!el.vTop, disabled: ro, onchange: (e) => cambiarEl('Empezar arriba', { vTop: e.target.checked || null }) }), 'Empieza arriba de la caja'));
     } else {
       partes.push(h('label', { class: 'casilla' }, h('input', { type: 'checkbox', checked: !!el.tight, disabled: ro, onchange: (e) => cambiarEl('Líneas juntas', { tight: e.target.checked || null }) }), 'Líneas juntas (no repartirlas en la caja)'));

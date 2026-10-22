@@ -36,7 +36,8 @@ def browser_pdfs(p):
     res = {}
     for lang, n in CASES:
         # Contexto nuevo por caso: si no, el borrador guardado reabre la demo a mitad de formulario
-        ctx = b.new_context(viewport={'width': 1366, 'height': 900}, accept_downloads=True)
+        # Navegador de España: la demo propone A4 (con un navegador de EE. UU. propondría US Letter y el PDF no sería el de la CLI)
+        ctx = b.new_context(viewport={'width': 1366, 'height': 900}, accept_downloads=True, locale='es-ES', timezone_id='Europe/Madrid')
         pg = ctx.new_page()
         pg.on('dialog', lambda d: d.accept())
         pg.goto('file://' + DEMO)

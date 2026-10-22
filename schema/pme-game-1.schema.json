@@ -160,7 +160,7 @@
                     "xscale": { "type": ["number", "null"] },
                     "angle": { "type": "number" },
                     "flow": { "type": "string", "description": "Pareja de reflow: dos huecos de la misma línea con el mismo flow se reflujan juntos." },
-                    "transform": { "enum": ["runes"], "description": "Transformación del valor del hueco (mechanics/runes.js)." },
+                    "transform": { "enum": ["runes", "frase"], "description": "Transformación del valor del hueco (mechanics/runes.js, mechanics/frase.js)." },
                     "params": { "type": "object", "description": "Parámetros de la transformación (p. ej. prefix por idioma en «runes»)." }
                   }
                 }

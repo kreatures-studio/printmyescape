@@ -371,6 +371,17 @@ Un juego real de principio a fin, con prueba de juego, y la lista de piezas reut
   (US Letter: cada página A4 entera y centrada). El tercer punto de «Antes de empezar» sigue igual (pendiente).
   Pruebas: `tools/qa/preferencias-demo.py` 11/11, e2e-demo 30/30 y limites-demo 31/31 en las dos demos.
 
+- **Ajustes del 22-10 (hecho).** Formulario: «+ Otra opción» con contador de letras y que se puede desmarcar. Juego
+  (`tools/juegos/ajustes-22-10.cjs`): «¡Alguien ha robado el regalo de …!» con el nombre del cumpleañero (antes
+  ponía Ian siempre) gracias a la transformación nueva «frase» de un hueco (`mechanics/frase.js`: el valor dentro de
+  una frase por idioma, editable en el creador; en el creador también se edita el mensaje de las runas); «¿Cómo
+  funciona?» con aire; «Información importante» sobre las líneas del papel (interlineado e `even`: todas las líneas
+  con la misma anchura de letra, también en el creador); mensaje pigpen del sospechoso 2 confirmado («Aunque no dejo
+  de pensar en ti… lo nuestro es imposible [Nombre]»); en «Posibles ubicaciones», números que caben en su insignia,
+  ubicaciones de una línea y del mismo ancho, sin «del despacho» y sin el 3 repetido; textos en inglés que decían
+  «We know that [nombre] they were…» corregidos. Pruebas: preferencias-demo 14/14, e2e 30/30 y límites 31/31 en las
+  dos demos, golden y paridad 96/96.
+
 ## 4. Lo que no entra
 
 Dibujo libre, grupos de capas y recorte avanzado; botón de IA en la web; imágenes generadas con IA; edición

@@ -136,6 +136,12 @@ export function reglasCruzadas(game, { submit = false, existe = null, codigos = 
       }
       if (sl.transform !== undefined) {
         if (!(globalThis.PMETransforms || {})[sl.transform]) errs.push(`template/pages/${p.id}: la transformación «${sl.transform}» no existe`);
+        if (sl.transform === 'frase') {
+          for (const l of langs) {
+            const t = sl.params && sl.params.text && sl.params.text[l];
+            if (typeof t !== 'string' || !t.includes('{}')) errs.push(`template/pages/${p.id}: el hueco «${sl.field}» (frase) necesita params.text.${l} con {} donde va el valor`);
+          }
+        }
         if (sl.transform === 'runes') {
           for (const l of langs) {
             if (!(sl.params && sl.params.prefix && typeof sl.params.prefix[l] === 'string')) {

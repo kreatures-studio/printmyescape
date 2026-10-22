@@ -182,7 +182,9 @@ with sync_playwright() as p:
     if not e:
         pdf = download_pdf(pg, 'ejemplo-1-es')
         txt = pdf_text(pdf)
-        rec('X2 ejemplo 1 (ES) genera PDF en español', 'Ian' in txt and 'TE QUIERO CARMEN RUIZ' in txt.upper().replace('\n', ' '),
+        # el mensaje cifrado acaba en el nombre: «TE QUIERO …» en el original; la frase confirmada en el juego por piezas
+        cifrado = ' '.join(txt.upper().split())
+        rec('X2 ejemplo 1 (ES) genera PDF en español', 'Ian' in txt and ('TE QUIERO CARMEN RUIZ' in cifrado or 'LO NUESTRO ES IMPOSIBLE CARMEN RUIZ' in cifrado),
             'páginas=%s' % pdf_pages(pdf))
     else:
         rec('X2 ejemplo 1 (ES) genera PDF', False, e)
@@ -199,7 +201,7 @@ with sync_playwright() as p:
         sp = [w for w in ('madrugar', 'Odia', 'TE QUIERO', 'Otro', 'Tomás', 'pastas') if w in flat]
         rec('X3 ejemplo 2 (EN): el PDF sale sin textos en español', not sp and 'Martha' in flat,
             'palabras en español=%s páginas=%s' % (sp, pdf_pages(pdf)))
-        rec('X4 amor prohibido en inglés: I LOVE + nombre (no TE QUIERO)', 'I LOVE TOM WALSH' in flat.upper(),
+        rec('X4 amor prohibido en inglés: el mensaje en inglés + nombre (no TE QUIERO)', 'I LOVE TOM WALSH' in flat.upper() or 'WHAT WE HAVE IS IMPOSSIBLE TOM WALSH' in flat.upper(),
             'I LOVE presente=%s' % ('I LOVE TOM WALSH' in flat.upper()))
     else:
         rec('X3 ejemplo 2 (EN) genera PDF', False, e)

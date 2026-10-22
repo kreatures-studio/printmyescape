@@ -488,8 +488,8 @@ var UI = {
   completed: B('Completado', 'Completed'),
   lastStep: B('Último paso', 'Last step'),
   otherTag: B('Otro', 'Other'),
-  otherPill: B('+ Otra', '+ Other'),
-  otherPh: B('Escribe otra debilidad…', 'Type another weakness…'),
+  otherPill: B('+ Otra opción', '+ Other option'),
+  otherPh: B('Escríbela aquí…', 'Type it here…'),
   writeHere: B('Escribe aquí…', 'Type here…'),
   exampleLabel: B('Ejemplo:', 'Example:'),
   uploadPhoto: B('Pulsa para subir una foto', 'Click to upload a photo'),
@@ -1016,9 +1016,16 @@ function fieldControl(f) {
       var bo = el('button', 'pill' + (multiOther[f.id] ? ' on' : ''), t('otherPill'));
       bo.type = 'button';
       bo.onclick = function () {
-        var ow = wrap.querySelector('.otherWrap'); ow.classList.add('show');
+        var ow = wrap.querySelector('.otherWrap'), oi = wrap.querySelector('.otherInput');
+        /* «Otro» se desmarca como las demás opciones: se borra lo escrito */
+        if (bo.classList.contains('on')) {
+          bo.classList.remove('on'); ow.classList.remove('show'); oi.value = '';
+          var oc0 = wrap.querySelector('.otherCount'); if (oc0) oc0.textContent = '0/' + (LIMITS[f.other] || '');
+          collectMulti(f.id); return;
+        }
+        ow.classList.add('show');
         bo.classList.add('on');
-        var oi = wrap.querySelector('.otherInput'); oi.focus(); collectMulti(f.id);
+        oi.focus(); collectMulti(f.id);
       };
       pills.appendChild(bo);
     }
@@ -1029,8 +1036,11 @@ function fieldControl(f) {
       oi2.className = 'otherInput'; oi2.setAttribute('data-other', f.id);
       oi2.placeholder = t('otherPh'); oi2.maxLength = LIMITS[f.other];
       oi2.value = multiOther[f.id] || '';
-      oi2.oninput = function () { collectMulti(f.id); };
+      /* contador de letras, como en los demás campos */
+      var oc = el('div', 'count otherCount', (oi2.value || '').length + '/' + (LIMITS[f.other] || ''));
+      oi2.oninput = function () { oc.textContent = oi2.value.length + '/' + (LIMITS[f.other] || ''); collectMulti(f.id); };
       ow2.appendChild(oi2);
+      if (LIMITS[f.other]) ow2.appendChild(oc);
       wrap.appendChild(ow2);
     }
   } else if (f.type === 'choice') {

@@ -66,7 +66,9 @@ function fit(font, text, boxPt, size0, opt) {
   const targetHs = clampTarget(opt.targetHs, vertical);
   /* El artista puede haber condensado por debajo del 70% (p. ej. 0.63):
      el suelo de condensación respeta su valor en vez de forzar encogidos. */
-  const floor = single ? Math.min(0.6, targetHs) : Math.min(HS_MIN, targetHs);
+  const floor = single ? Math.min(0.6, targetHs) : opt.even ? targetHs : Math.min(HS_MIN, targetHs);
+  /* opt.even (hueco «even»): todas las líneas con la misma anchura de letra; se parte a lo ancho natural de la caja
+     y, si no cabe, encoge el tamaño en vez de condensar unas líneas más que otras. */
   /* Los valores de una línea pueden crecer a la derecha de su caja solo
      si esta es estrecha (códigos): en cajas anchas (títulos) el texto
      blanco se saldría de su pastilla y se volvería invisible. */
@@ -143,7 +145,7 @@ function drawFitted(page, degrees, ops, font, text, boxPt, size0, color, align, 
   const vertical = Math.abs(angle) > 45;
   const r = fit(font, text, boxPt, size0, {
     single: opt.single, targetHs: opt.targetHs, angle, lockSize: opt.lockSize,
-    grow: opt.grow, leading: opt.leading,
+    grow: opt.grow, leading: opt.leading, even: opt.even,
   });
   const { lines, hs, size } = r;
   const rad = (angle * Math.PI) / 180;
@@ -918,7 +920,7 @@ async function composeGame(deps) {
             H(s.color || '#000000'), s.align || 'left',
             { single: !s.wrap, targetHs: s.xscale || 1, angle: s.angle || 0,
               grow: (s.w || 0) < 10 ? 2.5 : 1, baseY: baseOverride.get(s), vStart: colLeft.has(s), vTop: !!s.vTop, tight: !!s.tight,
-              leading: s.leading ? (s.leading / 100) * PW : 0 })) {
+              leading: s.leading ? (s.leading / 100) * PW : 0, even: !!s.even })) {
           warns.push(`${s.field}: valor encogido`);
         }
       }
@@ -980,7 +982,8 @@ async function composeGame(deps) {
     const scale = (fuentes ? fuentes.manuscrita(fam) : /caveat|script|hand|myriad/i.test(fam)) ? 1.65 : 1;
     const r = fit(font, text, bb, (slot.size / 100) * PW * scale,
       { single: !slot.wrap, targetHs: slot.xscale || 1, angle: slot.angle || 0,
-        grow: (slot.w || 0) < 10 ? 2.5 : 1 });
+        grow: (slot.w || 0) < 10 ? 2.5 : 1, even: !!slot.even,
+        leading: slot.leading ? (slot.leading / 100) * PW : 0 });
     return !r.warn;
   }
 globalThis.PMECompose = { composeGame, fit, wrap, drawFitted, drawLine, drawPhoto, fieldFits, crearTema, recolorearPdf, rgbALab, labARgb, hexARgb, rgbAHex };

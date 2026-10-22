@@ -48,13 +48,25 @@ with sync_playwright() as p:
     for f in ['FAMA','S2_SECRET_LOVE','Nombre_Empresa','BUSQUEDA_1','NOMBRE_DEST','PERSONALIZADO_1','APP_1','B_INFO']:
         i=pg.evaluate(f"() => screenOfField('{f}')"); pg.evaluate(f"() => {{ idx = {i}; render(); }}"); pg.wait_for_timeout(150)
         pg.screenshot(path=f'{S}/campo-{f}.png')
+    # «Otro» en una pregunta de varias opciones: contador y se puede desmarcar
+    i=pg.evaluate("() => screenOfField('DEBILIDAD')"); pg.evaluate(f"() => {{ idx = {i}; render(); }}"); pg.wait_for_timeout(300)
+    campo=pg.locator('.field[data-field="DEBILIDAD"]')
+    if not campo.locator('.otherWrap.show').count(): campo.locator('.pill:has-text("Otra opción")').click()
+    oi=campo.locator('.otherInput'); oi.fill(''); oi.type('Roncar fuerte'); pg.wait_for_timeout(100)
+    cont=campo.locator('.otherCount').inner_text()
+    rec('«Otro»: contador de letras', cont.startswith('13/'), cont)
+    campo.locator('.pill:has-text("Otra opción")').click(); pg.wait_for_timeout(200)
+    ans=pg.evaluate("() => answers.DEBILIDAD")
+    rec('«Otro» se puede desmarcar (se borra lo escrito)', campo.locator('.otherWrap.show').count()==0 and 'Roncar' not in (ans or ''), ans)
     pg.evaluate("() => { PREFS.paper = 'letter'; PREFS.paperManual = true; renderReview($('answer')); }"); pg.wait_for_timeout(300)
     rec('la revisión dice el formato y el país', 'US Letter' in pg.inner_text('.review-prefs') and 'España' in pg.inner_text('.review-prefs'), pg.inner_text('.review-prefs'))
-    pg.evaluate("() => finish()"); pg.wait_for_timeout(500)
+    pg.evaluate("() => { answers.NOMBRE_CUMPLE = 'Lucía'; saveDraft(); finish(); }"); pg.wait_for_timeout(500)
     pg.click('#bGen'); pg.wait_for_selector('#dl', state='visible', timeout=240000)
     with pg.expect_download() as d: pg.click('#pdflink')
     out=S+'/carta.pdf'; d.value.save_as(out)
     info=subprocess.run(['pdfinfo',out],capture_output=True,text=True).stdout
+    txt=subprocess.run(['pdftotext','-f','3','-l','3',out,'-'],capture_output=True,text=True).stdout
+    rec('«¡Alguien ha robado el regalo de …!» lleva el nombre del cumpleañero', 'regalo de Lucía!' in txt and 'Ian' not in txt, [l for l in txt.splitlines() if 'regalo' in l][:2])
     rec('el PDF sale en US Letter (612 × 792)', '612 x 792' in info and d.value.suggested_filename.endswith('-letter.pdf'), [l for l in info.splitlines() if 'size' in l.lower()]+[d.value.suggested_filename])
     ctx.close(); b.close()
 rec('sin errores de JavaScript', not errs, errs[:3])
