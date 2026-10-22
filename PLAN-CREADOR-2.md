@@ -382,6 +382,13 @@ Un juego real de principio a fin, con prueba de juego, y la lista de piezas reut
   «We know that [nombre] they were…» corregidos. Pruebas: preferencias-demo 14/14, e2e 30/30 y límites 31/31 en las
   dos demos, golden y paridad 96/96.
 
+- **Shopify, fase 1 (hecho, 22-10).** Tienda de prueba a2arka-3r.myshopify.com: pasarela de pago de prueba activa;
+  el correo «Confirmación de pedido» lleva, si el pedido incluye El Regalo Robado (handle `el-regalo-robado`), el
+  bloque de `tools/shopify/correo-confirmacion.liquid` con el botón al formulario del pedido
+  (`docs/juego/el-regalo-robado/?pedido=N&firma=HMAC-SHA256(N, secreto)`; el secreto está solo en la plantilla de
+  Shopify y en el equipo del estudio). Probado con el pedido #1001: llega el correo, la firma es la esperada y el
+  formulario abre el pedido. Fase 2 (pendiente): servidor que compruebe la firma y el pedido antes de generar el PDF.
+
 ## 4. Lo que no entra
 
 Dibujo libre, grupos de capas y recorte avanzado; botón de IA en la web; imágenes generadas con IA; edición
